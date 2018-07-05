@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.xzhou.analyhtml"
-        minSdkVersion 25
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -22,7 +22,12 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation files('libs/jsoup-1.11.3.jar')
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
+    implementation 'com.yanzhenjie:permission:2.0.0-rc11'
+    implementation 'com.google.dagger:dagger-android:2.16'
+    annotationProcessor "com.google.dagger:dagger-android-processor:2.16"
 }

@@ -1,7 +1,5 @@
-package com.xzhou.book;
+package com.xzhou.book.readsource;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -12,29 +10,18 @@ import org.jsoup.select.Elements;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class MainActivity extends AppCompatActivity {
+public class BaiduSearch {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String key = "不知道是什么"; //查询关键字
-                try {
-                    key = URLEncoder.encode(key, "gb2312");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
-                parse(url);
-            }
-        }).start();
-    }
 
-    public static void parse(String url) {
+
+    public static void parse(String key) {
         try {
+            try {
+                key = URLEncoder.encode(key, "gb2312");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             //解析Url获取Document对象
             Document document = Jsoup.connect(url).get();
             //获取网页源码文本内容
@@ -67,5 +54,4 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 }
