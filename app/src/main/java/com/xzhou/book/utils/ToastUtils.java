@@ -9,6 +9,10 @@ import com.xzhou.book.MyApp;
 public class ToastUtils {
     private static Toast mToast;
 
+    public static void release() {
+        mToast = null;
+    }
+
     public static void showShortToast(String text) {
         if (mToast == null) {
             mToast = Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_SHORT);

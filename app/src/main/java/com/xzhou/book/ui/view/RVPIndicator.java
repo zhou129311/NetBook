@@ -22,12 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xzhou.book.R;
+import com.xzhou.book.utils.AppUtils;
 
 import java.util.List;
 
-/**
- * Created by Administrator on 2016/8/4.
- */
 public class RVPIndicator extends LinearLayout {
 
     private static final int STYLE_BITMAP = 0;
@@ -55,7 +53,7 @@ public class RVPIndicator extends LinearLayout {
     private Rect mRectF;
     private Bitmap mBitmap;
     private int mIndicatorHeight = 5;
-    private int mIndicatorWidth = getWidth() / mTabVisibleCount;
+    private int mIndicatorWidth;
 
     private static final float RADIO_TRIANGEL = 1.0f / 6;
     private float mTranslationX;
@@ -137,13 +135,10 @@ public class RVPIndicator extends LinearLayout {
             mTranslationX = 0;
             break;
         }
-        initTabItem();
-        setHighLightTextView(mPosition);
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        // 保存画布
         canvas.save();
 
         switch (mIndicatorStyle) {
@@ -178,6 +173,8 @@ public class RVPIndicator extends LinearLayout {
 
     public void setTabItemTitles(List<String> datas) {
         this.mTabTitles = datas;
+        initTabItem();
+        setHighLightTextView(mPosition);
     }
 
     public void setViewPager(ViewPager viewPager, int pos) {
@@ -220,10 +217,14 @@ public class RVPIndicator extends LinearLayout {
                 this.removeAllViews();
             }
             for (String title : mTabTitles) {
-                addView(createTextView(title));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(AppUtils.getScreenWidth() / mTabVisibleCount, LayoutParams.MATCH_PARENT);
+                TextView view = createTextView(title);
+                addView(view, lp);
             }
             setItemClickEvent();
         }
+        invalidate();
+        requestLayout();
     }
 
     private void setItemClickEvent() {
@@ -254,7 +255,6 @@ public class RVPIndicator extends LinearLayout {
     }
 
     private void onScroll(int position, float offset) {
-
         // 不断改变偏移量，invalidate
         mTranslationX = getWidth() / mTabVisibleCount * (position + offset);
 
@@ -271,8 +271,7 @@ public class RVPIndicator extends LinearLayout {
                 this.scrollTo(xValue, 0);
             } else {
                 // 为count为1时 的特殊处理
-                this.scrollTo(position * tabWidth + (int) (tabWidth * offset),
-                        0);
+                this.scrollTo(position * tabWidth + (int) (tabWidth * offset), 0);
             }
         }
 
@@ -281,14 +280,10 @@ public class RVPIndicator extends LinearLayout {
 
     private TextView createTextView(String text) {
         TextView tv = new TextView(getContext());
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        lp.width = getWidth() / mTabVisibleCount;
         tv.setGravity(Gravity.CENTER);
         tv.setTextColor(mTextColorNormal);
         tv.setText(text);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, mTextSize);
-        tv.setLayoutParams(lp);
         return tv;
     }
 

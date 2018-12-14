@@ -1,4 +1,4 @@
-package com.xzhou.book.ui.activity;
+package com.xzhou.book.ui.common;
 
 import android.annotation.LayoutRes;
 import android.annotation.Nullable;
@@ -126,5 +126,4 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }
     }
-
 }

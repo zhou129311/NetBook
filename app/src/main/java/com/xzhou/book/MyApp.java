@@ -3,6 +3,7 @@ package com.xzhou.book;
 import android.app.Application;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.SPUtils;
 
 public class MyApp extends Application {
@@ -17,8 +18,12 @@ public class MyApp extends Application {
 
     }
 
-    protected void initNightMode() {
-        boolean isNight = SPUtils.get().getBoolean(SPUtils.PRE_KEY_ISNIGHT, false);
+    private void initDagger() {
+
+    }
+
+    private void initNightMode() {
+        boolean isNight = SPUtils.get().getBoolean(AppSettings.PRE_KEY_ISNIGHT, false);
         if (isNight) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {

@@ -4,24 +4,22 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 public class SPUtils {
-
-    public static final String PRE_KEY_ISNIGHT = "pre_key_is_night";
-
     private static SPUtils mInstance;
     private SharedPreferences mPreferences;
 
     public static SPUtils get() {
         if (mInstance == null) {
-            synchronized (SPUtils.class) {
-                if (mInstance == null) {
-                    mInstance = new SPUtils();
-                }
-            }
+            mInstance = new SPUtils();
         }
         return mInstance;
     }
 
     private SPUtils() {
+    }
+
+    public void uninit() {
+        mPreferences = null;
+        mInstance = null;
     }
 
     public void init(Context context) {

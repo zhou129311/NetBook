@@ -21,9 +21,11 @@ public class Log {
     public static void w(String msg) {
         i("NO_TAG", msg);
     }
+
     public static void e(String msg) {
         i("NO_TAG", msg);
     }
+
     public static void d(String msg) {
         i("NO_TAG", msg);
     }
@@ -95,8 +97,7 @@ public class Log {
     }
 
     private static String formatMsg(String tag, String msg) {
-        return "[" + getPid() + "]" +
-                "[" + tag + "] [thread=" + String.valueOf(Thread.currentThread().getId()) + "] ==>" + msg;
+        return "[" + tag + "]:" + msg;
     }
 
     private static String getPid() {
@@ -121,12 +122,7 @@ public class Log {
                 } catch (IOException e) {
                     android.util.Log.e("FileLog", "Store: " + e.getMessage(), e);
                 } finally {
-                    if (fw != null) {
-                        try {
-                            fw.close();
-                        } catch (IOException ignored) {
-                        }
-                    }
+                    AppUtils.close(fw);
                 }
             }
         });

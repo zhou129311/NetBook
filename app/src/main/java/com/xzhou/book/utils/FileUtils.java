@@ -210,12 +210,10 @@ public class FileUtils {
     }
 
     public static String createRootPath(Context context) {
-        String cacheRootPath = "";
+        String cacheRootPath;
         if (isSdCardAvailable()) {
-            // /sdcard/Android/data/<application package>/cache
             cacheRootPath = context.getExternalCacheDir().getPath();
         } else {
-            // /data/data/<application package>/cache
             cacheRootPath = context.getCacheDir().getPath();
         }
         return cacheRootPath;

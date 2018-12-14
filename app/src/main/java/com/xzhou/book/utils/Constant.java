@@ -12,18 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author yuyh.
- * @date 16/8/5.
- */
 public class Constant {
-
-    public static final String IMG_BASE_URL = "http://statics.zhuishushenqi.com";
-
-    public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
-
     public static String PATH_DATA = FileUtils.createRootPath(MyApp.getContext()) + "/cache";
-
     public static String PATH_COLLECT = FileUtils.createRootPath(MyApp.getContext()) + "/collect";
 
     public static String PATH_TXT = PATH_DATA + "/book/";
