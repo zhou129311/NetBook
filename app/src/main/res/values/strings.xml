@@ -3,6 +3,17 @@
     <string name="book_read_mode_day">夜间</string>
     <string name="menu_main_night_mode">夜间模式</string>
 
+    <string name="community_discuss">综合讨论区</string>
+    <string name="community_comment">书评区</string>
+    <string name="community_helper">书荒互助区</string>
+    <string name="community_girl">女生区</string>
+
+    <string name="find_ranking">排行榜</string>
+    <string name="find_topic">主题书单</string>
+    <string name="find_category">分类</string>
+    <string name="find_random_read">随机看书</string>
+    <string name="rank_other">别人家的排行榜</string>
+
     <string name="search">搜索</string>
     <string name="search_hot_search">大家都在搜</string>
     <string name="search_change_a_lot">换一批</string>
@@ -89,11 +100,14 @@
     <string name="network_error_tips">加载失败，请检查网络或稍后再试</string>
     <string name="cancle_top">取消置顶</string>
     <string name="to_add">去添加</string>
-    <string name="book_empty_hint">""千世人生书中悟\n无书只得一世休""</string>
+    <string name="book_empty_hint">\&#034;千世人生书中悟\n无书只得一世休\&#034;</string>
+    <string name="no_update">你追的小说暂无更新</string>
 
     <string name="category">分类</string>
     <string name="male">男生</string>
     <string name="female">女生</string>
-    <string name="category_book_count">%1$d本</string>
+    <string name="picture">漫画</string>
+    <string name="epub">出版</string>
+    <string name="category_book_count">%1$d 本</string>
     <string name="favor">收藏</string>
 </resources>

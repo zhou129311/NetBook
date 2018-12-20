@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/touch_bg"
+                android:gravity="center_vertical"
+                android:paddingBottom="15dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="15dp">
+
+    <ImageView
+        android:id="@+id/click_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/discuss_section"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/click_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="30dp"
+        android:layout_toEndOf="@id/click_image"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        tools:text="综合讨论区"/>
+
+    <ImageView
+        android:id="@+id/click_image_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="20dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ios_arrow"
+        android:visibility="gone"
+        tools:ignore="ContentDescription"/>
+
+</RelativeLayout>

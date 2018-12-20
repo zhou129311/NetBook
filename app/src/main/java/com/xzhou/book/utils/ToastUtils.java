@@ -18,19 +18,12 @@ public class ToastUtils {
             mToast = Toast.makeText(MyApp.getContext(), text, Toast.LENGTH_SHORT);
         } else {
             mToast.setText(text);
-            mToast.setDuration(Toast.LENGTH_SHORT);
         }
         mToast.show();
     }
 
     public static void showShortToast(@StringRes int resId) {
-        if (mToast == null) {
-            mToast = Toast.makeText(MyApp.getContext(), AppUtils.getString(resId), Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(AppUtils.getString(resId));
-            mToast.setDuration(Toast.LENGTH_SHORT);
-        }
-        mToast.show();
+        showShortToast(AppUtils.getString(resId));
     }
 
     public static void showLongToast(String text) {
@@ -39,19 +32,11 @@ public class ToastUtils {
             mToast = Toast.makeText(context, text, Toast.LENGTH_LONG);
         } else {
             mToast.setText(text);
-            mToast.setDuration(Toast.LENGTH_LONG);
         }
         mToast.show();
     }
 
     public static void showLongToast(@StringRes int resId) {
-        Context context = MyApp.getContext();
-        if (mToast == null) {
-            mToast = Toast.makeText(context, AppUtils.getString(resId), Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(AppUtils.getString(resId));
-            mToast.setDuration(Toast.LENGTH_SHORT);
-        }
-        mToast.show();
+        showLongToast(AppUtils.getString(resId));
     }
 }

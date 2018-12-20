@@ -3,6 +3,8 @@ package com.xzhou.book.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.xzhou.book.MyApp;
+
 public class SPUtils {
     private static SPUtils mInstance;
     private SharedPreferences mPreferences;
@@ -15,15 +17,7 @@ public class SPUtils {
     }
 
     private SPUtils() {
-    }
-
-    public void uninit() {
-        mPreferences = null;
-        mInstance = null;
-    }
-
-    public void init(Context context) {
-        mPreferences = context.getSharedPreferences("book_preference", Context.MODE_PRIVATE);
+        mPreferences = MyApp.getContext().getSharedPreferences("book_preference", Context.MODE_PRIVATE);
     }
 
     public boolean getBoolean(String key, boolean defaultVal) {

@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ZhuiShuSQApi {
     public static final String TAG = "ZhuiShuSQApi";
@@ -14,6 +16,7 @@ public class ZhuiShuSQApi {
     public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
 
     private static ZhuiShuSQApi sInstance;
+    private static ExecutorService mPool;
 
     private ZhuiShuSQApi() {
     }
@@ -25,6 +28,19 @@ public class ZhuiShuSQApi {
         return sInstance;
     }
 
+    public static ExecutorService getPool() {
+        if (mPool == null || mPool.isTerminated() || mPool.isShutdown()) {
+            mPool = Executors.newFixedThreadPool(5);
+        }
+        return mPool;
+    }
+
+    /**
+     * 根据性别获取推荐列表
+     *
+     * @param gender male  female
+     * @return Recommend
+     */
     public HttpResult getRecommend(String gender) {
         HttpRequest request = new HttpRequest("/book/recommend");
         HashMap<String, String> params = new HashMap<>();
@@ -59,10 +75,12 @@ public class ZhuiShuSQApi {
      *
      * @return SearchResult
      */
-    public HttpResult getSearchResult(String query) {
+    public HttpResult getSearchResult(String query, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/fuzzy-search");
         HashMap<String, String> params = new HashMap<>();
         params.put("query", query);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
         return OkHttpUtils.get(request, Entities.SearchResult.TYPE, params);
     }
 
@@ -104,13 +122,31 @@ public class ZhuiShuSQApi {
         return OkHttpUtils.get(request, Entities.BooksByTag.TYPE, params);
     }
 
-    public HttpResult getBookMixAToc(String bookId, String view) {
+    /**
+     * 获得混合书源
+     *
+     * @return BookMixAToc
+     */
+    public HttpResult getBookMixToc(String bookId) {
+        HttpRequest request = new HttpRequest("/mix-toc", bookId);
+        return OkHttpUtils.get(request, Entities.BookMixAToc.TYPE, null);
+    }
+
+    /**
+     * @param bookId 书源ID
+     * @return BookMixAToc
+     */
+    public HttpResult getBookMixAToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-atoc", bookId);
         HashMap<String, String> params = new HashMap<>();
-        params.put("view", view);
+        params.put("view", "chapters");
         return OkHttpUtils.get(request, Entities.BookMixAToc.TYPE, params);
     }
 
+    /**
+     * @param url getBookMixAToc中获取的link
+     * @return ChapterRead
+     */
     public HttpResult getChapterRead(String url) {
         HttpRequest request = new HttpRequest("http://chapter2.zhuishushenqi.com/chapter", url);
         return OkHttpUtils.get(request, Entities.ChapterRead.TYPE, null);
@@ -119,13 +155,12 @@ public class ZhuiShuSQApi {
     /**
      * 获取正版源(若有) 与 盗版源
      *
-     * @param view
-     * @param book
+     * @param book bookid
      */
-    public List<Entities.BookSource> getBookSource(String view, String book) {
+    public List<Entities.BookSource> getBookSource(String book) {
         HttpRequest request = new HttpRequest("/atoc");
         HashMap<String, String> params = new HashMap<>();
-        params.put("view", view);
+        params.put("view", "summary");
         params.put("book", book);
         Object o = OkHttpUtils.getObject(request, Entities.BookSource.TYPE, params);
         if (o instanceof List) {
@@ -140,9 +175,9 @@ public class ZhuiShuSQApi {
      *
      * @return RankingList
      */
-    public HttpResult getRanking() {
+    public Entities.RankingList getRanking() {
         HttpRequest request = new HttpRequest("/ranking/gender");
-        return OkHttpUtils.get(request, Entities.RankingList.TYPE, null);
+        return (Entities.RankingList) OkHttpUtils.getObject(request, Entities.RankingList.TYPE, null);
     }
 
     /**
@@ -164,7 +199,7 @@ public class ZhuiShuSQApi {
      * 最新发布：duration=all&sort=created
      * 最多收藏：duration=all&sort=collectorCount
      *
-     * @param tag    都市、古代、架空、重生、玄幻、网游
+     * @param tag  {@link #getBookListTags()}
      * @param gender male、female
      * @param limit  20
      * @return BookLists
@@ -206,9 +241,9 @@ public class ZhuiShuSQApi {
      *
      * @return CategoryList
      */
-    public HttpResult getCategoryList() {
+    public Entities.CategoryList getCategoryList() {
         HttpRequest request = new HttpRequest("/cats/lv2/statistics");
-        return OkHttpUtils.get(request, Entities.CategoryList.TYPE, null);
+        return (Entities.CategoryList) OkHttpUtils.getObject(request, Entities.CategoryList.TYPE, null);
     }
 
     /**

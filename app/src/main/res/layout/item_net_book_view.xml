@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/touch_bg"
+                android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/book_image"
+        android:layout_width="45dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/ic_cover_default"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/book_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@id/book_image"
+        android:ellipsize="end"
+        android:maxEms="15"
+        android:maxLines="1"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        tools:text="我是书名"/>
+
+    <TextView
+        android:id="@+id/book_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/book_title"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@id/book_image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:text="我是作者 | 我是标签"/>
+
+    <TextView
+        android:id="@+id/book_describe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/book_author"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@id/book_image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:text="我是简介"/>
+
+    <TextView
+        android:id="@+id/book_save_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/book_describe"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@id/book_image"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h2"
+        android:textSize="13sp"
+        tools:text="12089 人在追 | 72.84% 读者留存"/>
+
+</RelativeLayout>

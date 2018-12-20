@@ -6,210 +6,31 @@ import android.os.Environment;
 import com.xzhou.book.MyApp;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.channels.FileChannel;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class FileUtils {
-
     public static String getChapterPath(String bookId, int chapter) {
-        return Constant.PATH_TXT + bookId + File.separator + chapter + ".txt";
+        return getBookDir(bookId) + File.separator + chapter + ".txt";
     }
 
     public static File getChapterFile(String bookId, int chapter) {
-        File file = new File(getChapterPath(bookId, chapter));
-        if (!file.exists())
-            createFile(file);
-        return file;
+        return new File(getChapterPath(bookId, chapter));
     }
 
-    public static File getBookDir(String bookId) {
-        return new File(Constant.PATH_TXT + bookId);
-    }
-
-    public static File createWifiTempFile() {
-        String src = Constant.PATH_DATA + "/" + System.currentTimeMillis();
-        File file = new File(src);
-        if (!file.exists())
-            createFile(file);
-        return file;
-    }
-
-    public static File createWifiTranfesFile(String fileName) {
-        Log.i("wifi trans save " + fileName);
-        // 取文件名作为文件夹（bookid）
-        String absPath = Constant.PATH_TXT + "/" + fileName + "/1.txt";
-
-        File file = new File(absPath);
-        if (!file.exists())
-            createFile(file);
-        return file;
-    }
-
-    public static String getEpubFolderPath(String epubFileName) {
-        return Constant.PATH_EPUB + "/" + epubFileName;
-    }
-
-    public static String getPathOPF(String unzipDir) {
-        String mPathOPF = "";
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(unzipDir
-                    + "/META-INF/container.xml"), "UTF-8"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains("full-path")) {
-                    int start = line.indexOf("full-path");
-                    int start2 = line.indexOf('\"', start);
-                    int stop2 = line.indexOf('\"', start2 + 1);
-                    if (start2 > -1 && stop2 > start2) {
-                        mPathOPF = line.substring(start2 + 1, stop2).trim();
-                        break;
-                    }
-                }
-            }
-            br.close();
-
-            if (!mPathOPF.contains("/")) {
-                return null;
-            }
-
-            int last = mPathOPF.lastIndexOf('/');
-            if (last > -1) {
-                mPathOPF = mPathOPF.substring(0, last);
-            }
-
-            return mPathOPF;
-        } catch (NullPointerException | IOException e) {
-            Log.e(e.toString());
+    public static String getBookDir(String bookId) {
+        File file = new File(getCachePath(MyApp.getContext()), bookId);
+        if (!file.exists()) {
+            file.mkdirs();
         }
-        return mPathOPF;
+        return file.getAbsolutePath();
     }
 
-    public static boolean checkOPFInRootDirectory(String unzipDir) {
-        String mPathOPF = "";
-        boolean status = false;
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(unzipDir
-                    + "/META-INF/container.xml"), "UTF-8"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains("full-path")) {
-                    int start = line.indexOf("full-path");
-                    int start2 = line.indexOf('\"', start);
-                    int stop2 = line.indexOf('\"', start2 + 1);
-                    if (start2 > -1 && stop2 > start2) {
-                        mPathOPF = line.substring(start2 + 1, stop2).trim();
-                        break;
-                    }
-                }
-            }
-            br.close();
-
-            if (!mPathOPF.contains("/")) {
-                status = true;
-            } else {
-                status = false;
-            }
-        } catch (NullPointerException | IOException e) {
-            Log.e(e.toString());
-        }
-        return status;
-    }
-
-    public static void unzipFile(String inputZip, String destinationDirectory) throws IOException {
-
-        int buffer = 2048;
-        List<String> zipFiles = new ArrayList<>();
-        File sourceZipFile = new File(inputZip);
-        File unzipDirectory = new File(destinationDirectory);
-
-        createDir(unzipDirectory.getAbsolutePath());
-
-        ZipFile zipFile;
-        zipFile = new ZipFile(sourceZipFile, ZipFile.OPEN_READ);
-        Enumeration zipFileEntries = zipFile.entries();
-
-        while (zipFileEntries.hasMoreElements()) {
-
-            ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-            String currentEntry = entry.getName();
-            File destFile = new File(unzipDirectory, currentEntry);
-
-            if (currentEntry.endsWith(Constant.SUFFIX_ZIP)) {
-                zipFiles.add(destFile.getAbsolutePath());
-            }
-
-            File destinationParent = destFile.getParentFile();
-            createDir(destinationParent.getAbsolutePath());
-
-            if (!entry.isDirectory()) {
-
-                if (destFile.exists()) {
-                    Log.i(destFile + "已存在");
-                    continue;
-                }
-
-                BufferedInputStream is = new BufferedInputStream(zipFile.getInputStream(entry));
-                int currentByte;
-                // buffer for writing file
-                byte[] data = new byte[buffer];
-
-                FileOutputStream fos = new FileOutputStream(destFile);
-                BufferedOutputStream dest = new BufferedOutputStream(fos, buffer);
-
-                while ((currentByte = is.read(data, 0, buffer)) != -1) {
-                    dest.write(data, 0, currentByte);
-                }
-                dest.flush();
-                dest.close();
-                is.close();
-            }
-        }
-        zipFile.close();
-
-        for (Iterator iter = zipFiles.iterator(); iter.hasNext(); ) {
-            String zipName = (String) iter.next();
-            unzipFile(zipName, destinationDirectory + File.separatorChar
-                    + zipName.substring(0, zipName.lastIndexOf(Constant.SUFFIX_ZIP)));
-        }
-    }
-
-    public static byte[] readAssets(String fileName) {
-        if (fileName == null || fileName.length() <= 0) {
-            return null;
-        }
-        byte[] buffer = null;
-        try {
-            InputStream fin = MyApp.getContext().getAssets().open("uploader" + fileName);
-            int length = fin.available();
-            buffer = new byte[length];
-            fin.read(buffer);
-            fin.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            return buffer;
-        }
-    }
-
-    public static String createRootPath(Context context) {
+    public static String getCachePath(Context context) {
         String cacheRootPath;
         if (isSdCardAvailable()) {
             cacheRootPath = context.getExternalCacheDir().getPath();
@@ -223,53 +44,6 @@ public class FileUtils {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    public static String createDir(String dirPath) {
-        try {
-            File file = new File(dirPath);
-            if (file.getParentFile().exists()) {
-                Log.i("----- 创建文件夹" + file.getAbsolutePath());
-                file.mkdir();
-                return file.getAbsolutePath();
-            } else {
-                createDir(file.getParentFile().getAbsolutePath());
-                Log.i("----- 创建文件夹" + file.getAbsolutePath());
-                file.mkdir();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dirPath;
-    }
-
-    public static String createFile(File file) {
-        try {
-            if (file.getParentFile().exists()) {
-                Log.i("----- 创建文件" + file.getAbsolutePath());
-                file.createNewFile();
-                return file.getAbsolutePath();
-            } else {
-                createDir(file.getParentFile().getAbsolutePath());
-                file.createNewFile();
-                Log.i("----- 创建文件" + file.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public static void writeFile(String filePath, String content, boolean isAppend) {
-        Log.i("save:" + filePath);
-        try {
-            FileOutputStream fout = new FileOutputStream(filePath, isAppend);
-            byte[] bytes = content.getBytes();
-            fout.write(bytes);
-            fout.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void writeFile(String filePathAndName, String fileContent) {
         try {
             OutputStream outstream = new FileOutputStream(filePathAndName);
@@ -281,87 +55,6 @@ public class FileUtils {
         }
     }
 
-    public static String getFileFromRaw(Context context, int resId) {
-        if (context == null) {
-            return null;
-        }
-
-        StringBuilder s = new StringBuilder();
-        try {
-            InputStreamReader in = new InputStreamReader(context.getResources().openRawResource(resId));
-            BufferedReader br = new BufferedReader(in);
-            String line;
-            while ((line = br.readLine()) != null) {
-                s.append(line);
-            }
-            return s.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static byte[] getBytesFromFile(File f) {
-        if (f == null) {
-            return null;
-        }
-        try {
-            FileInputStream stream = new FileInputStream(f);
-            ByteArrayOutputStream out = new ByteArrayOutputStream(1000);
-            byte[] b = new byte[1000];
-            for (int n; (n = stream.read(b)) != -1; ) {
-                out.write(b, 0, n);
-            }
-            stream.close();
-            out.close();
-            return out.toByteArray();
-        } catch (IOException e) {
-        }
-        return null;
-    }
-
-    public static void fileChannelCopy(File src, File desc) {
-        //createFile(src);
-        createFile(desc);
-        FileInputStream fi = null;
-        FileOutputStream fo = null;
-        try {
-            fi = new FileInputStream(src);
-            fo = new FileOutputStream(desc);
-            FileChannel in = fi.getChannel();//得到对应的文件通道
-            FileChannel out = fo.getChannel();//得到对应的文件通道
-            in.transferTo(0, in.size(), out);//连接两个通道，并且从in通道读取，然后写入out通道
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fo != null) fo.close();
-                if (fi != null) fi.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static String formatFileSizeToString(long fileLen) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        String fileSizeString = "";
-        if (fileLen < 1024) {
-            fileSizeString = df.format((double) fileLen) + "B";
-        } else if (fileLen < 1048576) {
-            fileSizeString = df.format((double) fileLen / 1024) + "K";
-        } else if (fileLen < 1073741824) {
-            fileSizeString = df.format((double) fileLen / 1048576) + "M";
-        } else {
-            fileSizeString = df.format((double) fileLen / 1073741824) + "G";
-        }
-        return fileSizeString;
-    }
-
-    public static boolean deleteFile(File file) {
-        return deleteFileOrDirectory(file);
-    }
-
     public static boolean deleteFileOrDirectory(File file) {
         try {
             if (file != null && file.isFile()) {
@@ -369,81 +62,35 @@ public class FileUtils {
             }
             if (file != null && file.isDirectory()) {
                 File[] childFiles = file.listFiles();
-                // 删除空文件夹
                 if (childFiles == null || childFiles.length == 0) {
                     return file.delete();
                 }
-                // 递归删除文件夹下的子文件
-                for (int i = 0; i < childFiles.length; i++) {
-                    deleteFileOrDirectory(childFiles[i]);
+                for (File childFile : childFiles) {
+                    deleteFileOrDirectory(childFile);
                 }
                 return file.delete();
             }
-        } catch (Exception e) {
-            Log.e("NO_TAG", e);
+        } catch (Exception ignored) {
         }
         return false;
     }
 
-    public static long getFolderSize(String dir) throws Exception {
+    public static long getFolderSize(String dir) {
         File file = new File(dir);
         long size = 0;
         try {
             File[] fileList = file.listFiles();
-            for (int i = 0; i < fileList.length; i++) {
-                // 如果下面还有文件
-                if (fileList[i].isDirectory()) {
-                    size = size + getFolderSize(fileList[i].getAbsolutePath());
+            for (File f : fileList) {
+                if (f.isDirectory()) {
+                    size = size + getFolderSize(f.getAbsolutePath());
                 } else {
-                    size = size + fileList[i].length();
+                    size = size + f.length();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return size;
-    }
-
-    public static String getExtensionName(String filename) {
-        if ((filename != null) && (filename.length() > 0)) {
-            int dot = filename.lastIndexOf('.');
-            if ((dot > -1) && (dot < (filename.length() - 1))) {
-                return filename.substring(dot + 1);
-            }
-        }
-        return filename;
-    }
-
-    public static String getFileOutputString(String path, String charset) {
-        try {
-            File file = new File(path);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset), 8192);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                sb.append("\n").append(line);
-            }
-            bufferedReader.close();
-            return sb.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private synchronized void getAllFiles(File root, String ext) {
-        List<File> list = new ArrayList<>();
-        File files[] = root.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    getAllFiles(f, ext);
-                } else {
-                    if (f.getName().endsWith(ext) && f.length() > 50)
-                        list.add(f);
-                }
-            }
-        }
     }
 
     public static String getCharset(String fileName) {
@@ -532,27 +179,5 @@ public class FileUtils {
             code = "GBK";
         }
         return code;
-    }
-
-    public static void saveWifiTxt(String src, String desc) {
-        byte[] LINE_END = "\n".getBytes();
-        try {
-            InputStreamReader isr = new InputStreamReader(new FileInputStream(src), getCharset(src));
-            BufferedReader br = new BufferedReader(isr);
-
-            FileOutputStream fout = new FileOutputStream(desc, true);
-            String temp;
-            while ((temp = br.readLine()) != null) {
-                byte[] bytes = temp.getBytes();
-                fout.write(bytes);
-                fout.write(LINE_END);
-            }
-            br.close();
-            fout.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

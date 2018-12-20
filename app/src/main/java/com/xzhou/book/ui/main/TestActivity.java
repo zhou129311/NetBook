@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.xzhou.book.R;
-import com.xzhou.book.datasource.HttpRequest;
-import com.xzhou.book.datasource.OkHttpUtils;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 
 import butterknife.ButterKnife;
@@ -50,7 +48,7 @@ public class TestActivity extends Activity {
                     ZhuiShuSQApi.get().getHotWord();
                     break;
                 case R.id.btn_6:
-                    ZhuiShuSQApi.get().getSearchResult("超级");
+                    ZhuiShuSQApi.get().getSearchResult("超级", 0, 20);
                     break;
                 case R.id.btn_7:
                     ZhuiShuSQApi.get().searchBooksByAuthor("十二翼黑暗炽天使");
@@ -59,7 +57,7 @@ public class TestActivity extends Activity {
                     ZhuiShuSQApi.get().getBookDetail("58232ecbe8464ea22f0a7aa0");
                     break;
                 case R.id.btn_9:
-                    ZhuiShuSQApi.get().getBookMixAToc("58232ecbe8464ea22f0a7aa0", "chapters");
+                    ZhuiShuSQApi.get().getBookMixAToc("58232ecbe8464ea22f0a7aa0");
                     break;
                 case R.id.btn_10:
                     String u = "http://book.my716.com/getBooks.aspx?method=content&bookId=1329871&chapterFile=U_1329871_201707191431258172_1441_2.txt";

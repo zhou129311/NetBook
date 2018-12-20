@@ -5,8 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 
 import com.xzhou.book.MyApp;
 
@@ -17,6 +15,10 @@ public class AppUtils {
 
     public static String getString(int resId) {
         return MyApp.getContext().getResources().getString(resId);
+    }
+
+    public static String getString(int resId, Object... args) {
+        return MyApp.getContext().getResources().getString(resId, args);
     }
 
     public static int getColor(int resId) {
@@ -46,20 +48,22 @@ public class AppUtils {
         return false;
     }
 
-    public static DisplayMetrics getDisplayMetrics(Context context) {
-        try {
-            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            DisplayMetrics dm = new DisplayMetrics();
-            wm.getDefaultDisplay().getMetrics(dm);
-            return dm;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static int getScreenWidth() {
+        return MyApp.getContext().getResources().getDisplayMetrics().widthPixels;
     }
 
-    public static int getScreenWidth() {
-        DisplayMetrics dm = getDisplayMetrics(MyApp.getContext());
-        return dm == null ? 0 : dm.widthPixels;
+    public static int getScreenHeight() {
+        return MyApp.getContext().getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public static int dip2px(float dip) {
+        float density = MyApp.getContext().getResources().getDisplayMetrics().density;
+        return (int) (dip * density + 0.5f);
+    }
+
+    public static int px2dip(int px) {
+        // px/dip = density;
+        float density = MyApp.getContext().getResources().getDisplayMetrics().density;
+        return (int) (px / density + 0.5f);
     }
 }

@@ -1,9 +1,15 @@
 package com.xzhou.book.datasource;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
+import com.xzhou.book.MyApp;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -20,9 +26,12 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,18 +40,40 @@ import okhttp3.Response;
 
 public class OkHttpUtils {
     private static OkHttpClient sGetClient;
+    private static final int CACHE_MAXAGE = 60 * 60 * 24; // s
 
     private static OkHttpClient getClient() {
         if (sGetClient == null) {
+            File httpCacheDirectory = new File(FileUtils.getCachePath(MyApp.getContext()), "okhttps");
+            Cache cache = new Cache(httpCacheDirectory, 20 * 1024 * 1024);
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                    .addNetworkInterceptor(interceptor)
                     .readTimeout(6, TimeUnit.SECONDS)
                     .connectTimeout(6, TimeUnit.SECONDS)
+                    .cache(cache)
                     .cookieJar(new LocalCookieJar());
             addHttpAuthority(builder);
             sGetClient = builder.build();
         }
         return sGetClient;
     }
+
+    private static Interceptor interceptor = new Interceptor() {
+        @Override
+        public Response intercept(Interceptor.Chain chain) throws IOException {
+            Request request = chain.request();
+            Response response = chain.proceed(request);
+
+            String cacheControl = request.cacheControl().toString();
+            if (TextUtils.isEmpty(cacheControl)) {
+                cacheControl = "public, max-age=" + CACHE_MAXAGE;
+            }
+            return response.newBuilder()
+                    .header("Cache-Control", cacheControl)
+                    .removeHeader("Pragma")
+                    .build();
+        }
+    };
 
     private static class LocalCookieJar implements CookieJar {
         List<Cookie> cookies;
@@ -113,8 +144,12 @@ public class OkHttpUtils {
     public static <T> Object getObject(final HttpRequest request, final Type typeOfT, final HashMap<String, String> params) {
         String url = HttpRequest.appendQueryUrl(params, request.getTargetUrl());
 
+        CacheControl cacheControl = new CacheControl.Builder()
+                .maxAge(CACHE_MAXAGE, TimeUnit.SECONDS)
+                .build();
         Request req = new Request.Builder()
                 .url(url)
+                .cacheControl(cacheControl)
                 .get()
                 .build();
 
@@ -141,10 +176,7 @@ public class OkHttpUtils {
             String body = response.body().string();
             loge("post url = " + url + ", content = " + content + "\nresponse =" + body);
             Entities.HttpResult result = new Gson().fromJson(body, typeOfT);
-//            if (result != null) {
-//                result.response = body;
-//            }
-//            return result;
+            return result;
         } catch (Exception e) {
             Log.e("post", e);
         }

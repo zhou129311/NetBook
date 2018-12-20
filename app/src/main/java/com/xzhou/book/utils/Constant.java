@@ -1,9 +1,8 @@
 package com.xzhou.book.utils;
 
 import android.graphics.Color;
+import android.support.annotation.IntDef;
 import android.support.annotation.StringDef;
-
-import com.xzhou.book.MyApp;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,17 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Constant {
-    public static String PATH_DATA = FileUtils.createRootPath(MyApp.getContext()) + "/cache";
-    public static String PATH_COLLECT = FileUtils.createRootPath(MyApp.getContext()) + "/collect";
-
-    public static String PATH_TXT = PATH_DATA + "/book/";
-
-    public static String PATH_EPUB = PATH_DATA + "/epub";
-
-    public static String PATH_CHM = PATH_DATA + "/chm";
-
-    public static String BASE_PATH = MyApp.getContext().getCacheDir().getPath();
-
     public static final String ISNIGHT = "isNight";
 
     public static final String ISBYUPDATESORT = "isByUpdateSort";
@@ -35,7 +23,7 @@ public class Constant {
     public static final String SUFFIX_ZIP = ".zip";
     public static final String SUFFIX_CHM = ".chm";
 
-    public static final int[] tagColors = new int[]{
+    public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),
             Color.parseColor("#91CED5"),
             Color.parseColor("#F88F55"),
@@ -44,6 +32,16 @@ public class Constant {
             Color.parseColor("#67CCB7"),
             Color.parseColor("#F6BC7E")
     };
+
+    @IntDef({ TabSource.SOURCE_RANK_SUB,
+            TabSource.SOURCE_TOPIC,
+            TabSource.SOURCE_CATEGORY_SUB
+    })
+    public @interface TabSource {
+        int SOURCE_RANK_SUB = 0;
+        int SOURCE_TOPIC = 1;
+        int SOURCE_CATEGORY_SUB = 2;
+    }
 
     @StringDef({
             Gender.MALE,

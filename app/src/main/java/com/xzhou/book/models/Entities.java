@@ -1,12 +1,181 @@
 package com.xzhou.book.models;
 
+import android.annotation.IdRes;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.chad.library.adapter.base.entity.AbstractExpandableItem;
+import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.ui.find.SortListAdapter;
+import com.xzhou.book.utils.Constant;
 
 import java.lang.reflect.Type;
 import java.util.List;
 
 public class Entities {
+    public static class RankLv0 implements MultiItemEntity {
+        public String name;
+
+        @Override
+        public int getItemType() {
+            return SortListAdapter.TEXT;
+        }
+    }
+
+    public static class RankLv1 extends AbstractExpandableItem<RankLv2> implements MultiItemEntity {
+        public String _id;
+        public String title;
+        public String cover;
+        public boolean collapse; // true 是否折叠
+        public String monthRank;
+        public String totalRank;
+        public String shortTitle;
+
+        public String url() {
+            return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
+
+        public RankLv1(String title) {
+            this.title = title;
+        }
+
+        public RankLv1(Entities.RankingList.Ranking ranking) {
+            _id = ranking._id;
+            title = ranking.title;
+            cover = ranking.cover;
+            collapse = ranking.collapse;
+            monthRank = ranking.monthRank;
+            totalRank = ranking.totalRank;
+            shortTitle = ranking.shortTitle;
+        }
+
+        @Override
+        public int getItemType() {
+            return SortListAdapter.TEXT_IMAGE;
+        }
+
+        @Override
+        public int getLevel() {
+            return SortListAdapter.TEXT_IMAGE;
+        }
+    }
+
+    public static class RankLv2 extends RankLv1 {
+
+        public RankLv2(Entities.RankingList.Ranking ranking) {
+            super(ranking);
+        }
+
+        @Override
+        public int getItemType() {
+            return SortListAdapter.TEXT_IMAGE_2;
+        }
+
+        @Override
+        public int getLevel() {
+            return SortListAdapter.TEXT_IMAGE_2;
+        }
+    }
+
+    public static class CategoryLv0 implements MultiItemEntity {
+        public String title;
+
+        public CategoryLv0(String title) {
+            this.title = title;
+        }
+
+        @Override
+        public int getItemType() {
+            return SortListAdapter.TEXT;
+        }
+    }
+
+    public static class CategoryLv1 extends CategoryLv0 {
+        public int bookCount;
+
+        public CategoryLv1(CategoryList.Category category) {
+            super(category.name);
+            bookCount = category.bookCount;
+        }
+
+        @Override
+        public int getItemType() {
+            return SortListAdapter.TEXT_GRID;
+        }
+    }
+
+    public static class ItemClick {
+        public String name;
+        public @IdRes
+        int resId;
+
+        public ItemClick(String name, int resId) {
+            this.name = name;
+            this.resId = resId;
+        }
+    }
+
+    public static class TabData implements Parcelable {
+        public String title;
+        public @Constant.TabSource
+        int source;
+
+        // SOURCE_RANK_SUB
+        public String week_rankId;
+        public String month_rankId;
+        public String total_rankId;
+
+        // SOURCE_CATEGORY_SUB
+        public String gender;
+        public String major;
+        public String minor;
+
+        public TabData() {
+        }
+
+        protected TabData(Parcel in) {
+            title = in.readStringNoHelper();
+            source = in.readInt();
+            week_rankId = in.readStringNoHelper();
+            month_rankId = in.readStringNoHelper();
+            total_rankId = in.readStringNoHelper();
+            gender = in.readStringNoHelper();
+            major = in.readStringNoHelper();
+            minor = in.readStringNoHelper();
+        }
+
+        public static final Creator<TabData> CREATOR = new Creator<TabData>() {
+            @Override
+            public TabData createFromParcel(Parcel in) {
+                return new TabData(in);
+            }
+
+            @Override
+            public TabData[] newArray(int size) {
+                return new TabData[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeStringNoHelper(title);
+            dest.writeInt(source);
+            dest.writeStringNoHelper(week_rankId);
+            dest.writeStringNoHelper(month_rankId);
+            dest.writeStringNoHelper(total_rankId);
+            dest.writeStringNoHelper(gender);
+            dest.writeStringNoHelper(major);
+            dest.writeStringNoHelper(minor);
+        }
+    }
 
     public static class HttpResult<T> {
         public boolean ok;
@@ -17,7 +186,6 @@ public class Entities {
         public String _id;
         public String author;
         public String cover;
-        public String shortIntro;
         public String title;
         public String lastChapter;
         public String updated;
@@ -277,7 +445,7 @@ public class Entities {
     }
 
     public static class RankingList {
-        public static final Type TYPE = new TypeToken<HttpResult<RankingList>>() {
+        public static final Type TYPE = new TypeToken<RankingList>() {
         }.getType();
 
         public List<Ranking> female;
@@ -286,12 +454,12 @@ public class Entities {
         public List<Ranking> epub;
 
         public static class Ranking {
-            public String _id;
+            public String _id; //周榜
             public String title;
             public String cover;
-            public boolean collapse; // true 别人家的排行榜
-            public String monthRank;
-            public String totalRank;
+            public boolean collapse; // true 是否折叠
+            public String monthRank; //月榜
+            public String totalRank; //总榜
             public String shortTitle;
         }
     }
@@ -418,7 +586,7 @@ public class Entities {
     }
 
     public static class CategoryList {
-        public static final Type TYPE = new TypeToken<HttpResult<CategoryList>>() {
+        public static final Type TYPE = new TypeToken<CategoryList>() {
         }.getType();
 
         public List<Category> male; //男生

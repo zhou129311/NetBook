@@ -24,38 +24,48 @@ import com.xzhou.book.R;
 import java.lang.reflect.Method;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public abstract class BaseActivity extends AppCompatActivity {
     protected Activity mActivity;
-    protected MyApp mApplication;
+    protected MyApp mApp;
     protected Toolbar mToolbar;
+    private Unbinder mUnbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApplication = (MyApp) getApplication();
+        mApp = (MyApp) getApplication();
         mActivity = this;
     }
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
-        ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
         initToolBar();
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
-        ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
         initToolBar();
     }
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
         initToolBar();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
     }
 
     @Override
@@ -76,7 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
