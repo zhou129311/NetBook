@@ -94,23 +94,40 @@ public class ZhuiShuSQApi {
         return OkHttpUtils.get(request, Entities.BooksByTag.TYPE, params);
     }
 
-    public HttpResult getBookDetail(String bookId) {
+    /**
+     * 获取书籍详情
+     *
+     * @param bookId bookId
+     * @return BookDetail
+     */
+    public Entities.BookDetail getBookDetail(String bookId) {
         HttpRequest request = new HttpRequest("/book", bookId);
-        return OkHttpUtils.get(request, Entities.BookDetail.TYPE, null);
+        return (Entities.BookDetail) OkHttpUtils.getObject(request, Entities.BookDetail.TYPE, null);
     }
 
-    public HttpResult getHotReview(String book) {
+    /**
+     * @param book bookId
+     * @return
+     */
+    public Entities.HotReview getHotReview(String book) {
         HttpRequest request = new HttpRequest("/post/review/best-by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", book);
-        return OkHttpUtils.get(request, Entities.HotReview.TYPE, params);
+        return (Entities.HotReview) OkHttpUtils.getObject(request, Entities.HotReview.TYPE, params);
     }
 
-    public HttpResult getRecommendBookList(String bookId, String limit) {
+    /**
+     * 获取书籍详情界面 你可能感兴趣 列表
+     *
+     * @param bookId bookId
+     * @param limit  4
+     * @return RecommendBookList
+     */
+    public Entities.RecommendBookList getRecommendBookList(String bookId, String limit) {
         HttpRequest request = new HttpRequest("/book-list", bookId, "recommend");
         HashMap<String, String> params = new HashMap<>();
         params.put("limit", limit);
-        return OkHttpUtils.get(request, Entities.RecommendBookList.TYPE, params);
+        return (Entities.RecommendBookList) OkHttpUtils.getObject(request, Entities.RecommendBookList.TYPE, params);
     }
 
     public HttpResult getBooksByTag(String tags, String start, String limit) {
@@ -188,9 +205,9 @@ public class ZhuiShuSQApi {
      *
      * @return Rankings
      */
-    public HttpResult getRanking(String rankingId) {
+    public Entities.Rankings getRanking(String rankingId) {
         HttpRequest request = new HttpRequest("/ranking", rankingId);
-        return OkHttpUtils.get(request, Entities.Rankings.TYPE, null);
+        return (Entities.Rankings) OkHttpUtils.getObject(request, Entities.Rankings.TYPE, null);
     }
 
     /**
@@ -199,7 +216,7 @@ public class ZhuiShuSQApi {
      * 最新发布：duration=all&sort=created
      * 最多收藏：duration=all&sort=collectorCount
      *
-     * @param tag  {@link #getBookListTags()}
+     * @param tag    {@link #getBookListTags()}
      * @param gender male、female
      * @param limit  20
      * @return BookLists

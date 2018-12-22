@@ -7,7 +7,7 @@
 
     <include layout="@layout/common_toolbar"/>
 
-    <com.xzhou.book.ui.view.RVPIndicator
+    <com.xzhou.book.widget.RVPIndicator
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="50dp"

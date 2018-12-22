@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.xzhou.book.ui.main.MainActivity"
+            android:name=".main.MainActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.TestActivity"
+            android:name=".main.TestActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -44,14 +44,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.community.DiscussActivity"
+            android:name=".community.DiscussActivity"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.find.SortListActivity"
+            android:name=".find.SortListActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.find.SubRankActivity"/>
-        <activity android:name=".ui.common.TabActivity"/>
+        <activity android:name=".common.TabActivity"/>
+        <activity android:name=".main.BookDetailActivity"/>
+        <activity android:name=".main.BookListActivity"/>
 
         <service android:name=".DownloadService"/>
     </application>

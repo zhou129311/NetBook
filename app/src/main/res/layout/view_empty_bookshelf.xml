@@ -27,18 +27,16 @@
             android:textColor="@color/gray"
             android:textSize="12sp"/>
 
-        <TextView
+        <com.xzhou.book.widget.DrawableButton
             android:id="@+id/add_book_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="45dp"
             android:layout_marginTop="30dp"
-            android:background="@drawable/text_btn_bg"
+            android:background="@drawable/bg_add_book_btn"
             android:drawablePadding="5dp"
             android:drawableStart="@mipmap/ic_add_book"
-            android:gravity="center"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
             android:text="@string/to_add"
+            android:gravity="center_vertical"
             android:textColor="@color/white"/>
 
         <View

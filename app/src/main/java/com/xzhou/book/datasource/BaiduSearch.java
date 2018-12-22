@@ -46,7 +46,7 @@ public class BaiduSearch {
                     //Elements tag = child.getElementsByTag("a");
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     Log.i("zx", "title=" + title);
-                    //Log.i("zx", "url=" + tag.attr("href"));
+                    //Log.i("zx", "cover=" + tag.attr("href"));
                 }
 //                Log.i("zx", "result html=" + e.html());
             }

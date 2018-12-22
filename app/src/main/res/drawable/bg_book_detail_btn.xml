@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="#30000000">
+    <item>
+        <selector>
+            <item
+                android:state_activated="false"
+                android:state_pressed="true">
+                <shape>
+                    <corners android:radius="2dp"/>
+                    <solid android:color="#9c1420"/>
+                </shape>
+            </item>
+            <item
+                android:state_activated="true"
+                android:state_pressed="true">
+                <shape>
+                    <corners android:radius="2dp"/>
+                    <solid android:color="#696969"/>
+                </shape>
+            </item>
+            <item android:state_activated="true">
+                <shape>
+                    <corners android:radius="2dp"/>
+                    <solid android:color="#8f8f8f"/>
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <corners android:radius="2dp"/>
+                    <solid android:color="#d7202f"/>
+                </shape>
+            </item>
+        </selector>
+    </item>
+</ripple>

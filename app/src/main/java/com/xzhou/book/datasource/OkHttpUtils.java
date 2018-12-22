@@ -174,7 +174,7 @@ public class OkHttpUtils {
         try {
             Response response = getClient().newCall(req).execute();
             String body = response.body().string();
-            loge("post url = " + url + ", content = " + content + "\nresponse =" + body);
+            loge("post cover = " + url + ", content = " + content + "\nresponse =" + body);
             Entities.HttpResult result = new Gson().fromJson(body, typeOfT);
             return result;
         } catch (Exception e) {

@@ -8,8 +8,10 @@ import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import com.xzhou.book.common.TabAdapter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
-import com.xzhou.book.ui.find.SortListAdapter;
+import com.xzhou.book.find.SortListAdapter;
+import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.utils.Constant;
 
 import java.lang.reflect.Type;
@@ -28,11 +30,11 @@ public class Entities {
     public static class RankLv1 extends AbstractExpandableItem<RankLv2> implements MultiItemEntity {
         public String _id;
         public String title;
-        public String cover;
+        private String cover;
         public boolean collapse; // true 是否折叠
         public String monthRank;
         public String totalRank;
-        public String shortTitle;
+        String shortTitle;
 
         public String url() {
             return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
@@ -42,7 +44,7 @@ public class Entities {
             this.title = title;
         }
 
-        public RankLv1(Entities.RankingList.Ranking ranking) {
+        RankLv1(RankLv1 ranking) {
             _id = ranking._id;
             title = ranking.title;
             cover = ranking.cover;
@@ -50,6 +52,19 @@ public class Entities {
             monthRank = ranking.monthRank;
             totalRank = ranking.totalRank;
             shortTitle = ranking.shortTitle;
+        }
+
+        @Override
+        public String toString() {
+            return "RankLv1{" +
+                    "_id='" + _id + '\'' +
+                    ", title='" + title + '\'' +
+                    ", cover='" + cover + '\'' +
+                    ", collapse=" + collapse +
+                    ", monthRank='" + monthRank + '\'' +
+                    ", totalRank='" + totalRank + '\'' +
+                    ", shortTitle='" + shortTitle + '\'' +
+                    '}';
         }
 
         @Override
@@ -65,7 +80,7 @@ public class Entities {
 
     public static class RankLv2 extends RankLv1 {
 
-        public RankLv2(Entities.RankingList.Ranking ranking) {
+        public RankLv2(RankLv1 ranking) {
             super(ranking);
         }
 
@@ -95,10 +110,21 @@ public class Entities {
 
     public static class CategoryLv1 extends CategoryLv0 {
         public int bookCount;
+        public String gender;
 
-        public CategoryLv1(CategoryList.Category category) {
+        @Override
+        public String toString() {
+            return "CategoryLv1{" +
+                    "title='" + title + '\'' +
+                    ", bookCount=" + bookCount +
+                    ", gender='" + gender + '\'' +
+                    '}';
+        }
+
+        public CategoryLv1(CategoryList.Category category, String gender) {
             super(category.name);
             bookCount = category.bookCount;
+            this.gender = gender;
         }
 
         @Override
@@ -124,9 +150,9 @@ public class Entities {
         int source;
 
         // SOURCE_RANK_SUB
-        public String week_rankId;
-        public String month_rankId;
-        public String total_rankId;
+        public String weekRankId;
+        public String monthRankId;
+        public String totalRankId;
 
         // SOURCE_CATEGORY_SUB
         public String gender;
@@ -136,12 +162,12 @@ public class Entities {
         public TabData() {
         }
 
-        protected TabData(Parcel in) {
+        TabData(Parcel in) {
             title = in.readStringNoHelper();
             source = in.readInt();
-            week_rankId = in.readStringNoHelper();
-            month_rankId = in.readStringNoHelper();
-            total_rankId = in.readStringNoHelper();
+            weekRankId = in.readStringNoHelper();
+            monthRankId = in.readStringNoHelper();
+            totalRankId = in.readStringNoHelper();
             gender = in.readStringNoHelper();
             major = in.readStringNoHelper();
             minor = in.readStringNoHelper();
@@ -168,12 +194,26 @@ public class Entities {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeStringNoHelper(title);
             dest.writeInt(source);
-            dest.writeStringNoHelper(week_rankId);
-            dest.writeStringNoHelper(month_rankId);
-            dest.writeStringNoHelper(total_rankId);
+            dest.writeStringNoHelper(weekRankId);
+            dest.writeStringNoHelper(monthRankId);
+            dest.writeStringNoHelper(totalRankId);
             dest.writeStringNoHelper(gender);
             dest.writeStringNoHelper(major);
             dest.writeStringNoHelper(minor);
+        }
+
+        @Override
+        public String toString() {
+            return "TabData{" +
+                    "title='" + title + '\'' +
+                    ", source=" + source +
+                    ", weekRankId='" + weekRankId + '\'' +
+                    ", monthRankId='" + monthRankId + '\'' +
+                    ", totalRankId='" + totalRankId + '\'' +
+                    ", gender='" + gender + '\'' +
+                    ", major='" + major + '\'' +
+                    ", minor='" + minor + '\'' +
+                    '}';
         }
     }
 
@@ -182,14 +222,33 @@ public class Entities {
         public T data;
     }
 
-    public static class Book {
+    public static class NetBook implements MultiItemEntity {
         public String _id;
-        public String author;
-        public String cover;
         public String title;
+        public String author;
+        public String shortIntro = "";
+        public String cover;
+        public String site;
+        public String cat;
+        public int banned;
+        public int latelyFollowerBase;
+        public String minRetentionRatio;
+
         public String lastChapter;
-        public String updated;
+        public String updated; //最近更新时间
         public String contentType;
+        public int latelyFollower; //最近阅读人数
+        public double retentionRatio; //留存率 73.76
+        public int chaptersCount;
+
+        @Override
+        public int getItemType() {
+            return TabAdapter.NET_BOOK_ITEM;
+        }
+
+        public String cover() {
+            return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
     }
 
     public static class BookSource {
@@ -212,20 +271,8 @@ public class Entities {
         public static final Type TYPE = new TypeToken<HttpResult<Recommend>>() {
         }.getType();
 
-        public List<RecommendBook> books;
+        public List<NetBook> books;
 
-        public static class RecommendBook extends Book {
-            public boolean hasCp;
-            public boolean isTop = false;
-            public boolean isSeleted = false;
-            public boolean showCheckBox = false;
-            public boolean isFromSD = false;
-            public String path = "";
-            public int latelyFollower;
-            public double retentionRatio;
-            public int chaptersCount;
-            public String recentReadingTime = "";
-        }
     }
 
     public static class BookMixAToc {
@@ -345,60 +392,70 @@ public class Entities {
     }
 
     public static class HotReview {
-        public static final Type TYPE = new TypeToken<HttpResult<HotReview>>() {
+        public static final Type TYPE = new TypeToken<HotReview>() {
         }.getType();
         public List<Reviews> reviews;
+    }
 
-        public static class Reviews {
+    public static class Reviews implements MultiItemEntity {
+        public String _id;
+        public int rating;
+        public String content;
+        public String title;
+
+        public Author author;
+        public Helpful helpful;
+        public int likeCount;
+        public String state;
+        public String updated;
+        public String created;
+        public int commentCount;
+
+        @Override
+        public int getItemType() {
+            return BookDetailActivity.ITEM_TYPE_REVIEWS;
+        }
+
+        public static class Author {
             public String _id;
-            public int rating;
-            public String content;
-            public String title;
+            public String avatar;
+            public String nickname;
+            public String type;
+            public int lv;
+            public String gender;
+        }
 
-            public Author author;
-            public Helpful helpful;
-            public int likeCount;
-            public String state;
-            public String updated;
-            public String created;
-            public int commentCount;
-
-            public static class Author {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-            }
-
-            public static class Helpful {
-                public int yes;
-                public int total;
-                public int no;
-            }
+        public static class Helpful {
+            public int yes;
+            public int total;
+            public int no;
         }
     }
 
     public static class RecommendBookList {
-        public static final Type TYPE = new TypeToken<HttpResult<RecommendBookList>>() {
+        public static final Type TYPE = new TypeToken<RecommendBookList>() {
         }.getType();
 
         public List<RecommendBook> booklists;
+    }
 
-        public static class RecommendBook {
-            public String id;
-            public String title;
-            public String author;
-            public String desc;
-            public int bookCount;
-            public String cover;
-            public int collectorCount;
+    public static class RecommendBook implements MultiItemEntity {
+        public String id;
+        public String title;
+        public String author;
+        public String desc;
+        public int bookCount;
+        public String cover;
+        public int collectorCount;
+
+        @Override
+        public int getItemType() {
+            return BookDetailActivity.ITEM_TYPE_RECOMMEND;
         }
     }
 
     public static class BookDetail {
-        public static final Type TYPE = new TypeToken<HttpResult<BookDetail>>() {
+        public static final Type TYPE = new TypeToken<BookDetail>() {
         }.getType();
 
         public String _id;
@@ -442,30 +499,27 @@ public class Entities {
         public List<String> tocs;
         public List<String> categories;
         public Object gender; // MLGB, 偶尔是String，偶尔是Array
+
+        // me add
+        public boolean isSaveBookshelf;
+
+        public String cover() {
+            return ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
     }
 
     public static class RankingList {
         public static final Type TYPE = new TypeToken<RankingList>() {
         }.getType();
 
-        public List<Ranking> female;
-        public List<Ranking> male;
-        public List<Ranking> picture;
-        public List<Ranking> epub;
-
-        public static class Ranking {
-            public String _id; //周榜
-            public String title;
-            public String cover;
-            public boolean collapse; // true 是否折叠
-            public String monthRank; //月榜
-            public String totalRank; //总榜
-            public String shortTitle;
-        }
+        public List<RankLv1> female;
+        public List<RankLv1> male;
+        public List<RankLv1> picture;
+        public List<RankLv1> epub;
     }
 
     public static class Rankings {
-        public static final Type TYPE = new TypeToken<HttpResult<Rankings>>() {
+        public static final Type TYPE = new TypeToken<Rankings>() {
         }.getType();
 
         public RankingBean ranking;
@@ -487,22 +541,7 @@ public class Entities {
             public int priority;
             public String created;
             public String id;
-            public List<BooksBean> books;
-
-            public static class BooksBean {
-                public String _id;
-                public String title;
-                public String author;
-                public String shortIntro;
-                public String cover;
-                public String site;
-                public String cat;
-                public int banned;
-                public int latelyFollower;
-                public int latelyFollowerBase;
-                public String minRetentionRatio;
-                public String retentionRatio;
-            }
+            public List<NetBook> books;
         }
     }
 
