@@ -1,11 +1,11 @@
 package com.xzhou.book.common;
 
-import android.annotation.LayoutRes;
-import android.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.GridLayoutManager;
@@ -109,8 +109,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public static class MyLinearLayoutManager extends LinearLayoutManager {
 
+        private boolean mIsFixed = false;
+
         public MyLinearLayoutManager(Context context) {
+            this(context, false);
+        }
+
+        public MyLinearLayoutManager(Context context, boolean fixed) {
             super(context);
+            mIsFixed = fixed;
         }
 
         public MyLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
@@ -128,12 +135,28 @@ public abstract class BaseActivity extends AppCompatActivity {
             } catch (Exception ignored) {
             }
         }
+
+        @Override
+        public boolean canScrollVertically() {
+            return !mIsFixed && super.canScrollVertically();
+        }
+
+        @Override
+        public boolean canScrollHorizontally() {
+            return !mIsFixed && super.canScrollVertically();
+        }
     }
 
     public static class MyGridLayoutManager extends GridLayoutManager {
+        private boolean mIsFixed = false;
 
         public MyGridLayoutManager(Context context, int spanCount) {
             super(context, spanCount);
+        }
+
+        public MyGridLayoutManager(Context context, int spanCount, boolean fixed) {
+            super(context, spanCount);
+            mIsFixed = fixed;
         }
 
         @Override
@@ -142,6 +165,16 @@ public abstract class BaseActivity extends AppCompatActivity {
                 super.onLayoutChildren(recycler, state);
             } catch (Exception ignored) {
             }
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            return !mIsFixed && super.canScrollVertically();
+        }
+
+        @Override
+        public boolean canScrollHorizontally() {
+            return !mIsFixed && super.canScrollVertically();
         }
     }
 }

@@ -11,7 +11,7 @@ import android.view.View;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseFragment;
-import com.xzhou.book.common.ListItemDecoration;
+import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.main.MainActivity;
 
@@ -49,7 +49,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new ListItemDecoration());
+        mRecyclerView.addItemDecoration(new LineItemDecoration());
 
         mSwipeLayout.setOnRefreshListener(mRefreshListener);
         mSwipeLayout.setEnabled(false);

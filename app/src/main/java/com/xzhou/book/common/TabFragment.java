@@ -75,7 +75,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         mAdapter.bindToRecyclerView(mRecyclerView);
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new ListItemDecoration());
+        mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

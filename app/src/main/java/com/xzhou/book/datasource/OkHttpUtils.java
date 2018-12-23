@@ -40,7 +40,7 @@ import okhttp3.Response;
 
 public class OkHttpUtils {
     private static OkHttpClient sGetClient;
-    private static final int CACHE_MAXAGE = 60 * 60 * 24; // s
+    private static final int CACHE_MAXAGE = 60; // s
 
     private static OkHttpClient getClient() {
         if (sGetClient == null) {

@@ -1,17 +1,14 @@
 package com.xzhou.book.models;
 
-import android.annotation.IdRes;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IdRes;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import com.xzhou.book.common.TabAdapter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
-import com.xzhou.book.find.SortListAdapter;
-import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.utils.Constant;
 
 import java.lang.reflect.Type;
@@ -23,7 +20,7 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return SortListAdapter.TEXT;
+            return Constant.ITEM_TYPE_TEXT;
         }
     }
 
@@ -69,12 +66,12 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return SortListAdapter.TEXT_IMAGE;
+            return Constant.ITEM_TYPE_TEXT_IMAGE;
         }
 
         @Override
         public int getLevel() {
-            return SortListAdapter.TEXT_IMAGE;
+            return Constant.ITEM_TYPE_TEXT_IMAGE;
         }
     }
 
@@ -86,12 +83,12 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return SortListAdapter.TEXT_IMAGE_2;
+            return Constant.ITEM_TYPE_TEXT_IMAGE_2;
         }
 
         @Override
         public int getLevel() {
-            return SortListAdapter.TEXT_IMAGE_2;
+            return Constant.ITEM_TYPE_TEXT_IMAGE_2;
         }
     }
 
@@ -104,7 +101,7 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return SortListAdapter.TEXT;
+            return Constant.ITEM_TYPE_TEXT;
         }
     }
 
@@ -129,16 +126,16 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return SortListAdapter.TEXT_GRID;
+            return Constant.ITEM_TYPE_TEXT_GRID;
         }
     }
 
-    public static class ItemClick {
+    public static class ImageText {
         public String name;
         public @IdRes
         int resId;
 
-        public ItemClick(String name, int resId) {
+        public ImageText(String name, int resId) {
             this.name = name;
             this.resId = resId;
         }
@@ -163,14 +160,14 @@ public class Entities {
         }
 
         TabData(Parcel in) {
-            title = in.readStringNoHelper();
+            title = in.readString();
             source = in.readInt();
-            weekRankId = in.readStringNoHelper();
-            monthRankId = in.readStringNoHelper();
-            totalRankId = in.readStringNoHelper();
-            gender = in.readStringNoHelper();
-            major = in.readStringNoHelper();
-            minor = in.readStringNoHelper();
+            weekRankId = in.readString();
+            monthRankId = in.readString();
+            totalRankId = in.readString();
+            gender = in.readString();
+            major = in.readString();
+            minor = in.readString();
         }
 
         public static final Creator<TabData> CREATOR = new Creator<TabData>() {
@@ -192,14 +189,14 @@ public class Entities {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeStringNoHelper(title);
+            dest.writeString(title);
             dest.writeInt(source);
-            dest.writeStringNoHelper(weekRankId);
-            dest.writeStringNoHelper(monthRankId);
-            dest.writeStringNoHelper(totalRankId);
-            dest.writeStringNoHelper(gender);
-            dest.writeStringNoHelper(major);
-            dest.writeStringNoHelper(minor);
+            dest.writeString(weekRankId);
+            dest.writeString(monthRankId);
+            dest.writeString(totalRankId);
+            dest.writeString(gender);
+            dest.writeString(major);
+            dest.writeString(minor);
         }
 
         @Override
@@ -243,7 +240,7 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return TabAdapter.NET_BOOK_ITEM;
+            return Constant.ITEM_TYPE_NET_BOOK;
         }
 
         public String cover() {
@@ -268,7 +265,7 @@ public class Entities {
     }
 
     public static class Recommend {
-        public static final Type TYPE = new TypeToken<HttpResult<Recommend>>() {
+        public static final Type TYPE = new TypeToken<Recommend>() {
         }.getType();
 
         public List<NetBook> books;
@@ -413,7 +410,11 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return BookDetailActivity.ITEM_TYPE_REVIEWS;
+            return Constant.ITEM_TYPE_REVIEWS;
+        }
+
+        public String avatar() {
+            return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
         }
 
         public static class Author {
@@ -450,7 +451,7 @@ public class Entities {
 
         @Override
         public int getItemType() {
-            return BookDetailActivity.ITEM_TYPE_RECOMMEND;
+            return Constant.ITEM_TYPE_NET_BOOK_LIST;
         }
     }
 
@@ -466,7 +467,7 @@ public class Entities {
         public Object dramaPoint;
         public int followerCount;
         public int gradeCount;
-        public boolean isSerial;
+        public boolean isSerial; //连载 or 完结
         public String lastChapter;
         public int latelyFollower;
         public String longIntro;

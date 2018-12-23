@@ -10,24 +10,24 @@ import android.view.View;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
-import com.xzhou.book.find.SortListAdapter;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Constant;
 
-public class ListItemDecoration extends RecyclerView.ItemDecoration {
+public class LineItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
     private boolean isShowBottom;
     private int mSpanCount;
 
-    public ListItemDecoration() {
+    public LineItemDecoration() {
         this(false);
     }
 
-    public ListItemDecoration(int spanCount) {
+    public LineItemDecoration(int spanCount) {
         this(true);
         mSpanCount = spanCount;
     }
 
-    public ListItemDecoration(boolean isShowBottom) {
+    public LineItemDecoration(boolean isShowBottom) {
         mDivider = new ColorDrawable(ContextCompat.getColor(MyApp.getContext(), R.color.common_divider_narrow));
         this.isShowBottom = isShowBottom;
     }
@@ -36,19 +36,19 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
         if (isShowDivider(view, parent)) {
-            if (mSpanCount <= 1) {
-                outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
-            } else {
+            if (mSpanCount > 1) {
                 int position = parent.getChildAdapterPosition(view); // item position
                 //int count = parent.getAdapter().getItemCount();
                 int itemType = parent.getAdapter().getItemViewType(position); // item type
-                if (itemType == SortListAdapter.TEXT) {
-                    outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
-                } else {
+                if (itemType == Constant.ITEM_TYPE_TEXT_GRID) {
                     outRect.left = 0;
                     outRect.right = 1;
                     outRect.bottom = 1;
+                } else {
+                    outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
                 }
+            } else {
+                outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
             }
         }
     }
@@ -75,9 +75,8 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
                 if (mSpanCount > 1) {
                     int position = parent.getChildAdapterPosition(child);
                     int itemType = parent.getAdapter().getItemViewType(position); // item type
-                    if (itemType == SortListAdapter.TEXT) {
+                    if (itemType == Constant.ITEM_TYPE_TEXT_GRID) {
                         mDivider.setBounds(left, top, right, bottom);
-                    } else {
                         drawHorizontalDivider(c, child, params);
                         if (right > child.getRight() + 1) {
                             drawVerticalDivider(c, child, params);

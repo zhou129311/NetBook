@@ -23,7 +23,15 @@ public class Constant {
     public static final String SUFFIX_ZIP = ".zip";
     public static final String SUFFIX_CHM = ".chm";
 
-    public static final int[] tagColors = new int[] {
+    public static final int ITEM_TYPE_NET_BOOK = 1;
+    public static final int ITEM_TYPE_TEXT = 2;
+    public static final int ITEM_TYPE_TEXT_IMAGE = 3;
+    public static final int ITEM_TYPE_TEXT_IMAGE_2 = 4;
+    public static final int ITEM_TYPE_TEXT_GRID = 5;
+    public static final int ITEM_TYPE_REVIEWS = 6;
+    public static final int ITEM_TYPE_NET_BOOK_LIST = 7;
+
+    public static final int[] tagColors = new int[]{
             Color.parseColor("#90C5F0"),
             Color.parseColor("#91CED5"),
             Color.parseColor("#F88F55"),
@@ -33,7 +41,7 @@ public class Constant {
             Color.parseColor("#F6BC7E")
     };
 
-    @IntDef({ TabSource.SOURCE_RANK_SUB,
+    @IntDef({TabSource.SOURCE_RANK_SUB,
             TabSource.SOURCE_TOPIC,
             TabSource.SOURCE_CATEGORY_SUB
     })

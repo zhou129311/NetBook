@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CommunityPresenter extends BasePresenter<CommunityContract.View> implements CommunityContract.Presenter {
 
-    private List<Entities.ItemClick> mList;
+    private List<Entities.ImageText> mList;
 
     public CommunityPresenter(CommunityContract.View view) {
         super(view);
@@ -20,10 +20,10 @@ public class CommunityPresenter extends BasePresenter<CommunityContract.View> im
     public boolean start() {
         if (mList == null) {
             mList = new ArrayList<>();
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.community_discuss), R.mipmap.discuss_section));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.community_comment), R.mipmap.comment_section));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.community_helper), R.mipmap.helper_section));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.community_girl), R.mipmap.girl_section));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.community_discuss), R.mipmap.discuss_section));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.community_comment), R.mipmap.comment_section));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.community_helper), R.mipmap.helper_section));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.community_girl), R.mipmap.girl_section));
             mView.onInitData(mList);
             return true;
         }

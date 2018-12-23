@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FindPresenter extends BasePresenter<FindContract.View> implements FindContract.Presenter {
-    private List<Entities.ItemClick> mList;
+    private List<Entities.ImageText> mList;
 
     public FindPresenter(FindContract.View view) {
         super(view);
@@ -19,10 +19,10 @@ public class FindPresenter extends BasePresenter<FindContract.View> implements F
     public boolean start() {
         if (mList == null) {
             mList = new ArrayList<>();
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.find_ranking), R.mipmap.home_find_rank));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.find_topic), R.mipmap.home_find_topic));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.find_category), R.mipmap.home_find_category));
-            mList.add(new Entities.ItemClick(AppUtils.getString(R.string.find_random_read), R.mipmap.home_find_secret_unlocked));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.find_ranking), R.mipmap.home_find_rank));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.find_topic), R.mipmap.home_find_topic));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.find_category), R.mipmap.home_find_category));
+            mList.add(new Entities.ImageText(AppUtils.getString(R.string.find_random_read), R.mipmap.home_find_secret_unlocked));
             mView.onInitData(mList);
             return true;
         }

@@ -73,7 +73,6 @@ public class TabActivity extends BaseActivity {
         if (mTabData == null) {
             return;
         }
-
         Log.i(TAG, "mTabData = " + mTabData.toString());
         mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setTitle(mTabData.title);

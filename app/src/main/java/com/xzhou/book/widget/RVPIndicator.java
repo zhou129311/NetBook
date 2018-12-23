@@ -173,6 +173,7 @@ public class RVPIndicator extends LinearLayout {
 
     public void setTabItemTitles(List<String> datas) {
         this.mTabTitles = datas;
+        mTabVisibleCount = datas.size();
         initTabItem();
         setHighLightTextView(mPosition);
     }

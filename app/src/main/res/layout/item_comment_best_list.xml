@@ -12,7 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginRight="10dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/ic_avatar_default"/>
+        android:src="@mipmap/avatar_default"/>
 
     <TextView
         android:id="@+id/item_floor"
@@ -43,7 +43,7 @@
         android:layout_toRightOf="@id/item_title"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/book_detail_user_lv"
+        android:text="@string/book_detail_review_author"
         android:textColor="@color/light_coffee"
         android:textSize="13sp"/>
 

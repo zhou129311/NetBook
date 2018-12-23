@@ -12,14 +12,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.GridItemDecoration;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.ImageLoader;
 import com.xzhou.book.widget.DrawableButton;
+import com.xzhou.book.widget.RatingBar;
 import com.xzhou.book.widget.TagColor;
 import com.xzhou.book.widget.TagGroup;
 
@@ -32,8 +35,6 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     private static final String TAG = "BookDetailActivity";
 
     public static final String EXTRA_BOOKID = "extra_bookid";
-    public static final int ITEM_TYPE_REVIEWS = 1;
-    public static final int ITEM_TYPE_RECOMMEND = 2;
 
     @BindView(R.id.detail_book_img)
     ImageView detailBookImg;
@@ -122,6 +123,7 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     @Override
     protected void initToolBar() {
         super.initToolBar();
+        mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitle(R.string.book_detail);
     }
@@ -129,6 +131,10 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     @Override
     protected void onStart() {
         super.onStart();
+        startData();
+    }
+
+    private void startData() {
         if (mPresenter.start()) {
             mPlaceView.setVisibility(View.VISIBLE);
             mLoadView.setVisibility(View.VISIBLE);
@@ -145,6 +151,7 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     public void onInitBookDetail(Entities.BookDetail detail) {
         mLoadView.setVisibility(View.GONE);
         if (detail != null) {
+            detailBookTitle.setFocusable(true);
             mPlaceView.setVisibility(View.GONE);
             mLoadErrorView.setVisibility(View.GONE);
 
@@ -204,54 +211,104 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
         if (list != null && list.size() > 0) {
             detailGroupReviewsDivider.setVisibility(View.VISIBLE);
             detailGroupReviews.setVisibility(View.VISIBLE);
-
+            initRecyclerView(list, detailReviewsRecyclerView);
         }
     }
 
     @Override
     public void onInitRecommend(List<MultiItemEntity> list) {
+        if (list != null && list.size() > 0) {
+            detailGroupRecommendDivider.setVisibility(View.VISIBLE);
+            detailGroupRecommend.setVisibility(View.VISIBLE);
+            initRecyclerView(list, detailRecommendRecyclerView);
+        }
+    }
 
+    private void initRecyclerView(List<MultiItemEntity> list, RecyclerView recyclerView) {
+        Adapter adapter = new Adapter(list);
+        adapter.bindToRecyclerView(recyclerView);
+        recyclerView.setHasFixedSize(true);
+        if (list.get(0).getItemType() == Constant.ITEM_TYPE_REVIEWS) {
+            recyclerView.setLayoutManager(new MyLinearLayoutManager(this, true));
+        } else {
+            int spanCount = 4;
+            recyclerView.setLayoutManager(new MyGridLayoutManager(this, spanCount, true));
+            int space = (recyclerView.getWidth() - AppUtils.dip2px(60)) / (spanCount - 1);
+            recyclerView.addItemDecoration(new GridItemDecoration(spanCount, space, 0));
+        }
     }
 
     @Override
     public void setPresenter(BookDetailContract.Presenter presenter) {
     }
 
-    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read, R.id.detail_intro,
-            R.id.detail_more_reviews, R.id.detail_more_recommend })
+    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.load_error_view:
-            break;
-        case R.id.detail_book_author:
-            break;
-        case R.id.detail_collector:
-            break;
-        case R.id.detail_read:
-            break;
-        case R.id.detail_intro:
-            if (detailIntro.getMaxLines() == 4) {
-                detailIntro.setMaxLines(20);
-            } else {
-                detailIntro.setMaxLines(4);
-            }
-            break;
-        case R.id.detail_more_reviews:
-            break;
-        case R.id.detail_more_recommend:
-            break;
+            case R.id.load_error_view:
+                startData();
+                break;
+            case R.id.detail_book_author:
+                break;
+            case R.id.detail_collector:
+                break;
+            case R.id.detail_read:
+                break;
+            case R.id.detail_intro:
+                if (detailIntro.getMaxLines() == 4) {
+                    detailIntro.setMaxLines(20);
+                } else {
+                    detailIntro.setMaxLines(4);
+                }
+                break;
+            case R.id.detail_more_reviews:
+                break;
+            case R.id.detail_more_recommend:
+                break;
         }
     }
 
-    private static class Adapter extends BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder> {
+    private static class Adapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
 
-        public Adapter(List<MultiItemEntity> data) {
+        Adapter(List<MultiItemEntity> data) {
             super(data);
+            addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.book_detail_item_review_view);
+            addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.book_detail_item_recommend_view);
         }
 
         @Override
-        protected void convert(BaseViewHolder holder, MultiItemEntity item) {
+        protected void convert(CommonViewHolder holder, MultiItemEntity item) {
+            switch (holder.getItemViewType()) {
+                case Constant.ITEM_TYPE_REVIEWS:
+                    Entities.Reviews reviews = (Entities.Reviews) item;
+                    holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
+                            .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
+                                    reviews.author.nickname, reviews.author.lv))
+                            .setText(R.id.review_title, reviews.title)
+                            .setText(R.id.review_content, reviews.content)
+                            .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
+                    RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
+                    ratingBar.setActiveCount(reviews.rating);
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
+                        }
+                    });
+                    break;
+                case Constant.ITEM_TYPE_NET_BOOK:
+                    Entities.NetBook book = (Entities.NetBook) item;
+                    holder.setImageUrl(R.id.book_detail_recommend_img, book.cover(), R.mipmap.ic_cover_default)
+                            .setText(R.id.book_detail_recommend_title, book.title);
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+                    break;
+            }
         }
     }
 }

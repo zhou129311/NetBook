@@ -11,10 +11,10 @@ import android.widget.ProgressBar;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseActivity;
-import com.xzhou.book.common.ListItemDecoration;
+import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.TabActivity;
+import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
@@ -51,7 +51,7 @@ public class SortListActivity extends BaseActivity implements SortListContract.V
         setContentView(R.layout.activity_sort_list);
         mPresenter = new SortListPresenter(this, mSource);
 
-        mAdapter = new SortListAdapter(this);
+        mAdapter = new SortListAdapter();
         mAdapter.setOnItemClickListener(new SortListAdapter.ItemClickListener() {
             @Override
             public void onClick(MultiItemEntity item) {
@@ -66,10 +66,10 @@ public class SortListActivity extends BaseActivity implements SortListContract.V
             gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    return mAdapter.getItemViewType(position) == SortListAdapter.TEXT_GRID ? 1 : 3;
+                    return mAdapter.getItemViewType(position) == Constant.ITEM_TYPE_TEXT_GRID ? 1 : 3;
                 }
             });
-            mRecyclerView.addItemDecoration(new ListItemDecoration(3));
+            mRecyclerView.addItemDecoration(new LineItemDecoration(3));
             mRecyclerView.setLayoutManager(gridLayoutManager);
         } else {
             mRecyclerView.setLayoutManager(new MyLinearLayoutManager(this));

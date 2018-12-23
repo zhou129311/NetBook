@@ -27,7 +27,7 @@
 
     <string name="book_detail">书籍详情</string>
     <string name="book_detail_cat">&#160;&#160;|&#160;&#160;%1$s&#160;&#160;|&#160;&#160;</string>
-    <string name="book_detail_user_lv">&#160;lv.%1$d</string>
+    <string name="book_detail_review_author">%1$s&#160;&#160;lv.%2$d</string>
     <string name="book_detail_remove_collection">不追了</string>
     <string name="book_detail_join_collection">追更新</string>
     <string name="book_detail_retention_ratio">%1$s%%</string>

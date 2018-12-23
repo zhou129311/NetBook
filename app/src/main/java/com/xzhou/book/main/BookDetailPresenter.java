@@ -31,14 +31,24 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
 
                     Entities.HotReview hotReview = ZhuiShuSQApi.get().getHotReview(mBookId);
                     if (hotReview != null && hotReview.reviews != null && hotReview.reviews.size() > 0) {
-                        List<MultiItemEntity> list = new ArrayList<MultiItemEntity>(hotReview.reviews);
-                        setBookHotReviews(list);
+                        List<MultiItemEntity> reviews = new ArrayList<>();
+                        if (hotReview.reviews.size() > 2) {
+                            reviews.addAll(hotReview.reviews.subList(0, 2));
+                        } else {
+                            reviews.addAll(hotReview.reviews);
+                        }
+                        setBookHotReviews(reviews);
                     }
 
-                    Entities.RecommendBookList list = ZhuiShuSQApi.get().getRecommendBookList(mBookId, "4");
-                    if (list != null && list.booklists != null && list.booklists.size() > 0) {
-                        List<MultiItemEntity> l = new ArrayList<MultiItemEntity>(list.booklists);
-                        setBookCommend(l);
+                    Entities.Recommend list = ZhuiShuSQApi.get().getRecommendBook(mBookId);
+                    if (list != null && list.books != null && list.books.size() > 0) {
+                        List<MultiItemEntity> recommeds = new ArrayList<>();
+                        if (list.books.size() > 4) {
+                            recommeds.addAll(list.books.subList(0, 4));
+                        } else {
+                            recommeds.addAll(list.books);
+                        }
+                        setBookCommend(recommeds);
                     }
                 }
             });

@@ -11,6 +11,6 @@ public interface FindContract {
     }
 
     interface View extends BaseContract.BaseView<Presenter> {
-        void onInitData(List<Entities.ItemClick> list);
+        void onInitData(List<Entities.ImageText> list);
     }
 }

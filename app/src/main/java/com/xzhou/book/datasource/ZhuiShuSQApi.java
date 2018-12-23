@@ -41,11 +41,11 @@ public class ZhuiShuSQApi {
      * @param gender male  female
      * @return Recommend
      */
-    public HttpResult getRecommend(String gender) {
+    public Entities.Recommend getRecommend(String gender) {
         HttpRequest request = new HttpRequest("/book/recommend");
         HashMap<String, String> params = new HashMap<>();
         params.put("gender", gender);
-        return OkHttpUtils.get(request, Entities.Recommend.TYPE, params);
+        return (Entities.Recommend) OkHttpUtils.getObject(request, Entities.Recommend.TYPE, params);
     }
 
     /**
@@ -117,7 +117,19 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 获取书籍详情界面 你可能感兴趣 列表
+     * 获取书籍对应的推荐书单
+     *
+     * @param bookId bookId
+     * @return Recommend
+     */
+    public Entities.Recommend getRecommendBook(String bookId) {
+        HttpRequest request = new HttpRequest("/book", bookId, "recommend");
+        HashMap<String, String> params = new HashMap<>();
+        return (Entities.Recommend) OkHttpUtils.getObject(request, Entities.Recommend.TYPE, params);
+    }
+
+    /**
+     * 获取书籍对应的推荐书单
      *
      * @param bookId bookId
      * @param limit  4

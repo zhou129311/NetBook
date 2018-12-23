@@ -9,16 +9,16 @@ import com.xzhou.book.models.Entities;
 
 import java.util.List;
 
-public class ItemAdapter extends BaseQuickAdapter<Entities.ItemClick, BaseViewHolder> {
+public class ItemAdapter extends BaseQuickAdapter<Entities.ImageText, BaseViewHolder> {
     private boolean mIsShowEndView;
 
-    public ItemAdapter(@Nullable List<Entities.ItemClick> data, boolean isShowEndView) {
-        super(R.layout.item_click_view, data);
+    public ItemAdapter(@Nullable List<Entities.ImageText> data, boolean isShowEndView) {
+        super(R.layout.item_img_text_view, data);
         mIsShowEndView = isShowEndView;
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, Entities.ItemClick item) {
+    protected void convert(BaseViewHolder helper, Entities.ImageText item) {
         helper.setText(R.id.click_name, item.name)
                 .setImageResource(R.id.click_image, item.resId)
                 .setVisible(R.id.click_image_end, mIsShowEndView);
