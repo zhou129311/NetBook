@@ -2,13 +2,13 @@ package com.xzhou.book.common;
 
 public interface BaseContract {
 
-    interface BasePresenter {
+    interface Presenter {
         boolean start();
 
         void destroy();
     }
 
-    interface BaseView<T> {
+    interface View<T> {
         void setPresenter(T presenter);
     }
 

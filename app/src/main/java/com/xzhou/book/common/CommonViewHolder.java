@@ -22,6 +22,12 @@ public class CommonViewHolder extends BaseViewHolder {
         return this;
     }
 
+    public CommonViewHolder setRoundImageUrl(@IdRes int viewId, String url, @DrawableRes int defaultId) {
+        ImageView view = getView(viewId);
+        ImageLoader.showRoundImageUrl(view.getContext(), view, url, defaultId);
+        return this;
+    }
+
     public CommonViewHolder setCircleImageUrl(@IdRes int viewId, String url, @DrawableRes int defaultId) {
         ImageView view = getView(viewId);
         ImageLoader.showCircleImageUrl(view.getContext(), view, url, defaultId);

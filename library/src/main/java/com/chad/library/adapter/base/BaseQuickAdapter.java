@@ -930,7 +930,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         //Add up fetch logic, almost like load more, but simpler.
         autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
-        autoLoadMore(position);
+        autoLoadMore(holder, position);
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
@@ -1450,14 +1450,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
     }
 
-    private void autoLoadMore(int position) {
+    private void autoLoadMore(BaseViewHolder holder, int position) {
         if (getLoadMoreViewCount() == 0) {
             return;
         }
         if (position < getItemCount() - mPreLoadNumber) {
             return;
         }
-        if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
+        if (!mNextLoadEnable || mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);

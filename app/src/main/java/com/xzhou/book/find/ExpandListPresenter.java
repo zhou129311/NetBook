@@ -12,14 +12,14 @@ import com.xzhou.book.utils.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SortListPresenter extends BasePresenter<SortListContract.View> implements SortListContract.Presenter {
+public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> implements ExpandListContract.Presenter {
     public static final int SOURCE_RANK = 1;
     public static final int SOURCE_CATEGORY = 2;
 
     private List<MultiItemEntity> mList;
     private int mSource;
 
-    public SortListPresenter(SortListContract.View view, int source) {
+    public ExpandListPresenter(ExpandListContract.View view, int source) {
         super(view);
         mSource = source;
     }

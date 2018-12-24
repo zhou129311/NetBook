@@ -52,9 +52,9 @@ public class FindFragment extends BaseFragment<FindContract.Presenter> implement
                     } else if (AppUtils.getString(R.string.find_random_read).equals(name)) {
 
                     } else if (AppUtils.getString(R.string.find_category).equals(name)) {
-                        SortListActivity.startActivity(getActivity(), SortListPresenter.SOURCE_CATEGORY);
+                        ExpandListActivity.startActivity(getActivity(), ExpandListPresenter.SOURCE_CATEGORY);
                     } else if (AppUtils.getString(R.string.find_ranking).equals(name)) {
-                        SortListActivity.startActivity(getActivity(), SortListPresenter.SOURCE_RANK);
+                        ExpandListActivity.startActivity(getActivity(), ExpandListPresenter.SOURCE_RANK);
                     }
                 }
             }

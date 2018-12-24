@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public abstract class BaseFragment<P extends BaseContract.BasePresenter> extends Fragment {
+public abstract class BaseFragment<P extends BaseContract.Presenter> extends Fragment {
     protected View mParentView;
     private Unbinder mUnbinder;
     protected P mPresenter;

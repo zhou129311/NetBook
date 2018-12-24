@@ -6,11 +6,11 @@ import com.xzhou.book.common.BaseContract;
 import java.util.List;
 
 public interface FindContract {
-    interface Presenter extends BaseContract.BasePresenter {
+    interface Presenter extends BaseContract.Presenter {
 
     }
 
-    interface View extends BaseContract.BaseView<Presenter> {
+    interface View extends BaseContract.View<Presenter> {
         void onInitData(List<Entities.ImageText> list);
     }
 }

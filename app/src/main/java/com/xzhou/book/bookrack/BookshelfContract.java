@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface BookshelfContract {
 
-    interface Presenter extends BaseContract.BasePresenter {
+    interface Presenter extends BaseContract.Presenter {
 
         void refresh();
 
     }
 
-    interface View extends BaseContract.BaseView<Presenter> {
+    interface View extends BaseContract.View<Presenter> {
         void showLoading();
 
         void hideLoading();

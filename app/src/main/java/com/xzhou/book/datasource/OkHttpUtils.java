@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 
@@ -141,12 +142,17 @@ public class OkHttpUtils {
         return (Entities.HttpResult) getObject(request, typeOfT, params);
     }
 
-    public static <T> Object getObject(final HttpRequest request, final Type typeOfT, final HashMap<String, String> params) {
+    public static Object getObject(final HttpRequest request, final Type typeOfT, final HashMap<String, String> params) {
         String url = HttpRequest.appendQueryUrl(params, request.getTargetUrl());
 
-        CacheControl cacheControl = new CacheControl.Builder()
-                .maxAge(CACHE_MAXAGE, TimeUnit.SECONDS)
-                .build();
+        CacheControl cacheControl;
+        if (!AppUtils.isNetworkAvailable()) {
+            cacheControl = CacheControl.FORCE_CACHE;
+        } else {
+            cacheControl = new CacheControl.Builder()
+                    .maxAge(CACHE_MAXAGE, TimeUnit.SECONDS)
+                    .build();
+        }
         Request req = new Request.Builder()
                 .url(url)
                 .cacheControl(cacheControl)

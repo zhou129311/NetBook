@@ -14,8 +14,7 @@ import static com.xzhou.book.utils.Constant.ITEM_TYPE_TEXT_GRID;
 import static com.xzhou.book.utils.Constant.ITEM_TYPE_TEXT_IMAGE;
 import static com.xzhou.book.utils.Constant.ITEM_TYPE_TEXT_IMAGE_2;
 
-public class SortListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
-    private static final String TAG = "SortListAdapter";
+public class ExpandListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
 
     private ItemClickListener mItemClickListener;
 
@@ -23,7 +22,7 @@ public class SortListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, 
         void onClick(MultiItemEntity item);
     }
 
-    SortListAdapter() {
+    ExpandListAdapter() {
         super(null);
         addItemType(ITEM_TYPE_TEXT, R.layout.item_text_view);
         addItemType(ITEM_TYPE_TEXT_IMAGE, R.layout.item_img_text_view);
@@ -31,7 +30,7 @@ public class SortListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, 
         addItemType(ITEM_TYPE_TEXT_GRID, R.layout.item_grid_text_view);
     }
 
-    public void setOnItemClickListener(ItemClickListener listener) {
+    void setOnItemClickListener(ItemClickListener listener) {
         mItemClickListener = listener;
     }
 

@@ -8,11 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
+import com.xzhou.book.widget.CommonLoadMoreView;
 
 import java.util.List;
 
@@ -68,15 +70,29 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         }
         mEmptyView = LayoutInflater.from(getActivity()).inflate(R.layout.common_empty_view, null);
         mLoadErrorView = LayoutInflater.from(getActivity()).inflate(R.layout.common_load_error_view, null);
-        mLoadErrorView.setOnClickListener(mRefershClickListener);
-        mEmptyView.setOnClickListener(mRefershClickListener);
+        mLoadErrorView.setOnClickListener(mRefreshClickListener);
+        mEmptyView.setOnClickListener(mRefreshClickListener);
 
         mAdapter = new TabAdapter(mPosition);
         mAdapter.bindToRecyclerView(mRecyclerView);
+        boolean enableLoadMore = hasEnableLoadMore();
+        mAdapter.setEnableLoadMore(enableLoadMore);
+        if (enableLoadMore) {
+            mAdapter.disableLoadMoreIfNotFullPage();
+            mAdapter.setLoadMoreView(new CommonLoadMoreView());
+            mAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+                @Override
+                public void onLoadMoreRequested() {
+                    mPresenter.loadMore();
+                }
+            }, mRecyclerView);
+        }
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
+
+        mSwipeLayout.setEnabled(hasEnableRefresh());
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -119,17 +135,17 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
 
     @Override
     public void onLoadMore(List<MultiItemEntity> list) {
-        mSwipeLayout.setRefreshing(false);
         if (list == null) {
-
+            mAdapter.loadMoreFail();
         } else if (list.size() <= 0) {
-
+            mAdapter.loadMoreEnd();
         } else {
+            mAdapter.loadMoreComplete();
             mAdapter.addData(list);
         }
     }
 
-    private View.OnClickListener mRefershClickListener = new View.OnClickListener() {
+    private View.OnClickListener mRefreshClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             mSwipeLayout.setRefreshing(true);
@@ -139,14 +155,32 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
 
     private String getDataSource() {
         if (mTabData.source == Constant.TabSource.SOURCE_RANK_SUB) {
-            if (mPosition == 0) {
-                return mTabData.weekRankId;
-            } else if (mPosition == 1) {
-                return mTabData.monthRankId;
-            } else if (mPosition == 2) {
-                return mTabData.totalRankId;
-            }
+            return mTabData.params[mPosition];
         }
         return "";
+    }
+
+    private boolean hasEnableRefresh() {
+        boolean enable = false;
+        switch (mTabData.source) {
+        case Constant.TabSource.SOURCE_CATEGORY_SUB:
+        case Constant.TabSource.SOURCE_RANK_SUB:
+        case Constant.TabSource.SOURCE_TOPIC_LIST:
+            enable = true;
+            break;
+        }
+        return enable;
+    }
+
+    private boolean hasEnableLoadMore() {
+        boolean enable = false;
+        switch (mTabData.source) {
+        case Constant.TabSource.SOURCE_CATEGORY_SUB:
+        case Constant.TabSource.SOURCE_TOPIC_LIST:
+        case Constant.TabSource.SOURCE_TAG:
+            enable = true;
+            break;
+        }
+        return enable;
     }
 }

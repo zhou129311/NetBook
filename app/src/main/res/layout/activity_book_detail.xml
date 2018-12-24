@@ -64,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/detail_book_title"
                     android:layout_toEndOf="@+id/detail_book_img"
+                    android:background="@drawable/bg_book_detail_author"
                     android:ellipsize="end"
                     android:maxEms="10"
                     android:singleLine="true"
@@ -122,7 +123,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15dp"
                         android:layout_weight="1"
-                        android:drawableStart="@drawable/book_detail_add_sel"
+                        android:drawableStart="@drawable/sel_book_detail_add"
                         android:text="@string/book_detail_join_collection"/>
 
                     <com.xzhou.book.widget.DrawableButton

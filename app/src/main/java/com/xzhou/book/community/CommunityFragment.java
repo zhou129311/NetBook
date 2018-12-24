@@ -24,8 +24,6 @@ public class CommunityFragment extends BaseFragment<CommunityContract.Presenter>
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    private ItemAdapter mAdapter;
-
     @Override
     public int getLayoutResId() {
         return R.layout.fragment_community;
@@ -49,8 +47,9 @@ public class CommunityFragment extends BaseFragment<CommunityContract.Presenter>
 
     @Override
     public void onInitData(List<Entities.ImageText> list) {
-        mAdapter = new ItemAdapter(list, false);
-        mAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        ItemAdapter adapter = new ItemAdapter(list, false);
+        adapter.bindToRecyclerView(mRecyclerView);
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Object item = adapter.getItem(position);
@@ -70,7 +69,6 @@ public class CommunityFragment extends BaseFragment<CommunityContract.Presenter>
             }
         });
 
-        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new LineItemDecoration(true));

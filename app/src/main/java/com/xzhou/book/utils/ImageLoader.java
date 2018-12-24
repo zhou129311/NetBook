@@ -1,10 +1,12 @@
 package com.xzhou.book.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
@@ -16,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.util.Util;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -35,6 +38,10 @@ public class ImageLoader {
 
     private static RequestOptions getCircleOptions(@DrawableRes int placeholder) {
         return new RequestOptions().centerInside().placeholder(placeholder).transform(new GlideCircleTransform());
+    }
+
+    private static RequestOptions getRoundOptions(@DrawableRes int placeholder) {
+        return new RequestOptions().centerInside().placeholder(placeholder).transform(new GlideRoundTransform());
     }
 
     public static void showImageFile(Context context, ImageView imageView, @NonNull File file, @DrawableRes int placeholder) {
@@ -74,6 +81,10 @@ public class ImageLoader {
         Glide.with(context).load(uri).apply(getCircleOptions(placeholder)).into(imageView);
     }
 
+    public static void showRoundImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
+        Glide.with(context).load(uri).apply(getRoundOptions(placeholder)).into(imageView);
+    }
+
     public static void showImageBitmap(Context context, ImageView imageView, @NonNull Bitmap bitmap, @DrawableRes int error) {
         Glide.with(context).load(bitmap).apply(getOptions(error, error)).into(imageView);
     }
@@ -87,24 +98,17 @@ public class ImageLoader {
     }
 
     private static class GlideCircleTransform extends BitmapTransformation {
+        private final String TAG = getClass().getName();
 
-        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-                                   int outWidth, int outHeight) {
-            return circleCrop(pool, toTransform);
-        }
-
-        private static Bitmap circleCrop(BitmapPool pool, Bitmap source) {
-            if (source == null)
-                return null;
-            int size = Math.min(source.getWidth(), source.getHeight());
-            int x = (source.getWidth() - size) / 2;
-            int y = (source.getHeight() - size) / 2;
-            Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);
+        protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+            int size = Math.min(toTransform.getWidth(), toTransform.getHeight());
+            int x = (toTransform.getWidth() - size) / 2;
+            int y = (toTransform.getHeight() - size) / 2;
+            Bitmap squared = Bitmap.createBitmap(toTransform, x, y, size, size);
             Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(result);
             Paint paint = new Paint();
-            paint.setShader(new BitmapShader(squared, BitmapShader.TileMode.CLAMP,
-                    BitmapShader.TileMode.CLAMP));
+            paint.setShader(new BitmapShader(squared, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP));
             paint.setAntiAlias(true);
             float r = size / 2f;
             canvas.drawCircle(r, r, r, paint);
@@ -112,8 +116,58 @@ public class ImageLoader {
         }
 
         @Override
-        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        public boolean equals(Object obj) {
+            return obj instanceof GlideCircleTransform;
+        }
 
+        @Override
+        public int hashCode() {
+            return Util.hashCode(TAG.hashCode());
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            messageDigest.update(TAG.getBytes(CHARSET));
+        }
+    }
+
+    private static class GlideRoundTransform extends BitmapTransformation {
+        private final String TAG = getClass().getName();
+
+        private float mRadius = 0f;
+
+        GlideRoundTransform() {
+            this(2);
+        }
+
+        GlideRoundTransform(int dp) {
+            mRadius = Resources.getSystem().getDisplayMetrics().density * dp;
+        }
+
+        protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+            Bitmap result = pool.get(toTransform.getWidth(), toTransform.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(result);
+            Paint paint = new Paint();
+            paint.setShader(new BitmapShader(toTransform, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP));
+            paint.setAntiAlias(true);
+            RectF rectF = new RectF(0f, 0f, toTransform.getWidth(), toTransform.getHeight());
+            canvas.drawRoundRect(rectF, mRadius, mRadius, paint);
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof GlideRoundTransform;
+        }
+
+        @Override
+        public int hashCode() {
+            return Util.hashCode(TAG.hashCode());
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            messageDigest.update(TAG.getBytes(CHARSET));
         }
     }
 }

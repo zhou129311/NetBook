@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppUtils;
@@ -65,7 +66,15 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
             final int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = parent.getChildAt(i);
-                if (!isShowDivider(child, parent)) {
+                View nextChild = parent.getChildAt(i + 1);
+                boolean nextIsLoadView = false;
+                if (nextChild != null) {
+                    View view = nextChild.findViewById(R.id.load_more_loading);
+                    if (view != null) {
+                        nextIsLoadView = true;
+                    }
+                }
+                if (!isShowDivider(child, parent) || nextIsLoadView) {
                     continue;
                 }
 

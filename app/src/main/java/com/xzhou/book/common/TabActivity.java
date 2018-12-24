@@ -11,10 +11,10 @@ import android.view.View;
 
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.widget.RVPIndicator;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
+import com.xzhou.book.widget.RVPIndicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,16 +90,17 @@ public class TabActivity extends BaseActivity {
             mTabNames = Arrays.asList(getResources().getStringArray(R.array.category_sub_tabs));
             break;
         case Constant.TabSource.SOURCE_RANK_SUB:
-            if (AppUtils.isEmpty(mTabData.monthRankId) || AppUtils.isEmpty(mTabData.totalRankId)) {
-                mTabNames = new ArrayList<>();
-                mTabNames.add("");
-            } else {
+            if (!AppUtils.isEmpty(mTabData.params[1]) && !AppUtils.isEmpty(mTabData.params[2])) {
                 mTabNames = Arrays.asList(getResources().getStringArray(R.array.sub_rank_tabs));
             }
             break;
-        case Constant.TabSource.SOURCE_TOPIC:
+        case Constant.TabSource.SOURCE_TOPIC_LIST:
             mTabNames = Arrays.asList(getResources().getStringArray(R.array.topic_tabs));
             break;
+        }
+        if (mTabNames == null) {
+            mTabNames = new ArrayList<>();
+            mTabNames.add("");
         }
 
         List<Fragment> fragmentList = getSupportFragmentManager().getFragments();

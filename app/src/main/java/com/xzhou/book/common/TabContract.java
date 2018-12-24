@@ -5,7 +5,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import java.util.List;
 
 public interface TabContract {
-    interface Presenter extends BaseContract.BasePresenter {
+    interface Presenter extends BaseContract.Presenter {
 
         void refresh();
 
@@ -13,7 +13,7 @@ public interface TabContract {
 
     }
 
-    interface View extends BaseContract.BaseView<Presenter> {
+    interface View extends BaseContract.View<Presenter> {
 
         void onDataChange(List<MultiItemEntity> list);
 

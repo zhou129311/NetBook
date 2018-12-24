@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,10 +19,12 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.GridItemDecoration;
+import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.ImageLoader;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.DrawableButton;
 import com.xzhou.book.widget.RatingBar;
 import com.xzhou.book.widget.TagColor;
@@ -31,7 +35,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class BookDetailActivity extends BaseActivity implements BookDetailContract.View {
+public class BookDetailActivity extends BaseActivity<BookDetailContract.Presenter> implements BookDetailContract.View {
     private static final String TAG = "BookDetailActivity";
 
     public static final String EXTRA_BOOKID = "extra_bookid";
@@ -105,8 +109,6 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     @BindView(R.id.common_load_view)
     ProgressBar mLoadView;
 
-    private BookDetailContract.Presenter mPresenter;
-
     public static void startActivity(Context context, String bookId) {
         Intent intent = new Intent(context, BookDetailActivity.class);
         intent.putExtra(EXTRA_BOOKID, bookId);
@@ -117,7 +119,11 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
-        mPresenter = new BookDetailPresenter(this, getIntent().getStringExtra(EXTRA_BOOKID));
+    }
+
+    @Override
+    protected BookDetailContract.Presenter createPresenter() {
+        return new BookDetailPresenter(this, getIntent().getStringExtra(EXTRA_BOOKID));
     }
 
     @Override
@@ -144,18 +150,17 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
     @Override
     public void finish() {
         super.finish();
-        mPresenter.destroy();
     }
 
     @Override
     public void onInitBookDetail(Entities.BookDetail detail) {
         mLoadView.setVisibility(View.GONE);
         if (detail != null) {
+            ViewGroup parent = (ViewGroup) mPlaceView.getParent();
+            parent.removeView(mPlaceView);
             detailBookTitle.setFocusable(true);
-            mPlaceView.setVisibility(View.GONE);
-            mLoadErrorView.setVisibility(View.GONE);
 
-            ImageLoader.showImageUrl(this, detailBookImg, detail.cover(), R.mipmap.ic_cover_default);
+            ImageLoader.showRoundImageUrl(this, detailBookImg, detail.cover(), R.mipmap.ic_cover_default);
             detailBookTitle.setText(detail.title);
             detailBookAuthor.setText(detail.author);
             detailBookCat.setText(getString(R.string.book_detail_cat, detail.cat));
@@ -171,7 +176,7 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
             detailRetentionRatio.setText(AppUtils.isEmpty(detail.retentionRatio) ?
                     "-" : String.format(getString(R.string.book_detail_retention_ratio), detail.retentionRatio));
             detailDayWordCount.setText(detail.serializeWordCount < 1 ? "-" : String.valueOf(detail.serializeWordCount));
-            detailIntro.setText(AppUtils.isEmpty(detail.longIntro) ? "暂无简介" : detail.longIntro);
+            detailIntro.setText(AppUtils.isEmpty(detail.longIntro) ? AppUtils.getString(R.string.detail_no_intro) : detail.longIntro);
             initTagView(detail.tags);
             initCommunity(detail);
         } else {
@@ -185,11 +190,18 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
             detailGroupTag.setVisibility(View.GONE);
         } else {
             List<TagColor> colors = TagColor.getRandomColors(tags.size());
-            detailGroupTag.setTags(colors, (String[]) tags.toArray(new String[tags.size()]));
+            detailGroupTag.setTags(colors, (String[]) tags.toArray(new String[0]));
             detailGroupTag.setOnTagClickListener(new TagGroup.OnTagClickListener() {
                 @Override
                 public void onTagClick(String tag) {
-
+                    if (AppUtils.isEmpty(tag)) {
+                        return;
+                    }
+                    Entities.TabData data = new Entities.TabData();
+                    data.title = tag;
+                    data.source = Constant.TabSource.SOURCE_TAG;
+                    data.params = new String[] { tag };
+                    TabActivity.startActivity(mActivity, data);
                 }
             });
         }
@@ -224,49 +236,55 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
         }
     }
 
-    private void initRecyclerView(List<MultiItemEntity> list, RecyclerView recyclerView) {
+    private void initRecyclerView(List<MultiItemEntity> list, final RecyclerView recyclerView) {
         Adapter adapter = new Adapter(list);
         adapter.bindToRecyclerView(recyclerView);
         recyclerView.setHasFixedSize(true);
         if (list.get(0).getItemType() == Constant.ITEM_TYPE_REVIEWS) {
             recyclerView.setLayoutManager(new MyLinearLayoutManager(this, true));
         } else {
-            int spanCount = 4;
+            final int spanCount = 4;
+            recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    int space = (recyclerView.getWidth() - (AppUtils.dip2px(60) * spanCount)) / (spanCount - 1);
+                    recyclerView.addItemDecoration(new GridItemDecoration(spanCount, space, 0));
+                    recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
             recyclerView.setLayoutManager(new MyGridLayoutManager(this, spanCount, true));
-            int space = (recyclerView.getWidth() - AppUtils.dip2px(60)) / (spanCount - 1);
-            recyclerView.addItemDecoration(new GridItemDecoration(spanCount, space, 0));
+        }
+    }
+
+    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+        case R.id.load_error_view:
+            startData();
+            break;
+        case R.id.detail_book_author:
+            break;
+        case R.id.detail_collector:
+            break;
+        case R.id.detail_read:
+            break;
+        case R.id.detail_intro:
+            if (detailIntro.getMaxLines() == 4) {
+                detailIntro.setMaxLines(Integer.MAX_VALUE);
+            } else {
+                detailIntro.setMaxLines(4);
+            }
+            break;
+        case R.id.detail_more_reviews:
+            break;
+        case R.id.detail_more_recommend:
+            break;
         }
     }
 
     @Override
     public void setPresenter(BookDetailContract.Presenter presenter) {
-    }
-
-    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.load_error_view:
-                startData();
-                break;
-            case R.id.detail_book_author:
-                break;
-            case R.id.detail_collector:
-                break;
-            case R.id.detail_read:
-                break;
-            case R.id.detail_intro:
-                if (detailIntro.getMaxLines() == 4) {
-                    detailIntro.setMaxLines(20);
-                } else {
-                    detailIntro.setMaxLines(4);
-                }
-                break;
-            case R.id.detail_more_reviews:
-                break;
-            case R.id.detail_more_recommend:
-                break;
-        }
     }
 
     private static class Adapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
@@ -280,34 +298,34 @@ public class BookDetailActivity extends BaseActivity implements BookDetailContra
         @Override
         protected void convert(CommonViewHolder holder, MultiItemEntity item) {
             switch (holder.getItemViewType()) {
-                case Constant.ITEM_TYPE_REVIEWS:
-                    Entities.Reviews reviews = (Entities.Reviews) item;
-                    holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
-                            .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
-                                    reviews.author.nickname, reviews.author.lv))
-                            .setText(R.id.review_title, reviews.title)
-                            .setText(R.id.review_content, reviews.content)
-                            .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
-                    RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
-                    ratingBar.setActiveCount(reviews.rating);
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+            case Constant.ITEM_TYPE_REVIEWS:
+                Entities.Reviews reviews = (Entities.Reviews) item;
+                holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
+                        .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
+                                reviews.author.nickname, reviews.author.lv))
+                        .setText(R.id.review_title, reviews.title)
+                        .setText(R.id.review_content, reviews.content)
+                        .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
+                RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
+                ratingBar.setActiveCount(reviews.rating);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                        }
-                    });
-                    break;
-                case Constant.ITEM_TYPE_NET_BOOK:
-                    Entities.NetBook book = (Entities.NetBook) item;
-                    holder.setImageUrl(R.id.book_detail_recommend_img, book.cover(), R.mipmap.ic_cover_default)
-                            .setText(R.id.book_detail_recommend_title, book.title);
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                    }
+                });
+                break;
+            case Constant.ITEM_TYPE_NET_BOOK:
+                Entities.NetBook book = (Entities.NetBook) item;
+                holder.setRoundImageUrl(R.id.book_detail_recommend_img, book.cover(), R.mipmap.ic_cover_default)
+                        .setText(R.id.book_detail_recommend_title, book.title);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                        }
-                    });
-                    break;
+                    }
+                });
+                break;
             }
         }
     }

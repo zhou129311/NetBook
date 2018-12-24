@@ -12,6 +12,7 @@ import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.utils.Constant;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 
 public class Entities {
@@ -147,14 +148,17 @@ public class Entities {
         int source;
 
         // SOURCE_RANK_SUB
-        public String weekRankId;
-        public String monthRankId;
-        public String totalRankId;
+//        public String weekRankId;
+//        public String monthRankId;
+//        public String totalRankId;
 
         // SOURCE_CATEGORY_SUB
-        public String gender;
-        public String major;
-        public String minor;
+//        public String gender;
+//        public String major;
+//        public String minor;
+
+        //other single list
+        public String[] params; // bookid、tag、author...
 
         public TabData() {
         }
@@ -162,12 +166,13 @@ public class Entities {
         TabData(Parcel in) {
             title = in.readString();
             source = in.readInt();
-            weekRankId = in.readString();
-            monthRankId = in.readString();
-            totalRankId = in.readString();
-            gender = in.readString();
-            major = in.readString();
-            minor = in.readString();
+//            weekRankId = in.readString();
+//            monthRankId = in.readString();
+//            totalRankId = in.readString();
+//            gender = in.readString();
+//            major = in.readString();
+//            minor = in.readString();
+            params = in.readStringArray();
         }
 
         public static final Creator<TabData> CREATOR = new Creator<TabData>() {
@@ -191,12 +196,13 @@ public class Entities {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeString(title);
             dest.writeInt(source);
-            dest.writeString(weekRankId);
-            dest.writeString(monthRankId);
-            dest.writeString(totalRankId);
-            dest.writeString(gender);
-            dest.writeString(major);
-            dest.writeString(minor);
+//            dest.writeString(weekRankId);
+//            dest.writeString(monthRankId);
+//            dest.writeString(totalRankId);
+//            dest.writeString(gender);
+//            dest.writeString(major);
+//            dest.writeString(minor);
+            dest.writeStringArray(params);
         }
 
         @Override
@@ -204,12 +210,7 @@ public class Entities {
             return "TabData{" +
                     "title='" + title + '\'' +
                     ", source=" + source +
-                    ", weekRankId='" + weekRankId + '\'' +
-                    ", monthRankId='" + monthRankId + '\'' +
-                    ", totalRankId='" + totalRankId + '\'' +
-                    ", gender='" + gender + '\'' +
-                    ", major='" + major + '\'' +
-                    ", minor='" + minor + '\'' +
+                    ", params='" + Arrays.toString(params) + '\'' +
                     '}';
         }
     }
@@ -237,6 +238,10 @@ public class Entities {
         public int latelyFollower; //最近阅读人数
         public double retentionRatio; //留存率 73.76
         public int chaptersCount;
+
+        public String majorCate;
+        public String minorCate;
+        public List<String> tags;
 
         @Override
         public int getItemType() {
@@ -366,26 +371,10 @@ public class Entities {
     }
 
     public static class BooksByTag {
-        public static final Type TYPE = new TypeToken<HttpResult<BooksByTag>>() {
+        public static final Type TYPE = new TypeToken<BooksByTag>() {
         }.getType();
 
-        public List<TagBook> books;
-
-        public static class TagBook {
-            public String _id;
-            public String title;
-            public String author;
-            public String shortIntro;
-            public String cover;
-            public String site;
-            public String cat;
-            public String majorCate;
-            public String minorCate;
-            public int latelyFollower;
-            public String retentionRatio;
-            public String lastChapter;
-            public List<String> tags;
-        }
+        public List<NetBook> books;
     }
 
     public static class HotReview {

@@ -44,6 +44,7 @@
     <string name="detail_follower_count">追书人数</string>
     <string name="detail_retention_ratio">读者留存率</string>
     <string name="detail_day_word_count">日更新字数</string>
+    <string name="detail_no_intro">暂无简介</string>
 
     <string name="book_read_reading">朗读</string>
     <string name="book_read_community">社区</string>
@@ -120,6 +121,9 @@
     <string name="category_book_count">%1$d 本</string>
     <string name="favor">收藏</string>
     <string name="more">更多</string>
+    <string name="loading_more">加载中&#8230;</string>
+    <string name="load_no_more">(*￣ω￣) 没有更多了</string>
+    <string name="load_more_fail">(*￣ω￣) 加载失败</string>
 
 
 </resources>

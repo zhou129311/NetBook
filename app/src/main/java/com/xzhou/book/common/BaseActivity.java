@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.xzhou.book.MyApp;
@@ -26,11 +25,16 @@ import java.lang.reflect.Method;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity<P extends BaseContract.Presenter> extends AppCompatActivity {
     protected Activity mActivity;
     protected MyApp mApp;
     protected Toolbar mToolbar;
     private Unbinder mUnbinder;
+    protected P mPresenter;
+
+    protected P createPresenter() {
+        return null;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,10 +52,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             initToolBar();
             setSupportActionBar(mToolbar);
         }
+        mPresenter = createPresenter();
     }
 
     @Override
-    public void setContentView(View view) {
+    public void setContentView(android.view.View view) {
         super.setContentView(view);
         mUnbinder = ButterKnife.bind(this);
         mToolbar = findViewById(R.id.common_toolbar);
@@ -59,10 +64,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             initToolBar();
             setSupportActionBar(mToolbar);
         }
+        mPresenter = createPresenter();
     }
 
     @Override
-    public void setContentView(View view, ViewGroup.LayoutParams params) {
+    public void setContentView(android.view.View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
         mUnbinder = ButterKnife.bind(this);
         mToolbar = findViewById(R.id.common_toolbar);
@@ -70,11 +76,15 @@ public abstract class BaseActivity extends AppCompatActivity {
             initToolBar();
             setSupportActionBar(mToolbar);
         }
+        mPresenter = createPresenter();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mPresenter != null) {
+            mPresenter.destroy();
+        }
         if (mUnbinder != null) {
             mUnbinder.unbind();
         }

@@ -28,7 +28,7 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             if (AppUtils.isEmpty(netBook.cat)) {
                 netBook.cat = "";
             }
-            holder.setImageUrl(R.id.book_image, netBook.cover(), R.mipmap.ic_cover_default).
+            holder.setRoundImageUrl(R.id.book_image, netBook.cover(), R.mipmap.ic_cover_default).
                     setText(R.id.book_title, netBook.title)
                     .setText(R.id.book_author, AppUtils.getString(R.string.net_book_author, netBook.author, netBook.cat))
                     .setText(R.id.book_describe, netBook.shortIntro)

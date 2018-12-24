@@ -31,7 +31,7 @@ public class Constant {
     public static final int ITEM_TYPE_REVIEWS = 6;
     public static final int ITEM_TYPE_NET_BOOK_LIST = 7;
 
-    public static final int[] tagColors = new int[]{
+    public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),
             Color.parseColor("#91CED5"),
             Color.parseColor("#F88F55"),
@@ -41,14 +41,20 @@ public class Constant {
             Color.parseColor("#F6BC7E")
     };
 
-    @IntDef({TabSource.SOURCE_RANK_SUB,
-            TabSource.SOURCE_TOPIC,
-            TabSource.SOURCE_CATEGORY_SUB
+    @IntDef({ TabSource.SOURCE_RANK_SUB,
+            TabSource.SOURCE_TOPIC_LIST,
+            TabSource.SOURCE_CATEGORY_SUB,
+            TabSource.SOURCE_AUTHOR,
+            TabSource.SOURCE_TAG,
+            TabSource.SOURCE_RECOMMEND,
     })
     public @interface TabSource {
         int SOURCE_RANK_SUB = 0;
-        int SOURCE_TOPIC = 1;
+        int SOURCE_TOPIC_LIST = 1;
         int SOURCE_CATEGORY_SUB = 2;
+        int SOURCE_AUTHOR = 3;
+        int SOURCE_TAG = 4;
+        int SOURCE_RECOMMEND = 5;
     }
 
     @StringDef({

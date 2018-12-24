@@ -86,12 +86,14 @@ public class ZhuiShuSQApi {
 
     /**
      * 通过作者查询书名
+     *
+     * @return BooksByTag
      */
-    public HttpResult searchBooksByAuthor(String author) {
+    public Entities.BooksByTag searchBooksByAuthor(String author) {
         HttpRequest request = new HttpRequest("/book/accurate-search");
         HashMap<String, String> params = new HashMap<>();
         params.put("author", author);
-        return OkHttpUtils.get(request, Entities.BooksByTag.TYPE, params);
+        return (Entities.BooksByTag) OkHttpUtils.getObject(request, Entities.BooksByTag.TYPE, params);
     }
 
     /**
@@ -142,13 +144,13 @@ public class ZhuiShuSQApi {
         return (Entities.RecommendBookList) OkHttpUtils.getObject(request, Entities.RecommendBookList.TYPE, params);
     }
 
-    public HttpResult getBooksByTag(String tags, String start, String limit) {
+    public Entities.BooksByTag getBooksByTag(String tags, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/by-tags");
         HashMap<String, String> params = new HashMap<>();
         params.put("tags", tags);
-        params.put("start", start);
-        params.put("limit", limit);
-        return OkHttpUtils.get(request, Entities.BooksByTag.TYPE, params);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
+        return (Entities.BooksByTag) OkHttpUtils.getObject(request, Entities.BooksByTag.TYPE, params);
     }
 
     /**

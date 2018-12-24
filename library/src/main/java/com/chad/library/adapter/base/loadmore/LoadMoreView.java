@@ -30,26 +30,26 @@ public abstract class LoadMoreView {
 
     public void convert(BaseViewHolder holder) {
         switch (mLoadMoreStatus) {
-            case STATUS_LOADING:
-                visibleLoading(holder, true);
-                visibleLoadFail(holder, false);
-                visibleLoadEnd(holder, false);
-                break;
-            case STATUS_FAIL:
-                visibleLoading(holder, false);
-                visibleLoadFail(holder, true);
-                visibleLoadEnd(holder, false);
-                break;
-            case STATUS_END:
-                visibleLoading(holder, false);
-                visibleLoadFail(holder, false);
-                visibleLoadEnd(holder, true);
-                break;
-            case STATUS_DEFAULT:
-                visibleLoading(holder, false);
-                visibleLoadFail(holder, false);
-                visibleLoadEnd(holder, false);
-                break;
+        case STATUS_LOADING:
+            visibleLoading(holder, true);
+            visibleLoadFail(holder, false);
+            visibleLoadEnd(holder, false);
+            break;
+        case STATUS_FAIL:
+            visibleLoading(holder, false);
+            visibleLoadFail(holder, true);
+            visibleLoadEnd(holder, false);
+            break;
+        case STATUS_END:
+            visibleLoading(holder, false);
+            visibleLoadFail(holder, false);
+            visibleLoadEnd(holder, true);
+            break;
+        case STATUS_DEFAULT:
+            visibleLoading(holder, false);
+            visibleLoadFail(holder, false);
+            visibleLoadEnd(holder, false);
+            break;
         }
     }
 
