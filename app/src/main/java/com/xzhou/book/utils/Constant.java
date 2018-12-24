@@ -30,6 +30,8 @@ public class Constant {
     public static final int ITEM_TYPE_TEXT_GRID = 5;
     public static final int ITEM_TYPE_REVIEWS = 6;
     public static final int ITEM_TYPE_NET_BOOK_LIST = 7;
+    public static final int ITEM_TYPE_BOOK_BY_AUTHOR = 8;
+    public static final int ITEM_TYPE_BOOK_BY_TAG = 9;
 
     public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),

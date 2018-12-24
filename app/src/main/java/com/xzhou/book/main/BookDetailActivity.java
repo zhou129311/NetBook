@@ -24,7 +24,6 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.ImageLoader;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.DrawableButton;
 import com.xzhou.book.widget.RatingBar;
 import com.xzhou.book.widget.TagColor;
@@ -38,7 +37,7 @@ import butterknife.OnClick;
 public class BookDetailActivity extends BaseActivity<BookDetailContract.Presenter> implements BookDetailContract.View {
     private static final String TAG = "BookDetailActivity";
 
-    public static final String EXTRA_BOOKID = "extra_bookid";
+    public static final String EXTRA_BOOK_ID = "extra_bookId";
 
     @BindView(R.id.detail_book_img)
     ImageView detailBookImg;
@@ -111,7 +110,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     public static void startActivity(Context context, String bookId) {
         Intent intent = new Intent(context, BookDetailActivity.class);
-        intent.putExtra(EXTRA_BOOKID, bookId);
+        intent.putExtra(EXTRA_BOOK_ID, bookId);
         context.startActivity(intent);
     }
 
@@ -123,7 +122,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     @Override
     protected BookDetailContract.Presenter createPresenter() {
-        return new BookDetailPresenter(this, getIntent().getStringExtra(EXTRA_BOOKID));
+        return new BookDetailPresenter(this, getIntent().getStringExtra(EXTRA_BOOK_ID));
     }
 
     @Override
@@ -200,7 +199,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
                     data.source = Constant.TabSource.SOURCE_TAG;
-                    data.params = new String[] { tag };
+                    data.params = new String[]{tag};
                     TabActivity.startActivity(mActivity, data);
                 }
             });
@@ -256,15 +255,21 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
+    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
             startData();
             break;
-        case R.id.detail_book_author:
+        case R.id.detail_book_author: {
+            Entities.TabData data = new Entities.TabData();
+            data.title = detailBookAuthor.getText().toString();
+            data.source = Constant.TabSource.SOURCE_AUTHOR;
+            data.params = new String[]{data.title};
+            TabActivity.startActivity(mActivity, data);
             break;
+        }
         case R.id.detail_collector:
             break;
         case R.id.detail_read:
@@ -278,8 +283,14 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             break;
         case R.id.detail_more_reviews:
             break;
-        case R.id.detail_more_recommend:
+        case R.id.detail_more_recommend: {
+            Entities.TabData data = new Entities.TabData();
+            data.title = detailRecommend.getText().toString();
+            data.source = Constant.TabSource.SOURCE_RECOMMEND;
+            data.params = new String[]{getIntent().getStringExtra(EXTRA_BOOK_ID)};
+            TabActivity.startActivity(mActivity, data);
             break;
+        }
         }
     }
 
@@ -316,13 +327,13 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                 });
                 break;
             case Constant.ITEM_TYPE_NET_BOOK:
-                Entities.NetBook book = (Entities.NetBook) item;
+                final Entities.NetBook book = (Entities.NetBook) item;
                 holder.setRoundImageUrl(R.id.book_detail_recommend_img, book.cover(), R.mipmap.ic_cover_default)
                         .setText(R.id.book_detail_recommend_title, book.title);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        BookDetailActivity.startActivity(getRecyclerView().getContext(), book._id);
                     }
                 });
                 break;

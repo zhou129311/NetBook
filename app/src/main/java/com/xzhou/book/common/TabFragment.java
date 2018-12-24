@@ -13,7 +13,6 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.CommonLoadMoreView;
 
 import java.util.List;
@@ -89,7 +88,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         }
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration());
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
 
         mSwipeLayout.setEnabled(hasEnableRefresh());
@@ -118,19 +117,14 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     public void onDataChange(List<MultiItemEntity> list) {
         mSwipeLayout.setRefreshing(false);
         if (list == null) {
-            Log.i(TAG, "onDataChange: null");
             mAdapter.setEmptyView(mLoadErrorView);
             mAdapter.notifyDataSetChanged();
         } else if (list.size() <= 0) {
-            Log.i(TAG, "onDataChange: " + list);
             mAdapter.setEmptyView(mEmptyView);
             mAdapter.notifyDataSetChanged();
         } else {
-            Log.i(TAG, "onDataChange: " + list.size() + ",source = " + getDataSource());
             mAdapter.replaceData(list);
         }
-
-        Log.i(TAG, "mAdapter.getData = " + mAdapter.getData().size());
     }
 
     @Override

@@ -42,6 +42,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                 switch (mTabData.source) {
                 case TabSource.SOURCE_CATEGORY_SUB:
                     list = new ArrayList<>();
+                    
                     break;
                 case TabSource.SOURCE_RANK_SUB:
                     String rankId = mTabData.params[mPosition];
@@ -56,6 +57,13 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                 case TabSource.SOURCE_TOPIC_LIST:
                     break;
                 case TabSource.SOURCE_AUTHOR:
+                    Entities.BooksByTag searchBooks = ZhuiShuSQApi.get().searchBooksByAuthor(mTabData.params[0]);
+                    if (searchBooks != null) {
+                        list = new ArrayList<>();
+                        if (searchBooks.books != null && searchBooks.books.size() > 0) {
+                            list.addAll(searchBooks.books);
+                        }
+                    }
                     break;
                 case TabSource.SOURCE_TAG:
                     mDataNumber = 0;
@@ -69,7 +77,13 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     }
                     break;
                 case TabSource.SOURCE_RECOMMEND:
-
+                    Entities.Recommend recommend = ZhuiShuSQApi.get().getRecommendBook(mTabData.params[0]);
+                    if (recommend != null) {
+                        list = new ArrayList<>();
+                        if (recommend.books != null && recommend.books.size() > 0) {
+                            list.addAll(recommend.books);
+                        }
+                    }
                     break;
                 }
 

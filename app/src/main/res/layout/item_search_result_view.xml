@@ -7,7 +7,7 @@
                 android:padding="10dp">
 
     <ImageView
-        android:id="@+id/search_image"
+        android:id="@+id/book_image"
         android:layout_width="45dp"
         android:layout_height="60dp"
         android:layout_centerVertical="true"
@@ -20,11 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/search_image"
+        android:layout_toEndOf="@id/book_image"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/search_title"
+            android:id="@+id/book_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -34,7 +34,7 @@
             tools:text="武侠世界自由行"/>
 
         <TextView
-            android:id="@+id/search_describe"
+            android:id="@+id/book_h2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

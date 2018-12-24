@@ -146,19 +146,7 @@ public class Entities {
         public String title;
         public @Constant.TabSource
         int source;
-
-        // SOURCE_RANK_SUB
-//        public String weekRankId;
-//        public String monthRankId;
-//        public String totalRankId;
-
-        // SOURCE_CATEGORY_SUB
-//        public String gender;
-//        public String major;
-//        public String minor;
-
-        //other single list
-        public String[] params; // bookid、tag、author...
+        public String[] params;
 
         public TabData() {
         }
@@ -166,13 +154,11 @@ public class Entities {
         TabData(Parcel in) {
             title = in.readString();
             source = in.readInt();
-//            weekRankId = in.readString();
-//            monthRankId = in.readString();
-//            totalRankId = in.readString();
-//            gender = in.readString();
-//            major = in.readString();
-//            minor = in.readString();
-            params = in.readStringArray();
+            int length = in.readInt();
+            if (length > 0) {
+                params = new String[length];
+                in.readStringArray(params);
+            }
         }
 
         public static final Creator<TabData> CREATOR = new Creator<TabData>() {
@@ -196,13 +182,12 @@ public class Entities {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeString(title);
             dest.writeInt(source);
-//            dest.writeString(weekRankId);
-//            dest.writeString(monthRankId);
-//            dest.writeString(totalRankId);
-//            dest.writeString(gender);
-//            dest.writeString(major);
-//            dest.writeString(minor);
-            dest.writeStringArray(params);
+            if (params == null) {
+                dest.writeInt(0);
+            } else {
+                dest.writeInt(params.length);
+                dest.writeStringArray(params);
+            }
         }
 
         @Override
@@ -238,10 +223,6 @@ public class Entities {
         public int latelyFollower; //最近阅读人数
         public double retentionRatio; //留存率 73.76
         public int chaptersCount;
-
-        public String majorCate;
-        public String minorCate;
-        public List<String> tags;
 
         @Override
         public int getItemType() {
@@ -374,7 +355,18 @@ public class Entities {
         public static final Type TYPE = new TypeToken<BooksByTag>() {
         }.getType();
 
-        public List<NetBook> books;
+        public List<TagBook> books;
+
+        public static class TagBook extends NetBook {
+            public String majorCate;
+            public String minorCate;
+            public List<String> tags;
+
+            @Override
+            public int getItemType() {
+                return tags == null ? Constant.ITEM_TYPE_BOOK_BY_AUTHOR : Constant.ITEM_TYPE_BOOK_BY_TAG;
+            }
+        }
     }
 
     public static class HotReview {
