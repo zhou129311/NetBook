@@ -18,6 +18,7 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -127,16 +128,18 @@ public class ExpandListActivity extends BaseActivity<ExpandListContract.Presente
             Entities.RankLv1 rankLv1 = (Entities.RankLv1) item;
             data.title = rankLv1.title;
             data.source = Constant.TabSource.SOURCE_RANK_SUB;
-            data.params = new String[] {
-                    rankLv1._id, rankLv1.monthRank, rankLv1.totalRank
-            };
+            data.params = new String[] { rankLv1._id, rankLv1.monthRank, rankLv1.totalRank };
         } else if (item instanceof Entities.CategoryLv1) {
             Entities.CategoryLv1 categoryLv1 = (Entities.CategoryLv1) item;
             data.title = categoryLv1.title;
             data.source = Constant.TabSource.SOURCE_CATEGORY_SUB;
-            data.params = new String[] {
-                    categoryLv1.gender, categoryLv1.title, ""
-            };
+            data.params = new String[] { categoryLv1.title, categoryLv1.gender };
+            if (categoryLv1.minors != null && categoryLv1.minors.size() > 0) {
+                List<String> filtrates = new ArrayList<>();
+                filtrates.add(data.title);
+                filtrates.addAll(categoryLv1.minors);
+                data.filtrate = filtrates.toArray(new String[0]);
+            }
         }
         if (data.title != null) {
             TabActivity.startActivity(mActivity, data);

@@ -11,6 +11,9 @@
 
     <string name="find_ranking">排行榜</string>
     <string name="find_topic">主题书单</string>
+    <string name="all_topic">全部书单</string>
+    <string name="male_topic">男生书单</string>
+    <string name="female_topic">女生书单</string>
     <string name="find_category">分类</string>
     <string name="find_random_read">随机看书</string>
     <string name="rank_other">别人家的排行榜</string>
@@ -60,8 +63,8 @@
     <string name="clear_bookmark">清除</string>
     <string name="book_read_download_error">网络异常，已取消下载</string>
     <string name="book_read_download_complete">缓存完成，失败%1$d章</string>
-    <string name="book_read_alreday_download">已缓存过:%1$s(%2$d/%3$d)...</string>
-    <string name="book_read_download_progress">正在缓存:%1$s(%2$d/%3$d)...</string>
+    <string name="book_read_alreday_download">已缓存过:%1$s(%2$d/%3$d)&#8230;</string>
+    <string name="book_read_download_progress">正在缓存:%1$s(%2$d/%3$d)&#8230;</string>
     <string name="net_error">网络异常</string>
     <string name="book_read_add_book">添书</string>
     <string name="book_read_would_you_like_to_add_this_to_the_book_shelf">是否将本书加入书架？</string>
@@ -71,11 +74,9 @@
     <string name="category_book_msg">%1$d人在追 |&#160; %2$s%%读者留存</string>
     <string name="subject_book_msg">共%1$d本书 |&#160; %2$d人收藏</string>
 
-    <string name="subject_book_list">主题书单</string>
-    <string name="subject_book_list_my_book_list">我的书单</string>
-    <string name="subject_book_list_detail">书单详情</string>
-    <string name="subject_book_list_detail_book_lately_follower">%1$d&#160;人在追</string>
-    <string name="subject_book_list_detail_book_word_count">|&#160;%1$d&#160;万字</string>
+    <string name="create_book_list">创建书单</string>
+    <string name="user_book_list">我的书单</string>
+    <string name="book_list_detail">书单详情</string>
 
     <string name="comment_floor">%1$d楼&#160;</string>
     <string name="comment_like_count">❤%1$d次同感</string>
@@ -122,6 +123,7 @@
     <string name="loading_more">加载中&#8230;</string>
     <string name="load_no_more">(*￣ω￣) 没有更多了</string>
     <string name="load_more_fail">(*￣ω￣) 加载失败</string>
-
+    <string name="filtrate">筛选</string>
+    <string name="pack_up">收起</string>
 
 </resources>

@@ -39,7 +39,6 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
-    private List<String> mTabs;
     private SparseArrayCompat<BaseFragment> mFragment;
     private BookshelfContract.Presenter mBookPresenter;
     private CommunityContract.Presenter mCommPresenter;
@@ -92,8 +91,8 @@ public class MainActivity extends BaseActivity {
     private void initViewData() {
         mFragment = new SparseArrayCompat<>();
         restoreFragment();
-        mTabs = Arrays.asList(getResources().getStringArray(R.array.home_tabs));
-        mIndicatorView.setTabItemTitles(mTabs);
+        List<String> tabs = Arrays.asList(getResources().getStringArray(R.array.home_tabs));
+        mIndicatorView.setTabItemTitles(tabs);
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public int getCount() {

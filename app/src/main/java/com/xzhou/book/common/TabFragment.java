@@ -103,8 +103,16 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     @Override
     public void onStart() {
         super.onStart();
-        if (mPresenter.start()) {
-            mSwipeLayout.setRefreshing(true);
+        if (mPosition == 0) {
+            mPresenter.start();
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && isAdded()) {
+            mPresenter.start();
         }
     }
 
@@ -114,8 +122,12 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     }
 
     @Override
+    public void onRefreshStateChange(boolean isRefreshing) {
+        mSwipeLayout.setRefreshing(isRefreshing);
+    }
+
+    @Override
     public void onDataChange(List<MultiItemEntity> list) {
-        mSwipeLayout.setRefreshing(false);
         if (list == null) {
             mAdapter.setEmptyView(mLoadErrorView);
             mAdapter.notifyDataSetChanged();
@@ -142,7 +154,6 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private View.OnClickListener mRefreshClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mSwipeLayout.setRefreshing(true);
             mPresenter.refresh();
         }
     };

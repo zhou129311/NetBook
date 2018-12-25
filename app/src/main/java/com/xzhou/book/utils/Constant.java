@@ -79,11 +79,8 @@ public class Constant {
     @Retention(RetentionPolicy.SOURCE)
     public @interface CateType {
         String HOT = "hot";
-
         String NEW = "new";
-
         String REPUTATION = "reputation";
-
         String OVER = "over";
     }
 

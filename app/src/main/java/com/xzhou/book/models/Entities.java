@@ -109,6 +109,7 @@ public class Entities {
     public static class CategoryLv1 extends CategoryLv0 {
         public int bookCount;
         public String gender;
+        public List<String> minors;
 
         @Override
         public String toString() {
@@ -119,10 +120,11 @@ public class Entities {
                     '}';
         }
 
-        public CategoryLv1(CategoryList.Category category, String gender) {
+        public CategoryLv1(CategoryList.Category category, String gender, List<String> minors) {
             super(category.name);
             bookCount = category.bookCount;
             this.gender = gender;
+            this.minors = minors;
         }
 
         @Override
@@ -147,6 +149,7 @@ public class Entities {
         public @Constant.TabSource
         int source;
         public String[] params;
+        public String[] filtrate;
 
         public TabData() {
         }
@@ -158,6 +161,11 @@ public class Entities {
             if (length > 0) {
                 params = new String[length];
                 in.readStringArray(params);
+            }
+            length = in.readInt();
+            if (length > 0) {
+                filtrate = new String[length];
+                in.readStringArray(filtrate);
             }
         }
 
@@ -188,6 +196,12 @@ public class Entities {
                 dest.writeInt(params.length);
                 dest.writeStringArray(params);
             }
+            if (filtrate == null) {
+                dest.writeInt(0);
+            } else {
+                dest.writeInt(filtrate.length);
+                dest.writeStringArray(filtrate);
+            }
         }
 
         @Override
@@ -196,6 +210,7 @@ public class Entities {
                     "title='" + title + '\'' +
                     ", source=" + source +
                     ", params='" + Arrays.toString(params) + '\'' +
+                    ", filtrate='" + Arrays.toString(filtrate) + '\'' +
                     '}';
         }
     }
@@ -618,11 +633,12 @@ public class Entities {
         public static class Category {
             public String name;
             public int bookCount;
+            public List<String> minors;
         }
     }
 
     public static class CategoryListLv2 {
-        public static final Type TYPE = new TypeToken<HttpResult<CategoryListLv2>>() {
+        public static final Type TYPE = new TypeToken<CategoryListLv2>() {
         }.getType();
 
         public List<Category> male;
@@ -637,23 +653,12 @@ public class Entities {
     }
 
     public static class BooksByCats {
-        public static final Type TYPE = new TypeToken<HttpResult<BooksByCats>>() {
+        public static final Type TYPE = new TypeToken<BooksByCats>() {
         }.getType();
-        public List<BooksBean> books;
+        public List<CatBook> books;
 
-        public static class BooksBean {
-            public String _id;
-            public String title;
-            public String author;
-            public String shortIntro;
-            public String cover;
-            public String site;
+        public static class CatBook extends NetBook {
             public String majorCate;
-            public int latelyFollower;
-            public int latelyFollowerBase;
-            public String minRetentionRatio;
-            public String retentionRatio;
-            public String lastChapter;
             public List<String> tags;
         }
     }

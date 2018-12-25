@@ -31,6 +31,9 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             final Entities.NetBook netBook = (Entities.NetBook) item;
             if (AppUtils.isEmpty(netBook.cat)) {
                 netBook.cat = "";
+                if (netBook instanceof Entities.BooksByCats.CatBook) {
+                    netBook.cat = ((Entities.BooksByCats.CatBook) netBook).majorCate;
+                }
             }
             holder.setRoundImageUrl(R.id.book_image, netBook.cover(), R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, netBook.title)
@@ -75,7 +78,6 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
         }
         }
     }
-
 
     private static String formatTags(List<String> tags) {
         StringBuilder sb = new StringBuilder();

@@ -1,5 +1,7 @@
 package com.xzhou.book.find;
 
+import android.text.TextUtils;
+
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
@@ -39,9 +41,16 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
 //                            parseRankingList(rankingList.picture, AppUtils.getString(R.string.picture));
 //                            parseRankingList(rankingList.epub, AppUtils.getString(R.string.epub));
                         }
-                    } else {
+                    } else if (mSource == SOURCE_CATEGORY) {
                         Entities.CategoryList categoryList = ZhuiShuSQApi.get().getCategoryList();
+                        Entities.CategoryListLv2 categoryListLv2 = ZhuiShuSQApi.get().getCategoryListLv2();
                         if (categoryList != null) {
+                            if (categoryListLv2 != null) {
+                                parseCategoryListLv2(categoryList.male, categoryListLv2.male);
+                                parseCategoryListLv2(categoryList.female, categoryListLv2.female);
+//                                parseCategoryListLv2(categoryList.picture, categoryListLv2.picture);
+//                                parseCategoryListLv2(categoryList.press, categoryListLv2.press);
+                            }
                             mList = new ArrayList<>();
                             parseCategoryList(categoryList.male, AppUtils.getString(R.string.male), "male");
                             parseCategoryList(categoryList.female, AppUtils.getString(R.string.female), "female");
@@ -57,6 +66,19 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
         return false;
     }
 
+    private void parseCategoryListLv2(List<Entities.CategoryList.Category> list, List<Entities.CategoryListLv2.Category> listLv2) {
+        if (list != null && listLv2 != null) {
+            for (Entities.CategoryList.Category category : list) {
+                for (Entities.CategoryListLv2.Category lv2 : listLv2) {
+                    if (TextUtils.equals(lv2.major, category.name)) {
+                        category.minors = lv2.mins;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private void parseCategoryList(List<Entities.CategoryList.Category> list, String title, String gender) {
         if (list == null || list.size() < 1) {
             Log.e("CategoryList.Category is null or empty");
@@ -65,7 +87,7 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
 
         mList.add(new Entities.CategoryLv0(title));
         for (Entities.CategoryList.Category category : list) {
-            mList.add(new Entities.CategoryLv1(category, gender));
+            mList.add(new Entities.CategoryLv1(category, gender, category.minors));
         }
     }
 

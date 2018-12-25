@@ -7,6 +7,8 @@ import java.util.List;
 public interface TabContract {
     interface Presenter extends BaseContract.Presenter {
 
+        void setFiltrate(String filtrate);
+
         void refresh();
 
         void loadMore();
@@ -14,6 +16,8 @@ public interface TabContract {
     }
 
     interface View extends BaseContract.View<Presenter> {
+
+        void onRefreshStateChange(boolean isRefreshing);
 
         void onDataChange(List<MultiItemEntity> list);
 

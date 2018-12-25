@@ -12,9 +12,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.xzhou.book.MyApp;
@@ -51,6 +50,12 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
         if (mToolbar != null) {
             initToolBar();
             setSupportActionBar(mToolbar);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
         }
         mPresenter = createPresenter();
     }
@@ -63,6 +68,12 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
         if (mToolbar != null) {
             initToolBar();
             setSupportActionBar(mToolbar);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
         }
         mPresenter = createPresenter();
     }
@@ -75,6 +86,12 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
         if (mToolbar != null) {
             initToolBar();
             setSupportActionBar(mToolbar);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
         }
         mPresenter = createPresenter();
     }
@@ -105,15 +122,6 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
         return super.onPrepareOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     protected void initToolBar() {
     }
 
@@ -130,14 +138,6 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
             mIsFixed = fixed;
         }
 
-        public MyLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
-            super(context, orientation, reverseLayout);
-        }
-
-        public MyLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-            super(context, attrs, defStyleAttr, defStyleRes);
-        }
-
         @Override
         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
             try {
@@ -148,12 +148,18 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
 
         @Override
         public boolean canScrollVertically() {
-            return !mIsFixed && super.canScrollVertically();
+            if (mIsFixed) {
+                return false;
+            }
+            return super.canScrollVertically();
         }
 
         @Override
         public boolean canScrollHorizontally() {
-            return !mIsFixed && super.canScrollVertically();
+            if (mIsFixed) {
+                return false;
+            }
+            return super.canScrollHorizontally();
         }
     }
 
@@ -179,12 +185,18 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
 
         @Override
         public boolean canScrollVertically() {
-            return !mIsFixed && super.canScrollVertically();
+            if (mIsFixed) {
+                return false;
+            }
+            return super.canScrollVertically();
         }
 
         @Override
         public boolean canScrollHorizontally() {
-            return !mIsFixed && super.canScrollVertically();
+            if (mIsFixed) {
+                return false;
+            }
+            return super.canScrollHorizontally();
         }
     }
 }

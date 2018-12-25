@@ -282,9 +282,9 @@ public class ZhuiShuSQApi {
      *
      * @return CategoryListLv2
      */
-    public HttpResult getCategoryListLv2() {
+    public Entities.CategoryListLv2 getCategoryListLv2() {
         HttpRequest request = new HttpRequest("/cats/lv2");
-        return OkHttpUtils.get(request, Entities.CategoryListLv2.TYPE, null);
+        return (Entities.CategoryListLv2) OkHttpUtils.getObject(request, Entities.CategoryListLv2.TYPE, null);
     }
 
     /**
@@ -297,7 +297,7 @@ public class ZhuiShuSQApi {
      * @param limit  50
      * @return BooksByCats
      */
-    public HttpResult getBooksByCats(String gender, String type, String major, String minor, int start, int limit) {
+    public Entities.BooksByCats getBooksByCats(String gender, String type, String major, String minor, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/by-categories");
         HashMap<String, String> params = new HashMap<>();
         params.put("gender", gender);
@@ -306,7 +306,7 @@ public class ZhuiShuSQApi {
         params.put("minor", minor);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
-        return OkHttpUtils.get(request, Entities.BooksByCats.TYPE, params);
+        return (Entities.BooksByCats) OkHttpUtils.getObject(request, Entities.BooksByCats.TYPE, params);
     }
 
     /**

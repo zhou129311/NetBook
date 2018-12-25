@@ -85,12 +85,13 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
                     int position = parent.getChildAdapterPosition(child);
                     int itemType = parent.getAdapter().getItemViewType(position); // item type
                     if (itemType == Constant.ITEM_TYPE_TEXT_GRID) {
-                        mDivider.setBounds(left, top, right, bottom);
                         drawHorizontalDivider(c, child, params);
                         if (right > child.getRight() + 1) {
                             drawVerticalDivider(c, child, params);
                         }
                         continue;
+                    } else {
+                        mDivider.setBounds(left, top, right, bottom);
                     }
                 } else {
                     mDivider.setBounds(left, top, right, bottom);

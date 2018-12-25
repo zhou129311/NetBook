@@ -32,7 +32,8 @@ public class FileUtils {
 
     public static String getCachePath(Context context) {
         String cacheRootPath;
-        if (isSdCardAvailable()) {
+        File file = context.getExternalCacheDir();
+        if (file != null && file.exists()) {
             cacheRootPath = context.getExternalCacheDir().getPath();
         } else {
             cacheRootPath = context.getCacheDir().getPath();
