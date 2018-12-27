@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
         android:textColor="@color/common_h1"
-        android:textSize="13sp"
+        android:textSize="15sp"
         tools:text="东方玄幻"/>
 
     <ImageView

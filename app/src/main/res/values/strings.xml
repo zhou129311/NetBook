@@ -20,6 +20,7 @@
 
     <string name="net_book_author">%1$s | %2$s</string>
     <string name="net_book_save_count">%1$d 人在追 | %2$s%%读者留存</string>
+    <string name="book_list_count">共%1$d本书&#160;&#160;|&#160;&#160;%2$d人收藏</string>
 
     <string name="search">搜索</string>
     <string name="search_hot_search">大家都在搜</string>
@@ -36,8 +37,6 @@
     <string name="book_detail_community">%1$s的社区</string>
     <string name="book_detail_post_count">共有&#160;%1$d&#160;个帖子</string>
     <string name="book_detail_recommend_book_list">你可能感兴趣</string>
-    <string name="book_detail_recommend_book_list_book_count">共%1$d本书 |&#160;</string>
-    <string name="book_detail_recommend_book_list_collector_count">%1$d人收藏</string>
     <string name="book_detail_is_joined_the_book_shelf">是否将《%1$s》加入书架</string>
     <string name="book_detail_has_joined_the_book_shelf">《%1$s》成功加入书架</string>
     <string name="book_detail_has_remove_the_book_shelf">已移除《%1$s》</string>
@@ -77,6 +76,8 @@
     <string name="create_book_list">创建书单</string>
     <string name="user_book_list">我的书单</string>
     <string name="book_list_detail">书单详情</string>
+    <string name="book_list_share">分享书单</string>
+    <string name="book_list_detail_by">创建自</string>
 
     <string name="comment_floor">%1$d楼&#160;</string>
     <string name="comment_like_count">❤%1$d次同感</string>
@@ -110,7 +111,7 @@
     <string name="book_empty_hint">\&#034;千世人生书中悟\n无书只得一世休\&#034;</string>
     <string name="update_none">你追的小说暂无更新</string>
     <string name="update_success">小说已更新</string>
-    <string name="empty_data">服务器异常，请稍后再试</string>
+    <string name="empty_data">暂时没有书籍哦</string>
 
     <string name="category">分类</string>
     <string name="male">男生</string>

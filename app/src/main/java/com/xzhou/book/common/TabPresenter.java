@@ -61,18 +61,13 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                 List<MultiItemEntity> list = null;
                 switch (mTabData.source) {
                 case TabSource.SOURCE_CATEGORY_SUB:
-                    String type = mTypes[mPosition];
-                    String major = mTabData.params[0];
-                    String gender = mTabData.params[1];
-                    mDataNumber = 0;
-                    Entities.BooksByCats booksByCats = ZhuiShuSQApi.get().getBooksByCats(gender, type, major, mFiltrate, mDataNumber, PAGE_SIZE);
-                    if (booksByCats != null) {
-                        list = new ArrayList<>();
-                        if (booksByCats.books != null && booksByCats.books.size() > 0) {
-                            list.addAll(booksByCats.books);
-                            mDataNumber = list.size();
-                        }
-                    }
+                    list = getCategorySubData(false);
+                    break;
+                case TabSource.SOURCE_TOPIC_LIST:
+                    list = getTopicListData(false);
+                    break;
+                case TabSource.SOURCE_TAG:
+                    list = getBookByTagData(false);
                     break;
                 case TabSource.SOURCE_RANK_SUB:
                     String rankId = mTabData.params[mPosition];
@@ -84,27 +79,12 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                         }
                     }
                     break;
-                case TabSource.SOURCE_TOPIC_LIST:
-
-
-                    break;
                 case TabSource.SOURCE_AUTHOR:
                     Entities.BooksByTag searchBooks = ZhuiShuSQApi.get().searchBooksByAuthor(mTabData.params[0]);
                     if (searchBooks != null) {
                         list = new ArrayList<>();
                         if (searchBooks.books != null && searchBooks.books.size() > 0) {
                             list.addAll(searchBooks.books);
-                        }
-                    }
-                    break;
-                case TabSource.SOURCE_TAG:
-                    mDataNumber = 0;
-                    Entities.BooksByTag booksByTag = ZhuiShuSQApi.get().getBooksByTag(mTabData.params[0], mDataNumber, PAGE_SIZE);
-                    if (booksByTag != null) {
-                        list = new ArrayList<>();
-                        if (booksByTag.books != null && booksByTag.books.size() > 0) {
-                            list.addAll(booksByTag.books);
-                            mDataNumber = list.size();
                         }
                     }
                     break;
@@ -137,45 +117,120 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     // do nothing
                     break;
                 case TabSource.SOURCE_CATEGORY_SUB:
-                    if (mDataNumber % PAGE_SIZE != 0) {
-                        list = new ArrayList<>();
-                    } else {
-                        String type = mTypes[mPosition];
-                        String major = mTabData.params[0];
-                        String gender = mTabData.params[1];
-                        int limit = mDataNumber + PAGE_SIZE;
-                        Entities.BooksByCats booksByCats = ZhuiShuSQApi.get().getBooksByCats(gender, type, major, mFiltrate, mDataNumber, limit);
-                        if (booksByCats != null) {
-                            list = new ArrayList<>();
-                            if (booksByCats.books != null && booksByCats.books.size() > 0) {
-                                list.addAll(booksByCats.books);
-                                mDataNumber += list.size();
-                            }
-                        }
-                    }
+                    list = getCategorySubData(true);
                     break;
                 case TabSource.SOURCE_TOPIC_LIST:
+                    list = getTopicListData(true);
                     break;
                 case TabSource.SOURCE_TAG:
-                    if (mDataNumber % PAGE_SIZE != 0) {
-                        list = new ArrayList<>();
-                    } else {
-                        int limit = mDataNumber + PAGE_SIZE;
-                        Entities.BooksByTag booksByTag = ZhuiShuSQApi.get().getBooksByTag(mTabData.params[0], mDataNumber, limit);
-                        if (booksByTag != null) {
-                            list = new ArrayList<>();
-                            if (booksByTag.books != null && booksByTag.books.size() > 0) {
-                                list.addAll(booksByTag.books);
-                                mDataNumber += list.size();
-                            }
-                        }
-                    }
+                    list = getBookByTagData(true);
                     break;
                 }
 
                 setDataList(list, true);
             }
         });
+    }
+
+    private List<MultiItemEntity> getCategorySubData(boolean isLoadMore) {
+        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
+            return new ArrayList<>(); //没有更多了
+        }
+
+        List<MultiItemEntity> list = null;
+        int start = 0;
+        int limit = PAGE_SIZE;
+        if (isLoadMore) {
+            start = mDataNumber;
+            limit = mDataNumber + PAGE_SIZE;
+        } else {
+            mDataNumber = 0;
+        }
+        String type = mTypes[mPosition];
+        String major = mTabData.params[0];
+        String gender = mTabData.params[1];
+        Entities.BooksByCats booksByCats = ZhuiShuSQApi.get().getBooksByCats(gender, type, major, mFiltrate, start, limit);
+        if (booksByCats != null) {
+            list = new ArrayList<>();
+            if (booksByCats.books != null && booksByCats.books.size() > 0) {
+                list.addAll(booksByCats.books);
+                if (isLoadMore) {
+                    mDataNumber += list.size();
+                } else {
+                    mDataNumber = list.size();
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getTopicListData(boolean isLoadMore) {
+        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
+            return new ArrayList<>(); //没有更多了
+        }
+
+        List<MultiItemEntity> list = null;
+        int start = 0;
+        int limit = PAGE_SIZE;
+        if (isLoadMore) {
+            start = mDataNumber;
+            limit = mDataNumber + PAGE_SIZE;
+        } else {
+            mDataNumber = 0;
+        }
+        String duration, sort;
+        if (mPosition == 0) { //本周最热
+            duration = "last-seven-days";
+            sort = "collectorCount";
+        } else if (mPosition == 1) { //最新发布
+            duration = "all";
+            sort = "created";
+        } else { //最多收藏
+            duration = "all";
+            sort = "collectorCount";
+        }
+        Entities.BookLists bookLists = ZhuiShuSQApi.get().getBookLists(duration, sort, start, limit, "", mFiltrate);
+        if (bookLists != null) {
+            list = new ArrayList<>();
+            if (bookLists.bookLists != null && bookLists.bookLists.size() > 0) {
+                list.addAll(bookLists.bookLists);
+                if (isLoadMore) {
+                    mDataNumber += list.size();
+                } else {
+                    mDataNumber = list.size();
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getBookByTagData(boolean isLoadMore) {
+        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
+            return new ArrayList<>(); //没有更多了
+        }
+
+        List<MultiItemEntity> list = null;
+        int start = 0;
+        int limit = PAGE_SIZE;
+        if (isLoadMore) {
+            start = mDataNumber;
+            limit = mDataNumber + PAGE_SIZE;
+        } else {
+            mDataNumber = 0;
+        }
+        Entities.BooksByTag booksByTag = ZhuiShuSQApi.get().getBooksByTag(mTabData.params[0], start, limit);
+        if (booksByTag != null) {
+            list = new ArrayList<>();
+            if (booksByTag.books != null && booksByTag.books.size() > 0) {
+                list.addAll(booksByTag.books);
+                if (isLoadMore) {
+                    mDataNumber += list.size();
+                } else {
+                    mDataNumber = list.size();
+                }
+            }
+        }
+        return list;
     }
 
     private void setDataList(final List<MultiItemEntity> list, final boolean isLoadMore) {

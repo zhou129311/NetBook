@@ -41,7 +41,7 @@
                     android:layout_height="80dp"
                     android:layout_marginEnd="@dimen/book_detail_margin"
                     android:contentDescription="@null"
-                    android:scaleType="centerCrop"
+                    android:scaleType="fitXY"
                     android:src="@mipmap/ic_cover_default"/>
 
                 <TextView

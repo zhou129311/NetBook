@@ -67,13 +67,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
             for (int i = 0; i < childCount; i++) {
                 final View child = parent.getChildAt(i);
                 View nextChild = parent.getChildAt(i + 1);
-                boolean nextIsLoadView = false;
-                if (nextChild != null) {
-                    View view = nextChild.findViewById(R.id.load_more_loading);
-                    if (view != null) {
-                        nextIsLoadView = true;
-                    }
-                }
+                boolean nextIsLoadView = isNoMoreView(nextChild);
                 if (!isShowDivider(child, parent) || nextIsLoadView) {
                     continue;
                 }
@@ -120,10 +114,21 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     private boolean isShowDivider(View view, RecyclerView parent) {
+        if (isNoMoreView(view)) {
+            return false;
+        }
         int position = parent.getChildAdapterPosition(view);
         if ((position + 1) >= parent.getAdapter().getItemCount() && !isShowBottom) {
             return false;
         }
         return true;
+    }
+
+    private boolean isNoMoreView(View view) {
+        if (view == null) {
+            return false;
+        }
+        View v = view.findViewById(R.id.load_more_loading);
+        return v != null;
     }
 }

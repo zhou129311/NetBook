@@ -50,7 +50,7 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".common.TabActivity"/>
         <activity android:name=".main.BookDetailActivity"/>
-        <activity android:name=".main.BookListActivity"/>
+        <activity android:name=".find.BookListDetailActivity"/>
         <activity android:name=".community.ReviewDetailActivity"/>
 
         <service android:name=".DownloadService"/>

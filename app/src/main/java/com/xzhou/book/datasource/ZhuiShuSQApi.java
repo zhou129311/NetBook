@@ -75,17 +75,17 @@ public class ZhuiShuSQApi {
      *
      * @return SearchResult
      */
-    public HttpResult getSearchResult(String query, int start, int limit) {
+    public Entities.SearchResult getSearchResult(String query, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/fuzzy-search");
         HashMap<String, String> params = new HashMap<>();
         params.put("query", query);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
-        return OkHttpUtils.get(request, Entities.SearchResult.TYPE, params);
+        return (Entities.SearchResult) OkHttpUtils.getObject(request, Entities.SearchResult.TYPE, params);
     }
 
     /**
-     * 通过作者查询书名
+     * 通过作者查询书籍
      *
      * @return BooksByTag
      */
@@ -119,7 +119,7 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 获取书籍对应的推荐书单
+     * 获取书籍对应的推荐书籍
      *
      * @param bookId bookId
      * @return Recommend
@@ -235,16 +235,16 @@ public class ZhuiShuSQApi {
      * @param limit  20
      * @return BookLists
      */
-    public HttpResult getBookLists(String duration, String sort, String start, String limit, String tag, String gender) {
+    public Entities.BookLists getBookLists(String duration, String sort, int start, int limit, String tag, String gender) {
         HttpRequest request = new HttpRequest("/book-list");
         HashMap<String, String> params = new HashMap<>();
         params.put("duration", duration);
         params.put("sort", sort);
-        params.put("start", start);
-        params.put("limit", limit);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
         params.put("tag", tag);
         params.put("gender", gender);
-        return OkHttpUtils.get(request, Entities.BookLists.TYPE, params);
+        return (Entities.BookLists) OkHttpUtils.getObject(request, Entities.BookLists.TYPE, params);
     }
 
     /**
@@ -262,9 +262,9 @@ public class ZhuiShuSQApi {
      *
      * @return BookListDetail
      */
-    public HttpResult getBookListDetail(String bookListId) {
+    public Entities.BookListDetail getBookListDetail(String bookListId) {
         HttpRequest request = new HttpRequest("/book-list", bookListId);
-        return OkHttpUtils.get(request, Entities.BookListDetail.TYPE, null);
+        return (Entities.BookListDetail) OkHttpUtils.getObject(request, Entities.BookListDetail.TYPE, null);
     }
 
     /**

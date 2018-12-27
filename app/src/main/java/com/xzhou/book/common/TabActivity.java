@@ -193,7 +193,7 @@ public class TabActivity extends BaseActivity {
         if (mTabData.filtrate != null && mTabData.filtrate.length > 0) {
             item.setTitle(R.string.pack_up);
             if (mListPopupWindow == null) {
-                List<String> list = new ArrayList<>();
+                final List<String> list = new ArrayList<>();
                 if (mTabData.source == TabSource.SOURCE_TOPIC_LIST) {
                     list.add(getString(R.string.all_topic));
                     list.add(getString(R.string.male_topic));
@@ -214,7 +214,7 @@ public class TabActivity extends BaseActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         mFiltrateAdapter.setChecked(position);
-                        mToolbar.setTitle(mTabData.filtrate[position]);
+                        mToolbar.setTitle(list.get(position));
                         mListPopupWindow.dismiss();
                         for (int i = 0, size = mPresenterList.size(); i < size; i++) {
                             TabContract.Presenter presenter = mPresenterList.valueAt(i);

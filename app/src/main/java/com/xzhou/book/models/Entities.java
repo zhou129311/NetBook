@@ -3,12 +3,14 @@ package com.xzhou.book.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
+import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 
 import java.lang.reflect.Type;
@@ -225,8 +227,8 @@ public class Entities {
         public String title;
         public String author;
         public String shortIntro = "";
-        public String cover;
-        public String site;
+        private String cover;
+        public String site; // vip.zhuishu
         public String cat;
         public int banned;
         public int latelyFollowerBase;
@@ -341,28 +343,21 @@ public class Entities {
     }
 
     public static class SearchResult {
-        public static final Type TYPE = new TypeToken<HttpResult<SearchResult>>() {
+        public static final Type TYPE = new TypeToken<SearchResult>() {
         }.getType();
 
         public List<SearchBook> books;
+    }
 
-        public static class SearchBook {
-            public String _id;
-            public boolean hasCp;
-            public String title;
-            public String aliases;
-            public String cat;
-            public String author;
-            public String site; //书源
-            public String cover;
-            public String shortIntro;
-            public String lastChapter;
-            public String retentionRatio; //留存率 73.76
-            public String contentType; //txt
-            public String superscript;
-            public int banned;
-            public int latelyFollower; //22259 人在追
-            public int wordCount; //字数
+    public static class SearchBook extends NetBook {
+        public boolean hasCp;
+        public String aliases;
+        public String superscript;
+        public int wordCount; //字数
+
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_BOOK_BY_SEARCH;
         }
     }
 
@@ -415,7 +410,7 @@ public class Entities {
 
         public static class Author {
             public String _id;
-            public String avatar;
+            private String avatar;
             public String nickname;
             public String type;
             public int lv;
@@ -433,22 +428,7 @@ public class Entities {
         public static final Type TYPE = new TypeToken<RecommendBookList>() {
         }.getType();
 
-        public List<RecommendBook> booklists;
-    }
-
-    public static class RecommendBook implements MultiItemEntity {
-        public String id;
-        public String title;
-        public String author;
-        public String desc;
-        public int bookCount;
-        public String cover;
-        public int collectorCount;
-
-        @Override
-        public int getItemType() {
-            return Constant.ITEM_TYPE_NET_BOOK_LIST;
-        }
+        public List<BookListBean> booklists;
     }
 
     public static class BookDetail {
@@ -458,7 +438,7 @@ public class Entities {
         public String _id;
         public String author;
         public int banned;
-        public String cover;
+        private String cover;
         public String creater;
         public Object dramaPoint;
         public int followerCount;
@@ -543,20 +523,34 @@ public class Entities {
     }
 
     public static class BookLists {
-        public static final Type TYPE = new TypeToken<HttpResult<BookLists>>() {
+        public static final Type TYPE = new TypeToken<BookLists>() {
         }.getType();
 
-        public List<BookListsBean> bookLists;
+        public List<BookListBean> bookLists;
+    }
 
-        public class BookListsBean {
-            public String _id;
-            public String title;
-            public String author;
-            public String desc;
-            public String gender;
-            public int collectorCount;
-            public String cover;
-            public int bookCount;
+    public class BookListBean implements MultiItemEntity {
+        private String _id;
+        private String id;
+        public String title;
+        public String author;
+        public String desc;
+        public String gender;
+        public int collectorCount;
+        private String cover;
+        public int bookCount;
+
+        public String id() {
+            return AppUtils.isEmpty(_id) ? id : _id;
+        }
+
+        public String cover() {
+            return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
+
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_NET_BOOK_LIST;
         }
     }
 
@@ -569,12 +563,12 @@ public class Entities {
     }
 
     public static class BookListDetail {
-        public static final Type TYPE = new TypeToken<HttpResult<BookListDetail>>() {
+        public static final Type TYPE = new TypeToken<BookListDetail>() {
         }.getType();
 
-        public BookListBean bookList;
+        public BookList bookList;
 
-        public static class BookListBean {
+        public static class BookList {
             public String _id;
             public String updated;
             public String title;

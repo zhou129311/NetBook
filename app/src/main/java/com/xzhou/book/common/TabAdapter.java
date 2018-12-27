@@ -5,6 +5,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
+import com.xzhou.book.find.BookListDetailActivity;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
@@ -22,12 +23,13 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
         addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.item_net_book_view);
         addItemType(Constant.ITEM_TYPE_BOOK_BY_AUTHOR, R.layout.item_search_result_view);
         addItemType(Constant.ITEM_TYPE_BOOK_BY_TAG, R.layout.item_tag_book_view);
+        addItemType(Constant.ITEM_TYPE_NET_BOOK_LIST, R.layout.item_net_book_view);
     }
 
     @Override
     protected void convert(CommonViewHolder holder, MultiItemEntity item) {
         switch (holder.getItemViewType()) {
-        case Constant.ITEM_TYPE_NET_BOOK:
+        case Constant.ITEM_TYPE_NET_BOOK: {
             final Entities.NetBook netBook = (Entities.NetBook) item;
             if (AppUtils.isEmpty(netBook.cat)) {
                 netBook.cat = "";
@@ -47,7 +49,8 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                     BookDetailActivity.startActivity(getRecyclerView().getContext(), netBook._id);
                 }
             });
-            break;
+        }
+        break;
         case Constant.ITEM_TYPE_BOOK_BY_AUTHOR: {
             final Entities.BooksByTag.TagBook tagBook = (Entities.BooksByTag.TagBook) item;
             holder.setRoundImageUrl(R.id.book_image, tagBook.cover(), R.mipmap.ic_cover_default)
@@ -72,6 +75,22 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                 @Override
                 public void onClick(View v) {
                     BookDetailActivity.startActivity(getRecyclerView().getContext(), tagBook._id);
+                }
+            });
+            break;
+        }
+        case Constant.ITEM_TYPE_NET_BOOK_LIST: {
+            final Entities.BookListBean bookListBean = (Entities.BookListBean) item;
+            holder.setRoundImageUrl(R.id.book_image, bookListBean.cover(), R.mipmap.ic_cover_default)
+                    .setText(R.id.book_title, bookListBean.title)
+                    .setText(R.id.book_author, bookListBean.author)
+                    .setTextColor(R.id.book_author, AppUtils.getColor(R.color.common_h2))
+                    .setText(R.id.book_describe, bookListBean.desc)
+                    .setText(R.id.book_save_count, AppUtils.getString(R.string.book_list_count, bookListBean.bookCount, bookListBean.collectorCount));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BookListDetailActivity.startActivity(getRecyclerView().getContext(), bookListBean.id());
                 }
             });
             break;

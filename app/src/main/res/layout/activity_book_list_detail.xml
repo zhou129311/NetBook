@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/common_toolbar"
+        layout="@layout/common_toolbar"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/share_btn"
+        android:layout_below="@id/common_toolbar"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:id="@+id/book_list_detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/book_item_margin_h"
+                android:layout_marginStart="@dimen/book_item_margin_h"
+                android:textColor="@color/common_h1"
+                android:textSize="20sp"
+                tools:text="精致的肥宅快乐书"/>
+
+            <TextView
+                android:id="@+id/book_list_detail_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/book_item_margin_h"
+                android:layout_marginStart="@dimen/book_item_margin_h"
+                android:layout_marginTop="15dp"
+                android:ellipsize="end"
+                android:maxLines="5"
+                android:textColor="@color/common_h2"
+                android:textSize="13sp"
+                tools:text="统统都是大神的书，简直赚到了，看书不用愁没钱了！"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/book_item_margin_h"
+                android:layout_marginEnd="@dimen/book_item_margin_h"
+                android:layout_marginStart="@dimen/book_item_margin_h"
+                android:layout_marginTop="30dp">
+
+                <ImageView
+                    android:id="@+id/book_list_detail_image"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/avatar_default"
+                    tools:ignore="ContentDescription"/>
+
+                <TextView
+                    android:id="@+id/book_detail_create_by"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/book_item_margin_h"
+                    android:layout_toEndOf="@id/book_list_detail_image"
+                    android:text="@string/book_list_detail_by"
+                    android:textColor="@color/common_h2"
+                    android:textSize="13sp"/>
+
+                <TextView
+                    android:id="@+id/book_detail_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/book_detail_create_by"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/orange"
+                    android:textSize="13sp"
+                    tools:text="清酒"/>
+
+                <!--<com.xzhou.book.widget.DrawableButton
+                    android:id="@+id/book_list_detail_share_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>-->
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/common_load_error_view"/>
+
+    <include layout="@layout/common_load_view"/>
+
+    <com.xzhou.book.widget.DrawableButton
+        android:id="@+id/share_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:drawablePadding="10dp"
+        android:drawableStart="@mipmap/booklist_detail_share"
+        android:gravity="center_vertical"
+        android:padding="15dp"
+        android:text="@string/book_list_share"
+        android:textColor="@color/white"
+        android:textSize="15sp"/>
+</RelativeLayout>

@@ -6,4 +6,6 @@
     <dimen name="book_read_bottom_text">12dp</dimen>
     <dimen name="book_read_top_text">16sp</dimen>
     <dimen name="book_detail_margin">17sp</dimen>
+    <dimen name="book_item_margin_h">17sp</dimen>
+    <dimen name="book_item_margin_v">15sp</dimen>
 </resources>

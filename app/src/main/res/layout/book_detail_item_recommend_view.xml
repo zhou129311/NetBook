@@ -10,7 +10,7 @@
         android:id="@+id/book_detail_recommend_img"
         android:layout_width="60dp"
         android:layout_height="80dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         android:src="@mipmap/ic_cover_default"
         tools:ignore="ContentDescription"/>
 

@@ -69,6 +69,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         }
         mEmptyView = LayoutInflater.from(getActivity()).inflate(R.layout.common_empty_view, null);
         mLoadErrorView = LayoutInflater.from(getActivity()).inflate(R.layout.common_load_error_view, null);
+        mLoadErrorView.setVisibility(View.VISIBLE);
         mLoadErrorView.setOnClickListener(mRefreshClickListener);
         mEmptyView.setOnClickListener(mRefreshClickListener);
 
@@ -130,10 +131,10 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     public void onDataChange(List<MultiItemEntity> list) {
         if (list == null) {
             mAdapter.setEmptyView(mLoadErrorView);
-            mAdapter.notifyDataSetChanged();
+            mAdapter.setNewData(null);
         } else if (list.size() <= 0) {
             mAdapter.setEmptyView(mEmptyView);
-            mAdapter.notifyDataSetChanged();
+            mAdapter.setNewData(null);
         } else {
             mAdapter.replaceData(list);
         }

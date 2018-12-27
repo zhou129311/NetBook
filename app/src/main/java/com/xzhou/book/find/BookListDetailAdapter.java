@@ -1,4 +1,4 @@
-package com.xzhou.book.main;
+package com.xzhou.book.find;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
@@ -6,9 +6,9 @@ import com.xzhou.book.common.CommonViewHolder;
 
 import java.util.List;
 
-public class BookListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
+public class BookListDetailAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
 
-    public BookListAdapter(List<MultiItemEntity> data) {
+    public BookListDetailAdapter(List<MultiItemEntity> data) {
         super(data);
     }
 
