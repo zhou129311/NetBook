@@ -9,13 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.widget.DrawableButton;
 
-import java.util.List;
 
 import butterknife.BindView;
 

@@ -109,7 +109,7 @@ public class ZhuiShuSQApi {
 
     /**
      * @param book bookId
-     * @return
+     * @return HotReview
      */
     public Entities.HotReview getHotReview(String book) {
         HttpRequest request = new HttpRequest("/post/review/best-by-book");
@@ -484,22 +484,22 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 获取书籍详情讨论列表
+     * 获取书籍讨论列表
      *
-     * @param book  bookId
-     * @param sort  updated(默认排序)
-     *              created(最新发布)
-     *              comment-count(最多评论)
-     * @param type  normal
-     *              vote
-     * @param start 0
-     * @param limit 20
+     * @param bookId bookId
+     * @param sort   updated(默认排序)
+     *               created(最新发布)
+     *               comment-count(最多评论)
+     * @param type   normal
+     *               vote
+     * @param start  0
+     * @param limit  20
      * @return DiscussionList
      */
-    public HttpResult getBookDetailDisscussionList(String book, String sort, String type, String start, String limit) {
+    public HttpResult getBookDisscussionList(String bookId, String sort, String type, String start, String limit) {
         HttpRequest request = new HttpRequest("/post/by-book");
         HashMap<String, String> params = new HashMap<>();
-        params.put("book", book);
+        params.put("book", bookId);
         params.put("sort", sort);
         params.put("type", type);
         params.put("start", start);
@@ -510,19 +510,19 @@ public class ZhuiShuSQApi {
     /**
      * 获取书籍详情书评列表
      *
-     * @param book  bookId
-     * @param sort  updated(默认排序)
-     *              created(最新发布)
-     *              helpful(最有用的)
-     *              comment-count(最多评论)
-     * @param start 0
-     * @param limit 20
+     * @param bookId bookId
+     * @param sort   updated(默认排序)
+     *               created(最新发布)
+     *               helpful(最有用的)
+     *               comment-count(最多评论)
+     * @param start  0
+     * @param limit  20
      * @return HotReview
      */
-    public HttpResult getBookDetailReviewList(String book, String sort, String start, String limit) {
+    public HttpResult getBookReviewList(String bookId, String sort, String start, String limit) {
         HttpRequest request = new HttpRequest("/post/review/by-book");
         HashMap<String, String> params = new HashMap<>();
-        params.put("book", book);
+        params.put("book", bookId);
         params.put("sort", sort);
         params.put("start", start);
         params.put("limit", limit);

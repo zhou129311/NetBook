@@ -31,6 +31,7 @@ import butterknife.BindView;
 public class TabActivity extends BaseActivity {
     private static final String TAG = "TabActivity";
     private static final String EXTRA_DATA = "extra_args";
+    private static final String EXTRA_TAB = "extra_tab";
 
     @BindView(R.id.indicator)
     RVPIndicator mIndicator;
@@ -45,11 +46,16 @@ public class TabActivity extends BaseActivity {
     private FiltrateAdapter mFiltrateAdapter;
 
     public static void startActivity(Activity activity, Entities.TabData data) {
+        startActivity(activity, data, 0);
+    }
+
+    public static void startActivity(Activity activity, Entities.TabData data, int tab) {
         if (data == null) {
             throw new NullPointerException("data cannot be null");
         }
         Intent intent = new Intent(activity, TabActivity.class);
         intent.putExtra(EXTRA_DATA, data);
+        intent.putExtra(EXTRA_TAB, tab);
         activity.startActivity(intent);
     }
 
@@ -80,6 +86,8 @@ public class TabActivity extends BaseActivity {
         if (mTabData.filtrate != null && mTabData.filtrate.length > 0) {
             if (mTabData.source == TabSource.SOURCE_TOPIC_LIST) {
                 getMenuInflater().inflate(R.menu.menu_topic, menu);
+            } else if (mTabData.source == TabSource.SOURCE_COMMUNITY) {
+                getMenuInflater().inflate(R.menu.menu_post_sort, menu);
             } else {
                 getMenuInflater().inflate(R.menu.menu_filtrate, menu);
             }
@@ -99,6 +107,9 @@ public class TabActivity extends BaseActivity {
             return true;
         case R.id.menu_user_list:
 
+            return true;
+        case R.id.menu_post_sort:
+            showPopupWindow(item);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -133,6 +144,9 @@ public class TabActivity extends BaseActivity {
             break;
         case TabSource.SOURCE_TOPIC_LIST:
             mTabNames = Arrays.asList(getResources().getStringArray(R.array.topic_tabs));
+            break;
+        case TabSource.SOURCE_COMMUNITY:
+            mTabNames = Arrays.asList(getResources().getStringArray(R.array.community_tabs));
             break;
         }
         if (mTabNames == null) {
@@ -185,8 +199,9 @@ public class TabActivity extends BaseActivity {
             mIndicator.setVisibility(View.GONE);
         } else {
             mIndicator.setTabItemTitles(mTabNames);
-            mIndicator.setViewPager(mViewPager, 0);
         }
+        int tab = getIntent().getIntExtra(EXTRA_TAB, 0);
+        mIndicator.setViewPager(mViewPager, tab);
     }
 
     private void showPopupWindow(final MenuItem item) {

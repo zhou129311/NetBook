@@ -20,9 +20,11 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.GridItemDecoration;
 import com.xzhou.book.common.TabActivity;
+import com.xzhou.book.community.ReviewDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.utils.ImageLoader;
 import com.xzhou.book.widget.DrawableButton;
 import com.xzhou.book.widget.RatingBar;
@@ -198,7 +200,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     }
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
-                    data.source = Constant.TabSource.SOURCE_TAG;
+                    data.source = TabSource.SOURCE_TAG;
                     data.params = new String[]{tag};
                     TabActivity.startActivity(mActivity, data);
                 }
@@ -206,13 +208,19 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    private void initCommunity(Entities.BookDetail detail) {
+    private void initCommunity(final Entities.BookDetail detail) {
         detailCommunityTitle.setText(getString(R.string.book_detail_community, detail.title));
         detailCommunityCount.setText(getString(R.string.book_detail_post_count, detail.postCount));
         detailGroupCommunity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //书籍社区详情
+                Entities.TabData data = new Entities.TabData();
+                data.title = detail.title;
+                data.source = TabSource.SOURCE_COMMUNITY;
+                data.filtrate = new String[]{AppUtils.getString(R.string.community_sort_default,
+                        R.string.community_sort_new, R.string.community_sort_maximum)};
+                data.params = new String[]{detail._id};
+                TabActivity.startActivity(mActivity, data);
             }
         });
     }
@@ -265,7 +273,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         case R.id.detail_book_author: {
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
-            data.source = Constant.TabSource.SOURCE_AUTHOR;
+            data.source = TabSource.SOURCE_AUTHOR;
             data.params = new String[]{data.title};
             TabActivity.startActivity(mActivity, data);
             break;
@@ -282,11 +290,12 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             }
             break;
         case R.id.detail_more_reviews:
+
             break;
         case R.id.detail_more_recommend: {
             Entities.TabData data = new Entities.TabData();
             data.title = detailRecommend.getText().toString();
-            data.source = Constant.TabSource.SOURCE_RECOMMEND;
+            data.source = TabSource.SOURCE_RECOMMEND;
             data.params = new String[]{getIntent().getStringExtra(EXTRA_BOOK_ID)};
             TabActivity.startActivity(mActivity, data);
             break;
@@ -310,7 +319,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         protected void convert(CommonViewHolder holder, MultiItemEntity item) {
             switch (holder.getItemViewType()) {
             case Constant.ITEM_TYPE_REVIEWS:
-                Entities.Reviews reviews = (Entities.Reviews) item;
+                final Entities.Reviews reviews = (Entities.Reviews) item;
                 holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
                         .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
                                 reviews.author.nickname, reviews.author.lv))
@@ -322,7 +331,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        ReviewDetailActivity.startActivity(mContext, reviews._id);
                     }
                 });
                 break;

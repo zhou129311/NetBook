@@ -8,6 +8,9 @@
     <string name="community_comment">书评区</string>
     <string name="community_helper">书荒互助区</string>
     <string name="community_girl">女生区</string>
+    <string name="community_sort_default">默认排序</string>
+    <string name="community_sort_new">最新发布</string>
+    <string name="community_sort_maximum">最多评论</string>
 
     <string name="find_ranking">排行榜</string>
     <string name="find_topic">主题书单</string>
@@ -70,8 +73,8 @@
     <string name="book_read_join_the_book_shelf">加入书架</string>
     <string name="book_read_not">不了</string>
 
-    <string name="category_book_msg">%1$d人在追 |&#160; %2$s%%读者留存</string>
-    <string name="subject_book_msg">共%1$d本书 |&#160; %2$d人收藏</string>
+    <string name="category_book_msg">%1$d人在追&#160;&#160;|&#160;&#160;%2$s%%读者留存</string>
+    <string name="subject_book_msg">共%1$d本书&#160;&#160;|&#160;&#160;%2$d人收藏</string>
 
     <string name="create_book_list">创建书单</string>
     <string name="user_book_list">我的书单</string>
@@ -118,7 +121,7 @@
     <string name="female">女生</string>
     <string name="picture">漫画</string>
     <string name="epub">出版</string>
-    <string name="category_book_count">%1$d 本</string>
+    <string name="category_book_count">%1$d&#160;&#160;本</string>
     <string name="favor">收藏</string>
     <string name="more">更多</string>
     <string name="loading_more">加载中&#8230;</string>
