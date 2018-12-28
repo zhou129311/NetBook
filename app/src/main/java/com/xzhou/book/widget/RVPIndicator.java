@@ -55,7 +55,6 @@ public class RVPIndicator extends LinearLayout {
     private int mIndicatorHeight = 5;
     private int mIndicatorWidth;
 
-    private static final float RADIO_TRIANGEL = 1.0f / 7;
     private float mTranslationX;
     private int mIndicatorStyle = STYLE_LINE;
     private Path mPath;
@@ -125,12 +124,7 @@ public class RVPIndicator extends LinearLayout {
             mRectF = new Rect(0, 0, mIndicatorWidth, mIndicatorHeight);
             break;
         case STYLE_TRIANGLE:
-            /*
-             * 三角形指示器:宽与item(1/4)相等,高是item的1/4
-             */
-            //mIndicatorWidth = w / mTabVisibleCount / 4;
-            // mIndicatorHeight = h / 4;
-            mIndicatorWidth = (int) (w / mTabVisibleCount * RADIO_TRIANGEL);// 1/6 of  width  ;
+            mIndicatorWidth = w / 24;// 1/24 of  width  ;
             mIndicatorHeight = (int) (mIndicatorWidth / 2 / Math.sqrt(2));
             mTranslationX = 0;
             break;

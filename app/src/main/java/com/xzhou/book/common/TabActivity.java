@@ -104,6 +104,7 @@ public class TabActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_filtrate:
+        case R.id.menu_post_sort:
             showPopupWindow(item);
             return true;
         case R.id.menu_create_list:
@@ -111,9 +112,6 @@ public class TabActivity extends BaseActivity {
             return true;
         case R.id.menu_user_list:
 
-            return true;
-        case R.id.menu_post_sort:
-            showPopupWindow(item);
             return true;
         }
         return super.onOptionsItemSelected(item);

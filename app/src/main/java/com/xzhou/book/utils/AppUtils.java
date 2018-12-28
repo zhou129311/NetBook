@@ -120,7 +120,7 @@ public class AppUtils {
      * @param dateString 时间字符串
      * @return
      */
-    public static String formatZhuiShuDateString(String dateString) {
+    private static String formatZhuiShuDateString(String dateString) {
         return dateString.replaceAll("T", " ").replaceAll("Z", "");
     }
 

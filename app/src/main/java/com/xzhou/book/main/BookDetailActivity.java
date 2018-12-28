@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -138,6 +140,21 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_download_book, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_download) {
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         startData();
@@ -204,7 +221,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
                     data.source = TabSource.SOURCE_TAG;
-                    data.params = new String[] { tag };
+                    data.params = new String[]{tag};
                     TabActivity.startActivity(mActivity, data);
                 }
             });
@@ -260,8 +277,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
+    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -271,7 +288,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
             data.source = TabSource.SOURCE_AUTHOR;
-            data.params = new String[] { data.title };
+            data.params = new String[]{data.title};
             TabActivity.startActivity(mActivity, data);
             break;
         }
@@ -293,7 +310,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             Entities.TabData data = new Entities.TabData();
             data.title = detailRecommend.getText().toString();
             data.source = TabSource.SOURCE_RECOMMEND;
-            data.params = new String[] { getIntent().getStringExtra(EXTRA_BOOK_ID) };
+            data.params = new String[]{getIntent().getStringExtra(EXTRA_BOOK_ID)};
             TabActivity.startActivity(mActivity, data);
             break;
         }
@@ -304,9 +321,9 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         Entities.TabData data = new Entities.TabData();
         data.title = title;
         data.source = TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[] { AppUtils.getString(R.string.community_sort_default),
-                AppUtils.getString(R.string.community_sort_new), AppUtils.getString(R.string.community_sort_maximum) };
-        data.params = new String[] { bookId };
+        data.filtrate = new String[]{AppUtils.getString(R.string.community_sort_default),
+                AppUtils.getString(R.string.community_sort_new), AppUtils.getString(R.string.community_sort_maximum)};
+        data.params = new String[]{bookId};
         TabActivity.startActivity(mActivity, data, tabId);
     }
 

@@ -131,5 +131,6 @@
     <string name="filtrate">筛选</string>
     <string name="pack_up">收起</string>
     <string name="share">分享</string>
+    <string name="download_book">缓存全本</string>
 
 </resources>

@@ -94,6 +94,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         mRecyclerView.addItemDecoration(new LineItemDecoration(true));
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
 
+        mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeLayout.setEnabled(hasEnableRefresh());
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

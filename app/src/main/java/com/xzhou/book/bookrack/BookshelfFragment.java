@@ -10,12 +10,13 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
-import com.xzhou.book.common.CommonViewHolder;
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseFragment;
+import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.main.MainActivity;
+import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppUtils;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new LineItemDecoration());
 
+        mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeLayout.setOnRefreshListener(mRefreshListener);
         mSwipeLayout.setEnabled(false);
     }
@@ -134,9 +136,10 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
         @Override
         protected void convert(CommonViewHolder helper, Entities.NetBook item) {
+            String sub = AppUtils.getDescriptionTimeFromDateString(item.updated);
             helper.setRoundImageUrl(R.id.book_image, item.cover(), R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.title)
-                    .setText(R.id.book_subhead, "13小时前:灌口二郎神显圣 第1037章...");
+                    .setText(R.id.book_subhead, sub + ":" + item.lastChapter);
         }
 
     }
