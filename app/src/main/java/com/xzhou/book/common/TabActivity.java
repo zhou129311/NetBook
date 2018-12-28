@@ -31,7 +31,7 @@ import butterknife.BindView;
 public class TabActivity extends BaseActivity {
     private static final String TAG = "TabActivity";
     private static final String EXTRA_DATA = "extra_args";
-    private static final String EXTRA_TAB = "extra_tab";
+    public static final String EXTRA_TAB_ID = "extra_tabId";
 
     @BindView(R.id.indicator)
     RVPIndicator mIndicator;
@@ -43,19 +43,19 @@ public class TabActivity extends BaseActivity {
     private Entities.TabData mTabData;
     private List<String> mTabNames;
     private ListPopupWindow mListPopupWindow;
-    private FiltrateAdapter mFiltrateAdapter;
+    private SparseArrayCompat<FiltrateAdapter> mFiltrateAdapterList = new SparseArrayCompat<>();
 
     public static void startActivity(Activity activity, Entities.TabData data) {
         startActivity(activity, data, 0);
     }
 
-    public static void startActivity(Activity activity, Entities.TabData data, int tab) {
+    public static void startActivity(Activity activity, Entities.TabData data, int tabId) {
         if (data == null) {
             throw new NullPointerException("data cannot be null");
         }
         Intent intent = new Intent(activity, TabActivity.class);
         intent.putExtra(EXTRA_DATA, data);
-        intent.putExtra(EXTRA_TAB, tab);
+        intent.putExtra(EXTRA_TAB_ID, tabId);
         activity.startActivity(intent);
     }
 
@@ -79,6 +79,10 @@ public class TabActivity extends BaseActivity {
         mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setTitle(mTabData.title);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
+    }
+
+    public int getCurTabId() {
+        return getIntent().getIntExtra(EXTRA_TAB_ID, 0);
     }
 
     @Override
@@ -132,7 +136,6 @@ public class TabActivity extends BaseActivity {
             finish();
             return;
         }
-
         switch (mTabData.source) {
         case TabSource.SOURCE_CATEGORY_SUB:
             mTabNames = Arrays.asList(getResources().getStringArray(R.array.category_sub_tabs));
@@ -160,8 +163,8 @@ public class TabActivity extends BaseActivity {
                 Fragment fragment = fragmentList.get(i);
                 if (fragment instanceof TabFragment) {
                     TabFragment f = (TabFragment) fragment;
-                    mFragments.put(f.getPosition(), f);
-                    mPresenterList.put(f.getPosition(), new TabPresenter(f, mTabData, f.getPosition()));
+                    mFragments.put(f.getTabId(), f);
+                    mPresenterList.put(f.getTabId(), new TabPresenter(f, mTabData, f.getTabId()));
                 }
             }
         }
@@ -199,54 +202,65 @@ public class TabActivity extends BaseActivity {
             mIndicator.setVisibility(View.GONE);
         } else {
             mIndicator.setTabItemTitles(mTabNames);
+            mIndicator.setViewPager(mViewPager, getCurTabId());
         }
-        int tab = getIntent().getIntExtra(EXTRA_TAB, 0);
-        mIndicator.setViewPager(mViewPager, tab);
     }
 
     private void showPopupWindow(final MenuItem item) {
-        if (mTabData.filtrate != null && mTabData.filtrate.length > 0) {
-            item.setTitle(R.string.pack_up);
-            if (mListPopupWindow == null) {
-                final List<String> list = new ArrayList<>();
-                if (mTabData.source == TabSource.SOURCE_TOPIC_LIST) {
-                    list.add(getString(R.string.all_topic));
-                    list.add(getString(R.string.male_topic));
-                    list.add(getString(R.string.female_topic));
-                } else {
-                    list.addAll(Arrays.asList(mTabData.filtrate));
-                }
-                Log.i(TAG, "showPopupWindow::" + Arrays.toString(mTabData.filtrate));
-                mFiltrateAdapter = new FiltrateAdapter(mActivity, list);
-                mListPopupWindow = new ListPopupWindow(mActivity);
-                mListPopupWindow.setAdapter(mFiltrateAdapter);
-                mListPopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-                mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                mListPopupWindow.setAnchorView(mToolbar);
-                //mListPopupWindow.setVerticalOffset(-mToolbar.getHeight());
-                mListPopupWindow.setModal(true);
-                mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mFiltrateAdapter.setChecked(position);
-                        mToolbar.setTitle(list.get(position));
-                        mListPopupWindow.dismiss();
-                        for (int i = 0, size = mPresenterList.size(); i < size; i++) {
-                            TabContract.Presenter presenter = mPresenterList.valueAt(i);
-                            if (presenter != null) {
-                                presenter.setFiltrate(mTabData.filtrate[position]);
-                            }
-                        }
-                    }
-                });
-                mListPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        item.setTitle(R.string.filtrate);
-                    }
-                });
-            }
-            mListPopupWindow.show();
+        if (mTabData.filtrate == null || mTabData.filtrate.length < 1) {
+            return;
         }
+        item.setTitle(R.string.pack_up);
+        final int curTabId = mViewPager.getCurrentItem();
+        FiltrateAdapter adapter = mFiltrateAdapterList.get(curTabId);
+        if (adapter == null) {
+            final List<String> list = new ArrayList<>();
+            if (mTabData.source == TabSource.SOURCE_TOPIC_LIST) {
+                list.add(getString(R.string.all_topic));
+                list.add(getString(R.string.male_topic));
+                list.add(getString(R.string.female_topic));
+            } else {
+                list.addAll(Arrays.asList(mTabData.filtrate));
+            }
+
+            adapter = new FiltrateAdapter(mActivity, list);
+            if (mTabData.source == TabSource.SOURCE_COMMUNITY) {
+                adapter.setChecked(1);
+            } else {
+                adapter.setMarginLeft(10);
+            }
+            mFiltrateAdapterList.put(curTabId, adapter);
+        }
+        if (mListPopupWindow == null) {
+            mListPopupWindow = new ListPopupWindow(mActivity);
+            mListPopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+            mListPopupWindow.setAnchorView(mToolbar);
+            //mListPopupWindow.setVerticalOffset(-mToolbar.getHeight());
+            mListPopupWindow.setModal(true);
+            mListPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    item.setTitle(R.string.filtrate);
+                }
+            });
+        }
+        mListPopupWindow.setAdapter(adapter);
+        mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FiltrateAdapter fa = mFiltrateAdapterList.get(curTabId);
+                fa.setChecked(position);
+                if (mTabData.source != TabSource.SOURCE_COMMUNITY) {
+                    mToolbar.setTitle(fa.getItem(position));
+                }
+                mListPopupWindow.dismiss();
+                TabContract.Presenter presenter = mPresenterList.get(curTabId);
+                if (presenter != null) {
+                    presenter.setFiltrate(mTabData.filtrate[position]);
+                }
+            }
+        });
+        mListPopupWindow.show();
     }
 }

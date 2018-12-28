@@ -13,7 +13,7 @@ public class ItemAdapter extends BaseQuickAdapter<Entities.ImageText, BaseViewHo
     private boolean mIsShowEndView;
 
     public ItemAdapter(@Nullable List<Entities.ImageText> data, boolean isShowEndView) {
-        super(R.layout.item_img_text_view, data);
+        super(R.layout.item_view_img_text, data);
         mIsShowEndView = isShowEndView;
     }
 

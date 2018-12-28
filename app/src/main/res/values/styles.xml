@@ -77,4 +77,17 @@
         <item name="android:background">@drawable/bg_book_detail_btn</item>
     </style>
 
+    <style name="RoundBtn">
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingStart">17dp</item>
+        <item name="android:paddingEnd">17dp</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/round_btn_text_color</item>
+        <item name="android:background">@drawable/sel_round_btn</item>
+        <item name="android:state_activated">false</item>
+    </style>
+
 </resources>

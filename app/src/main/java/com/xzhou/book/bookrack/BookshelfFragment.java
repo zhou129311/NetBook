@@ -82,7 +82,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     private View getEmptyView() {
         if (mEmptyView == null) {
-            mEmptyView = LayoutInflater.from(getActivity()).inflate(R.layout.view_empty_bookshelf, null);
+            mEmptyView = LayoutInflater.from(getActivity()).inflate(R.layout.empty_view_bookshelf, null);
             mEmptyView.findViewById(R.id.add_book_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -129,7 +129,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
     private static class Adapter extends BaseQuickAdapter<Entities.NetBook, CommonViewHolder> {
 
         Adapter() {
-            super(R.layout.item_bookshelf_view, null);
+            super(R.layout.item_view_bookshelf_book, null);
         }
 
         @Override

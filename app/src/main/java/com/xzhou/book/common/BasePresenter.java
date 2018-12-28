@@ -10,7 +10,7 @@ public class BasePresenter<V extends BaseContract.View> implements BaseContract.
 
     @Override
     public boolean start() {
-        return true;
+        return false;
     }
 
     @Override

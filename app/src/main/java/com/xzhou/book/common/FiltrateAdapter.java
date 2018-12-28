@@ -18,10 +18,15 @@ public class FiltrateAdapter extends BaseAdapter {
     private List<String> mList;
     private LayoutInflater mInflater;
     private int mCheckedPos;
+    private int mMarginLeft;
 
-    public FiltrateAdapter(Context context, List<String> list) {
+    FiltrateAdapter(Context context, List<String> list) {
         mList = list;
         mInflater = LayoutInflater.from(context);
+    }
+
+    public void setMarginLeft(int dp) {
+        mMarginLeft = dp;
     }
 
     public void setChecked(int position) {
@@ -34,7 +39,7 @@ public class FiltrateAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public String getItem(int position) {
         return mList.get(position);
     }
 
@@ -47,7 +52,7 @@ public class FiltrateAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_category_selected, null);
+            convertView = mInflater.inflate(R.layout.item_view_category_selected, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -61,7 +66,7 @@ public class FiltrateAdapter extends BaseAdapter {
             holder.tv.setTextColor(AppUtils.getColor(R.color.common_h1));
             holder.iv.setVisibility(View.INVISIBLE);
         }
-        int leftMargin = position == 0 ? 0 : AppUtils.dip2px(10);
+        int leftMargin = position == 0 ? 0 : AppUtils.dip2px(mMarginLeft);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) holder.tv.getLayoutParams();
         lp.leftMargin = leftMargin;
         holder.tv.setLayoutParams(lp);

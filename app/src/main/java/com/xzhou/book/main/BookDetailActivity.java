@@ -20,7 +20,7 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.GridItemDecoration;
 import com.xzhou.book.common.TabActivity;
-import com.xzhou.book.community.ReviewDetailActivity;
+import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
@@ -110,6 +110,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     @BindView(R.id.common_load_view)
     ProgressBar mLoadView;
 
+    private Entities.BookDetail mDetail;
+
     public static void startActivity(Context context, String bookId) {
         Intent intent = new Intent(context, BookDetailActivity.class);
         intent.putExtra(EXTRA_BOOK_ID, bookId);
@@ -157,6 +159,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     public void onInitBookDetail(Entities.BookDetail detail) {
         mLoadView.setVisibility(View.GONE);
         if (detail != null) {
+            mDetail = detail;
             ViewGroup parent = (ViewGroup) mPlaceView.getParent();
             parent.removeView(mPlaceView);
             detailBookTitle.setFocusable(true);
@@ -179,7 +182,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             detailDayWordCount.setText(detail.serializeWordCount < 1 ? "-" : String.valueOf(detail.serializeWordCount));
             detailIntro.setText(AppUtils.isEmpty(detail.longIntro) ? AppUtils.getString(R.string.detail_no_intro) : detail.longIntro);
             initTagView(detail.tags);
-            initCommunity(detail);
+            initCommunity();
         } else {
             mLoadErrorView.setVisibility(View.VISIBLE);
         }
@@ -201,26 +204,20 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
                     data.source = TabSource.SOURCE_TAG;
-                    data.params = new String[]{tag};
+                    data.params = new String[] { tag };
                     TabActivity.startActivity(mActivity, data);
                 }
             });
         }
     }
 
-    private void initCommunity(final Entities.BookDetail detail) {
-        detailCommunityTitle.setText(getString(R.string.book_detail_community, detail.title));
-        detailCommunityCount.setText(getString(R.string.book_detail_post_count, detail.postCount));
+    private void initCommunity() {
+        detailCommunityTitle.setText(getString(R.string.book_detail_community, mDetail.title));
+        detailCommunityCount.setText(getString(R.string.book_detail_post_count, mDetail.postCount));
         detailGroupCommunity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Entities.TabData data = new Entities.TabData();
-                data.title = detail.title;
-                data.source = TabSource.SOURCE_COMMUNITY;
-                data.filtrate = new String[]{AppUtils.getString(R.string.community_sort_default,
-                        R.string.community_sort_new, R.string.community_sort_maximum)};
-                data.params = new String[]{detail._id};
-                TabActivity.startActivity(mActivity, data);
+                startDiscussionByBook(mDetail.title, mDetail._id, 0);
             }
         });
     }
@@ -263,8 +260,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
+    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -274,7 +271,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
             data.source = TabSource.SOURCE_AUTHOR;
-            data.params = new String[]{data.title};
+            data.params = new String[] { data.title };
             TabActivity.startActivity(mActivity, data);
             break;
         }
@@ -290,17 +287,27 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             }
             break;
         case R.id.detail_more_reviews:
-
+            startDiscussionByBook(mDetail.title, mDetail._id, 1);
             break;
         case R.id.detail_more_recommend: {
             Entities.TabData data = new Entities.TabData();
             data.title = detailRecommend.getText().toString();
             data.source = TabSource.SOURCE_RECOMMEND;
-            data.params = new String[]{getIntent().getStringExtra(EXTRA_BOOK_ID)};
+            data.params = new String[] { getIntent().getStringExtra(EXTRA_BOOK_ID) };
             TabActivity.startActivity(mActivity, data);
             break;
         }
         }
+    }
+
+    private void startDiscussionByBook(String title, String bookId, int tabId) {
+        Entities.TabData data = new Entities.TabData();
+        data.title = title;
+        data.source = TabSource.SOURCE_COMMUNITY;
+        data.filtrate = new String[] { AppUtils.getString(R.string.community_sort_default),
+                AppUtils.getString(R.string.community_sort_new), AppUtils.getString(R.string.community_sort_maximum) };
+        data.params = new String[] { bookId };
+        TabActivity.startActivity(mActivity, data, tabId);
     }
 
     @Override
@@ -311,7 +318,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
         Adapter(List<MultiItemEntity> data) {
             super(data);
-            addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.book_detail_item_review_view);
+            addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.item_view_review);
             addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.book_detail_item_recommend_view);
         }
 
@@ -331,7 +338,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ReviewDetailActivity.startActivity(mContext, reviews._id);
+                        PostsDetailActivity.startActivity(mContext, reviews._id);
                     }
                 });
                 break;

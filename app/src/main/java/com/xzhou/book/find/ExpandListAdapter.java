@@ -24,10 +24,10 @@ public class ExpandListAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity
 
     ExpandListAdapter() {
         super(null);
-        addItemType(ITEM_TYPE_TEXT, R.layout.item_text_view);
-        addItemType(ITEM_TYPE_TEXT_IMAGE, R.layout.item_img_text_view);
-        addItemType(ITEM_TYPE_TEXT_IMAGE_2, R.layout.item_img_text_view);
-        addItemType(ITEM_TYPE_TEXT_GRID, R.layout.item_grid_text_view);
+        addItemType(ITEM_TYPE_TEXT, R.layout.item_view_text);
+        addItemType(ITEM_TYPE_TEXT_IMAGE, R.layout.item_view_img_text);
+        addItemType(ITEM_TYPE_TEXT_IMAGE_2, R.layout.item_view_img_text);
+        addItemType(ITEM_TYPE_TEXT_GRID, R.layout.item_view_grid_text);
     }
 
     void setOnItemClickListener(ItemClickListener listener) {

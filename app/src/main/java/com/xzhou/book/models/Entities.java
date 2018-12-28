@@ -3,7 +3,6 @@ package com.xzhou.book.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
-import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
@@ -584,6 +583,10 @@ public class Entities {
             public String id;
             public List<String> tags;
             public List<BooksBean> books;
+
+            public String avatar() {
+                return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            }
         }
 
         public static class AuthorBean {
@@ -603,7 +606,7 @@ public class Entities {
                 public String title;
                 public String author;
                 public String longIntro;
-                public String cover;
+                private String cover;
                 public String site;
                 public int banned;
                 public int latelyFollower;
@@ -611,6 +614,10 @@ public class Entities {
                 public int wordCount;
                 public String minRetentionRatio;
                 public double retentionRatio;
+
+                public String cover() {
+                    return ZhuiShuSQApi.IMG_BASE_URL + cover;
+                }
             }
         }
     }
@@ -658,40 +665,49 @@ public class Entities {
     }
 
     public static class DiscussionList {
-        public static final Type TYPE = new TypeToken<HttpResult<DiscussionList>>() {
+        public static final Type TYPE = new TypeToken<DiscussionList>() {
         }.getType();
         public List<PostsBean> posts;
+    }
 
-        public static class PostsBean {
+    public static class PostsBean implements MultiItemEntity {
+        public String _id;
+        public String title;
+        public String type;
+        public int likeCount;
+        public String block;
+        public String state;
+        public String updated;
+        public String created;
+        public int commentCount;
+        public int voteCount;
+        public AuthorBean author;
+
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_DISCUSSION;
+        }
+
+        public String avatar() {
+            return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+        }
+
+        public static class AuthorBean {
             public String _id;
-            public String title;
+            public String avatar;
+            public String nickname;
             public String type;
-            public int likeCount;
-            public String block;
-            public String state;
-            public String updated;
-            public String created;
-            public int commentCount;
-            public int voteCount;
-            public AuthorBean author;
-
-            public static class AuthorBean {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-            }
+            public int lv;
+            public String gender;
         }
     }
 
-    public static class Disscussion {
-        public static final Type TYPE = new TypeToken<HttpResult<Disscussion>>() {
+    public static class Discussion {
+        public static final Type TYPE = new TypeToken<Discussion>() {
         }.getType();
-        public PostBean post;
+        public PostsDetail post;
 
-        public static class PostBean {
+        public static class PostsDetail {
             public String _id;
             public String title;
             public String content;

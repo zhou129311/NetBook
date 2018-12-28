@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/detail_book_title"
                     android:layout_toEndOf="@+id/detail_book_img"
-                    android:background="@drawable/bg_book_detail_author"
+                    android:background="@drawable/bg_author_text"
                     android:ellipsize="end"
                     android:maxEms="10"
                     android:singleLine="true"

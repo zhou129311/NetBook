@@ -4,8 +4,10 @@ import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
+import com.xzhou.book.R;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant.CateType;
 import com.xzhou.book.utils.Constant.TabSource;
 
@@ -16,17 +18,17 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
     private static final int PAGE_SIZE = 20;
 
     private final Entities.TabData mTabData;
-    private final int mPosition;
+    private final int mTabId;
     private boolean hasStart = true;
     private int mDataNumber;
 
     private String mFiltrate = "";
-    private String[] mTypes = new String[]{CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER};
+    private final String[] CATE_TYPE = new String[] { CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER };
 
-    TabPresenter(TabContract.View view, Entities.TabData data, int position) {
+    TabPresenter(TabContract.View view, Entities.TabData data, int tabId) {
         super(view);
         mTabData = data;
-        mPosition = position;
+        mTabId = tabId;
     }
 
     @Override
@@ -70,14 +72,14 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     list = getBookByTagData(false);
                     break;
                 case TabSource.SOURCE_COMMUNITY:
-                    if (mPosition == 0) {
-                        list = getDisscussionList(false);
+                    if (mTabId == 0) {
+                        list = getDiscussionList(false);
                     } else {
                         list = getBookReviewList(false);
                     }
                     break;
                 case TabSource.SOURCE_RANK_SUB:
-                    String rankId = mTabData.params[mPosition];
+                    String rankId = mTabData.params[mTabId];
                     Entities.Rankings rankings = ZhuiShuSQApi.get().getRanking(rankId);
                     if (rankings != null) {
                         list = new ArrayList<>();
@@ -133,8 +135,8 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     list = getBookByTagData(true);
                     break;
                 case TabSource.SOURCE_COMMUNITY:
-                    if (mPosition == 0) {
-                        list = getDisscussionList(true);
+                    if (mTabId == 0) {
+                        list = getDiscussionList(true);
                     } else {
                         list = getBookReviewList(true);
                     }
@@ -160,7 +162,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         } else {
             mDataNumber = 0;
         }
-        String type = mTypes[mPosition];
+        String type = CATE_TYPE[mTabId];
         String major = mTabData.params[0];
         String gender = mTabData.params[1];
         Entities.BooksByCats booksByCats = ZhuiShuSQApi.get().getBooksByCats(gender, type, major, mFiltrate, start, limit);
@@ -193,10 +195,10 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             mDataNumber = 0;
         }
         String duration, sort;
-        if (mPosition == 0) { //本周最热
+        if (mTabId == 0) { //本周最热
             duration = "last-seven-days";
             sort = "collectorCount";
-        } else if (mPosition == 1) { //最新发布
+        } else if (mTabId == 1) { //最新发布
             duration = "all";
             sort = "created";
         } else { //最多收藏
@@ -247,7 +249,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         return list;
     }
 
-    private List<MultiItemEntity> getDisscussionList(boolean isLoadMore) {
+    private List<MultiItemEntity> getDiscussionList(boolean isLoadMore) {
         if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
             return new ArrayList<>(); //没有更多了
         }
@@ -260,7 +262,25 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         } else {
             mDataNumber = 0;
         }
-
+        String sort = "created"; //最新发布
+        String type = "";
+        if (TextUtils.equals(AppUtils.getString(R.string.community_sort_default), mFiltrate)) {
+            sort = "updated"; //默认
+        } else if (TextUtils.equals(AppUtils.getString(R.string.community_sort_maximum), mFiltrate)) {
+            sort = "comment-count"; //最多评论
+        }
+        Entities.DiscussionList discussionList = ZhuiShuSQApi.get().getBookDiscussionList(mTabData.params[0], sort, type, start, limit);
+        if (discussionList != null) {
+            list = new ArrayList<>();
+            if (discussionList.posts != null && discussionList.posts.size() > 0) {
+                list.addAll(discussionList.posts);
+                if (isLoadMore) {
+                    mDataNumber += list.size();
+                } else {
+                    mDataNumber = list.size();
+                }
+            }
+        }
         return list;
     }
 
@@ -277,7 +297,24 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         } else {
             mDataNumber = 0;
         }
-
+        String sort = "created"; //最新发布
+        if (TextUtils.equals(AppUtils.getString(R.string.community_sort_default), mFiltrate)) {
+            sort = "updated"; //默认
+        } else if (TextUtils.equals(AppUtils.getString(R.string.community_sort_maximum), mFiltrate)) {
+            sort = "comment-count"; //最多评论
+        }
+        Entities.HotReview review = ZhuiShuSQApi.get().getBookReviewList(mTabData.params[0], sort, start, limit);
+        if (review != null) {
+            list = new ArrayList<>();
+            if (review.reviews != null && review.reviews.size() > 0) {
+                list.addAll(review.reviews);
+                if (isLoadMore) {
+                    mDataNumber += list.size();
+                } else {
+                    mDataNumber = list.size();
+                }
+            }
+        }
         return list;
     }
 

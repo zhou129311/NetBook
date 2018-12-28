@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/touch_bg"
+                android:paddingBottom="15dp"
+                android:paddingEnd="@dimen/book_detail_margin"
+                android:paddingStart="@dimen/book_detail_margin"
+                android:paddingTop="15dp">
+
+    <ImageView
+        android:id="@+id/discussion_img"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="15dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/avatar_default"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/discussion_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:ignore="RelativeOverlap"
+        tools:text="前天"/>
+
+    <TextView
+        android:id="@+id/discussion_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/discussion_img"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/light_coffee"
+        android:textSize="13sp"
+        tools:text="我就是静静  lv.10"/>
+
+    <TextView
+        android:id="@+id/discussion_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/discussion_author"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@id/discussion_img"
+        android:ellipsize="end"
+        android:maxLines="4"
+        android:textColor="@color/common_h1"
+        tools:text="越到后面越索然无味"/>
+
+    <TextView
+        android:id="@+id/discussion_comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/discussion_title"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@id/discussion_img"
+        android:drawablePadding="5dp"
+        android:drawableStart="@mipmap/ic_message"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:text="308"/>
+
+    <TextView
+        android:id="@+id/discussion_comment_like_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/discussion_title"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@id/discussion_comment_count"
+        android:drawablePadding="5dp"
+        android:drawableStart="@mipmap/ic_book_review_like"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:text="308"/>
+</RelativeLayout>

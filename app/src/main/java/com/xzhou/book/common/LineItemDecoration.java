@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppUtils;
@@ -56,7 +55,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-        int left = 0;
+        int left = parent.getPaddingLeft();
         if (mSpanCount <= 1) {
             left = parent.getPaddingLeft() + AppUtils.dip2px(60);
         }

@@ -55,7 +55,7 @@ public class RVPIndicator extends LinearLayout {
     private int mIndicatorHeight = 5;
     private int mIndicatorWidth;
 
-    private static final float RADIO_TRIANGEL = 1.0f / 6;
+    private static final float RADIO_TRIANGEL = 1.0f / 7;
     private float mTranslationX;
     private int mIndicatorStyle = STYLE_LINE;
     private Path mPath;

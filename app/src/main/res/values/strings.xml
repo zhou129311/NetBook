@@ -21,8 +21,8 @@
     <string name="find_random_read">随机看书</string>
     <string name="rank_other">别人家的排行榜</string>
 
-    <string name="net_book_author">%1$s | %2$s</string>
-    <string name="net_book_save_count">%1$d 人在追 | %2$s%%读者留存</string>
+    <string name="net_book_author">%1$s&#160;|&#160;%2$s</string>
+    <string name="net_book_save_count">%1$d&#160;人在追&#160;|&#160;%2$s%%读者留存</string>
     <string name="book_list_count">共%1$d本书&#160;&#160;|&#160;&#160;%2$d人收藏</string>
 
     <string name="search">搜索</string>
@@ -81,6 +81,7 @@
     <string name="book_list_detail">书单详情</string>
     <string name="book_list_share">分享书单</string>
     <string name="book_list_detail_by">创建自</string>
+    <string name="book_list_word_count"><Data><![CDATA[<font color="#da1b2a"><b>%1$d<br/></b></font>人在追&#160;&#160;|&#160;&#160;<font color="#da1b2a"><b>%2$d<br/></b></font>万字]]></Data></string>
 
     <string name="comment_floor">%1$d楼&#160;</string>
     <string name="comment_like_count">❤%1$d次同感</string>
@@ -114,7 +115,7 @@
     <string name="book_empty_hint">\&#034;千世人生书中悟\n无书只得一世休\&#034;</string>
     <string name="update_none">你追的小说暂无更新</string>
     <string name="update_success">小说已更新</string>
-    <string name="empty_data">暂时没有书籍哦</string>
+    <string name="empty_data">暂时没有数据哦</string>
 
     <string name="category">分类</string>
     <string name="male">男生</string>
@@ -129,5 +130,6 @@
     <string name="load_more_fail">(*￣ω￣) 加载失败</string>
     <string name="filtrate">筛选</string>
     <string name="pack_up">收起</string>
+    <string name="share">分享</string>
 
 </resources>

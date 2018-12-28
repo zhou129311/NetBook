@@ -5,10 +5,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/touch_bg"
-                android:paddingBottom="10dp"
+                android:paddingBottom="15dp"
                 android:paddingEnd="@dimen/book_detail_margin"
                 android:paddingStart="@dimen/book_detail_margin"
-                android:paddingTop="10dp">
+                android:paddingTop="15dp">
 
     <ImageView
         android:id="@+id/review_img"
@@ -18,6 +18,16 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/avatar_default"
         tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/review_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:ignore="RelativeOverlap"
+        tools:text="前天"/>
 
     <TextView
         android:id="@+id/review_author"
@@ -74,7 +84,7 @@
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/review_img"
         android:drawablePadding="5dp"
-        android:drawableStart="@drawable/sel_review_useful_yes"
+        android:drawableStart="@mipmap/post_item_like"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         tools:text="308"/>

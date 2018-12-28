@@ -5,25 +5,29 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
+import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.find.BookListDetailActivity;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.widget.RatingBar;
 
 import java.util.List;
 
 public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
 
-    private int mPosition;
+    private int mTabId;
 
-    TabAdapter(int position) {
+    TabAdapter(int tabId) {
         super(null);
-        mPosition = position;
-        addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.item_net_book_view);
-        addItemType(Constant.ITEM_TYPE_BOOK_BY_AUTHOR, R.layout.item_search_result_view);
-        addItemType(Constant.ITEM_TYPE_BOOK_BY_TAG, R.layout.item_tag_book_view);
-        addItemType(Constant.ITEM_TYPE_NET_BOOK_LIST, R.layout.item_net_book_view);
+        mTabId = tabId;
+        addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.item_view_net_book);
+        addItemType(Constant.ITEM_TYPE_BOOK_BY_AUTHOR, R.layout.item_view_search_result);
+        addItemType(Constant.ITEM_TYPE_BOOK_BY_TAG, R.layout.item_view_tag_book);
+        addItemType(Constant.ITEM_TYPE_NET_BOOK_LIST, R.layout.item_view_net_book);
+        addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.item_view_review);
+        addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_discussion);
     }
 
     @Override
@@ -94,6 +98,41 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                 }
             });
             break;
+        }
+        case Constant.ITEM_TYPE_REVIEWS: {
+            final Entities.Reviews reviews = (Entities.Reviews) item;
+            holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
+                    .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
+                            reviews.author.nickname, reviews.author.lv))
+                    .setText(R.id.review_time, AppUtils.getDescriptionTimeFromDateString(reviews.created))
+                    .setText(R.id.review_title, reviews.title)
+                    .setText(R.id.review_content, reviews.content)
+                    .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
+            RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
+            ratingBar.setActiveCount(reviews.rating);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PostsDetailActivity.startActivity(mContext, reviews._id);
+                }
+            });
+            break;
+        }
+        case Constant.ITEM_TYPE_DISCUSSION: {
+            final Entities.PostsBean posts = (Entities.PostsBean) item;
+            holder.setCircleImageUrl(R.id.discussion_img, posts.avatar(), R.mipmap.avatar_default)
+                    .setText(R.id.discussion_author, AppUtils.getString(R.string.book_detail_review_author,
+                            posts.author.nickname, posts.author.lv))
+                    .setText(R.id.discussion_time, AppUtils.getDescriptionTimeFromDateString(posts.created))
+                    .setText(R.id.discussion_title, posts.title)
+                    .setText(R.id.discussion_comment_count, String.valueOf(posts.commentCount))
+                    .setText(R.id.discussion_comment_like_count, String.valueOf(posts.likeCount));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PostsDetailActivity.startActivity(mContext, posts._id);
+                }
+            });
         }
         }
     }

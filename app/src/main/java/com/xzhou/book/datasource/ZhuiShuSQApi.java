@@ -326,7 +326,7 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品)
      * @return DiscussionList
      */
-    public HttpResult getBookDisscussionList(String block, String duration, String sort, String type, String start, String limit, String distillate) {
+    public Entities.DiscussionList getBookDiscussionList(String block, String duration, String sort, String type, String start, String limit, String distillate) {
         HttpRequest request = new HttpRequest("/post/by-block");
         HashMap<String, String> params = new HashMap<>();
         params.put("block", block);
@@ -336,18 +336,18 @@ public class ZhuiShuSQApi {
         params.put("start", start);
         params.put("limit", limit);
         params.put("distillate", distillate);
-        return OkHttpUtils.get(request, Entities.DiscussionList.TYPE, params);
+        return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
     }
 
     /**
      * 获取综合讨论区帖子详情
      *
-     * @param disscussionId->_id
-     * @return Disscussion
+     * @param discussionId->_id
+     * @return Discussion
      */
-    public HttpResult getBookDisscussionDetail(String disscussionId) {
-        HttpRequest request = new HttpRequest("/post", disscussionId);
-        return OkHttpUtils.get(request, Entities.Disscussion.TYPE, null);
+    public HttpResult getBookDiscussionDetail(String discussionId) {
+        HttpRequest request = new HttpRequest("/post", discussionId);
+        return OkHttpUtils.get(request, Entities.Discussion.TYPE, null);
     }
 
     /**
@@ -364,13 +364,13 @@ public class ZhuiShuSQApi {
     /**
      * 获取综合讨论区帖子详情内的评论列表
      *
-     * @param disscussionId->_id
-     * @param start              0
-     * @param limit              30
+     * @param discussionId->_id
+     * @param start             0
+     * @param limit             30
      * @return CommentList
      */
-    public HttpResult getBookDisscussionComments(String disscussionId, String start, String limit) {
-        HttpRequest request = new HttpRequest("/post", disscussionId, "comment");
+    public HttpResult getBookDiscussionComments(String discussionId, String start, String limit) {
+        HttpRequest request = new HttpRequest("/post", discussionId, "comment");
         HashMap<String, String> params = new HashMap<>();
         params.put("start", start);
         params.put("limit", limit);
@@ -484,31 +484,32 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 获取书籍讨论列表
+     * 获取bookId对应的讨论列表
      *
      * @param bookId bookId
      * @param sort   updated(默认排序)
      *               created(最新发布)
      *               comment-count(最多评论)
-     * @param type   normal
-     *               vote
+     * @param type   normal 话题
+     *               vote 投票
+     *               "" 所有
      * @param start  0
      * @param limit  20
      * @return DiscussionList
      */
-    public HttpResult getBookDisscussionList(String bookId, String sort, String type, String start, String limit) {
+    public Entities.DiscussionList getBookDiscussionList(String bookId, String sort, String type, int start, int limit) {
         HttpRequest request = new HttpRequest("/post/by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", bookId);
         params.put("sort", sort);
         params.put("type", type);
-        params.put("start", start);
-        params.put("limit", limit);
-        return OkHttpUtils.get(request, Entities.DiscussionList.TYPE, params);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
+        return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
     }
 
     /**
-     * 获取书籍详情书评列表
+     * 获取bookId对应的书评列表
      *
      * @param bookId bookId
      * @param sort   updated(默认排序)
@@ -519,14 +520,14 @@ public class ZhuiShuSQApi {
      * @param limit  20
      * @return HotReview
      */
-    public HttpResult getBookReviewList(String bookId, String sort, String start, String limit) {
+    public Entities.HotReview getBookReviewList(String bookId, String sort, int start, int limit) {
         HttpRequest request = new HttpRequest("/post/review/by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", bookId);
         params.put("sort", sort);
-        params.put("start", start);
-        params.put("limit", limit);
-        return OkHttpUtils.get(request, Entities.HotReview.TYPE, params);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
+        return (Entities.HotReview) OkHttpUtils.getObject(request, Entities.HotReview.TYPE, params);
     }
 
     /**
@@ -546,7 +547,7 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品)
      * @return DiscussionList
      */
-    public HttpResult getGirlBookDisscussionList(String block, String duration, String sort, String type, String start, String limit, String distillate) {
+    public Entities.DiscussionList getGirlBookDisscussionList(String block, String duration, String sort, String type, String start, String limit, String distillate) {
         HttpRequest request = new HttpRequest("/post/by-block");
         HashMap<String, String> params = new HashMap<>();
         params.put("block", block);
@@ -556,6 +557,6 @@ public class ZhuiShuSQApi {
         params.put("type", type);
         params.put("distillate", distillate);
         params.put("limit", limit);
-        return OkHttpUtils.get(request, Entities.DiscussionList.TYPE, params);
+        return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
     }
 }

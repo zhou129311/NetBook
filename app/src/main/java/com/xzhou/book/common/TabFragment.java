@@ -1,5 +1,7 @@
 package com.xzhou.book.common;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,7 +14,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.widget.CommonLoadMoreView;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private String TAG;
 
     public static final String TAB_DATA = "tab_data";
-    public static final String TAB_POSITION = "position";
+    public static final String TAB_ID = "tab_id";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -34,21 +36,21 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private TabAdapter mAdapter;
     private View mEmptyView;
     private View mLoadErrorView;
-    private int mPosition;
+    private int mTabId;
 
-    public static TabFragment newInstance(Entities.TabData data, int position) {
+    public static TabFragment newInstance(Entities.TabData data, int tabId) {
         TabFragment fragment = new TabFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(TAB_DATA, data);
-        bundle.putInt(TAB_POSITION, position);
+        bundle.putInt(TAB_ID, tabId);
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public int getPosition() {
+    public int getTabId() {
         Bundle bundle = getArguments();
         if (bundle != null) {
-            return bundle.getInt(TAB_POSITION, -1);
+            return bundle.getInt(TAB_ID, -1);
         }
         return -1;
     }
@@ -64,8 +66,8 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         Bundle bundle = getArguments();
         if (bundle != null) {
             mTabData = bundle.getParcelable(TAB_DATA);
-            mPosition = bundle.getInt(TAB_POSITION);
-            TAG = "TabFragment_" + mPosition;
+            mTabId = bundle.getInt(TAB_ID, 0);
+            TAG = "TabFragment_" + mTabId;
         }
         mEmptyView = LayoutInflater.from(getActivity()).inflate(R.layout.common_empty_view, null);
         mLoadErrorView = LayoutInflater.from(getActivity()).inflate(R.layout.common_load_error_view, null);
@@ -73,7 +75,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         mLoadErrorView.setOnClickListener(mRefreshClickListener);
         mEmptyView.setOnClickListener(mRefreshClickListener);
 
-        mAdapter = new TabAdapter(mPosition);
+        mAdapter = new TabAdapter(mTabId);
         mAdapter.bindToRecyclerView(mRecyclerView);
         boolean enableLoadMore = hasEnableLoadMore();
         mAdapter.setEnableLoadMore(enableLoadMore);
@@ -104,7 +106,12 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     @Override
     public void onStart() {
         super.onStart();
-        if (mPosition == 0) {
+        int tabId = 0;
+        TabActivity activity = (TabActivity) getActivity();
+        if (activity != null) {
+            tabId = activity.getCurTabId();
+        }
+        if (mTabId == tabId) {
             mPresenter.start();
         }
     }
@@ -160,8 +167,8 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     };
 
     private String getDataSource() {
-        if (mTabData.source == Constant.TabSource.SOURCE_RANK_SUB) {
-            return mTabData.params[mPosition];
+        if (mTabData.source == TabSource.SOURCE_RANK_SUB) {
+            return mTabData.params[mTabId];
         }
         return "";
     }
@@ -169,9 +176,10 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private boolean hasEnableRefresh() {
         boolean enable = false;
         switch (mTabData.source) {
-        case Constant.TabSource.SOURCE_CATEGORY_SUB:
-        case Constant.TabSource.SOURCE_RANK_SUB:
-        case Constant.TabSource.SOURCE_TOPIC_LIST:
+        case TabSource.SOURCE_CATEGORY_SUB:
+        case TabSource.SOURCE_RANK_SUB:
+        case TabSource.SOURCE_TOPIC_LIST:
+        case TabSource.SOURCE_COMMUNITY:
             enable = true;
             break;
         }
@@ -181,9 +189,10 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private boolean hasEnableLoadMore() {
         boolean enable = false;
         switch (mTabData.source) {
-        case Constant.TabSource.SOURCE_CATEGORY_SUB:
-        case Constant.TabSource.SOURCE_TOPIC_LIST:
-        case Constant.TabSource.SOURCE_TAG:
+        case TabSource.SOURCE_CATEGORY_SUB:
+        case TabSource.SOURCE_TOPIC_LIST:
+        case TabSource.SOURCE_TAG:
+        case TabSource.SOURCE_COMMUNITY:
             enable = true;
             break;
         }

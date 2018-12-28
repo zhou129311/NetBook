@@ -6,7 +6,10 @@ import android.support.annotation.Nullable;
 
 import com.xzhou.book.common.BaseActivity;
 
-public class ReviewDetailActivity extends BaseActivity {
+/**
+ * 帖子详情，包括 书评、讨论、综合讨论、女生话题等等
+ */
+public class PostsDetailActivity extends BaseActivity {
 
     public static void startActivity(Context context, String reviewId) {
 
