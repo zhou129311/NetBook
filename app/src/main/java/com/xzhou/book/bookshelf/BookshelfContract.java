@@ -1,4 +1,4 @@
-package com.xzhou.book.bookrack;
+package com.xzhou.book.bookshelf;
 
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseContract;

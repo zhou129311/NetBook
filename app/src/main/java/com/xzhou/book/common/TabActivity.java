@@ -209,7 +209,7 @@ public class TabActivity extends BaseActivity {
             return;
         }
         item.setTitle(R.string.pack_up);
-        final int curTabId = mViewPager.getCurrentItem();
+        final int curTabId = hasAllTabFiltrate() ? 0 : mViewPager.getCurrentItem();
         FiltrateAdapter adapter = mFiltrateAdapterList.get(curTabId);
         if (adapter == null) {
             final List<String> list = new ArrayList<>();
@@ -253,12 +253,38 @@ public class TabActivity extends BaseActivity {
                     mToolbar.setTitle(fa.getItem(position));
                 }
                 mListPopupWindow.dismiss();
-                TabContract.Presenter presenter = mPresenterList.get(curTabId);
-                if (presenter != null) {
-                    presenter.setFiltrate(mTabData.filtrate[position]);
-                }
+                String filtrate = mTabData.filtrate[position];
+                setFiltrate(filtrate, curTabId);
             }
         });
         mListPopupWindow.show();
+    }
+
+    private void setFiltrate(String filtrate, int curTabId) {
+        if (hasAllTabFiltrate()) {
+            for (int i = 0, size = mPresenterList.size(); i < size; i++) {
+                TabContract.Presenter presenter = mPresenterList.valueAt(i);
+                if (presenter != null) {
+                    presenter.setFiltrate(filtrate);
+                }
+            }
+        } else {
+            TabContract.Presenter presenter = mPresenterList.get(curTabId);
+            if (presenter != null) {
+                presenter.setFiltrate(filtrate);
+            }
+        }
+    }
+
+    /**
+     * @return true 右上角筛选对所有TabFragment生效, false 右上角筛选只对当前TabFragment生效
+     */
+    private boolean hasAllTabFiltrate() {
+        switch (mTabData.source) {
+        case TabSource.SOURCE_COMMUNITY:
+            return false;
+        default:
+            return true;
+        }
     }
 }

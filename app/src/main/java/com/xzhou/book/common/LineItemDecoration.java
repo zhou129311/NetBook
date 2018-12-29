@@ -17,19 +17,25 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
     private boolean isShowBottom;
     private int mSpanCount;
+    private int mMarginLeft;
 
     public LineItemDecoration() {
-        this(false);
+        this(false, 60, 0);
     }
 
     public LineItemDecoration(int spanCount) {
-        this(true);
-        mSpanCount = spanCount;
+        this(true, 0, spanCount);
     }
 
     public LineItemDecoration(boolean isShowBottom) {
+        this(isShowBottom, 60, 0);
+    }
+
+    public LineItemDecoration(boolean isShowBottom, int marginLeft, int spanCount) {
         mDivider = new ColorDrawable(ContextCompat.getColor(MyApp.getContext(), R.color.common_divider_narrow));
         this.isShowBottom = isShowBottom;
+        mSpanCount = spanCount;
+        mMarginLeft = marginLeft;
     }
 
     @Override
@@ -57,7 +63,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         int left = parent.getPaddingLeft();
         if (mSpanCount <= 1) {
-            left = parent.getPaddingLeft() + AppUtils.dip2px(60);
+            left = parent.getPaddingLeft() + AppUtils.dip2px(mMarginLeft);
         }
         int right = parent.getWidth() - parent.getPaddingRight();
 

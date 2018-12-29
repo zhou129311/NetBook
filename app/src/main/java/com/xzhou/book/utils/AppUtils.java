@@ -13,10 +13,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class AppUtils {
-    private static SimpleDateFormat sdf = new SimpleDateFormat();
-    public final static String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA);
     private static final long ONE_MINUTE = 60000L;
     private static final long ONE_HOUR = 3600000L;
     private static final long ONE_DAY = 86400000L;
@@ -106,31 +106,39 @@ public class AppUtils {
     public static String getDescriptionTimeFromDateString(String dateString) {
         if (TextUtils.isEmpty(dateString))
             return "";
-        sdf.applyPattern(FORMAT_DATE_TIME);
         try {
-            return getDescriptionTimeFromDate(sdf.parse(formatZhuiShuDateString(dateString)));
+            return getDescriptionTimeFromDate(SDF.parse(formatZhuiShuDateString(dateString)));
         } catch (Exception ignored) {
         }
         return "";
     }
 
+    public static String getDescriptionTimeFromTimeMills(long timeMills) {
+        return getDescriptionTimeFromDate(new Date(timeMills));
+    }
+
     /**
      * 格式化追书神器返回的时间字符串
-     *
-     * @param dateString 时间字符串
-     * @return
      */
     private static String formatZhuiShuDateString(String dateString) {
         return dateString.replaceAll("T", " ").replaceAll("Z", "");
     }
 
+    public static long getTimeFormDateString(String dateString) {
+        try {
+            return SDF.parse(formatZhuiShuDateString(dateString)).getTime();
+        } catch (Exception ignored) {
+        }
+        return 0;
+    }
+
     /**
      * 根据Date获取描述性时间，如3分钟前，1天前
      *
-     * @param date
-     * @return
+     * @param date date
+     * @return 3分钟前
      */
-    public static String getDescriptionTimeFromDate(Date date) {
+    private static String getDescriptionTimeFromDate(Date date) {
         long delta = new Date().getTime() - date.getTime();
         if (delta < ONE_MINUTE) {
             long seconds = toSeconds(delta);

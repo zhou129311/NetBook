@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/common_toolbar"
+        layout="@layout/common_toolbar"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/comment_layout"
+        android:layout_below="@id/common_toolbar"/>
+
+    <include layout="@layout/common_load_error_view"/>
+
+    <include layout="@layout/common_load_view"/>
+
+    <RelativeLayout
+        android:id="@+id/comment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/comment_edit_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/comment_send_view"
+            android:background="@color/edit_bg"
+            android:gravity="center_vertical|start"
+            android:hint="@string/comment_add"
+            android:inputType="textMultiLine"
+            android:minHeight="55dp"
+            android:minLines="3"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:textColor="@color/common_h1"
+            android:textSize="14sp"
+            tools:ignore="Autofill"/>
+
+        <ImageView
+            android:id="@+id/comment_send_view"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/comment_edit_view"
+            android:layout_alignParentEnd="true"
+            android:background="@color/colorPrimaryDark"
+            android:scaleType="center"
+            android:src="@drawable/sel_comment_send"
+            tools:ignore="ContentDescription"/>
+    </RelativeLayout>
+</RelativeLayout>

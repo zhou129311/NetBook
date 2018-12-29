@@ -1,4 +1,4 @@
-package com.xzhou.book.bookrack;
+package com.xzhou.book.bookshelf;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

@@ -11,6 +11,10 @@
         <item name="android:windowBackground">@color/common_bg</item>
     </style>
 
+    <style name="NavigationBarTheme" parent="AppTheme">
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
     <style name="TitleTextStyle">
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">18dp</item>

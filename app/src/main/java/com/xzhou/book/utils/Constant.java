@@ -34,6 +34,7 @@ public class Constant {
     public static final int ITEM_TYPE_BOOK_BY_TAG = 9;
     public static final int ITEM_TYPE_BOOK_BY_SEARCH = 10;
     public static final int ITEM_TYPE_DISCUSSION = 11;
+    public static final int ITEM_TYPE_LOCAL_BOOK = 12;
 
     public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),

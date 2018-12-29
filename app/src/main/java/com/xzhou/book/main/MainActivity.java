@@ -1,6 +1,7 @@
 package com.xzhou.book.main;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
@@ -9,9 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xzhou.book.R;
-import com.xzhou.book.bookrack.BookshelfContract;
-import com.xzhou.book.bookrack.BookshelfFragment;
-import com.xzhou.book.bookrack.BookshelfPresenter;
+import com.xzhou.book.bookshelf.BookshelfContract;
+import com.xzhou.book.bookshelf.BookshelfFragment;
+import com.xzhou.book.bookshelf.BookshelfPresenter;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.community.CommunityContract;
@@ -43,6 +44,7 @@ public class MainActivity extends BaseActivity {
     private BookshelfContract.Presenter mBookPresenter;
     private CommunityContract.Presenter mCommPresenter;
     private FindContract.Presenter mFindPresenter;
+    private long mLastBackPressedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,12 @@ public class MainActivity extends BaseActivity {
         if (mViewPager.getCurrentItem() != FRAGMENT_BOOKSHELF) {
             setCurFragment(FRAGMENT_BOOKSHELF);
         } else {
-            super.onBackPressed();
+            if (SystemClock.elapsedRealtime() - mLastBackPressedTime > 1500) {
+                super.onBackPressed();
+            } else {
+                mLastBackPressedTime = SystemClock.elapsedRealtime();
+                ToastUtils.showShortToast(R.string.exit_tips);
+            }
         }
     }
 

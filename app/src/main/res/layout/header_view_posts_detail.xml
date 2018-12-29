@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/book_item_margin_v"
+              android:paddingEnd="@dimen/book_item_margin_h"
+              android:paddingStart="@dimen/book_item_margin_h"
+              android:paddingTop="@dimen/book_item_margin_v">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/posts_detail_avatar_view"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/avatar_default"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/posts_detail_author_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/book_item_margin_h"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/posts_detail_avatar_view"
+            android:background="@drawable/bg_author_text"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/orange"
+            android:textSize="15sp"
+            tools:text="追书家的眼镜娘 lv.10"/>
+
+        <TextView
+            android:id="@+id/posts_detail_create_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/posts_detail_author_view"
+            android:layout_marginStart="@dimen/book_item_margin_h"
+            android:layout_toEndOf="@id/posts_detail_avatar_view"
+            android:textColor="@color/common_h3"
+            android:textSize="13sp"
+            tools:text="前天"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/posts_detail_title_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/common_h1"
+        android:textSize="20sp"
+        tools:text="盘点||追书2018年度盘点"/>
+
+    <TextView
+        android:id="@+id/posts_detail_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:lineSpacingMultiplier="1.3"
+        android:textColor="@color/common_h2"
+        android:textSize="16sp"
+        tools:text="统统都是大神的书，简直赚到了，看书不用愁没钱了！"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="25dp">
+
+        <TextView
+            android:id="@+id/posts_agreed_view"
+            style="@style/RoundBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:drawableStart="@drawable/sel_posts_agreed"
+            android:text="@string/posts_agreed"
+            tools:ignore="RelativeOverlap"/>
+
+        <ImageView
+            android:id="@+id/posts_more_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:src="@mipmap/post_detail_more"
+            tools:ignore="ContentDescription"/>
+    </RelativeLayout>
+</LinearLayout>

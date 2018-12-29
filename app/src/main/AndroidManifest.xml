@@ -22,7 +22,8 @@
         <activity
             android:name=".main.MainActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -43,17 +44,36 @@
         </activity>
         <activity
             android:name=".community.DiscussActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
 
         <activity
             android:name=".find.ExpandListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".common.TabActivity"/>
-        <activity android:name=".main.BookDetailActivity"/>
-        <activity android:name=".find.BookListDetailActivity"/>
-        <activity android:name=".community.PostsDetailActivity"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".common.TabActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".main.BookDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".find.BookListDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".community.PostsDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity android:name=".read.ReadActivity"/>
 
         <service android:name=".DownloadService"/>
+        <provider
+            android:name=".BookProviderImpl"
+            android:authorities="com.xzhou.book.provider"
+            android:exported="false"/>
     </application>
 
 </manifest>

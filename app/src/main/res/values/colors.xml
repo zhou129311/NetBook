@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#d11322</color>
-    <color name="colorPrimaryDark">#b41421</color>
+    <color name="colorPrimary">#b83020</color>
+    <color name="colorPrimaryDark">#883120</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="white">#ffffffff</color>
@@ -12,6 +12,8 @@
     <color name="green">#5FB236</color>
     <color name="transparent">#00000000</color>
 
+    <color name="indicator_normal">#d48479</color>
+
     <color name="light_white">#EEEEEE</color>
     <color name="light_black">#515151</color>
     <color name="light_pink">#fb9090</color>
@@ -20,6 +22,8 @@
     <color name="light_red">#EC4A48</color>
     <color name="light_blue">#039BE5</color>
     <color name="dark_red">#B93221</color>
+
+    <color name="edit_bg">#e4e4e4</color>
 
     <color name="common_bg">@color/white</color>
     <color name="common_touch_bg">#E3E3E3</color>
