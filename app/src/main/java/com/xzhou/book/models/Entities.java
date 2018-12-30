@@ -390,8 +390,8 @@ public class Entities {
         public String content;
         public String title;
 
-        public Author author;
-        public Helpful helpful;
+        private Author author;
+        private Helpful helpful;
         public int likeCount;
         public String state;
         public String updated;
@@ -404,10 +404,22 @@ public class Entities {
         }
 
         public String avatar() {
-            return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
         }
 
-        public static class Author {
+        public String nickname() {
+            return author == null ? "" : author.nickname;
+        }
+
+        public int lv() {
+            return author == null ? 0 : author.lv;
+        }
+
+        public int yes() {
+            return helpful == null ? 0 : helpful.yes;
+        }
+
+        static class Author {
             public String _id;
             private String avatar;
             public String nickname;
@@ -416,7 +428,7 @@ public class Entities {
             public String gender;
         }
 
-        public static class Helpful {
+        static class Helpful {
             public int yes;
             public int total;
             public int no;
@@ -571,7 +583,7 @@ public class Entities {
             public String _id;
             public String updated;
             public String title;
-            public AuthorBean author;
+            private Author author;
             public String desc;
             public String gender;
             public String created;
@@ -585,11 +597,15 @@ public class Entities {
             public List<BooksBean> books;
 
             public String avatar() {
-                return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+                return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            }
+
+            public String nickname() {
+                return author == null ? "" : author.nickname;
             }
         }
 
-        public static class AuthorBean {
+        private static class Author {
             public String _id;
             public String avatar;
             public String nickname;
@@ -667,21 +683,22 @@ public class Entities {
     public static class DiscussionList {
         public static final Type TYPE = new TypeToken<DiscussionList>() {
         }.getType();
-        public List<PostsBean> posts;
+        public List<Posts> posts;
     }
 
-    public static class PostsBean implements MultiItemEntity {
+    public static class Posts implements MultiItemEntity {
         public String _id;
         public String title;
-        public String type;
-        public int likeCount;
-        public String block;
-        public String state;
+        public String type; //type=vote 投票
+        public int likeCount; //赞同数
+        public String block; // ramble original
+        public String state; //state=hot focus 热门  normal
         public String updated;
         public String created;
-        public int commentCount;
-        public int voteCount;
-        public AuthorBean author;
+        public int commentCount; //评论人数
+        public int voteCount; // 投票人数
+        public boolean haveImage; //内容是否包含图片
+        private Author author;
 
         @Override
         public int getItemType() {
@@ -689,16 +706,36 @@ public class Entities {
         }
 
         public String avatar() {
-            return ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
         }
 
-        public static class AuthorBean {
-            public String _id;
-            public String avatar;
-            public String nickname;
-            public String type;
-            public int lv;
-            public String gender;
+        public String authorId() {
+            return author == null ? "" : author._id;
+        }
+
+        public String nickname() {
+            return author == null ? "" : author.nickname;
+        }
+
+        public String authorType() {
+            return author == null ? "" : author.type;
+        }
+
+        public int authorLv() {
+            return author == null ? 1 : author.lv;
+        }
+
+        public String gender() {
+            return author == null ? "" : author.gender;
+        }
+
+        static class Author {
+            private String _id;
+            private String avatar;
+            private String nickname;
+            private String type; //type=official 官方  type=normal 普通  type=commentator 评论员
+            private int lv;
+            private String gender;
         }
     }
 
@@ -711,7 +748,7 @@ public class Entities {
             public String _id;
             public String title;
             public String content;
-            public AuthorBean author;
+            private Author author;
             public String type;
             public boolean isStopPriority;
             public boolean deleted;
@@ -727,7 +764,23 @@ public class Entities {
             public String id;
             public List<?> votes;
 
-            public static class AuthorBean {
+            public String nickname() {
+                return author == null ? "" : author.nickname;
+            }
+
+            public String authorType() {
+                return author == null ? "" : author.type;
+            }
+
+            public int authorLv() {
+                return author == null ? 1 : author.lv;
+            }
+
+            public String avatar() {
+                return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            }
+
+            public static class Author {
                 public String _id;
                 public String avatar;
                 public String nickname;

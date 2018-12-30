@@ -4,7 +4,7 @@ import com.xzhou.book.common.BasePresenter;
 
 public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View> implements PostsDetailContract.Presenter {
 
-    public PostsDetailPresenter(PostsDetailContract.View view) {
+    PostsDetailPresenter(PostsDetailContract.View view) {
         super(view);
     }
 

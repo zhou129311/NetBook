@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -72,6 +74,21 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_subject_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_collect) {
+            //收藏
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         if (mPresenter.start()) {
@@ -82,7 +99,7 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     @Override
     public void onInitData(Entities.BookListDetail detail) {
         mLoadView.setVisibility(View.GONE);
-        if (detail == null) {
+        if (detail == null || detail.bookList == null) {
             mLoadErrorView.setVisibility(View.VISIBLE);
         } else {
             View view = LayoutInflater.from(this).inflate(R.layout.header_view_book_list_detail, null);
@@ -101,7 +118,7 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     public void setPresenter(BookListDetailContract.Presenter presenter) {
     }
 
-    @OnClick({ R.id.share_btn })
+    @OnClick({R.id.share_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.share_btn:
@@ -140,10 +157,10 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
                     mBookListDetailDesc.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
             });
-            mBookDetailAuthor.setText(detail.bookList.author.nickname);
+            mBookDetailAuthor.setText(detail.bookList.nickname());
         }
 
-        @OnClick({ R.id.book_list_detail_desc, R.id.book_list_detail_share_btn, R.id.book_list_detail_desc_more })
+        @OnClick({R.id.book_list_detail_desc, R.id.book_list_detail_share_btn, R.id.book_list_detail_desc_more})
         public void onViewClicked(View view) {
             switch (view.getId()) {
             case R.id.book_list_detail_desc:

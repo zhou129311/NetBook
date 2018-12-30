@@ -119,10 +119,10 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             break;
         }
         case Constant.ITEM_TYPE_DISCUSSION: {
-            final Entities.PostsBean posts = (Entities.PostsBean) item;
+            final Entities.Posts posts = (Entities.Posts) item;
             holder.setCircleImageUrl(R.id.discussion_img, posts.avatar(), R.mipmap.avatar_default)
                     .setText(R.id.discussion_author, AppUtils.getString(R.string.book_detail_review_author,
-                            posts.author.nickname, posts.author.lv))
+                            posts.nickname(), posts.authorLv()))
                     .setText(R.id.discussion_time, AppUtils.getDescriptionTimeFromDateString(posts.created))
                     .setText(R.id.discussion_title, posts.title)
                     .setText(R.id.discussion_comment_count, String.valueOf(posts.commentCount))

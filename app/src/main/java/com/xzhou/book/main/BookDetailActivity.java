@@ -346,10 +346,10 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                 final Entities.Reviews reviews = (Entities.Reviews) item;
                 holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
                         .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
-                                reviews.author.nickname, reviews.author.lv))
+                                reviews.nickname(), reviews.lv()))
                         .setText(R.id.review_title, reviews.title)
                         .setText(R.id.review_content, reviews.content)
-                        .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
+                        .setText(R.id.review_useful_yes, String.valueOf(reviews.yes()));
                 RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
                 ratingBar.setActiveCount(reviews.rating);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
