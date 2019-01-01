@@ -123,6 +123,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     }
 
     protected void initToolBar() {
+        mToolbar.setTitleTextAppearance(this, R.style.CommonTitleTextStyle);
     }
 
     public static class MyLinearLayoutManager extends LinearLayoutManager {

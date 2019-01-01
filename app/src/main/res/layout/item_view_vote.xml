@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="15dp"
+    android:paddingTop="@dimen/book_item_margin_h"
+    android:paddingEnd="20dp"
+    android:paddingBottom="@dimen/book_item_margin_h">
+
+    <ImageView
+        android:id="@+id/vote_item_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/post_detail_comment_vote_item_1"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/vote_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@id/vote_btn"
+        android:layout_toEndOf="@id/vote_item_number"
+        android:textColor="@color/common_h2"
+        android:textSize="14sp"
+        tools:text="2018再见11111111111111111111111111111111111111111111111"/>
+
+    <ImageView
+        android:id="@+id/vote_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/post_detail_do_vote"
+        tools:ignore="ContentDescription"/>
+</RelativeLayout>

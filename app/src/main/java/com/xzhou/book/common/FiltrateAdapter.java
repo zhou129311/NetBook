@@ -15,12 +15,16 @@ import com.xzhou.book.utils.AppUtils;
 import java.util.List;
 
 public class FiltrateAdapter extends BaseAdapter {
+    public static final int CHECK_TYPE_TAB = 1;
+    public static final int CHECK_TYPE_DISCUSSION = 2;
+
     private List<String> mList;
     private LayoutInflater mInflater;
     private int mCheckedPos;
     private int mMarginLeft;
+    private int mCheckedType = CHECK_TYPE_TAB;
 
-    FiltrateAdapter(Context context, List<String> list) {
+    public FiltrateAdapter(Context context, List<String> list) {
         mList = list;
         mInflater = LayoutInflater.from(context);
     }
@@ -31,6 +35,11 @@ public class FiltrateAdapter extends BaseAdapter {
 
     public void setChecked(int position) {
         mCheckedPos = position;
+        notifyDataSetChanged();
+    }
+
+    public void setCheckedStyle(int type) {
+        mCheckedType = type;
     }
 
     @Override
@@ -60,11 +69,19 @@ public class FiltrateAdapter extends BaseAdapter {
         }
         holder.tv.setText(mList.get(position));
         if (mCheckedPos == position) {
-            holder.tv.setTextColor(AppUtils.getColor(R.color.dark_red));
-            holder.iv.setVisibility(View.VISIBLE);
+            holder.tv.setTextColor(AppUtils.getColor(R.color.colorPrimary));
+            int vis = View.VISIBLE;
+            if (mCheckedType == CHECK_TYPE_DISCUSSION) {
+                vis = View.GONE;
+            }
+            holder.iv.setVisibility(vis);
         } else {
-            holder.tv.setTextColor(AppUtils.getColor(R.color.common_h1));
-            holder.iv.setVisibility(View.INVISIBLE);
+            int color = AppUtils.getColor(R.color.common_h1);
+            if (mCheckedType == CHECK_TYPE_DISCUSSION) {
+                color = AppUtils.getColor(R.color.common_h3);
+            }
+            holder.tv.setTextColor(color);
+            holder.iv.setVisibility(View.GONE);
         }
         int leftMargin = position == 0 ? 0 : AppUtils.dip2px(mMarginLeft);
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) holder.tv.getLayoutParams();

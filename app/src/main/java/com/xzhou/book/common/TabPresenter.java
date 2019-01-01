@@ -23,7 +23,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
     private int mDataNumber;
 
     private String mFiltrate = "";
-    private final String[] CATE_TYPE = new String[] { CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER };
+    private final String[] CATE_TYPE = new String[]{CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER};
 
     TabPresenter(TabContract.View view, Entities.TabData data, int tabId) {
         super(view);
@@ -61,6 +61,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             @Override
             public void run() {
                 List<MultiItemEntity> list = null;
+                mDataNumber = 0;
                 switch (mTabData.source) {
                 case TabSource.SOURCE_CATEGORY_SUB:
                     list = getCategorySubData(false);
@@ -80,7 +81,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     break;
                 case TabSource.SOURCE_RANK_SUB:
                     String rankId = mTabData.params[mTabId];
-                    Entities.Rankings rankings = ZhuiShuSQApi.get().getRanking(rankId);
+                    Entities.Rankings rankings = ZhuiShuSQApi.getRanking(rankId);
                     if (rankings != null) {
                         list = new ArrayList<>();
                         if (rankings.ranking != null && rankings.ranking.books != null) {
@@ -89,7 +90,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     }
                     break;
                 case TabSource.SOURCE_AUTHOR:
-                    Entities.BooksByTag searchBooks = ZhuiShuSQApi.get().searchBooksByAuthor(mTabData.params[0]);
+                    Entities.BooksByTag searchBooks = ZhuiShuSQApi.searchBooksByAuthor(mTabData.params[0]);
                     if (searchBooks != null) {
                         list = new ArrayList<>();
                         if (searchBooks.books != null && searchBooks.books.size() > 0) {
@@ -98,7 +99,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     }
                     break;
                 case TabSource.SOURCE_RECOMMEND:
-                    Entities.Recommend recommend = ZhuiShuSQApi.get().getRecommendBook(mTabData.params[0]);
+                    Entities.Recommend recommend = ZhuiShuSQApi.getRecommendBook(mTabData.params[0]);
                     if (recommend != null) {
                         list = new ArrayList<>();
                         if (recommend.books != null && recommend.books.size() > 0) {
@@ -107,7 +108,9 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     }
                     break;
                 }
-
+                if (list != null && list.size() > 0) {
+                    mDataNumber = list.size();
+                }
                 setDataList(list, false);
             }
         });
@@ -142,7 +145,9 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     }
                     break;
                 }
-
+                if (list != null && list.size() > 0) {
+                    mDataNumber += list.size();
+                }
                 setDataList(list, true);
             }
         });
@@ -154,27 +159,16 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         }
 
         List<MultiItemEntity> list = null;
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        } else {
-            mDataNumber = 0;
-        }
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
         String type = CATE_TYPE[mTabId];
         String major = mTabData.params[0];
         String gender = mTabData.params[1];
-        Entities.BooksByCats booksByCats = ZhuiShuSQApi.get().getBooksByCats(gender, type, major, mFiltrate, start, limit);
+        Entities.BooksByCats booksByCats = ZhuiShuSQApi.getBooksByCats(gender, type, major, mFiltrate, start, limit);
         if (booksByCats != null) {
             list = new ArrayList<>();
             if (booksByCats.books != null && booksByCats.books.size() > 0) {
                 list.addAll(booksByCats.books);
-                if (isLoadMore) {
-                    mDataNumber += list.size();
-                } else {
-                    mDataNumber = list.size();
-                }
             }
         }
         return list;
@@ -186,14 +180,8 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         }
 
         List<MultiItemEntity> list = null;
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        } else {
-            mDataNumber = 0;
-        }
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
         String duration, sort;
         if (mTabId == 0) { //本周最热
             duration = "last-seven-days";
@@ -205,16 +193,11 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             duration = "all";
             sort = "collectorCount";
         }
-        Entities.BookLists bookLists = ZhuiShuSQApi.get().getBookLists(duration, sort, start, limit, "", mFiltrate);
+        Entities.BookLists bookLists = ZhuiShuSQApi.getBookLists(duration, sort, start, limit, "", mFiltrate);
         if (bookLists != null) {
             list = new ArrayList<>();
             if (bookLists.bookLists != null && bookLists.bookLists.size() > 0) {
                 list.addAll(bookLists.bookLists);
-                if (isLoadMore) {
-                    mDataNumber += list.size();
-                } else {
-                    mDataNumber = list.size();
-                }
             }
         }
         return list;
@@ -226,24 +209,13 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         }
 
         List<MultiItemEntity> list = null;
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        } else {
-            mDataNumber = 0;
-        }
-        Entities.BooksByTag booksByTag = ZhuiShuSQApi.get().getBooksByTag(mTabData.params[0], start, limit);
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
+        Entities.BooksByTag booksByTag = ZhuiShuSQApi.getBooksByTag(mTabData.params[0], start, limit);
         if (booksByTag != null) {
             list = new ArrayList<>();
             if (booksByTag.books != null && booksByTag.books.size() > 0) {
                 list.addAll(booksByTag.books);
-                if (isLoadMore) {
-                    mDataNumber += list.size();
-                } else {
-                    mDataNumber = list.size();
-                }
             }
         }
         return list;
@@ -254,31 +226,20 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             return new ArrayList<>(); //没有更多了
         }
         List<MultiItemEntity> list = null;
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        } else {
-            mDataNumber = 0;
-        }
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
         String sort = "created"; //最新发布
         String type = "";
-        if (TextUtils.equals(AppUtils.getString(R.string.community_sort_default), mFiltrate)) {
+        if (TextUtils.equals(AppUtils.getString(R.string.sort_default), mFiltrate)) {
             sort = "updated"; //默认
-        } else if (TextUtils.equals(AppUtils.getString(R.string.community_sort_maximum), mFiltrate)) {
+        } else if (TextUtils.equals(AppUtils.getString(R.string.sort_comment_count), mFiltrate)) {
             sort = "comment-count"; //最多评论
         }
-        Entities.DiscussionList discussionList = ZhuiShuSQApi.get().getBookDiscussionList(mTabData.params[0], sort, type, start, limit);
+        Entities.DiscussionList discussionList = ZhuiShuSQApi.getBookDiscussionList(mTabData.params[0], sort, type, start, limit);
         if (discussionList != null) {
             list = new ArrayList<>();
             if (discussionList.posts != null && discussionList.posts.size() > 0) {
                 list.addAll(discussionList.posts);
-                if (isLoadMore) {
-                    mDataNumber += list.size();
-                } else {
-                    mDataNumber = list.size();
-                }
             }
         }
         return list;
@@ -289,30 +250,19 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             return new ArrayList<>(); //没有更多了
         }
         List<MultiItemEntity> list = null;
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        } else {
-            mDataNumber = 0;
-        }
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
         String sort = "created"; //最新发布
-        if (TextUtils.equals(AppUtils.getString(R.string.community_sort_default), mFiltrate)) {
+        if (TextUtils.equals(AppUtils.getString(R.string.sort_default), mFiltrate)) {
             sort = "updated"; //默认
-        } else if (TextUtils.equals(AppUtils.getString(R.string.community_sort_maximum), mFiltrate)) {
+        } else if (TextUtils.equals(AppUtils.getString(R.string.sort_comment_count), mFiltrate)) {
             sort = "comment-count"; //最多评论
         }
-        Entities.HotReview review = ZhuiShuSQApi.get().getBookReviewList(mTabData.params[0], sort, start, limit);
+        Entities.HotReview review = ZhuiShuSQApi.getBookReviewList(mTabData.params[0], sort, start, limit);
         if (review != null) {
             list = new ArrayList<>();
             if (review.reviews != null && review.reviews.size() > 0) {
                 list.addAll(review.reviews);
-                if (isLoadMore) {
-                    mDataNumber += list.size();
-                } else {
-                    mDataNumber = list.size();
-                }
             }
         }
         return list;

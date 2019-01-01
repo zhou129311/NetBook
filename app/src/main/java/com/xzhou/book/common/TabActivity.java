@@ -20,7 +20,7 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.utils.Log;
-import com.xzhou.book.widget.RVPIndicator;
+import com.xzhou.book.widget.Indicator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class TabActivity extends BaseActivity {
     public static final String EXTRA_TAB_ID = "extra_tabId";
 
     @BindView(R.id.indicator)
-    RVPIndicator mIndicator;
+    Indicator mIndicator;
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
@@ -76,7 +76,6 @@ public class TabActivity extends BaseActivity {
             return;
         }
         Log.i(TAG, "mTabData = " + mTabData.toString());
-        mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setTitle(mTabData.title);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
     }

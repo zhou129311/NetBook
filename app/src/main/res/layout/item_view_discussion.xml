@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/touch_bg"
-                android:paddingBottom="15dp"
-                android:paddingEnd="@dimen/book_detail_margin"
                 android:paddingStart="@dimen/book_detail_margin"
-                android:paddingTop="15dp">
+                android:paddingTop="15dp"
+                android:paddingEnd="@dimen/book_detail_margin"
+                android:paddingBottom="15dp">
 
     <ImageView
         android:id="@+id/discussion_img"
@@ -19,15 +18,46 @@
         android:src="@mipmap/avatar_default"
         tools:ignore="ContentDescription"/>
 
+    <ImageView
+        android:id="@+id/official_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="35dp"
+        android:src="@mipmap/user_avatar_verify_official"
+        android:visibility="gone"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible"/>
+
     <TextView
         android:id="@+id/discussion_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:textColor="@color/common_h3"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="normal"
         tools:ignore="RelativeOverlap"
         tools:text="前天"/>
+
+    <TextView
+        android:id="@+id/discussion_hot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_hot_post"
+        android:drawableStart="@mipmap/ic_topic_hot"
+        android:drawablePadding="2dp"
+        android:paddingStart="4dp"
+        android:paddingTop="1.5dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="1.5dp"
+        android:text="@string/discussion_hot"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:ignore="RelativeOverlap"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/discussion_author"
@@ -59,11 +89,28 @@
         android:layout_below="@id/discussion_title"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/discussion_img"
-        android:drawablePadding="5dp"
         android:drawableStart="@mipmap/ic_message"
+        android:drawablePadding="3dp"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
-        tools:text="308"/>
+        android:visibility="gone"
+        tools:text="308"
+        tools:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/discussion_vote_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/discussion_title"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@id/discussion_comment_count"
+        android:drawableStart="@mipmap/ic_notif_vote"
+        android:drawablePadding="3dp"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:text="308"
+        tools:visibility="gone"/>
 
     <TextView
         android:id="@+id/discussion_comment_like_count"
@@ -72,9 +119,9 @@
         android:layout_below="@id/discussion_title"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:layout_toEndOf="@id/discussion_comment_count"
-        android:drawablePadding="5dp"
+        android:layout_toEndOf="@id/discussion_vote_count"
         android:drawableStart="@mipmap/ic_book_review_like"
+        android:drawablePadding="3dp"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         tools:text="308"/>

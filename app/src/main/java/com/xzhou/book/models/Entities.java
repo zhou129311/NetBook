@@ -2,6 +2,7 @@ package com.xzhou.book.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
@@ -328,14 +329,14 @@ public class Entities {
     }
 
     public static class HotWord {
-        public static final Type TYPE = new TypeToken<HttpResult<HotWord>>() {
+        public static final Type TYPE = new TypeToken<HotWord>() {
         }.getType();
 
         public List<String> hotWords;
     }
 
     public static class AutoComplete {
-        public static final Type TYPE = new TypeToken<HttpResult<AutoComplete>>() {
+        public static final Type TYPE = new TypeToken<AutoComplete>() {
         }.getType();
 
         public List<String> keywords;
@@ -419,19 +420,13 @@ public class Entities {
             return helpful == null ? 0 : helpful.yes;
         }
 
-        static class Author {
-            public String _id;
+        private static class Author {
+            private String _id;
             private String avatar;
-            public String nickname;
-            public String type;
-            public int lv;
-            public String gender;
-        }
-
-        static class Helpful {
-            public int yes;
-            public int total;
-            public int no;
+            private String nickname;
+            private String type;
+            private int lv;
+            private String gender;
         }
     }
 
@@ -540,6 +535,7 @@ public class Entities {
         public List<BookListBean> bookLists;
     }
 
+    //书单列表
     public class BookListBean implements MultiItemEntity {
         private String _id;
         private String id;
@@ -606,11 +602,11 @@ public class Entities {
         }
 
         private static class Author {
-            public String _id;
-            public String avatar;
-            public String nickname;
-            public String type;
-            public int lv;
+            private String _id;
+            private String avatar;
+            private String nickname;
+            private String type;
+            private int lv;
         }
 
         public static class BooksBean {
@@ -680,6 +676,7 @@ public class Entities {
         }
     }
 
+    //综合讨论区帖子列表
     public static class DiscussionList {
         public static final Type TYPE = new TypeToken<DiscussionList>() {
         }.getType();
@@ -717,8 +714,16 @@ public class Entities {
             return author == null ? "" : author.nickname;
         }
 
-        public String authorType() {
-            return author == null ? "" : author.type;
+        public boolean isVote() {
+            return "vote".equals(type);
+        }
+
+        public boolean isHot() {
+            return "hot".equals(state) || "focus".equals(state);
+        }
+
+        public boolean isOfficial() {
+            return author != null && "official".equals(author.type);
         }
 
         public int authorLv() {
@@ -739,12 +744,13 @@ public class Entities {
         }
     }
 
-    public static class Discussion {
-        public static final Type TYPE = new TypeToken<Discussion>() {
+    //综合讨论区帖子详情
+    public static class DiscussionDetail {
+        public static final Type TYPE = new TypeToken<DiscussionDetail>() {
         }.getType();
-        public PostsDetail post;
+        public PostDetail post;
 
-        public static class PostsDetail {
+        public static class PostDetail {
             public String _id;
             public String title;
             public String content;
@@ -762,17 +768,25 @@ public class Entities {
             public int voteCount;
             public String shareLink;
             public String id;
-            public List<?> votes;
+            public List<Vote> votes;
 
             public String nickname() {
                 return author == null ? "" : author.nickname;
             }
 
-            public String authorType() {
-                return author == null ? "" : author.type;
+            public boolean isVote() {
+                return "vote".equals(type);
             }
 
-            public int authorLv() {
+            public boolean isHot() {
+                return "hot".equals(state) || "focus".equals(state);
+            }
+
+            public boolean isOfficial() {
+                return author != null && "official".equals(author.type);
+            }
+
+            public int lv() {
                 return author == null ? 1 : author.lv;
             }
 
@@ -780,132 +794,207 @@ public class Entities {
                 return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
             }
 
-            public static class Author {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-                public Object rank;
-                public String created;
+            static class Author {
+                private String _id;
+                private String avatar;
+                private String nickname;
+                private String type;
+                private int lv;
+                private String gender;
+                private Object rank;
+                private String created;
+                private String id;
+            }
+
+            public static class Vote {
+                public String content;
+                public int count;
                 public String id;
+                public @DrawableRes
+                int itemNumberRes;
             }
         }
     }
 
+    //评论
     public static class CommentList {
-        public static final Type TYPE = new TypeToken<HttpResult<CommentList>>() {
+        public static final Type TYPE = new TypeToken<CommentList>() {
         }.getType();
-        public List<CommentsBean> comments;
+        public List<Comment> comments;
+    }
 
-        public static class CommentsBean {
-            public String _id;
-            public String content;
-            public AuthorBean author;
-            public int floor;
-            public int likeCount;
-            public String created;
-            public ReplyToBean replyTo;
+    public static class Comment implements MultiItemEntity {
+        public String _id;
+        public String content;
+        private Author author;
+        public int floor; //楼层
+        public int likeCount; //同感
+        public String created;
+        public ReplyTo replyTo;
+        public ReplyTo replyAuthor;
 
-            public static class AuthorBean {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-            }
+        public boolean isBest; //是否是神评论
 
-            public static class ReplyToBean {
-                public String _id;
-                public int floor;
-                public AuthorBean author;
+        public String avatar() {
+            return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+        }
 
-                public static class AuthorBean {
-                    public String _id;
-                    public String nickname;
-                }
+        public int lv() {
+            return author == null ? 0 : author.lv;
+        }
+
+        public String nickname() {
+            return author == null ? "" : author.nickname;
+        }
+
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_COMMENT;
+        }
+
+        static class Author {
+            private String _id;
+            private String avatar;
+            private String nickname;
+            private String type;
+            private int lv;
+            private String gender;
+        }
+
+        static class ReplyTo {
+            private String _id;
+            private int floor;//楼层
+            private Author author; //回复XXX
+
+            static class Author {
+                private String _id;
+                private String nickname;
             }
         }
     }
 
-    public static class BookReviewList {
-        public static final Type TYPE = new TypeToken<HttpResult<BookReviewList>>() {
-        }.getType();
-        public List<ReviewsBean> reviews;
+    public static class PostSection implements MultiItemEntity {
+        public String text;
 
-        public static class ReviewsBean {
-            public String _id;
-            public String title;
-            public BookBean book;
-            public HelpfulBean helpful;
-            public int likeCount;
-            public String state;
-            public String updated;
-            public String created;
+        public PostSection(String text) {
+            this.text = text;
+        }
 
-            public static class BookBean {
-                public String _id;
-                public String cover;
-                public String title;
-                public String site;
-                public String type;
-            }
-
-            public static class HelpfulBean {
-                public int total;
-                public int no;
-                public int yes;
-            }
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_TEXT;
         }
     }
 
-    public static class BookReview {
-        public static final Type TYPE = new TypeToken<HttpResult<BookReview>>() {
-        }.getType();
-        public ReviewBean review;
+    public static class Helpful implements MultiItemEntity {
+        public int total;
+        public int no;
+        public int yes;
 
-        public static class ReviewBean {
+        @Override
+        public int getItemType() {
+            return Constant.ITEM_TYPE_HELPFUL;
+        }
+    }
+
+    //书评区列表
+    public static class PostReviewList {
+        public static final Type TYPE = new TypeToken<PostReviewList>() {
+        }.getType();
+        public List<PostReviews> reviews;
+    }
+
+    public static class PostReviews {
+        public String _id;
+        public String title;
+        public Book book;
+        public Helpful helpful;
+        public int likeCount;
+        public String state;
+        public String updated;
+        public String created;
+
+        public static class Book {
             public String _id;
-            public int rating;
-            public String content;
+            public String cover;
             public String title;
+            public String site;
             public String type;
-            public BookBean book;
-            public AuthorBean author;
-            public HelpfulBean helpful;
-            public String state;
-            public String updated;
+        }
+    }
+
+    public static class ReviewDetail {
+        public static final Type TYPE = new TypeToken<ReviewDetail>() {
+        }.getType();
+        public ReviewDetailHeader review;
+    }
+
+    public static class ReviewDetailHeader {
+        public String _id;
+        public int rating;
+        public String content;
+        public String title;
+        public String type; //review
+        private ReviewBook book;
+        private ReviewAuthor author;
+        public Helpful helpful;
+        public String state; //normal
+        public String updated;
+        public String created;
+        public int commentCount;
+        public String shareLink;
+        public String id;
+
+        public String cover() {
+            return book == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + book.cover;
+        }
+
+        public String bookId() {
+            return book == null ? "" : (book._id == null ? "" : book.id);
+        }
+
+        public String bookTitle() {
+            return book == null ? "" : book.title;
+        }
+
+        public String avatar() {
+            return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+        }
+
+        public String nickname() {
+            return author == null ? "" : author.nickname;
+        }
+
+        public int lv() {
+            return author == null ? 1 : author.lv;
+        }
+
+        public int yes() {
+            return helpful == null ? 0 : helpful.yes;
+        }
+
+        public int no() {
+            return helpful == null ? 0 : helpful.no;
+        }
+
+        static class ReviewBook {
+            private String _id;
+            private String cover;
+            private String author;
+            private String title;
+            private String id;
+        }
+
+        static class ReviewAuthor {
+            public String _id;
+            private String avatar;
+            private String nickname;
+            public String type;
+            private int lv;
+            public String gender;
+            public Object rank;
             public String created;
-            public int commentCount;
-            public String shareLink;
             public String id;
-
-            public static class BookBean {
-                public String _id;
-                public String cover;
-                public String title;
-                public String id;
-            }
-
-            public static class AuthorBean {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-                public Object rank;
-                public String created;
-                public String id;
-            }
-
-            public static class HelpfulBean {
-                public int total;
-                public int yes;
-                public int no;
-            }
         }
     }
 

@@ -1,17 +1,18 @@
 package com.xzhou.book.widget;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import com.xzhou.book.R;
-
 public class DrawableButton extends android.support.v7.widget.AppCompatTextView {
 
+    public DrawableButton(Context context) {
+        super(context);
+    }
+
     public DrawableButton(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
     }
 
     public DrawableButton(Context context, AttributeSet attrs, int defStyle) {
@@ -40,6 +41,14 @@ public class DrawableButton extends android.support.v7.widget.AppCompatTextView 
             float bodyH = textSize + drawableTop.getIntrinsicHeight() + drawablePadding;
             float dy = ((float) getHeight() - bodyH) / 2f;
             canvas.translate(0, dy - (dy / 5f));
+        }
+        Drawable drawableRight = drawables[2];
+        if (drawableRight != null) {
+            float textWidth = getPaint().measureText(getText().toString());
+            int drawablePadding = getCompoundDrawablePadding();
+            float bodyWidth = textWidth + drawableRight.getIntrinsicWidth() + drawablePadding;
+            setPadding(getPaddingLeft(), getPaddingTop(), (int) (getWidth() - bodyWidth), getPaddingBottom());
+            canvas.translate((getWidth() - bodyWidth) / 2, 0);
         }
         super.onDraw(canvas);
     }

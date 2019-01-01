@@ -134,7 +134,6 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     @Override
     protected void initToolBar() {
         super.initToolBar();
-        mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitle(R.string.book_detail);
     }
@@ -321,8 +320,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         Entities.TabData data = new Entities.TabData();
         data.title = title;
         data.source = TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[]{AppUtils.getString(R.string.community_sort_default),
-                AppUtils.getString(R.string.community_sort_new), AppUtils.getString(R.string.community_sort_maximum)};
+        data.filtrate = new String[]{AppUtils.getString(R.string.sort_default),
+                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count)};
         data.params = new String[]{bookId};
         TabActivity.startActivity(mActivity, data, tabId);
     }
@@ -351,11 +350,11 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                         .setText(R.id.review_content, reviews.content)
                         .setText(R.id.review_useful_yes, String.valueOf(reviews.yes()));
                 RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
-                ratingBar.setActiveCount(reviews.rating);
+                ratingBar.setStarCount(reviews.rating);
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        PostsDetailActivity.startActivity(mContext, reviews._id);
+                        PostsDetailActivity.startActivity(mContext, reviews._id, PostsDetailActivity.TYPE_REVIEW);
                     }
                 });
                 break;

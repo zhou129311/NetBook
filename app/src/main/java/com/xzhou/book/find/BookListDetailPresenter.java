@@ -8,7 +8,7 @@ import com.xzhou.book.models.Entities;
 public class BookListDetailPresenter extends BasePresenter<BookListDetailContract.View> implements BookListDetailContract.Presenter {
 
     private String mBookListId;
-    private boolean hasStart;
+    private Entities.BookListDetail mBookListDetail;
 
     BookListDetailPresenter(BookListDetailContract.View view, String bookListId) {
         super(view);
@@ -17,13 +17,12 @@ public class BookListDetailPresenter extends BasePresenter<BookListDetailContrac
 
     @Override
     public boolean start() {
-        if (!hasStart) {
-            hasStart = true;
+        if (mBookListDetail == null) {
             ZhuiShuSQApi.getPool().execute(new Runnable() {
                 @Override
                 public void run() {
-                    Entities.BookListDetail detail = ZhuiShuSQApi.get().getBookListDetail(mBookListId);
-                    setData(detail);
+                    mBookListDetail = ZhuiShuSQApi.getBookListDetail(mBookListId);
+                    setData();
                 }
             });
             return true;
@@ -31,12 +30,12 @@ public class BookListDetailPresenter extends BasePresenter<BookListDetailContrac
         return false;
     }
 
-    private void setData(final Entities.BookListDetail detail) {
+    private void setData() {
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
-                    mView.onInitData(detail);
+                    mView.onInitData(mBookListDetail);
                 }
             }
         });

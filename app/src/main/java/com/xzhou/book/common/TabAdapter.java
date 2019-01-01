@@ -103,17 +103,17 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             final Entities.Reviews reviews = (Entities.Reviews) item;
             holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
                     .setText(R.id.review_author, AppUtils.getString(R.string.book_detail_review_author,
-                            reviews.author.nickname, reviews.author.lv))
+                            reviews.nickname(), reviews.lv()))
                     .setText(R.id.review_time, AppUtils.getDescriptionTimeFromDateString(reviews.created))
                     .setText(R.id.review_title, reviews.title)
                     .setText(R.id.review_content, reviews.content)
-                    .setText(R.id.review_useful_yes, String.valueOf(reviews.helpful.yes));
+                    .setText(R.id.review_useful_yes, String.valueOf(reviews.yes()));
             RatingBar ratingBar = holder.getView(R.id.review_rating_bar);
-            ratingBar.setActiveCount(reviews.rating);
+            ratingBar.setStarCount(reviews.rating);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PostsDetailActivity.startActivity(mContext, reviews._id);
+                    PostsDetailActivity.startActivity(mContext, reviews._id, PostsDetailActivity.TYPE_REVIEW);
                 }
             });
             break;
@@ -126,11 +126,17 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                     .setText(R.id.discussion_time, AppUtils.getDescriptionTimeFromDateString(posts.created))
                     .setText(R.id.discussion_title, posts.title)
                     .setText(R.id.discussion_comment_count, String.valueOf(posts.commentCount))
-                    .setText(R.id.discussion_comment_like_count, String.valueOf(posts.likeCount));
+                    .setText(R.id.discussion_vote_count, String.valueOf(posts.voteCount))
+                    .setText(R.id.discussion_comment_like_count, String.valueOf(posts.likeCount))
+                    .setGone(R.id.official_view, posts.isOfficial())
+                    .setGone(R.id.discussion_comment_count, !posts.isVote())
+                    .setGone(R.id.discussion_vote_count, posts.isVote())
+                    .setGone(R.id.discussion_time, !posts.isHot())
+                    .setGone(R.id.discussion_hot, posts.isHot());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PostsDetailActivity.startActivity(mContext, posts._id);
+                    PostsDetailActivity.startActivity(mContext, posts._id, PostsDetailActivity.TYPE_DISCUSS);
                 }
             });
         }

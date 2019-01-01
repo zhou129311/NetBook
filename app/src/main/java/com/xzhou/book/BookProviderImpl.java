@@ -37,7 +37,6 @@ public class BookProviderImpl extends ContentProvider {
 
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        uri = ContentProvider.getUriWithoutUserId(uri);
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(TABLE_BOOK);
 //        int match = URI_MATCHER.match(uri);
@@ -61,7 +60,6 @@ public class BookProviderImpl extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        uri = ContentProvider.getUriWithoutUserId(uri);
 //        String table;
         SQLiteDatabase db = mHelper.getWritableDatabase();
 
@@ -84,7 +82,6 @@ public class BookProviderImpl extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        uri = ContentProvider.getUriWithoutUserId(uri);
         SQLiteDatabase db = mHelper.getWritableDatabase();
 //        String table;
 //        int match = URI_MATCHER.match(uri);
@@ -104,7 +101,6 @@ public class BookProviderImpl extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, String selection, String[] selectionArgs) {
-        uri = ContentProvider.getUriWithoutUserId(uri);
         SQLiteDatabase db = mHelper.getWritableDatabase();
 //        String table;
 //        int match = URI_MATCHER.match(uri);

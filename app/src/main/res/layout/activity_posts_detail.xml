@@ -13,9 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/comment_layout"
-        android:layout_below="@id/common_toolbar"/>
+        android:layout_below="@id/common_toolbar"
+        android:scrollbars="vertical"/>
 
-    <include layout="@layout/common_load_error_view"/>
+    <include
+        layout="@layout/common_load_error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/comment_layout"
+        android:layout_below="@id/common_toolbar"/>
 
     <include layout="@layout/common_load_view"/>
 
@@ -36,8 +42,8 @@
             android:inputType="textMultiLine"
             android:minHeight="55dp"
             android:minLines="3"
-            android:paddingEnd="15dp"
             android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:textColor="@color/common_h1"
             android:textSize="14sp"
             tools:ignore="Autofill"/>

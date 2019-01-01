@@ -8,9 +8,12 @@
     <string name="community_comment">书评区</string>
     <string name="community_helper">书荒互助区</string>
     <string name="community_girl">女生区</string>
-    <string name="community_sort_default">默认排序</string>
-    <string name="community_sort_new">最新发布</string>
-    <string name="community_sort_maximum">最多评论</string>
+    <string name="sort_default">默认排序</string>
+    <string name="sort_created">最新发布</string>
+    <string name="sort_comment_count">最多评论</string>
+    <string name="sort_helpful">最有用的</string>
+    <string name="distillate_false">全部</string>
+    <string name="distillate_true">精品</string>
 
     <string name="find_ranking">排行榜</string>
     <string name="find_topic">主题书单</string>
@@ -83,21 +86,21 @@
     <string name="book_list_detail_by">创建自</string>
     <string name="book_list_word_count"><Data><![CDATA[<font color="#da1b2a"><b>%1$d<br/></b></font>人在追&#160;&#160;|&#160;&#160;<font color="#da1b2a"><b>%2$d<br/></b></font>万字]]></Data></string>
 
-    <string name="comment_floor">%1$d楼&#160;</string>
-    <string name="comment_like_count">❤%1$d次同感</string>
+    <string name="comment_floor">%1$d楼</string>
+    <string name="comment_like_count">%1$d次同感</string>
     <string name="comment_best_comment">仰望神评论</string>
     <string name="comment_comment_count">共%1$d条评论</string>
     <string name="comment_reply_floor">(%1$d楼)</string>
     <string name="comment_reply_nickname">回复 %1$s</string>
     <string name="comment_add">添加评论</string>
     <string name="posts_agreed">同感</string>
+    <string name="discussion_hot">热门</string>
+    <string name="vote_count">共%1$d人投票</string>
 
-    <string name="book_review_book_type">[%1$s]</string>
-    <string name="book_review_helpful_yes">%1$d 人推荐</string>
-    <string name="book_review_detail_helpful_yes">有用</string>
-    <string name="book_review_detail_helpful_no">无用</string>
-    <string name="book_review_detail_to_review_the_scoring">给书评打分</string>
-    <string name="book_review_detail_score">楼主打分：</string>
+    <string name="book_review_helpful_yes">有用</string>
+    <string name="book_review_helpful_no">无用</string>
+    <string name="book_review_the_scoring">给书评打分</string>
+    <string name="book_review_detail_score">楼主打分:</string>
 
     <string name="menu_main_settings">设置</string>
     <string name="menu_main_scan_local_book">扫描本地书籍</string>
@@ -134,5 +137,8 @@
     <string name="pack_up">收起</string>
     <string name="share">分享</string>
     <string name="download_book">缓存全本</string>
+    <string name="help_detail_title">书荒互助区详情</string>
+    <string name="discussion_detail_title">详情</string>
+    <string name="review_detail_title">书评详情</string>
 
 </resources>

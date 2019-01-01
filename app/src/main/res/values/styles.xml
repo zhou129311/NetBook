@@ -15,9 +15,15 @@
         <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
 
-    <style name="TitleTextStyle">
+    <style name="CommonTitleTextStyle">
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="MainTitleTextStyle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

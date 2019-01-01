@@ -26,7 +26,7 @@ import com.xzhou.book.utils.AppUtils;
 
 import java.util.List;
 
-public class RVPIndicator extends LinearLayout {
+public class Indicator extends LinearLayout {
 
     private static final int STYLE_BITMAP = 0;
     private static final int STYLE_LINE = 1;
@@ -44,7 +44,7 @@ public class RVPIndicator extends LinearLayout {
 
     public ViewPager mViewPager;
 
-    private int mTextSize = 16;
+    private float mTextSize = 15;
     private int mTextColorNormal = D_TEXT_COLOR_NORMAL;
     private int mTextColorHighlight = D_TEXT_COLOR_HIGHLIGHT;
     private int mIndicatorColor = D_INDICATOR_COLOR;
@@ -60,21 +60,21 @@ public class RVPIndicator extends LinearLayout {
     private Path mPath;
     private int mPosition = 0;
 
-    public RVPIndicator(Context context) {
+    public Indicator(Context context) {
         this(context, null);
     }
 
-    public RVPIndicator(Context context, AttributeSet attrs) {
+    public Indicator(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RVPIndicator);
-        mTabVisibleCount = a.getInt(R.styleable.RVPIndicator_item_count, D_TAB_COUNT);
-        mTextColorNormal = a.getColor(R.styleable.RVPIndicator_text_color_normal, D_TEXT_COLOR_NORMAL);
-        mTextColorHighlight = a.getColor(R.styleable.RVPIndicator_text_color_hightlight, D_TEXT_COLOR_HIGHLIGHT);
-        mTextSize = a.getDimensionPixelSize(R.styleable.RVPIndicator_text_size, 16);
-        mIndicatorColor = a.getColor(R.styleable.RVPIndicator_indicator_color, D_INDICATOR_COLOR);
-        mIndicatorStyle = a.getInt(R.styleable.RVPIndicator_indicator_style, STYLE_LINE);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Indicator);
+        mTabVisibleCount = a.getInt(R.styleable.Indicator_item_count, D_TAB_COUNT);
+        mTextColorNormal = a.getColor(R.styleable.Indicator_text_color_normal, D_TEXT_COLOR_NORMAL);
+        mTextColorHighlight = a.getColor(R.styleable.Indicator_text_color_hightlight, D_TEXT_COLOR_HIGHLIGHT);
+        mTextSize = a.getDimension(R.styleable.Indicator_text_size, 15);
+        mIndicatorColor = a.getColor(R.styleable.Indicator_indicator_color, D_INDICATOR_COLOR);
+        mIndicatorStyle = a.getInt(R.styleable.Indicator_indicator_style, STYLE_LINE);
 
-        Drawable drawable = a.getDrawable(R.styleable.RVPIndicator_indicator_src);
+        Drawable drawable = a.getDrawable(R.styleable.Indicator_indicator_src);
 
         if (drawable != null) {
             if (drawable instanceof BitmapDrawable) {
@@ -124,7 +124,7 @@ public class RVPIndicator extends LinearLayout {
             mRectF = new Rect(0, 0, mIndicatorWidth, mIndicatorHeight);
             break;
         case STYLE_TRIANGLE:
-            mIndicatorWidth = w / 24;// 1/24 of  width  ;
+            mIndicatorWidth = w / 25;
             mIndicatorHeight = (int) (mIndicatorWidth / 2 / Math.sqrt(2));
             mTranslationX = 0;
             break;

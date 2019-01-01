@@ -33,7 +33,7 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
                 @Override
                 public void run() {
                     if (mSource == SOURCE_RANK) {
-                        Entities.RankingList rankingList = ZhuiShuSQApi.get().getRanking();
+                        Entities.RankingList rankingList = ZhuiShuSQApi.getRanking();
                         if (rankingList != null) {
                             mList = new ArrayList<>();
                             parseRankingList(rankingList.male, AppUtils.getString(R.string.male));
@@ -42,8 +42,8 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
 //                            parseRankingList(rankingList.epub, AppUtils.getString(R.string.epub));
                         }
                     } else if (mSource == SOURCE_CATEGORY) {
-                        Entities.CategoryList categoryList = ZhuiShuSQApi.get().getCategoryList();
-                        Entities.CategoryListLv2 categoryListLv2 = ZhuiShuSQApi.get().getCategoryListLv2();
+                        Entities.CategoryList categoryList = ZhuiShuSQApi.getCategoryList();
+                        Entities.CategoryListLv2 categoryListLv2 = ZhuiShuSQApi.getCategoryListLv2();
                         if (categoryList != null) {
                             if (categoryListLv2 != null) {
                                 parseCategoryListLv2(categoryList.male, categoryListLv2.male);

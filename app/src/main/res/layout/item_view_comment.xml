@@ -4,12 +4,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/touch_bg"
-                android:padding="15dp">
+                android:paddingStart="@dimen/book_item_margin_h"
+                android:paddingTop="@dimen/book_item_margin_v"
+                android:paddingEnd="@dimen/book_item_margin_h"
+                android:paddingBottom="@dimen/book_item_margin_v">
 
     <ImageView
-        android:id="@+id/item_image"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:id="@+id/comment_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentStart="true"
         android:layout_marginEnd="10dp"
         android:scaleType="centerCrop"
@@ -17,59 +20,61 @@
         tools:ignore="ContentDescription"/>
 
     <TextView
-        android:id="@+id/item_floor"
+        android:id="@+id/comment_floor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/item_image"
+        android:layout_toEndOf="@id/comment_image"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/comment_floor"
         android:textColor="@color/common_h3"
-        android:textSize="13sp"/>
+        android:textSize="13sp"
+        tools:text="4楼"/>
 
     <TextView
-        android:id="@+id/item_title"
+        android:id="@+id/comment_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/item_floor"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/comment_floor"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/light_coffee"
         android:textSize="13sp"
-        tools:text="我就是静静"/>
+        tools:text="我就是静静 lv.9"/>
 
     <TextView
-        android:id="@+id/item_type"
+        android:id="@+id/comment_like_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/item_title"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:text="@string/book_detail_review_author"
-        android:textColor="@color/light_coffee"
-        android:textSize="13sp"/>
+        android:layout_alignParentEnd="true"
+        android:drawableStart="@mipmap/topic_comment_heart"
+        android:drawablePadding="3dp"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:ignore="RelativeOverlap"
+        tools:text="3次同感"/>
 
     <TextView
-        android:id="@+id/item_like_count"
+        android:id="@+id/comment_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/comment_like_count"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
-        tools:ignore="RelativeOverlap"/>
-
+        tools:ignore="RelativeOverlap"
+        tools:text="1分钟前"/>
 
     <TextView
-        android:id="@+id/item_content"
+        android:id="@+id/comment_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/item_title"
-        android:layout_marginTop="5dp"
-        android:layout_toEndOf="@id/item_image"
+        android:layout_below="@id/comment_title"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@id/comment_image"
+        android:lineSpacingMultiplier="1.1"
         android:textColor="@color/common_h2"
+        android:textSize="15sp"
         tools:text="越到后面越索然无味"/>
-
 </RelativeLayout>

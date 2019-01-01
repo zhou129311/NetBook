@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp">
+
+    <TextView
+        android:id="@+id/yes_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/common_h2"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/helpful_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="1"/>
+
+    <TextView
+        android:id="@+id/yes_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:drawableStart="@drawable/sel_review_useful_yes"
+        android:drawablePadding="7dp"
+        android:text="@string/book_review_helpful_yes"
+        android:textColor="@color/common_h2"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/helpful_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/yes_count_text"/>
+
+    <View
+        android:id="@+id/helpful_divider"
+        android:layout_width="1px"
+        android:layout_height="40dp"
+        android:background="@color/common_divider_narrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/no_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/common_h2"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/helpful_divider"
+        tools:text="1"/>
+
+    <TextView
+        android:id="@+id/no_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:drawableStart="@drawable/sel_review_useful_no"
+        android:drawablePadding="7dp"
+        android:text="@string/book_review_helpful_no"
+        android:textColor="@color/common_h2"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/helpful_divider"
+        app:layout_constraintTop_toBottomOf="@id/no_count_text"/>
+
+</android.support.constraint.ConstraintLayout>

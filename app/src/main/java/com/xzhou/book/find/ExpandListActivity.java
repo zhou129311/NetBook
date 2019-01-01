@@ -93,7 +93,6 @@ public class ExpandListActivity extends BaseActivity<ExpandListContract.Presente
         } else {
             title = getString(R.string.find_category);
         }
-        mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setTitle(title);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
     }

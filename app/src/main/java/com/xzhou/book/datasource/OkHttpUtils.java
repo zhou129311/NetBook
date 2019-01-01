@@ -123,7 +123,7 @@ public class OkHttpUtils {
         }
     }
 
-    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
+    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{new X509TrustManager() {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
@@ -136,7 +136,7 @@ public class OkHttpUtils {
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
         }
-    } };
+    }};
 
     public static <T> Entities.HttpResult get(HttpRequest request, Type typeOfT, HashMap<String, String> params) {
         return (Entities.HttpResult) getObject(request, typeOfT, params);
@@ -158,7 +158,6 @@ public class OkHttpUtils {
                 .cacheControl(cacheControl)
                 .get()
                 .build();
-
         try {
             Response response = getClient().newCall(req).execute();
             String body = response.body().string();

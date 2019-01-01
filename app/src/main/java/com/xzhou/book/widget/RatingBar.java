@@ -2,6 +2,7 @@ package com.xzhou.book.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -10,7 +11,6 @@ import android.widget.LinearLayout;
 
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 
 public class RatingBar extends LinearLayout {
 
@@ -18,6 +18,8 @@ public class RatingBar extends LinearLayout {
     private int mStarCount;
     private int mStarPadding; //px
     private int mActiveCount;
+    private @DrawableRes
+    int mStarResId;
 
     public RatingBar(Context context) {
         this(context, null);
@@ -34,6 +36,7 @@ public class RatingBar extends LinearLayout {
         mStarCount = typedArray.getInt(R.styleable.RatingBar_starCount, 5);
         mActiveCount = typedArray.getInt(R.styleable.RatingBar_activeCount, 5);
         mStarPadding = typedArray.getDimensionPixelSize(R.styleable.RatingBar_starPadding, AppUtils.dip2px(3));
+        mStarResId = typedArray.getResourceId(R.styleable.RatingBar_starSrc, R.drawable.sel_rating);
         typedArray.recycle();
         initView();
     }
@@ -58,13 +61,13 @@ public class RatingBar extends LinearLayout {
                     lp.leftMargin = mStarPadding;
                 }
                 addView(imageView, lp);
-                imageView.setImageResource(R.drawable.sel_rating);
+                imageView.setImageResource(mStarResId);
                 imageView.setActivated(mActiveCount - i > 0);
             }
         }
     }
 
-    public void setActiveCount(int activeCount) {
+    public void setStarCount(int activeCount) {
         mActiveCount = activeCount;
         initView();
     }

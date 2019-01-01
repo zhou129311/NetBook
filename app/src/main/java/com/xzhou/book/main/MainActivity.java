@@ -21,7 +21,7 @@ import com.xzhou.book.community.CommunityPresenter;
 import com.xzhou.book.find.FindContract;
 import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
-import com.xzhou.book.widget.RVPIndicator;
+import com.xzhou.book.widget.Indicator;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public class MainActivity extends BaseActivity {
     public static final int SIZE = FRAGMENT_FIND + 1;
 
     @BindView(R.id.indicator)
-    RVPIndicator mIndicatorView;
+    Indicator mIndicatorView;
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
 
@@ -57,6 +57,7 @@ public class MainActivity extends BaseActivity {
     protected void initToolBar() {
         super.initToolBar();
         mToolbar.setTitle(R.string.app_name);
+        mToolbar.setTitleTextAppearance(this, R.style.MainTitleTextStyle);
     }
 
     @Override

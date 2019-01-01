@@ -8,13 +8,12 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.ItemAdapter;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
+import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
 
@@ -56,15 +55,14 @@ public class CommunityFragment extends BaseFragment<CommunityContract.Presenter>
                 if (item instanceof Entities.ImageText) {
                     String name = ((Entities.ImageText) item).name;
                     if (AppUtils.getString(R.string.community_discuss).equals(name)) {
-
+                        DiscussActivity.startActivity(getActivity(), DiscussActivity.TYPE_DISCUSS);
                     } else if (AppUtils.getString(R.string.community_comment).equals(name)) {
-
+                        DiscussActivity.startActivity(getActivity(), DiscussActivity.TYPE_REVIEWS);
                     } else if (AppUtils.getString(R.string.community_helper).equals(name)) {
-
+                        DiscussActivity.startActivity(getActivity(), DiscussActivity.TYPE_HELP);
                     } else if (AppUtils.getString(R.string.community_girl).equals(name)) {
-
+                        DiscussActivity.startActivity(getActivity(), DiscussActivity.TYPE_GIRL);
                     }
-                    ToastUtils.showShortToast(name);
                 }
             }
         });

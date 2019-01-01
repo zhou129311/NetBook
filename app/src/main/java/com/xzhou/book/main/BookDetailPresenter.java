@@ -26,10 +26,10 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
             ZhuiShuSQApi.getPool().execute(new Runnable() {
                 @Override
                 public void run() {
-                    mBookDetail = ZhuiShuSQApi.get().getBookDetail(mBookId);
+                    mBookDetail = ZhuiShuSQApi.getBookDetail(mBookId);
                     setBookDetail();
 
-                    Entities.HotReview hotReview = ZhuiShuSQApi.get().getHotReview(mBookId);
+                    Entities.HotReview hotReview = ZhuiShuSQApi.getHotReview(mBookId);
                     if (hotReview != null && hotReview.reviews != null && hotReview.reviews.size() > 0) {
                         List<MultiItemEntity> reviews = new ArrayList<>();
                         if (hotReview.reviews.size() > 2) {
@@ -40,7 +40,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
                         setBookHotReviews(reviews);
                     }
 
-                    Entities.Recommend list = ZhuiShuSQApi.get().getRecommendBook(mBookId);
+                    Entities.Recommend list = ZhuiShuSQApi.getRecommendBook(mBookId);
                     if (list != null && list.books != null && list.books.size() > 0) {
                         List<MultiItemEntity> recommeds = new ArrayList<>();
                         if (list.books.size() > 4) {

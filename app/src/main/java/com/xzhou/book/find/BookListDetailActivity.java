@@ -68,7 +68,6 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     @Override
     protected void initToolBar() {
         super.initToolBar();
-        mToolbar.setTitleTextAppearance(this, R.style.TitleTextStyle);
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitle(R.string.book_list_detail);
     }
@@ -118,10 +117,15 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     public void setPresenter(BookListDetailContract.Presenter presenter) {
     }
 
-    @OnClick({R.id.share_btn})
+    @OnClick({R.id.share_btn, R.id.load_error_view})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.share_btn:
+            break;
+        case R.id.load_error_view:
+            if (mPresenter.start()) {
+                mLoadView.setVisibility(View.VISIBLE);
+            }
             break;
         }
     }

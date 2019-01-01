@@ -15,17 +15,9 @@ public class ZhuiShuSQApi {
     public static final String IMG_BASE_URL = "http://statics.zhuishushenqi.com";
     public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
 
-    private static ZhuiShuSQApi sInstance;
     private static ExecutorService mPool;
 
     private ZhuiShuSQApi() {
-    }
-
-    public static ZhuiShuSQApi get() {
-        if (sInstance == null) {
-            sInstance = new ZhuiShuSQApi();
-        }
-        return sInstance;
     }
 
     public static ExecutorService getPool() {
@@ -41,7 +33,7 @@ public class ZhuiShuSQApi {
      * @param gender male  female
      * @return Recommend
      */
-    public Entities.Recommend getRecommend(String gender) {
+    public static Entities.Recommend getRecommend(String gender) {
         HttpRequest request = new HttpRequest("/book/recommend");
         HashMap<String, String> params = new HashMap<>();
         params.put("gender", gender);
@@ -53,9 +45,9 @@ public class ZhuiShuSQApi {
      *
      * @return HotWord
      */
-    public HttpResult getHotWord() {
+    public static Entities.HotWord getHotWord() {
         HttpRequest request = new HttpRequest("/book/hot-word");
-        return OkHttpUtils.get(request, Entities.HotWord.TYPE, null);
+        return (Entities.HotWord) OkHttpUtils.getObject(request, Entities.HotWord.TYPE, null);
     }
 
     /**
@@ -63,11 +55,11 @@ public class ZhuiShuSQApi {
      *
      * @return AutoComplete
      */
-    public HttpResult getAutoComplete(String query) {
+    public static Entities.AutoComplete getAutoComplete(String query) {
         HttpRequest request = new HttpRequest("/book/auto-complete");
         HashMap<String, String> params = new HashMap<>();
         params.put("query", query);
-        return OkHttpUtils.get(request, Entities.AutoComplete.TYPE, params);
+        return (Entities.AutoComplete) OkHttpUtils.getObject(request, Entities.AutoComplete.TYPE, params);
     }
 
     /**
@@ -75,7 +67,7 @@ public class ZhuiShuSQApi {
      *
      * @return SearchResult
      */
-    public Entities.SearchResult getSearchResult(String query, int start, int limit) {
+    public static Entities.SearchResult getSearchResult(String query, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/fuzzy-search");
         HashMap<String, String> params = new HashMap<>();
         params.put("query", query);
@@ -89,7 +81,7 @@ public class ZhuiShuSQApi {
      *
      * @return BooksByTag
      */
-    public Entities.BooksByTag searchBooksByAuthor(String author) {
+    public static Entities.BooksByTag searchBooksByAuthor(String author) {
         HttpRequest request = new HttpRequest("/book/accurate-search");
         HashMap<String, String> params = new HashMap<>();
         params.put("author", author);
@@ -102,7 +94,7 @@ public class ZhuiShuSQApi {
      * @param bookId bookId
      * @return BookDetail
      */
-    public Entities.BookDetail getBookDetail(String bookId) {
+    public static Entities.BookDetail getBookDetail(String bookId) {
         HttpRequest request = new HttpRequest("/book", bookId);
         return (Entities.BookDetail) OkHttpUtils.getObject(request, Entities.BookDetail.TYPE, null);
     }
@@ -111,7 +103,7 @@ public class ZhuiShuSQApi {
      * @param book bookId
      * @return HotReview
      */
-    public Entities.HotReview getHotReview(String book) {
+    public static Entities.HotReview getHotReview(String book) {
         HttpRequest request = new HttpRequest("/post/review/best-by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", book);
@@ -124,7 +116,7 @@ public class ZhuiShuSQApi {
      * @param bookId bookId
      * @return Recommend
      */
-    public Entities.Recommend getRecommendBook(String bookId) {
+    public static Entities.Recommend getRecommendBook(String bookId) {
         HttpRequest request = new HttpRequest("/book", bookId, "recommend");
         HashMap<String, String> params = new HashMap<>();
         return (Entities.Recommend) OkHttpUtils.getObject(request, Entities.Recommend.TYPE, params);
@@ -137,14 +129,14 @@ public class ZhuiShuSQApi {
      * @param limit  4
      * @return RecommendBookList
      */
-    public Entities.RecommendBookList getRecommendBookList(String bookId, String limit) {
+    public static Entities.RecommendBookList getRecommendBookList(String bookId, String limit) {
         HttpRequest request = new HttpRequest("/book-list", bookId, "recommend");
         HashMap<String, String> params = new HashMap<>();
         params.put("limit", limit);
         return (Entities.RecommendBookList) OkHttpUtils.getObject(request, Entities.RecommendBookList.TYPE, params);
     }
 
-    public Entities.BooksByTag getBooksByTag(String tags, int start, int limit) {
+    public static Entities.BooksByTag getBooksByTag(String tags, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/by-tags");
         HashMap<String, String> params = new HashMap<>();
         params.put("tags", tags);
@@ -158,7 +150,7 @@ public class ZhuiShuSQApi {
      *
      * @return BookMixAToc
      */
-    public HttpResult getBookMixToc(String bookId) {
+    public static HttpResult getBookMixToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-toc", bookId);
         return OkHttpUtils.get(request, Entities.BookMixAToc.TYPE, null);
     }
@@ -167,7 +159,7 @@ public class ZhuiShuSQApi {
      * @param bookId 书源ID
      * @return BookMixAToc
      */
-    public HttpResult getBookMixAToc(String bookId) {
+    public static HttpResult getBookMixAToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-atoc", bookId);
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "chapters");
@@ -178,7 +170,7 @@ public class ZhuiShuSQApi {
      * @param url getBookMixAToc中获取的link
      * @return ChapterRead
      */
-    public HttpResult getChapterRead(String url) {
+    public static HttpResult getChapterRead(String url) {
         HttpRequest request = new HttpRequest("http://chapter2.zhuishushenqi.com/chapter", url);
         return OkHttpUtils.get(request, Entities.ChapterRead.TYPE, null);
     }
@@ -193,12 +185,7 @@ public class ZhuiShuSQApi {
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "summary");
         params.put("book", book);
-        Object o = OkHttpUtils.getObject(request, Entities.BookSource.TYPE, params);
-        if (o instanceof List) {
-            return (List<Entities.BookSource>) o;
-        } else {
-            return null;
-        }
+        return (List<Entities.BookSource>) OkHttpUtils.getObject(request, Entities.BookSource.TYPE, params);
     }
 
     /**
@@ -206,7 +193,7 @@ public class ZhuiShuSQApi {
      *
      * @return RankingList
      */
-    public Entities.RankingList getRanking() {
+    public static Entities.RankingList getRanking() {
         HttpRequest request = new HttpRequest("/ranking/gender");
         return (Entities.RankingList) OkHttpUtils.getObject(request, Entities.RankingList.TYPE, null);
     }
@@ -219,7 +206,7 @@ public class ZhuiShuSQApi {
      *
      * @return Rankings
      */
-    public Entities.Rankings getRanking(String rankingId) {
+    public static Entities.Rankings getRanking(String rankingId) {
         HttpRequest request = new HttpRequest("/ranking", rankingId);
         return (Entities.Rankings) OkHttpUtils.getObject(request, Entities.Rankings.TYPE, null);
     }
@@ -235,7 +222,7 @@ public class ZhuiShuSQApi {
      * @param limit  20
      * @return BookLists
      */
-    public Entities.BookLists getBookLists(String duration, String sort, int start, int limit, String tag, String gender) {
+    public static Entities.BookLists getBookLists(String duration, String sort, int start, int limit, String tag, String gender) {
         HttpRequest request = new HttpRequest("/book-list");
         HashMap<String, String> params = new HashMap<>();
         params.put("duration", duration);
@@ -252,7 +239,7 @@ public class ZhuiShuSQApi {
      *
      * @return List<BookListTags>
      */
-    public HttpResult getBookListTags() {
+    public static HttpResult getBookListTags() {
         HttpRequest request = new HttpRequest("/book-list/tagType");
         return OkHttpUtils.get(request, Entities.BookListTags.TYPE, null);
     }
@@ -262,7 +249,7 @@ public class ZhuiShuSQApi {
      *
      * @return BookListDetail
      */
-    public Entities.BookListDetail getBookListDetail(String bookListId) {
+    public static Entities.BookListDetail getBookListDetail(String bookListId) {
         HttpRequest request = new HttpRequest("/book-list", bookListId);
         return (Entities.BookListDetail) OkHttpUtils.getObject(request, Entities.BookListDetail.TYPE, null);
     }
@@ -272,7 +259,7 @@ public class ZhuiShuSQApi {
      *
      * @return CategoryList
      */
-    public Entities.CategoryList getCategoryList() {
+    public static Entities.CategoryList getCategoryList() {
         HttpRequest request = new HttpRequest("/cats/lv2/statistics");
         return (Entities.CategoryList) OkHttpUtils.getObject(request, Entities.CategoryList.TYPE, null);
     }
@@ -282,7 +269,7 @@ public class ZhuiShuSQApi {
      *
      * @return CategoryListLv2
      */
-    public Entities.CategoryListLv2 getCategoryListLv2() {
+    public static Entities.CategoryListLv2 getCategoryListLv2() {
         HttpRequest request = new HttpRequest("/cats/lv2");
         return (Entities.CategoryListLv2) OkHttpUtils.getObject(request, Entities.CategoryListLv2.TYPE, null);
     }
@@ -297,7 +284,7 @@ public class ZhuiShuSQApi {
      * @param limit  50
      * @return BooksByCats
      */
-    public Entities.BooksByCats getBooksByCats(String gender, String type, String major, String minor, int start, int limit) {
+    public static Entities.BooksByCats getBooksByCats(String gender, String type, String major, String minor, int start, int limit) {
         HttpRequest request = new HttpRequest("/book/by-categories");
         HashMap<String, String> params = new HashMap<>();
         params.put("gender", gender);
@@ -326,8 +313,8 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品)
      * @return DiscussionList
      */
-    public Entities.DiscussionList getBookDiscussionList(String block, String duration, String sort, String type,
-                                                         int start, int limit, boolean distillate) {
+    public static Entities.DiscussionList getBookDiscussionList(String block, String duration, String sort, String type,
+                                                                int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/by-block");
         HashMap<String, String> params = new HashMap<>();
         params.put("block", block);
@@ -346,22 +333,22 @@ public class ZhuiShuSQApi {
      * 获取综合讨论区帖子详情
      *
      * @param discussionId->_id
-     * @return Discussion
+     * @return DiscussionDetail
      */
-    public HttpResult getBookDiscussionDetail(String discussionId) {
+    public static Entities.DiscussionDetail getBookDiscussionDetail(String discussionId) {
         HttpRequest request = new HttpRequest("/post", discussionId);
-        return OkHttpUtils.get(request, Entities.Discussion.TYPE, null);
+        return (Entities.DiscussionDetail) OkHttpUtils.getObject(request, Entities.DiscussionDetail.TYPE, null);
     }
 
     /**
      * 获取神评论列表(综合讨论区、书评区、书荒区皆为同一接口)
      *
      * @param discussionId->_id
-     * @return CommentList
+     * @return Comment
      */
-    public HttpResult getBestComments(String discussionId) {
+    public static Entities.CommentList getBestComments(String discussionId) {
         HttpRequest request = new HttpRequest("/post", discussionId, "comment/best");
-        return OkHttpUtils.get(request, Entities.CommentList.TYPE, null);
+        return (Entities.CommentList) OkHttpUtils.getObject(request, Entities.CommentList.TYPE, null);
     }
 
     /**
@@ -370,14 +357,14 @@ public class ZhuiShuSQApi {
      * @param discussionId->_id
      * @param start             0
      * @param limit             30
-     * @return CommentList
+     * @return Comment
      */
-    public HttpResult getBookDiscussionComments(String discussionId, int start, int limit) {
+    public static Entities.CommentList getBookDiscussionComments(String discussionId, int start, int limit) {
         HttpRequest request = new HttpRequest("/post", discussionId, "comment");
         HashMap<String, String> params = new HashMap<>();
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
-        return OkHttpUtils.get(request, Entities.CommentList.TYPE, params);
+        return (Entities.CommentList) OkHttpUtils.getObject(request, Entities.CommentList.TYPE, params);
     }
 
     /**
@@ -394,9 +381,9 @@ public class ZhuiShuSQApi {
      * @param start      0
      * @param limit      20
      * @param distillate true(精品) 、空字符（全部）
-     * @return BookReviewList
+     * @return PostReviewList
      */
-    public HttpResult getBookReviewList(String duration, String sort, String type, int start, int limit, boolean distillate) {
+    public static Entities.PostReviewList getBookReviewList(String duration, String sort, String type, int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/review");
         HashMap<String, String> params = new HashMap<>();
         params.put("duration", duration);
@@ -407,18 +394,18 @@ public class ZhuiShuSQApi {
         if (distillate) {
             params.put("distillate", "true");
         }
-        return OkHttpUtils.get(request, Entities.BookReviewList.TYPE, params);
+        return (Entities.PostReviewList) OkHttpUtils.getObject(request, Entities.PostReviewList.TYPE, params);
     }
 
     /**
-     * 获取书评区帖子详情
+     * 获取书评帖子详情
      *
      * @param bookReviewId->_id
-     * @return BookReview
+     * @return ReviewDetail
      */
-    public HttpResult getBookReviewDetail(String bookReviewId) {
+    public static Entities.ReviewDetail getBookReviewDetail(String bookReviewId) {
         HttpRequest request = new HttpRequest("/post/review", bookReviewId);
-        return OkHttpUtils.get(request, Entities.BookReview.TYPE, null);
+        return (Entities.ReviewDetail) OkHttpUtils.getObject(request, Entities.ReviewDetail.TYPE, null);
     }
 
     /**
@@ -427,14 +414,14 @@ public class ZhuiShuSQApi {
      * @param bookReviewId->_id
      * @param start             0
      * @param limit             30
-     * @return CommentList
+     * @return Comment
      */
-    public HttpResult getBookReviewComments(String bookReviewId, int start, int limit) {
+    public static Entities.CommentList getBookReviewComments(String bookReviewId, int start, int limit) {
         HttpRequest request = new HttpRequest("/post/review", bookReviewId, "comment");
         HashMap<String, String> params = new HashMap<>();
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
-        return OkHttpUtils.get(request, Entities.CommentList.TYPE, params);
+        return (Entities.CommentList) OkHttpUtils.getObject(request, Entities.CommentList.TYPE, params);
     }
 
     /**
@@ -451,7 +438,7 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品) 、空字符（全部）
      * @return BookHelpList
      */
-    public HttpResult getBookHelpList(String duration, String sort, int start, int limit, boolean distillate) {
+    public static HttpResult getBookHelpList(String duration, String sort, int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/help");
         HashMap<String, String> params = new HashMap<>();
         params.put("duration", duration);
@@ -470,7 +457,7 @@ public class ZhuiShuSQApi {
      * @param helpId->_id
      * @return BookHelp
      */
-    public HttpResult getBookHelpDetail(String helpId) {
+    public static HttpResult getBookHelpDetail(String helpId) {
         HttpRequest request = new HttpRequest("/post/help", helpId);
         return OkHttpUtils.get(request, Entities.BookHelp.TYPE, null);
     }
@@ -480,7 +467,7 @@ public class ZhuiShuSQApi {
      *
      * @return Login
      */
-    public HttpResult login(String platform_uid, String platform_token, String platform_code) {
+    public static HttpResult login(String platform_uid, String platform_token, String platform_code) {
         HttpRequest request = new HttpRequest("/user/login");
         HashMap<String, String> body = new HashMap<>();
         body.put("platform_uid", platform_uid);
@@ -504,7 +491,7 @@ public class ZhuiShuSQApi {
      * @param limit  20
      * @return DiscussionList
      */
-    public Entities.DiscussionList getBookDiscussionList(String bookId, String sort, String type, int start, int limit) {
+    public static Entities.DiscussionList getBookDiscussionList(String bookId, String sort, String type, int start, int limit) {
         HttpRequest request = new HttpRequest("/post/by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", bookId);
@@ -527,7 +514,7 @@ public class ZhuiShuSQApi {
      * @param limit  20
      * @return HotReview
      */
-    public Entities.HotReview getBookReviewList(String bookId, String sort, int start, int limit) {
+    public static Entities.HotReview getBookReviewList(String bookId, String sort, int start, int limit) {
         HttpRequest request = new HttpRequest("/post/review/by-book");
         HashMap<String, String> params = new HashMap<>();
         params.put("book", bookId);
@@ -554,7 +541,7 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品)
      * @return DiscussionList
      */
-    public Entities.DiscussionList getGirlBookDisscussionList(String block, String duration, String sort, String type, int start, int limit, boolean distillate) {
+    public static Entities.DiscussionList getGirlBookDisscussionList(String block, String duration, String sort, String type, int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/by-block");
         HashMap<String, String> params = new HashMap<>();
         params.put("duration", duration);

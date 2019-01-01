@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical"
-              android:paddingBottom="@dimen/book_item_margin_v"
-              android:paddingEnd="@dimen/book_item_margin_h"
               android:paddingStart="@dimen/book_item_margin_h"
-              android:paddingTop="@dimen/book_item_margin_v">
+              android:paddingTop="@dimen/book_item_margin_v"
+              android:paddingEnd="@dimen/book_item_margin_h"
+              android:paddingBottom="@dimen/book_item_margin_v">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,6 +21,17 @@
             android:scaleType="centerCrop"
             android:src="@mipmap/avatar_default"
             tools:ignore="ContentDescription"/>
+
+        <ImageView
+            android:id="@+id/official_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="35dp"
+            android:src="@mipmap/user_avatar_verify_official"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"/>
 
         <TextView
             android:id="@+id/posts_detail_author_view"
@@ -66,11 +78,73 @@
         android:textSize="16sp"
         tools:text="统统都是大神的书，简直赚到了，看书不用愁没钱了！"/>
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/review_detail_rating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_review_detail_rating"
+        android:padding="15dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/book_image"
+            android:layout_width="45dp"
+            android:layout_height="58dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_cover_default"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/book_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="3dp"
+            android:ellipsize="end"
+            android:maxEms="15"
+            android:maxLines="1"
+            android:textColor="@color/common_h1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@id/book_rating_hint"
+            app:layout_constraintStart_toEndOf="@+id/book_image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="我是书名"/>
+
+        <TextView
+            android:id="@+id/book_rating_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="3dp"
+            android:text="@string/book_review_detail_score"
+            android:textColor="@color/common_h2"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/book_image"
+            app:layout_constraintTop_toBottomOf="@id/book_title"/>
+
+        <com.xzhou.book.widget.RatingBar
+            android:id="@+id/review_detail_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/book_rating_hint"
+            app:layout_constraintStart_toEndOf="@+id/book_rating_hint"
+            app:layout_constraintTop_toTopOf="@id/book_rating_hint"
+            app:starCount="5"
+            app:starPadding="5dp"
+            app:starSize="12dp"
+            app:starSrc="@drawable/sel_review_detail_rating"/>
+
+    </android.support.constraint.ConstraintLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="25dp">
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:id="@+id/posts_agreed_view"

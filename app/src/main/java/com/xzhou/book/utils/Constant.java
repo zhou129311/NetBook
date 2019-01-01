@@ -35,8 +35,10 @@ public class Constant {
     public static final int ITEM_TYPE_BOOK_BY_SEARCH = 10;
     public static final int ITEM_TYPE_DISCUSSION = 11;
     public static final int ITEM_TYPE_LOCAL_BOOK = 12;
+    public static final int ITEM_TYPE_COMMENT = 13;
+    public static final int ITEM_TYPE_HELPFUL = 14;
 
-    public static final int[] tagColors = new int[] {
+    public static final int[] tagColors = new int[]{
             Color.parseColor("#90C5F0"),
             Color.parseColor("#91CED5"),
             Color.parseColor("#F88F55"),
@@ -46,7 +48,7 @@ public class Constant {
             Color.parseColor("#F6BC7E")
     };
 
-    @IntDef({ TabSource.SOURCE_RANK_SUB,
+    @IntDef({TabSource.SOURCE_RANK_SUB,
             TabSource.SOURCE_TOPIC_LIST,
             TabSource.SOURCE_CATEGORY_SUB,
             TabSource.SOURCE_AUTHOR,
@@ -95,7 +97,7 @@ public class Constant {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Distillate {
-        String ALL = "";
+        String ALL = "false";
 
         String DISTILLATE = "true";
     }
@@ -116,13 +118,6 @@ public class Constant {
 
         String COMMENT_COUNT = "comment-count";
     }
-
-    public static List<String> sortTypeList = new ArrayList<String>() {{
-        add(SortType.DEFAULT);
-        add(SortType.CREATED);
-        add(SortType.COMMENT_COUNT);
-        add(SortType.HELPFUL);
-    }};
 
     @StringDef({
             BookType.ALL,
@@ -168,7 +163,7 @@ public class Constant {
         String DMTR = "dmtr";
     }
 
-    public static List<String> bookTypeList = new ArrayList<String>() {{
+    public static List<String> bookTypeParams = new ArrayList<String>() {{
         add(BookType.ALL);
         add(BookType.XHQH);
         add(BookType.WXXX);
@@ -176,15 +171,19 @@ public class Constant {
         add(BookType.LSJS);
         add(BookType.YXJJ);
         add(BookType.KHLY);
-        add(BookType.CYJK);
-        add(BookType.HMZC);
-        add(BookType.XDYQ);
-        add(BookType.GDYQ);
-        add(BookType.HXYQ);
-        add(BookType.DMTR);
     }};
 
-    public static Map<String, String> bookType = new HashMap<String, String>() {{
+    public static List<String> bookTypes = new ArrayList<String>() {{
+        add("全部类型");
+        add("玄幻奇幻");
+        add("武侠仙侠");
+        add("都市异能");
+        add("历史军事");
+        add("游戏竞技");
+        add("科幻灵异");
+    }};
+
+    public static Map<String, String> typeToText = new HashMap<String, String>() {{
         put("qt", "其他");
         put(BookType.XHQH, "玄幻奇幻");
         put(BookType.WXXX, "武侠仙侠");

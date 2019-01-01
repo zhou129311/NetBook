@@ -33,36 +33,36 @@ public class TestActivity extends Activity {
             public void run() {
                 switch (view.getId()) {
                 case R.id.btn_1:
-                    ZhuiShuSQApi.get().getBookListTags();
+                    ZhuiShuSQApi.getBookListTags();
                     break;
                 case R.id.btn_2:
-                    ZhuiShuSQApi.get().getCategoryList();
+                    ZhuiShuSQApi.getCategoryList();
                     break;
                 case R.id.btn_3:
-                    ZhuiShuSQApi.get().getAutoComplete("超级");
+                    ZhuiShuSQApi.getAutoComplete("超级");
                     break;
                 case R.id.btn_4:
-                    ZhuiShuSQApi.get().getRanking();
+                    ZhuiShuSQApi.getRanking();
                     break;
                 case R.id.btn_5:
-                    ZhuiShuSQApi.get().getHotWord();
+                    ZhuiShuSQApi.getHotWord();
                     break;
                 case R.id.btn_6:
-                    ZhuiShuSQApi.get().getSearchResult("超级", 0, 20);
+                    ZhuiShuSQApi.getSearchResult("超级", 0, 20);
                     break;
                 case R.id.btn_7:
-                    ZhuiShuSQApi.get().searchBooksByAuthor("十二翼黑暗炽天使");
+                    ZhuiShuSQApi.searchBooksByAuthor("十二翼黑暗炽天使");
                     break;
                 case R.id.btn_8:
-                    ZhuiShuSQApi.get().getBookDetail("58232ecbe8464ea22f0a7aa0");
+                    ZhuiShuSQApi.getBookDetail("58232ecbe8464ea22f0a7aa0");
                     break;
                 case R.id.btn_9:
-                    ZhuiShuSQApi.get().getBookMixAToc("58232ecbe8464ea22f0a7aa0");
+                    ZhuiShuSQApi.getBookMixAToc("58232ecbe8464ea22f0a7aa0");
                     break;
                 case R.id.btn_10:
                     String u = "http://book.my716.com/getBooks.aspx?method=content&bookId=1329871&chapterFile=U_1329871_201707191431258172_1441_2.txt";
                     //OkHttpUtils.get(new HttpRequest(u), null, null);
-                    ZhuiShuSQApi.get().getChapterRead(u);
+                    ZhuiShuSQApi.getChapterRead(u);
                     break;
                 }
             }
