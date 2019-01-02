@@ -195,7 +195,9 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
 
         Adapter() {
             super(null);
-            addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_discussion);
+            addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_posts_discussion);
+            addItemType(Constant.ITEM_TYPE_POSTS_REVIEW, R.layout.item_view_posts_review);
+            addItemType(Constant.ITEM_TYPE_POSTS_HELP, R.layout.item_view_posts_review);
         }
 
         @Override
@@ -214,8 +216,9 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                         .setGone(R.id.official_view, posts.isOfficial())
                         .setGone(R.id.discussion_comment_count, !posts.isVote())
                         .setGone(R.id.discussion_vote_count, posts.isVote())
-                        .setGone(R.id.discussion_time, !posts.isHot())
-                        .setGone(R.id.discussion_hot, posts.isHot());
+                        .setGone(R.id.discussion_time, !posts.isHot() && !posts.isDistillate())
+                        .setGone(R.id.view_hot, posts.isHot())
+                        .setGone(R.id.view_distillate, posts.isDistillate());
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -223,7 +226,24 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                     }
                 });
                 break;
-
+            case Constant.ITEM_TYPE_POSTS_REVIEW:
+                final Entities.PostsReviews postsReviews = (Entities.PostsReviews) item;
+                holder.setRoundImageUrl(R.id.posts_review_img, postsReviews.cover(), R.mipmap.ic_cover_default)
+                        .setText(R.id.posts_review_name_type, AppUtils.getString(R.string.post_review_name_type,
+                                postsReviews.bookTitle(), Constant.typeToText.get(postsReviews.bookType())))
+                        .setText(R.id.posts_review_title, postsReviews.title)
+                        .setText(R.id.posts_review_time, AppUtils.getDescriptionTimeFromDateString(postsReviews.created))
+                        .setText(R.id.posts_review_useful_yes, String.valueOf(postsReviews.helpfulYes()))
+                        .setGone(R.id.posts_review_time, !postsReviews.isHot() && !postsReviews.isDistillate())
+                        .setGone(R.id.view_hot, postsReviews.isHot())
+                        .setGone(R.id.view_distillate, postsReviews.isDistillate());
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PostsDetailActivity.startActivity(mContext, postsReviews._id, PostsDetailActivity.TYPE_REVIEW);
+                    }
+                });
+                break;
             }
         }
     }

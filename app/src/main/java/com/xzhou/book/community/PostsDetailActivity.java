@@ -147,26 +147,22 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     }
 
     @Override
-    public void onInitReviewDetail(Entities.ReviewDetail reviewDetail) {
-        if (reviewDetail == null) {
+    public void onInitPostDetail(Object detail) {
+        if (detail == null) {
             mLoadErrorView.setVisibility(View.VISIBLE);
             mCommentSendLayout.setVisibility(View.GONE);
             return;
         }
         View view = LayoutInflater.from(this).inflate(R.layout.header_view_posts_detail, null);
         HeaderViewHolder header = new HeaderViewHolder(view);
-        header.initReviewData(reviewDetail);
         mAdapter.addHeaderView(view);
-    }
-
-    @Override
-    public void onInitDiscussionDetail(Entities.DiscussionDetail detail) {
-        if (detail == null) {
-            mLoadErrorView.setVisibility(View.VISIBLE);
-            mCommentSendLayout.setVisibility(View.GONE);
-            return;
+        if (detail instanceof Entities.ReviewDetail) {
+            Entities.ReviewDetail reviewDetail = (Entities.ReviewDetail) detail;
+            header.initReviewData(reviewDetail);
+        } else if (detail instanceof Entities.DiscussionDetail) {
+            Entities.DiscussionDetail discussionDetail = (Entities.DiscussionDetail) detail;
+            header.initDiscussionData(discussionDetail);
         }
-
     }
 
     @Override
@@ -197,7 +193,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     public void setPresenter(PostsDetailContract.Presenter presenter) {
     }
 
-    @OnClick({R.id.load_error_view, R.id.comment_send_view})
+    @OnClick({ R.id.load_error_view, R.id.comment_send_view })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -236,7 +232,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             ButterKnife.bind(this, view);
         }
 
-        @OnClick({R.id.posts_agreed_view, R.id.posts_more_view})
+        @OnClick({ R.id.posts_agreed_view, R.id.posts_more_view })
         public void onViewClicked(View view) {
             switch (view.getId()) {
             case R.id.posts_agreed_view:
@@ -248,6 +244,8 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
 
         private void initReviewData(final Entities.ReviewDetail detail) {
             mPostDetailRatingLayout.setVisibility(View.VISIBLE);
+            mBookTitle.setText(detail.review.bookTitle());
+            mRatingBar.setStarCount(detail.review.rating);
             mPostDetailRatingLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -261,12 +259,18 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(detail.review.created));
             mPostDetailTitleView.setText(detail.review.title);
             mPostDetailContent.setText(detail.review.content);
-            mBookTitle.setText(detail.review.bookTitle());
-            mRatingBar.setStarCount(detail.review.rating);
             mPostAgreedView.setVisibility(View.GONE);
         }
 
-        private void initDiscussionData() {
+        private void initDiscussionData(Entities.DiscussionDetail detail) {
+            mPostDetailRatingLayout.setVisibility(View.GONE);
+            ImageLoader.showCircleImageUrl(mPostDetailAvatarView.getContext(), mPostDetailAvatarView,
+                    detail.post.avatar(), R.mipmap.avatar_default);
+            mPostDetailAuthorView.setText(AppUtils.getString(R.string.book_detail_review_author, detail.post.nickname(), detail.post.lv()));
+            mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(detail.post.created));
+            mPostDetailTitleView.setText(detail.post.title);
+            mPostDetailContent.setText(detail.post.content);
+            mPostAgreedView.setVisibility(View.VISIBLE);
         }
 
         private void initHelpData() {
@@ -277,9 +281,10 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
 
         Adapter() {
             super(null);
-            addItemType(Constant.ITEM_TYPE_TEXT, R.layout.item_view_post_section);
-            addItemType(Constant.ITEM_TYPE_HELPFUL, R.layout.item_view_review_scoring);
+            addItemType(Constant.ITEM_TYPE_TEXT, R.layout.item_view_posts_section);
+            addItemType(Constant.ITEM_TYPE_HELPFUL, R.layout.item_view_review_helpful);
             addItemType(Constant.ITEM_TYPE_COMMENT, R.layout.item_view_comment);
+            addItemType(Constant.ITEM_TYPE_VOTE, R.layout.item_view_vote);
         }
 
         @Override
@@ -300,6 +305,14 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                         .setText(R.id.comment_floor, AppUtils.getString(R.string.comment_floor, comment.floor))
                         .setText(R.id.comment_title, AppUtils.getString(R.string.book_detail_review_author, comment.nickname(), comment.lv()))
                         .setText(R.id.comment_content, comment.content);
+                String replayTo = comment.replayTo();
+                TextView replayToTv = holder.getView(R.id.comment_reply_to);
+                if (!TextUtils.isEmpty(replayTo)) {
+                    replayToTv.setVisibility(View.VISIBLE);
+                    replayToTv.setText(replayTo);
+                } else {
+                    replayToTv.setVisibility(View.GONE);
+                }
                 TextView likeView = holder.getView(R.id.comment_like_count);
                 TextView timeView = holder.getView(R.id.comment_time);
                 if (comment.isBest) {
@@ -311,6 +324,11 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                     likeView.setVisibility(View.GONE);
                     timeView.setVisibility(View.VISIBLE);
                 }
+                break;
+            case Constant.ITEM_TYPE_VOTE:
+                Entities.DiscussionDetail.PostDetail.Vote vote = (Entities.DiscussionDetail.PostDetail.Vote) item;
+                holder.setImageResource(R.id.vote_item_number, vote.itemNumberRes)
+                        .setText(R.id.vote_content, vote.content);
                 break;
             }
         }

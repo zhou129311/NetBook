@@ -4,10 +4,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/touch_bg"
-                android:paddingStart="@dimen/book_item_margin_h"
-                android:paddingTop="@dimen/book_item_margin_v"
+                android:paddingBottom="@dimen/book_item_margin_v"
                 android:paddingEnd="@dimen/book_item_margin_h"
-                android:paddingBottom="@dimen/book_item_margin_v">
+                android:paddingStart="@dimen/book_item_margin_h"
+                android:paddingTop="@dimen/book_item_margin_v">
 
     <ImageView
         android:id="@+id/comment_image"
@@ -47,8 +47,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:drawableStart="@mipmap/topic_comment_heart"
         android:drawablePadding="3dp"
+        android:drawableStart="@mipmap/topic_comment_heart"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         tools:ignore="RelativeOverlap"
@@ -77,4 +77,15 @@
         android:textColor="@color/common_h2"
         android:textSize="15sp"
         tools:text="越到后面越索然无味"/>
+
+    <TextView
+        android:id="@+id/comment_reply_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/comment_content"
+        android:layout_marginTop="1dp"
+        android:layout_toEndOf="@id/comment_image"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        tools:text="回复 静静(22楼)"/>
 </RelativeLayout>

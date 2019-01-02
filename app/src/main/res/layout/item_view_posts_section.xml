@@ -6,7 +6,7 @@
           android:layout_height="wrap_content"
           android:background="@color/edit_bg"
           android:paddingStart="@dimen/book_item_margin_h"
-          android:paddingTop="25dp"
+          android:paddingTop="20dp"
           android:paddingEnd="@dimen/book_item_margin_h"
           android:paddingBottom="12dp"
           android:textColor="@color/common_h3"

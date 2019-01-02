@@ -71,9 +71,11 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
             final int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = parent.getChildAt(i);
+                int position = parent.getChildAdapterPosition(child);
+                int itemViewType = parent.getAdapter().getItemViewType(position);
                 View nextChild = parent.getChildAt(i + 1);
                 boolean nextIsLoadView = isNoMoreView(nextChild);
-                if (!isShowDivider(child, parent) || nextIsLoadView) {
+                if (!isShowDivider(child, parent) || nextIsLoadView || itemViewType == Constant.ITEM_TYPE_TEXT) {
                     continue;
                 }
 
@@ -81,7 +83,6 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
                 int top = child.getBottom() + params.bottomMargin;
                 int bottom = top + 1;
                 if (mSpanCount > 1) {
-                    int position = parent.getChildAdapterPosition(child);
                     int itemType = parent.getAdapter().getItemViewType(position); // item type
                     if (itemType == Constant.ITEM_TYPE_TEXT_GRID) {
                         drawHorizontalDivider(c, child, params);

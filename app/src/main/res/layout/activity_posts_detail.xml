@@ -42,8 +42,8 @@
             android:inputType="textMultiLine"
             android:minHeight="55dp"
             android:minLines="3"
-            android:paddingStart="15dp"
             android:paddingEnd="15dp"
+            android:paddingStart="15dp"
             android:textColor="@color/common_h1"
             android:textSize="14sp"
             tools:ignore="Autofill"/>
@@ -54,7 +54,7 @@
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/comment_edit_view"
             android:layout_alignParentEnd="true"
-            android:background="@color/colorPrimaryDark"
+            android:background="@drawable/bg_color_primary_click"
             android:scaleType="center"
             android:src="@drawable/sel_comment_send"
             tools:ignore="ContentDescription"/>

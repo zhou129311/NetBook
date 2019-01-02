@@ -27,7 +27,7 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
         addItemType(Constant.ITEM_TYPE_BOOK_BY_TAG, R.layout.item_view_tag_book);
         addItemType(Constant.ITEM_TYPE_NET_BOOK_LIST, R.layout.item_view_net_book);
         addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.item_view_review);
-        addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_discussion);
+        addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_posts_discussion);
     }
 
     @Override
@@ -131,8 +131,9 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                     .setGone(R.id.official_view, posts.isOfficial())
                     .setGone(R.id.discussion_comment_count, !posts.isVote())
                     .setGone(R.id.discussion_vote_count, posts.isVote())
-                    .setGone(R.id.discussion_time, !posts.isHot())
-                    .setGone(R.id.discussion_hot, posts.isHot());
+                    .setGone(R.id.discussion_time, !posts.isHot() && !posts.isDistillate())
+                    .setGone(R.id.view_hot, posts.isHot())
+                    .setGone(R.id.view_distillate, posts.isDistillate());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

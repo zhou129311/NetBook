@@ -16,6 +16,7 @@ import android.widget.PopupWindow;
 import com.xzhou.book.R;
 import com.xzhou.book.common.FiltrateAdapter;
 import com.xzhou.book.community.DiscussActivity;
+import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.SortType;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 
 /**
  * ToolBar下面的过滤条
@@ -57,9 +57,9 @@ public class MultiSortLayout extends LinearLayout {
     }
 
     public HashMap<String, String> getDefaultParams() {
-        mParams.put("distillate", Constant.Distillate.ALL);
-        mParams.put("type", Constant.BookType.ALL);
-        mParams.put("sort", SortType.DEFAULT);
+        mParams.put(ZhuiShuSQApi.DISTILLATE, Constant.Distillate.ALL);
+        mParams.put(ZhuiShuSQApi.TYPE, Constant.BookType.ALL);
+        mParams.put(ZhuiShuSQApi.SORT, SortType.DEFAULT);
         return mParams;
     }
 
@@ -75,32 +75,32 @@ public class MultiSortLayout extends LinearLayout {
         switch (type) {
         case DiscussActivity.TYPE_DISCUSS:
         case DiscussActivity.TYPE_HELP:
-            data1.key = "distillate";
-            data1.data = new String[]{AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true)};
-            data1.dataParams = new String[]{Constant.Distillate.ALL, Constant.Distillate.DISTILLATE};
-            data2.key = "sort";
-            data2.data = new String[]{AppUtils.getString(R.string.sort_default),
+            data1.key = ZhuiShuSQApi.DISTILLATE;
+            data1.data = new String[] { AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true) };
+            data1.dataParams = new String[] { Constant.Distillate.ALL, Constant.Distillate.DISTILLATE };
+            data2.key = ZhuiShuSQApi.SORT;
+            data2.data = new String[] { AppUtils.getString(R.string.sort_default),
                     AppUtils.getString(R.string.sort_created),
                     AppUtils.getString(R.string.sort_comment_count),
             };
-            data2.dataParams = new String[]{SortType.DEFAULT, SortType.CREATED, SortType.COMMENT_COUNT};
+            data2.dataParams = new String[] { SortType.DEFAULT, SortType.CREATED, SortType.COMMENT_COUNT };
             list.add(data1);
             list.add(data2);
             break;
         case DiscussActivity.TYPE_REVIEWS:
-            data1.key = "distillate";
-            data1.data = new String[]{AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true)};
-            data1.dataParams = new String[]{Constant.Distillate.ALL, Constant.Distillate.DISTILLATE};
-            data2.key = "type";
+            data1.key = ZhuiShuSQApi.DISTILLATE;
+            data1.data = new String[] { AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true) };
+            data1.dataParams = new String[] { Constant.Distillate.ALL, Constant.Distillate.DISTILLATE };
+            data2.key = ZhuiShuSQApi.TYPE;
             data2.data = Constant.bookTypes.toArray(new String[0]);
             data2.dataParams = Constant.bookTypeParams.toArray(new String[0]);
-            data3.key = "sort";
-            data3.data = new String[]{AppUtils.getString(R.string.sort_default),
+            data3.key = ZhuiShuSQApi.SORT;
+            data3.data = new String[] { AppUtils.getString(R.string.sort_default),
                     AppUtils.getString(R.string.sort_created),
                     AppUtils.getString(R.string.sort_helpful),
                     AppUtils.getString(R.string.sort_comment_count),
             };
-            data3.dataParams = new String[]{SortType.DEFAULT, SortType.CREATED, SortType.HELPFUL, SortType.COMMENT_COUNT};
+            data3.dataParams = new String[] { SortType.DEFAULT, SortType.CREATED, SortType.HELPFUL, SortType.COMMENT_COUNT };
             list.add(data1);
             list.add(data2);
             list.add(data3);

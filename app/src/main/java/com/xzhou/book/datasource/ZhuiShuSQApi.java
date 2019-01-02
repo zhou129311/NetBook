@@ -15,6 +15,11 @@ public class ZhuiShuSQApi {
     public static final String IMG_BASE_URL = "http://statics.zhuishushenqi.com";
     public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
 
+    public static final String DURATION = "duration";
+    public static final String DISTILLATE = "distillate";
+    public static final String SORT = "sort";
+    public static final String TYPE = "type";
+
     private static ExecutorService mPool;
 
     private ZhuiShuSQApi() {
@@ -225,8 +230,8 @@ public class ZhuiShuSQApi {
     public static Entities.BookLists getBookLists(String duration, String sort, int start, int limit, String tag, String gender) {
         HttpRequest request = new HttpRequest("/book-list");
         HashMap<String, String> params = new HashMap<>();
-        params.put("duration", duration);
-        params.put("sort", sort);
+        params.put(DURATION, duration);
+        params.put(SORT, sort);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
         params.put("tag", tag);
@@ -318,13 +323,13 @@ public class ZhuiShuSQApi {
         HttpRequest request = new HttpRequest("/post/by-block");
         HashMap<String, String> params = new HashMap<>();
         params.put("block", block);
-        params.put("duration", duration);
-        params.put("sort", sort);
-        params.put("type", type);
+        params.put(DURATION, duration);
+        params.put(SORT, sort);
+        params.put(TYPE, type);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
         if (distillate) {
-            params.put("distillate", "true");
+            params.put(DISTILLATE, "true");
         }
         return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
     }
@@ -386,13 +391,13 @@ public class ZhuiShuSQApi {
     public static Entities.PostReviewList getBookReviewList(String duration, String sort, String type, int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/review");
         HashMap<String, String> params = new HashMap<>();
-        params.put("duration", duration);
-        params.put("sort", sort);
-        params.put("type", type);
+        params.put(DURATION, duration);
+        params.put(SORT, sort);
+        params.put(TYPE, type);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
         if (distillate) {
-            params.put("distillate", "true");
+            params.put(DISTILLATE, "true");
         }
         return (Entities.PostReviewList) OkHttpUtils.getObject(request, Entities.PostReviewList.TYPE, params);
     }
@@ -438,17 +443,17 @@ public class ZhuiShuSQApi {
      * @param distillate true(精品) 、空字符（全部）
      * @return BookHelpList
      */
-    public static HttpResult getBookHelpList(String duration, String sort, int start, int limit, boolean distillate) {
+    public static Entities.BookHelpList getBookHelpList(String duration, String sort, int start, int limit, boolean distillate) {
         HttpRequest request = new HttpRequest("/post/help");
         HashMap<String, String> params = new HashMap<>();
-        params.put("duration", duration);
-        params.put("sort", sort);
+        params.put(DURATION, duration);
+        params.put(SORT, sort);
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
         if (distillate) {
-            params.put("distillate", "true");
+            params.put(DISTILLATE, "true");
         }
-        return OkHttpUtils.get(request, Entities.BookHelpList.TYPE, params);
+        return (Entities.BookHelpList) OkHttpUtils.getObject(request, Entities.BookHelpList.TYPE, params);
     }
 
     /**

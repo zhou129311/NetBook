@@ -21,7 +21,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
     private String mPostId;
     private boolean hasStart;
     private int mDataNumber;
-    private final int[] mVoteNumberRes = new int[]{
+    private final int[] mVoteNumberRes = new int[] {
             R.mipmap.post_detail_comment_vote_item_1,
             R.mipmap.post_detail_comment_vote_item_2,
             R.mipmap.post_detail_comment_vote_item_3,
@@ -53,7 +53,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                     case PostsDetailActivity.TYPE_DISCUSS:
                         Entities.DiscussionDetail discussionDetail = ZhuiShuSQApi.getBookDiscussionDetail(mPostId);
                         if (discussionDetail != null && discussionDetail.post != null) {
-                            setDiscussionDetail(discussionDetail);
+                            setPostDetail(discussionDetail);
                             list = new ArrayList<>();
                             if (discussionDetail.post.votes != null && discussionDetail.post.votes.size() > 0) {
                                 list.add(new Entities.PostSection(AppUtils.getString(R.string.vote_count, discussionDetail.post.voteCount)));
@@ -63,11 +63,14 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                                         Log.e("Vote", "Entities.DiscussionDetail.PostDetail.Vote size > 7");
                                         break;
                                     }
+                                    list.add(vote);
                                     vote.itemNumberRes = mVoteNumberRes[i];
                                     i++;
                                 }
                             }
-
+                            addBestCommentList(list);
+                            list.add(new Entities.PostSection(AppUtils.getString(R.string.comment_comment_count, discussionDetail.post.commentCount)));
+                            addDiscussionCommentList(list, false);
                         }
                         break;
                     case PostsDetailActivity.TYPE_HELP:
@@ -76,14 +79,14 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                     case PostsDetailActivity.TYPE_REVIEW:
                         Entities.ReviewDetail reviewDetail = ZhuiShuSQApi.getBookReviewDetail(mPostId);
                         if (reviewDetail != null && reviewDetail.review != null && reviewDetail.review.helpful != null) {
-                            setReviewDetail(reviewDetail);
+                            setPostDetail(reviewDetail);
                             list = new ArrayList<>();
                             //给书评打分
                             list.add(new Entities.PostSection(AppUtils.getString(R.string.book_review_the_scoring)));
                             list.add(reviewDetail.review.helpful);
-
+                            //神评论
                             addBestCommentList(list);
-
+                            //共XX条评论
                             list.add(new Entities.PostSection(AppUtils.getString(R.string.comment_comment_count, reviewDetail.review.commentCount)));
                             addReviewCommentList(list, false);
                         }
@@ -103,41 +106,54 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
             @Override
             public void run() {
                 List<MultiItemEntity> list = null;
-                switch (mType) {
-                case PostsDetailActivity.TYPE_DISCUSS:
-
-                    break;
-                case PostsDetailActivity.TYPE_HELP:
-                case PostsDetailActivity.TYPE_REVIEW:
-                    list = addReviewCommentList(null, true);
-                    break;
+                if (mDataNumber % PAGE_SIZE != 0) {
+                    list = new ArrayList<>();
+                } else {
+                    switch (mType) {
+                    case PostsDetailActivity.TYPE_DISCUSS:
+                        list = addDiscussionCommentList(null, true);
+                        break;
+                    case PostsDetailActivity.TYPE_HELP:
+                    case PostsDetailActivity.TYPE_REVIEW:
+                        list = addReviewCommentList(null, true);
+                        break;
+                    }
                 }
-
+                if (list != null && list.size() > 0) {
+                    mDataNumber += list.size();
+                }
                 setCommentData(list, true);
             }
         });
     }
 
     private List<MultiItemEntity> addReviewCommentList(List<MultiItemEntity> list, boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>();
-        }
-        int start = 0;
-        int limit = PAGE_SIZE;
-        if (isLoadMore) {
-            start = mDataNumber;
-            limit = mDataNumber + PAGE_SIZE;
-        }
+        int start = mDataNumber;
+        int limit = mDataNumber + PAGE_SIZE;
         Entities.CommentList commentList = ZhuiShuSQApi.getBookReviewComments(mPostId, start, limit);
         if (commentList != null && commentList.comments != null && commentList.comments.size() > 0) {
             if (list == null) {
                 list = new ArrayList<>();
             }
             list.addAll(commentList.comments);
-            if (isLoadMore) {
-                mDataNumber += list.size();
-            } else {
-                mDataNumber = list.size();
+            if (!isLoadMore) {
+                mDataNumber = commentList.comments.size();
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> addDiscussionCommentList(List<MultiItemEntity> list, boolean isLoadMore) {
+        int start = mDataNumber;
+        int limit = mDataNumber + PAGE_SIZE;
+        Entities.CommentList commentList = ZhuiShuSQApi.getBookDiscussionComments(mPostId, start, limit);
+        if (commentList != null && commentList.comments != null && commentList.comments.size() > 0) {
+            if (list == null) {
+                list = new ArrayList<>();
+            }
+            list.addAll(commentList.comments);
+            if (!isLoadMore) {
+                mDataNumber = commentList.comments.size();
             }
         }
         return list;
@@ -156,25 +172,13 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         }
     }
 
-    private void setDiscussionDetail(final Entities.DiscussionDetail detail) {
+    private void setPostDetail(final Object detail) {
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 hasStart = detail != null;
                 if (mView != null) {
-                    mView.onInitDiscussionDetail(detail);
-                }
-            }
-        });
-    }
-
-    private void setReviewDetail(final Entities.ReviewDetail detail) {
-        MyApp.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                hasStart = detail != null;
-                if (mView != null) {
-                    mView.onInitReviewDetail(detail);
+                    mView.onInitPostDetail(detail);
                 }
             }
         });

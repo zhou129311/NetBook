@@ -90,12 +90,12 @@
     <string name="comment_like_count">%1$d次同感</string>
     <string name="comment_best_comment">仰望神评论</string>
     <string name="comment_comment_count">共%1$d条评论</string>
-    <string name="comment_reply_floor">(%1$d楼)</string>
-    <string name="comment_reply_nickname">回复 %1$s</string>
+    <string name="comment_reply_to">回复&#160;&#160;%1$s(%2$d楼)</string>
     <string name="comment_add">添加评论</string>
     <string name="posts_agreed">同感</string>
     <string name="discussion_hot">热门</string>
     <string name="vote_count">共%1$d人投票</string>
+    <string name="post_review_name_type">%1$s&#160;&#160;&#160;[%2$s]</string>
 
     <string name="book_review_helpful_yes">有用</string>
     <string name="book_review_helpful_no">无用</string>

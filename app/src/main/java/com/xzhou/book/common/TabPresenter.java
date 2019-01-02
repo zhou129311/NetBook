@@ -23,7 +23,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
     private int mDataNumber;
 
     private String mFiltrate = "";
-    private final String[] CATE_TYPE = new String[]{CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER};
+    private final String[] CATE_TYPE = new String[] { CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER };
 
     TabPresenter(TabContract.View view, Entities.TabData data, int tabId) {
         super(view);
@@ -64,19 +64,19 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                 mDataNumber = 0;
                 switch (mTabData.source) {
                 case TabSource.SOURCE_CATEGORY_SUB:
-                    list = getCategorySubData(false);
+                    list = getCategorySubData();
                     break;
                 case TabSource.SOURCE_TOPIC_LIST:
-                    list = getTopicListData(false);
+                    list = getTopicListData();
                     break;
                 case TabSource.SOURCE_TAG:
-                    list = getBookByTagData(false);
+                    list = getBookByTagData();
                     break;
                 case TabSource.SOURCE_COMMUNITY:
                     if (mTabId == 0) {
-                        list = getDiscussionList(false);
+                        list = getDiscussionList();
                     } else {
-                        list = getBookReviewList(false);
+                        list = getBookReviewList();
                     }
                     break;
                 case TabSource.SOURCE_RANK_SUB:
@@ -122,28 +122,32 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             @Override
             public void run() {
                 List<MultiItemEntity> list = null;
-                switch (mTabData.source) {
-                case TabSource.SOURCE_RANK_SUB:
-                case TabSource.SOURCE_AUTHOR:
-                case TabSource.SOURCE_RECOMMEND:
-                    // do nothing
-                    break;
-                case TabSource.SOURCE_CATEGORY_SUB:
-                    list = getCategorySubData(true);
-                    break;
-                case TabSource.SOURCE_TOPIC_LIST:
-                    list = getTopicListData(true);
-                    break;
-                case TabSource.SOURCE_TAG:
-                    list = getBookByTagData(true);
-                    break;
-                case TabSource.SOURCE_COMMUNITY:
-                    if (mTabId == 0) {
-                        list = getDiscussionList(true);
-                    } else {
-                        list = getBookReviewList(true);
+                if (mDataNumber % PAGE_SIZE != 0) {
+                    list = new ArrayList<>(); //没有更多了
+                } else {
+                    switch (mTabData.source) {
+                    case TabSource.SOURCE_RANK_SUB:
+                    case TabSource.SOURCE_AUTHOR:
+                    case TabSource.SOURCE_RECOMMEND:
+                        // do nothing
+                        break;
+                    case TabSource.SOURCE_CATEGORY_SUB:
+                        list = getCategorySubData();
+                        break;
+                    case TabSource.SOURCE_TOPIC_LIST:
+                        list = getTopicListData();
+                        break;
+                    case TabSource.SOURCE_TAG:
+                        list = getBookByTagData();
+                        break;
+                    case TabSource.SOURCE_COMMUNITY:
+                        if (mTabId == 0) {
+                            list = getDiscussionList();
+                        } else {
+                            list = getBookReviewList();
+                        }
+                        break;
                     }
-                    break;
                 }
                 if (list != null && list.size() > 0) {
                     mDataNumber += list.size();
@@ -153,11 +157,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         });
     }
 
-    private List<MultiItemEntity> getCategorySubData(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>(); //没有更多了
-        }
-
+    private List<MultiItemEntity> getCategorySubData() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
@@ -174,11 +174,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         return list;
     }
 
-    private List<MultiItemEntity> getTopicListData(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>(); //没有更多了
-        }
-
+    private List<MultiItemEntity> getTopicListData() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
@@ -203,11 +199,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         return list;
     }
 
-    private List<MultiItemEntity> getBookByTagData(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>(); //没有更多了
-        }
-
+    private List<MultiItemEntity> getBookByTagData() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
@@ -221,10 +213,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         return list;
     }
 
-    private List<MultiItemEntity> getDiscussionList(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>(); //没有更多了
-        }
+    private List<MultiItemEntity> getDiscussionList() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
@@ -245,10 +234,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         return list;
     }
 
-    private List<MultiItemEntity> getBookReviewList(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>(); //没有更多了
-        }
+    private List<MultiItemEntity> getBookReviewList() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DiscussPresenter extends BasePresenter<DiscussContract.View> implements DiscussContract.Presenter {
+    private static final String TAG = "DiscussPresenter";
     private static final int PAGE_SIZE = 20;
 
     private int mType;
@@ -54,13 +55,13 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
                 List<MultiItemEntity> list = null;
                 switch (mType) {
                 case DiscussActivity.TYPE_DISCUSS:
-                    list = getDiscussionList(false);
+                    list = getDiscussionList();
                     break;
                 case DiscussActivity.TYPE_REVIEWS:
-
+                    list = getReviewsList();
                     break;
                 case DiscussActivity.TYPE_HELP:
-
+                    list = getBookHelpList();
                     break;
                 case DiscussActivity.TYPE_GIRL:
 
@@ -81,19 +82,23 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
             @Override
             public void run() {
                 List<MultiItemEntity> list = null;
-                switch (mType) {
-                case DiscussActivity.TYPE_DISCUSS:
-                    list = getDiscussionList(true);
-                    break;
-                case DiscussActivity.TYPE_REVIEWS:
+                if (mDataNumber % PAGE_SIZE != 0) {
+                    list = new ArrayList<>();
+                } else {
+                    switch (mType) {
+                    case DiscussActivity.TYPE_DISCUSS:
+                        list = getDiscussionList();
+                        break;
+                    case DiscussActivity.TYPE_REVIEWS:
+                        list = getReviewsList();
+                        break;
+                    case DiscussActivity.TYPE_HELP:
+                        list = getBookHelpList();
+                        break;
+                    case DiscussActivity.TYPE_GIRL:
 
-                    break;
-                case DiscussActivity.TYPE_HELP:
-
-                    break;
-                case DiscussActivity.TYPE_GIRL:
-
-                    break;
+                        break;
+                    }
                 }
 
                 if (list != null && list.size() > 0) {
@@ -104,22 +109,52 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
         });
     }
 
-    private List<MultiItemEntity> getDiscussionList(boolean isLoadMore) {
-        if (isLoadMore && mDataNumber % PAGE_SIZE != 0) {
-            return new ArrayList<>();
-        }
+    private List<MultiItemEntity> getDiscussionList() {
         List<MultiItemEntity> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
-        boolean distillate = Boolean.getBoolean(mParams.get("distillate"));
+        boolean distillate = Boolean.valueOf(mParams.get(ZhuiShuSQApi.DISTILLATE));
         String type = "all";
-        String sort = mParams.get("sort");
+        String sort = mParams.get(ZhuiShuSQApi.SORT);
         Entities.DiscussionList discussionList = ZhuiShuSQApi.getBookDiscussionList("ramble", "all", sort, type,
                 start, limit, distillate);
         if (discussionList != null) {
             list = new ArrayList<>();
             if (discussionList.posts != null && discussionList.posts.size() > 0) {
                 list.addAll(discussionList.posts);
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getReviewsList() {
+        List<MultiItemEntity> list = null;
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
+        boolean distillate = Boolean.valueOf(mParams.get(ZhuiShuSQApi.DISTILLATE));
+        String type = mParams.get(ZhuiShuSQApi.TYPE);
+        String sort = mParams.get(ZhuiShuSQApi.SORT);
+        Entities.PostReviewList postReviewList = ZhuiShuSQApi.getBookReviewList("all", sort, type, start, limit, distillate);
+        if (postReviewList != null) {
+            list = new ArrayList<>();
+            if (postReviewList.reviews != null && postReviewList.reviews.size() > 0) {
+                list.addAll(postReviewList.reviews);
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getBookHelpList() {
+        List<MultiItemEntity> list = null;
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
+        boolean distillate = Boolean.valueOf(mParams.get(ZhuiShuSQApi.DISTILLATE));
+        String sort = mParams.get(ZhuiShuSQApi.SORT);
+        Entities.BookHelpList bookHelpList = ZhuiShuSQApi.getBookHelpList("all", sort, start, limit, distillate);
+        if (bookHelpList != null) {
+            list = new ArrayList<>();
+            if (bookHelpList.helps != null && bookHelpList.helps.size() > 0) {
+                list.addAll(bookHelpList.helps);
             }
         }
         return list;

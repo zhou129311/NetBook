@@ -4,10 +4,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/touch_bg"
-                android:paddingStart="@dimen/book_detail_margin"
-                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
                 android:paddingEnd="@dimen/book_detail_margin"
-                android:paddingBottom="15dp">
+                android:paddingStart="@dimen/book_detail_margin"
+                android:paddingTop="15dp">
 
     <ImageView
         android:id="@+id/discussion_img"
@@ -41,25 +41,6 @@
         tools:text="前天"/>
 
     <TextView
-        android:id="@+id/discussion_hot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/bg_hot_post"
-        android:drawableStart="@mipmap/ic_topic_hot"
-        android:drawablePadding="2dp"
-        android:paddingStart="4dp"
-        android:paddingTop="1.5dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="1.5dp"
-        android:text="@string/discussion_hot"
-        android:textColor="@color/white"
-        android:textSize="10sp"
-        android:visibility="gone"
-        tools:ignore="RelativeOverlap"
-        tools:visibility="visible"/>
-
-    <TextView
         android:id="@+id/discussion_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,8 +70,8 @@
         android:layout_below="@id/discussion_title"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/discussion_img"
-        android:drawableStart="@mipmap/ic_message"
         android:drawablePadding="3dp"
+        android:drawableStart="@mipmap/ic_message"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         android:visibility="gone"
@@ -104,8 +85,8 @@
         android:layout_below="@id/discussion_title"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/discussion_comment_count"
-        android:drawableStart="@mipmap/ic_notif_vote"
         android:drawablePadding="3dp"
+        android:drawableStart="@mipmap/ic_notif_vote"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         android:visibility="gone"
@@ -120,9 +101,47 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@id/discussion_vote_count"
-        android:drawableStart="@mipmap/ic_book_review_like"
         android:drawablePadding="3dp"
+        android:drawableStart="@mipmap/ic_book_review_like"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         tools:text="308"/>
+
+    <TextView
+        android:id="@+id/view_hot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_hot_posts"
+        android:drawablePadding="2dp"
+        android:drawableStart="@mipmap/ic_topic_hot"
+        android:paddingBottom="1.5dp"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:paddingTop="1.5dp"
+        android:text="@string/discussion_hot"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:ignore="RelativeOverlap"
+        tools:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/view_distillate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/bg_distillate_posts"
+        android:drawablePadding="2dp"
+        android:drawableStart="@mipmap/ic_topic_distillate"
+        android:paddingBottom="1.5dp"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:paddingTop="1.5dp"
+        android:text="@string/distillate_true"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:ignore="RelativeOverlap"
+        tools:visibility="visible"/>
 </RelativeLayout>
