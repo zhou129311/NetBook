@@ -193,7 +193,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     public void setPresenter(PostsDetailContract.Presenter presenter) {
     }
 
-    @OnClick({ R.id.load_error_view, R.id.comment_send_view })
+    @OnClick({R.id.load_error_view, R.id.comment_send_view})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -227,12 +227,14 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         TextView mPostAgreedView;
         @BindView(R.id.posts_more_view)
         ImageView mPostMoreView;
+        @BindView(R.id.author_type_view)
+        ImageView mAuthorTypeView;
 
         HeaderViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
 
-        @OnClick({ R.id.posts_agreed_view, R.id.posts_more_view })
+        @OnClick({R.id.posts_agreed_view, R.id.posts_more_view})
         public void onViewClicked(View view) {
             switch (view.getId()) {
             case R.id.posts_agreed_view:
@@ -260,6 +262,16 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailTitleView.setText(detail.review.title);
             mPostDetailContent.setText(detail.review.content);
             mPostAgreedView.setVisibility(View.GONE);
+            int resId = 0;
+            if (detail.review.isOfficial()) {
+                resId = R.mipmap.user_avatar_verify_official;
+            } else if (detail.review.isDoyen()) {
+                resId = R.mipmap.user_avatar_verify_doyen;
+            }
+            if (resId != 0) {
+                mAuthorTypeView.setVisibility(View.VISIBLE);
+                mAuthorTypeView.setImageResource(resId);
+            }
         }
 
         private void initDiscussionData(Entities.DiscussionDetail detail) {

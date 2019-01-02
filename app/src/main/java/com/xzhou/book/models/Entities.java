@@ -731,6 +731,10 @@ public class Entities {
             return author != null && "official".equals(author.type);
         }
 
+        public boolean isDoyen() {
+            return author != null && "doyen".equals(author.type);
+        }
+
         public int authorLv() {
             return author == null ? 1 : author.lv;
         }
@@ -743,7 +747,7 @@ public class Entities {
             private String _id;
             private String avatar;
             private String nickname;
-            private String type; //type=official 官方  type=normal 普通  type=commentator 评论员
+            private String type; //type=official 官方  type=normal 普通  type=commentator 评论员 doyen 首席
             private int lv;
             private String gender;
         }
@@ -1024,6 +1028,14 @@ public class Entities {
             return helpful == null ? 0 : helpful.no;
         }
 
+        public boolean isOfficial() {
+            return author != null && "official".equals(author.type);
+        }
+
+        public boolean isDoyen() {
+            return author != null && "doyen".equals(author.type);
+        }
+
         static class ReviewBook {
             private String _id;
             private String cover;
@@ -1059,6 +1071,34 @@ public class Entities {
             public String updated;
             public String created;
             public int commentCount;
+
+            public String avatar() {
+                return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            }
+
+            public String nickname() {
+                return author == null ? "" : author.nickname;
+            }
+
+            public int lv() {
+                return author == null ? 1 : author.lv;
+            }
+
+            public boolean isOfficial() {
+                return author != null && "official".equals(author.type);
+            }
+
+            public boolean isDoyen() {
+                return author != null && "doyen".equals(author.type);
+            }
+
+            public boolean isHot() {
+                return "hot".equals(state) || "focus".equals(state);
+            }
+
+            public boolean isDistillate() {
+                return "distillate".equals(state);
+            }
 
             @Override
             public int getItemType() {

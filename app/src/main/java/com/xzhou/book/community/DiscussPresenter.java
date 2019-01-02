@@ -114,9 +114,8 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;
         boolean distillate = Boolean.valueOf(mParams.get(ZhuiShuSQApi.DISTILLATE));
-        String type = "all";
         String sort = mParams.get(ZhuiShuSQApi.SORT);
-        Entities.DiscussionList discussionList = ZhuiShuSQApi.getBookDiscussionList("ramble", "all", sort, type,
+        Entities.DiscussionList discussionList = ZhuiShuSQApi.getBookDiscussionList("ramble", "all", sort, "all",
                 start, limit, distillate);
         if (discussionList != null) {
             list = new ArrayList<>();

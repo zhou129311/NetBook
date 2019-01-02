@@ -21,7 +21,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
     private String mPostId;
     private boolean hasStart;
     private int mDataNumber;
-    private final int[] mVoteNumberRes = new int[] {
+    private final int[] mVoteNumberRes = new int[]{
             R.mipmap.post_detail_comment_vote_item_1,
             R.mipmap.post_detail_comment_vote_item_2,
             R.mipmap.post_detail_comment_vote_item_3,
@@ -131,13 +131,15 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         int start = mDataNumber;
         int limit = mDataNumber + PAGE_SIZE;
         Entities.CommentList commentList = ZhuiShuSQApi.getBookReviewComments(mPostId, start, limit);
-        if (commentList != null && commentList.comments != null && commentList.comments.size() > 0) {
+        if (commentList != null && commentList.comments != null) {
             if (list == null) {
                 list = new ArrayList<>();
             }
-            list.addAll(commentList.comments);
-            if (!isLoadMore) {
-                mDataNumber = commentList.comments.size();
+            if (commentList.comments.size() > 0) {
+                list.addAll(commentList.comments);
+                if (!isLoadMore) {
+                    mDataNumber = commentList.comments.size();
+                }
             }
         }
         return list;
@@ -147,13 +149,15 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         int start = mDataNumber;
         int limit = mDataNumber + PAGE_SIZE;
         Entities.CommentList commentList = ZhuiShuSQApi.getBookDiscussionComments(mPostId, start, limit);
-        if (commentList != null && commentList.comments != null && commentList.comments.size() > 0) {
+        if (commentList != null && commentList.comments != null) {
             if (list == null) {
                 list = new ArrayList<>();
             }
-            list.addAll(commentList.comments);
-            if (!isLoadMore) {
-                mDataNumber = commentList.comments.size();
+            if (commentList.comments.size() > 0) {
+                list.addAll(commentList.comments);
+                if (!isLoadMore) {
+                    mDataNumber = commentList.comments.size();
+                }
             }
         }
         return list;

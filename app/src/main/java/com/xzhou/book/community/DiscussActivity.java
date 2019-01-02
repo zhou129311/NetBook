@@ -197,11 +197,12 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
             super(null);
             addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_posts_discussion);
             addItemType(Constant.ITEM_TYPE_POSTS_REVIEW, R.layout.item_view_posts_review);
-            addItemType(Constant.ITEM_TYPE_POSTS_HELP, R.layout.item_view_posts_review);
+            addItemType(Constant.ITEM_TYPE_POSTS_HELP, R.layout.item_view_posts_help);
         }
 
         @Override
         protected void convert(CommonViewHolder holder, MultiItemEntity item) {
+            int resId = 0;
             switch (holder.getItemViewType()) {
             case Constant.ITEM_TYPE_DISCUSSION:
                 final Entities.Posts posts = (Entities.Posts) item;
@@ -213,12 +214,21 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                         .setText(R.id.discussion_comment_count, String.valueOf(posts.commentCount))
                         .setText(R.id.discussion_vote_count, String.valueOf(posts.voteCount))
                         .setText(R.id.discussion_comment_like_count, String.valueOf(posts.likeCount))
-                        .setGone(R.id.official_view, posts.isOfficial())
                         .setGone(R.id.discussion_comment_count, !posts.isVote())
                         .setGone(R.id.discussion_vote_count, posts.isVote())
                         .setGone(R.id.discussion_time, !posts.isHot() && !posts.isDistillate())
                         .setGone(R.id.view_hot, posts.isHot())
-                        .setGone(R.id.view_distillate, posts.isDistillate());
+                        .setGone(R.id.view_distillate, posts.isDistillate())
+                        .setGone(R.id.author_type_view, posts.isOfficial() || posts.isDoyen());
+
+                if (posts.isOfficial()) {
+                    resId = R.mipmap.user_avatar_verify_official;
+                } else if (posts.isDoyen()) {
+                    resId = R.mipmap.user_avatar_verify_doyen;
+                }
+                if (resId != 0) {
+                    holder.setImageResource(R.id.author_type_view, resId);
+                }
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -241,6 +251,33 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                     @Override
                     public void onClick(View view) {
                         PostsDetailActivity.startActivity(mContext, postsReviews._id, PostsDetailActivity.TYPE_REVIEW);
+                    }
+                });
+                break;
+            case Constant.ITEM_TYPE_POSTS_HELP:
+                final Entities.BookHelpList.HelpsBean helpsBean = (Entities.BookHelpList.HelpsBean) item;
+                holder.setCircleImageUrl(R.id.book_help_img, helpsBean.avatar(), R.mipmap.avatar_default)
+                        .setText(R.id.book_help_author, AppUtils.getString(R.string.book_detail_review_author,
+                                helpsBean.nickname(), helpsBean.lv()))
+                        .setText(R.id.book_help_time, AppUtils.getDescriptionTimeFromDateString(helpsBean.created))
+                        .setText(R.id.book_help_title, helpsBean.title)
+                        .setText(R.id.book_help_comment_count, String.valueOf(helpsBean.commentCount))
+                        .setGone(R.id.book_help_time, !helpsBean.isHot() && !helpsBean.isDistillate())
+                        .setGone(R.id.view_hot, helpsBean.isHot())
+                        .setGone(R.id.view_distillate, helpsBean.isDistillate())
+                        .setGone(R.id.author_type_view, helpsBean.isOfficial() || helpsBean.isDoyen());
+                if (helpsBean.isOfficial()) {
+                    resId = R.mipmap.user_avatar_verify_official;
+                } else if (helpsBean.isDoyen()) {
+                    resId = R.mipmap.user_avatar_verify_doyen;
+                }
+                if (resId != 0) {
+                    holder.setImageResource(R.id.author_type_view, resId);
+                }
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PostsDetailActivity.startActivity(mContext, helpsBean._id, PostsDetailActivity.TYPE_HELP);
                     }
                 });
                 break;

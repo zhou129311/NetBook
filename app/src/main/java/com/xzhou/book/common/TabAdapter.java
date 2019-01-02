@@ -128,12 +128,21 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
                     .setText(R.id.discussion_comment_count, String.valueOf(posts.commentCount))
                     .setText(R.id.discussion_vote_count, String.valueOf(posts.voteCount))
                     .setText(R.id.discussion_comment_like_count, String.valueOf(posts.likeCount))
-                    .setGone(R.id.official_view, posts.isOfficial())
+                    .setGone(R.id.author_type_view, posts.isOfficial() || posts.isDoyen())
                     .setGone(R.id.discussion_comment_count, !posts.isVote())
                     .setGone(R.id.discussion_vote_count, posts.isVote())
                     .setGone(R.id.discussion_time, !posts.isHot() && !posts.isDistillate())
                     .setGone(R.id.view_hot, posts.isHot())
                     .setGone(R.id.view_distillate, posts.isDistillate());
+            int resId = 0;
+            if (posts.isOfficial()) {
+                resId = R.mipmap.user_avatar_verify_official;
+            } else if (posts.isDoyen()) {
+                resId = R.mipmap.user_avatar_verify_doyen;
+            }
+            if (resId != 0) {
+                holder.setImageResource(R.id.author_type_view, resId);
+            }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

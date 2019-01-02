@@ -23,7 +23,7 @@
             tools:ignore="ContentDescription"/>
 
         <ImageView
-            android:id="@+id/official_view"
+            android:id="@+id/author_type_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="35dp"
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
         android:textColor="@color/common_h1"
-        android:textSize="20sp"
+        android:textSize="18sp"
         tools:text="盘点||追书2018年度盘点"/>
 
     <TextView
