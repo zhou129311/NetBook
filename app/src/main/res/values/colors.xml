@@ -44,6 +44,9 @@
 
     <color name="book_detail_author_bg">#a2de6014</color>
 
+    <color name="seek_bar_background">#595959</color>
+    <color name="seek_bar_progress">#cccccc</color>
+
     <!--章节标题夜间颜色-->
     <color name="chapter_title_night">#292929</color>
     <!--章节内容夜间颜色-->

@@ -66,6 +66,7 @@
     <string name="book_read_download">缓存</string>
     <string name="read_settings_brightness_hint">跟随系统</string>
     <string name="read_settings_auto_read">自动阅读</string>
+    <string name="read_settings_more">更多设置</string>
     <string name="book_read_mark">书签</string>
     <string name="book_read_toc">目录</string>
     <string name="add_bookmark">新增书签</string>

@@ -3,10 +3,10 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="10dp"
-                android:paddingEnd="15dp"
                 android:paddingStart="15dp"
-                android:paddingTop="10dp">
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/chapter_title"
@@ -23,36 +23,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/battery_view"
-        android:layout_alignParentEnd="true"
         android:layout_below="@id/chapter_title"
-        android:layout_marginBottom="8dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textColor="@color/common_h1"/>
 
     <TextView
         android:id="@+id/page_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
+        tools:ignore="RelativeOverlap"
         tools:text="1/7"/>
 
     <TextView
         android:id="@+id/battery_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:background="@mipmap/reader_battery_bg_normal"
         android:gravity="center"
-        android:paddingBottom="2dp"
-        android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:paddingTop="2dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="2dp"
         android:textColor="@color/common_h2"
         android:textSize="10dp"
+        tools:ignore="SpUsage"
         tools:text="98"/>
 
     <TextClock
