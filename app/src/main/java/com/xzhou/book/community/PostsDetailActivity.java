@@ -132,7 +132,6 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             break;
         }
         mToolbar.setTitle(title);
-        mToolbar.setNavigationIcon(R.mipmap.ab_back);
     }
 
     @Override
@@ -162,6 +161,9 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         } else if (detail instanceof Entities.DiscussionDetail) {
             Entities.DiscussionDetail discussionDetail = (Entities.DiscussionDetail) detail;
             header.initDiscussionData(discussionDetail);
+        } else if (detail instanceof Entities.BookHelp) {
+            Entities.BookHelp bookHelp = (Entities.BookHelp) detail;
+            header.initHelpData(bookHelp);
         }
     }
 
@@ -193,7 +195,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     public void setPresenter(PostsDetailContract.Presenter presenter) {
     }
 
-    @OnClick({R.id.load_error_view, R.id.comment_send_view})
+    @OnClick({ R.id.load_error_view, R.id.comment_send_view })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -234,7 +236,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             ButterKnife.bind(this, view);
         }
 
-        @OnClick({R.id.posts_agreed_view, R.id.posts_more_view})
+        @OnClick({ R.id.posts_agreed_view, R.id.posts_more_view })
         public void onViewClicked(View view) {
             switch (view.getId()) {
             case R.id.posts_agreed_view:
@@ -285,7 +287,15 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostAgreedView.setVisibility(View.VISIBLE);
         }
 
-        private void initHelpData() {
+        private void initHelpData(Entities.BookHelp bookHelp) {
+            mPostDetailRatingLayout.setVisibility(View.GONE);
+            ImageLoader.showCircleImageUrl(mPostDetailAvatarView.getContext(), mPostDetailAvatarView,
+                    bookHelp.help.avatar(), R.mipmap.avatar_default);
+            mPostDetailAuthorView.setText(AppUtils.getString(R.string.book_detail_review_author, bookHelp.help.nickname(), bookHelp.help.lv()));
+            mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(bookHelp.help.created));
+            mPostDetailTitleView.setText(bookHelp.help.title);
+            mPostDetailContent.setText(bookHelp.help.content);
+            mPostAgreedView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -27,18 +27,19 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
 
             </intent-filter>
         </activity>
         <activity
             android:name=".main.TestActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/ReadTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
 
             </intent-filter>
         </activity>
@@ -67,7 +68,10 @@
             android:name=".community.PostsDetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NavigationBarTheme"/>
-        <activity android:name=".read.ReadActivity"/>
+        <activity
+            android:name=".read.ReadActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ReadTheme"/>
 
         <service android:name=".DownloadService"/>
         <provider

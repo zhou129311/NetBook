@@ -462,9 +462,9 @@ public class ZhuiShuSQApi {
      * @param helpId->_id
      * @return BookHelp
      */
-    public static HttpResult getBookHelpDetail(String helpId) {
+    public static Entities.BookHelp getBookHelpDetail(String helpId) {
         HttpRequest request = new HttpRequest("/post/help", helpId);
-        return OkHttpUtils.get(request, Entities.BookHelp.TYPE, null);
+        return (Entities.BookHelp) OkHttpUtils.getObject(request, Entities.BookHelp.TYPE, null);
     }
 
     /**

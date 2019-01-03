@@ -52,15 +52,20 @@
     <string name="detail_day_word_count">日更新字数</string>
     <string name="detail_no_intro">暂无简介</string>
 
-    <string name="book_read_reading">朗读</string>
+    <string name="read_change_mode">更换模式</string>
+    <string name="read_book_detail">书籍简介</string>
     <string name="book_read_community">社区</string>
     <string name="book_read_change_source">换源</string>
     <string name="book_read_introduce">简介</string>
     <string name="book_read_mode_day_manual_setting">日间</string>
     <string name="book_read_mode_night_manual_setting">夜间</string>
+    <string name="book_read_landscape">横屏</string>
+    <string name="book_read_portrait">竖屏</string>
     <string name="book_read_feedback">反馈</string>
     <string name="book_read_settings">设置</string>
     <string name="book_read_download">缓存</string>
+    <string name="read_settings_brightness_hint">跟随系统</string>
+    <string name="read_settings_auto_read">自动阅读</string>
     <string name="book_read_mark">书签</string>
     <string name="book_read_toc">目录</string>
     <string name="add_bookmark">新增书签</string>

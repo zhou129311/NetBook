@@ -55,7 +55,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initToolBar() {
-        super.initToolBar();
         mToolbar.setTitle(R.string.app_name);
         mToolbar.setTitleTextAppearance(this, R.style.MainTitleTextStyle);
     }

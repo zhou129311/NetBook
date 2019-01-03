@@ -111,7 +111,6 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
             title = getString(R.string.community_helper);
         }
         mToolbar.setTitle(title);
-        mToolbar.setNavigationIcon(R.mipmap.ab_back);
     }
 
     @Override

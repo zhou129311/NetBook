@@ -77,7 +77,6 @@ public class TabActivity extends BaseActivity {
         }
         Log.i(TAG, "mTabData = " + mTabData.toString());
         mToolbar.setTitle(mTabData.title);
-        mToolbar.setNavigationIcon(R.mipmap.ab_back);
     }
 
     public int getCurTabId() {

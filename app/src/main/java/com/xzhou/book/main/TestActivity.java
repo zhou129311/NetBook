@@ -1,23 +1,55 @@
 package com.xzhou.book.main;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xzhou.book.R;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.read.ReadViewPager;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class TestActivity extends Activity {
+public class TestActivity extends BaseActivity {
+
+    @BindView(R.id.read_view_pager)
+    ReadViewPager mReadViewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_read);
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void initToolBar() {
+        super.initToolBar();
+        mToolbar.setTitle("我是标题");
+        mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_read, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_community:
+            return true;
+        case R.id.menu_change_source:
+            return true;
+        case R.id.menu_change_mode:
+            return true;
+        case R.id.menu_book_detail:
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -25,47 +57,4 @@ public class TestActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({ R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5,
-            R.id.btn_6, R.id.btn_7, R.id.btn_8, R.id.btn_9, R.id.btn_10 })
-    public void onViewClicked(final View view) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                switch (view.getId()) {
-                case R.id.btn_1:
-                    ZhuiShuSQApi.getBookListTags();
-                    break;
-                case R.id.btn_2:
-                    ZhuiShuSQApi.getCategoryList();
-                    break;
-                case R.id.btn_3:
-                    ZhuiShuSQApi.getAutoComplete("超级");
-                    break;
-                case R.id.btn_4:
-                    ZhuiShuSQApi.getRanking();
-                    break;
-                case R.id.btn_5:
-                    ZhuiShuSQApi.getHotWord();
-                    break;
-                case R.id.btn_6:
-                    ZhuiShuSQApi.getSearchResult("超级", 0, 20);
-                    break;
-                case R.id.btn_7:
-                    ZhuiShuSQApi.searchBooksByAuthor("十二翼黑暗炽天使");
-                    break;
-                case R.id.btn_8:
-                    ZhuiShuSQApi.getBookDetail("58232ecbe8464ea22f0a7aa0");
-                    break;
-                case R.id.btn_9:
-                    ZhuiShuSQApi.getBookMixAToc("58232ecbe8464ea22f0a7aa0");
-                    break;
-                case R.id.btn_10:
-                    String u = "http://book.my716.com/getBooks.aspx?method=content&bookId=1329871&chapterFile=U_1329871_201707191431258172_1441_2.txt";
-                    //OkHttpUtils.get(new HttpRequest(u), null, null);
-                    ZhuiShuSQApi.getChapterRead(u);
-                    break;
-                }
-            }
-        }).start();
-    }
 }

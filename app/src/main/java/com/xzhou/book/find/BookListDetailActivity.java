@@ -68,7 +68,6 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     @Override
     protected void initToolBar() {
         super.initToolBar();
-        mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitle(R.string.book_list_detail);
     }
 

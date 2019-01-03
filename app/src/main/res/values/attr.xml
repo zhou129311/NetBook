@@ -61,4 +61,10 @@
         <attr name="starPadding" format="dimension"/>
         <attr name="starSrc" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="JustifyTextView">
+        <attr name="android:textSize"/>
+        <attr name="android:textColor"/>
+        <attr name="android:text"/>
+    </declare-styleable>
 </resources>

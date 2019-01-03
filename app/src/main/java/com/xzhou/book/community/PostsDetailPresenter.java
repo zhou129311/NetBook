@@ -1,7 +1,5 @@
 package com.xzhou.book.community;
 
-import android.support.annotation.WorkerThread;
-
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
@@ -21,7 +19,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
     private String mPostId;
     private boolean hasStart;
     private int mDataNumber;
-    private final int[] mVoteNumberRes = new int[]{
+    private final int[] mVoteNumberRes = new int[] {
             R.mipmap.post_detail_comment_vote_item_1,
             R.mipmap.post_detail_comment_vote_item_2,
             R.mipmap.post_detail_comment_vote_item_3,
@@ -74,7 +72,16 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                         }
                         break;
                     case PostsDetailActivity.TYPE_HELP:
-
+                        Entities.BookHelp bookHelp = ZhuiShuSQApi.getBookHelpDetail(mPostId);
+                        if (bookHelp != null && bookHelp.help != null) {
+                            setPostDetail(bookHelp);
+                            list = new ArrayList<>();
+                            //神评论
+                            addBestCommentList(list);
+                            //共XX条评论
+                            list.add(new Entities.PostSection(AppUtils.getString(R.string.comment_comment_count, bookHelp.help.commentCount)));
+                            addReviewOrHelpCommentList(list, false);
+                        }
                         break;
                     case PostsDetailActivity.TYPE_REVIEW:
                         Entities.ReviewDetail reviewDetail = ZhuiShuSQApi.getBookReviewDetail(mPostId);
@@ -88,7 +95,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                             addBestCommentList(list);
                             //共XX条评论
                             list.add(new Entities.PostSection(AppUtils.getString(R.string.comment_comment_count, reviewDetail.review.commentCount)));
-                            addReviewCommentList(list, false);
+                            addReviewOrHelpCommentList(list, false);
                         }
                         break;
                     }
@@ -115,7 +122,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                         break;
                     case PostsDetailActivity.TYPE_HELP:
                     case PostsDetailActivity.TYPE_REVIEW:
-                        list = addReviewCommentList(null, true);
+                        list = addReviewOrHelpCommentList(null, true);
                         break;
                     }
                 }
@@ -127,7 +134,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         });
     }
 
-    private List<MultiItemEntity> addReviewCommentList(List<MultiItemEntity> list, boolean isLoadMore) {
+    private List<MultiItemEntity> addReviewOrHelpCommentList(List<MultiItemEntity> list, boolean isLoadMore) {
         int start = mDataNumber;
         int limit = mDataNumber + PAGE_SIZE;
         Entities.CommentList commentList = ZhuiShuSQApi.getBookReviewComments(mPostId, start, limit);
@@ -163,7 +170,6 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         return list;
     }
 
-    @WorkerThread
     private void addBestCommentList(List<MultiItemEntity> list) {
         Entities.CommentList bestCommentList = ZhuiShuSQApi.getBestComments(mPostId);
         if (bestCommentList != null && bestCommentList.comments != null && bestCommentList.comments.size() > 0) {
@@ -180,6 +186,9 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (mView != null) {
+                    mView.onLoading(false);
+                }
                 hasStart = detail != null;
                 if (mView != null) {
                     mView.onInitPostDetail(detail);
@@ -192,9 +201,6 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
-                if (mView != null) {
-                    mView.onLoading(false);
-                }
                 if (isLoadMore) {
                     if (mView != null) {
                         mView.onLoadMore(list);

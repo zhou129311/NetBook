@@ -123,6 +123,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     }
 
     protected void initToolBar() {
+        mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitleTextAppearance(this, R.style.CommonTitleTextStyle);
     }
 

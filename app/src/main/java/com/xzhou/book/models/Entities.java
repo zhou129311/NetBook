@@ -1119,12 +1119,12 @@ public class Entities {
     public static class BookHelp {
         public static final Type TYPE = new TypeToken<BookHelp>() {
         }.getType();
-        public HelpBean help;
+        public HelpDetail help;
 
-        public static class HelpBean {
+        public static class HelpDetail {
             public String _id;
             public String type;
-            public Author author;
+            private Author author;
             public String title;
             public String content;
             public String state;
@@ -1134,16 +1134,36 @@ public class Entities {
             public String shareLink;
             public String id;
 
-            public static class Author {
-                public String _id;
-                public String avatar;
-                public String nickname;
-                public String type;
-                public int lv;
-                public String gender;
-                public Object rank;
-                public String created;
-                public String id;
+            public String avatar() {
+                return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
+            }
+
+            public String nickname() {
+                return author == null ? "" : author.nickname;
+            }
+
+            public int lv() {
+                return author == null ? 1 : author.lv;
+            }
+
+            public boolean isOfficial() {
+                return author != null && "official".equals(author.type);
+            }
+
+            public boolean isDoyen() {
+                return author != null && "doyen".equals(author.type);
+            }
+
+            static class Author {
+                private String _id;
+                private String avatar;
+                private String nickname;
+                private String type;
+                private int lv;
+                private String gender;
+                private Object rank;
+                private String created;
+                private String id;
             }
         }
     }

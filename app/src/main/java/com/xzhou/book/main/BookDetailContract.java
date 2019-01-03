@@ -7,7 +7,6 @@ import com.xzhou.book.models.Entities;
 import java.util.List;
 
 public interface BookDetailContract {
-
     interface Presenter extends BaseContract.Presenter {
     }
 
@@ -19,5 +18,4 @@ public interface BookDetailContract {
 
         void onInitRecommend(List<MultiItemEntity> list);
     }
-
 }

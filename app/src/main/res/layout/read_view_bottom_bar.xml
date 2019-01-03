@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/read_bottom_bar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@color/reader_menu_bg_color"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/read_setting_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingEnd="25dp"
+        android:paddingStart="25dp"
+        android:paddingTop="20dp">
+
+        <ImageView
+            android:id="@+id/brightness_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/brightness_min"
+            tools:ignore="ContentDescription"/>
+
+        <SeekBar
+            android:id="@+id/brightness_seek_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:maxHeight="10dp"
+            android:progress="10"
+            android:progressDrawable="@drawable/bg_seek_bar"
+            android:splitTrack="false"
+            android:thumb="@mipmap/seek_bar_thumb"
+            app:layout_constraintBottom_toBottomOf="@id/brightness_min"
+            app:layout_constraintEnd_toStartOf="@id/brightness_max"
+            app:layout_constraintStart_toEndOf="@id/brightness_min"
+            app:layout_constraintTop_toTopOf="@id/brightness_min"/>
+
+        <ImageView
+            android:id="@+id/brightness_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="25dp"
+            android:src="@mipmap/brightness_max"
+            app:layout_constraintEnd_toStartOf="@id/brightness_checkbox"
+            tools:ignore="ContentDescription"/>
+
+        <CheckBox
+            android:id="@+id/brightness_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:button="@drawable/checkbox_system_brightness"
+            app:layout_constraintEnd_toStartOf="@id/brightness_system"/>
+
+        <TextView
+            android:id="@+id/brightness_system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/read_settings_brightness_hint"
+            android:textColor="@color/gray"
+            android:textSize="11dp"
+            app:layout_constraintBottom_toBottomOf="@id/brightness_checkbox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/brightness_checkbox"
+            tools:ignore="SpUsage"/>
+
+        <TextView
+            android:id="@+id/auto_reader_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:drawablePadding="7dp"
+            android:drawableStart="@mipmap/ic_reader_auto"
+            android:text="@string/read_settings_auto_read"
+            android:textColor="@color/gray"
+            android:textSize="11dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/brightness_system"
+            tools:ignore="SpUsage"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/day_night_view"
+            style="@style/ReadSettingText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/sel_read_day_night"
+            android:text="@string/book_read_mode_night_manual_setting"/>
+
+        <TextView
+            android:id="@+id/orientation_view"
+            style="@style/ReadSettingText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@mipmap/ic_menu_orientation_normal"
+            android:text="@string/book_read_landscape"/>
+
+        <TextView
+            android:id="@+id/setting_view"
+            style="@style/ReadSettingText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@mipmap/ic_menu_settings_normal"
+            android:text="@string/book_read_settings"/>
+
+        <TextView
+            android:id="@+id/download_view"
+            style="@style/ReadSettingText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@mipmap/ic_reader_ab_download"
+            android:text="@string/book_read_download"/>
+
+        <TextView
+            android:id="@+id/toc_view"
+            style="@style/ReadSettingText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@mipmap/ic_menu_toc_normal"
+            android:text="@string/book_read_toc"/>
+    </LinearLayout>
+</LinearLayout>

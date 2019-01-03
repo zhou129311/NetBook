@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_community"
+        android:orderInCategory="80"
+        android:title="@string/book_read_community"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_change_source"
+        android:orderInCategory="80"
+        android:title="@string/book_read_change_source"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_change_mode"
+        android:title="@string/read_change_mode"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_book_detail"
+        android:title="@string/read_book_detail"
+        app:showAsAction="never"/>
+</menu>
