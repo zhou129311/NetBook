@@ -88,7 +88,7 @@ public class Indicator extends LinearLayout {
                 mBitmap = bitmap;
             }
         } else {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.heart_love);
+            mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bg_tab_widget_v3);
         }
         a.recycle();
 

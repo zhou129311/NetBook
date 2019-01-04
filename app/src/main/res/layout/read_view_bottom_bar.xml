@@ -14,6 +14,7 @@
         android:id="@+id/read_setting_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:paddingTop="25dp"
         android:paddingBottom="15dp">
 

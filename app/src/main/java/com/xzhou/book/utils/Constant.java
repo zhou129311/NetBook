@@ -41,7 +41,7 @@ public class Constant {
     public static final int ITEM_TYPE_POSTS_REVIEW = 16;
     public static final int ITEM_TYPE_POSTS_HELP = 17;
 
-    public static final int[] tagColors = new int[]{
+    public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),
             Color.parseColor("#91CED5"),
             Color.parseColor("#F88F55"),
@@ -51,7 +51,14 @@ public class Constant {
             Color.parseColor("#F6BC7E")
     };
 
-    @IntDef({TabSource.SOURCE_RANK_SUB,
+    @IntDef({ ReadTheme.WHITE, ReadTheme.BROWN, ReadTheme.GREEN, })
+    public @interface ReadTheme {
+        int WHITE = 0;
+        int BROWN = 1;
+        int GREEN = 2;
+    }
+
+    @IntDef({ TabSource.SOURCE_RANK_SUB,
             TabSource.SOURCE_TOPIC_LIST,
             TabSource.SOURCE_CATEGORY_SUB,
             TabSource.SOURCE_AUTHOR,

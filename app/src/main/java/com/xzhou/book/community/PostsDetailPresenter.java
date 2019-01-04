@@ -201,6 +201,9 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (mView != null) {
+                    mView.onLoading(false);
+                }
                 if (isLoadMore) {
                     if (mView != null) {
                         mView.onLoadMore(list);

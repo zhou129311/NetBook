@@ -6,7 +6,9 @@
     <com.xzhou.book.read.ReadViewPager
         android:id="@+id/read_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"/>
 
     <include layout="@layout/common_toolbar"/>
 

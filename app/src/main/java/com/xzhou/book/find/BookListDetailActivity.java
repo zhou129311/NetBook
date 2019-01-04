@@ -89,14 +89,11 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     @Override
     protected void onStart() {
         super.onStart();
-        if (mPresenter.start()) {
-            mLoadView.setVisibility(View.VISIBLE);
-        }
+        mPresenter.start();
     }
 
     @Override
     public void onInitData(Entities.BookListDetail detail) {
-        mLoadView.setVisibility(View.GONE);
         if (detail == null || detail.bookList == null) {
             mLoadErrorView.setVisibility(View.VISIBLE);
         } else {
@@ -113,18 +110,21 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
     }
 
     @Override
+    public void onLoading(boolean loading) {
+        mLoadView.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
     public void setPresenter(BookListDetailContract.Presenter presenter) {
     }
 
-    @OnClick({R.id.share_btn, R.id.load_error_view})
+    @OnClick({ R.id.share_btn, R.id.load_error_view })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.share_btn:
             break;
         case R.id.load_error_view:
-            if (mPresenter.start()) {
-                mLoadView.setVisibility(View.VISIBLE);
-            }
+            mPresenter.start();
             break;
         }
     }
@@ -163,7 +163,7 @@ public class BookListDetailActivity extends BaseActivity<BookListDetailContract.
             mBookDetailAuthor.setText(detail.bookList.nickname());
         }
 
-        @OnClick({R.id.book_list_detail_desc, R.id.book_list_detail_share_btn, R.id.book_list_detail_desc_more})
+        @OnClick({ R.id.book_list_detail_desc, R.id.book_list_detail_share_btn, R.id.book_list_detail_desc_more })
         public void onViewClicked(View view) {
             switch (view.getId()) {
             case R.id.book_list_detail_desc:

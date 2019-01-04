@@ -23,18 +23,29 @@ public class FileUtils {
     }
 
     public static String getBookDir(String bookId) {
-        File file = new File(getCachePath(MyApp.getContext()), bookId);
+        File file = new File(getFilePath(MyApp.getContext()), bookId);
         if (!file.exists()) {
             file.mkdirs();
         }
         return file.getAbsolutePath();
     }
 
+    public static String getFilePath(Context context) {
+        String cacheRootPath;
+        File file = context.getExternalFilesDir(null);
+        if (file != null && file.exists()) {
+            cacheRootPath = file.getPath();
+        } else {
+            cacheRootPath = context.getFilesDir().getPath();
+        }
+        return cacheRootPath;
+    }
+
     public static String getCachePath(Context context) {
         String cacheRootPath;
         File file = context.getExternalCacheDir();
         if (file != null && file.exists()) {
-            cacheRootPath = context.getExternalCacheDir().getPath();
+            cacheRootPath = file.getPath();
         } else {
             cacheRootPath = context.getCacheDir().getPath();
         }

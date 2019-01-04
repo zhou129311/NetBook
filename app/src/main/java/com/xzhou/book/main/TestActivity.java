@@ -14,7 +14,12 @@ import android.widget.TextView;
 
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.read.ReadPagerAdapter;
 import com.xzhou.book.read.ReadViewPager;
+import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Constant.ReadTheme;
+import com.xzhou.book.utils.Log;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -63,10 +68,32 @@ public class TestActivity extends BaseActivity {
     @BindView(R.id.toc_view)
     TextView mTocView;
 
+    private ReadPagerAdapter mPagerAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
+        @ReadTheme int theme = AppSettings.getReadTheme();
+        updateThemeView(theme);
+        mReadViewPager.setBackgroundColor(AppUtils.getThemeColor(theme));
+        mReadViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
+            @Override
+            public void onPrevious() {
+                if (hideReadToolBar()) {
+                    return;
+                }
+                Log.i("onPrevious");
+            }
+
+            @Override
+            public void onNext() {
+                if (hideReadToolBar()) {
+                    return;
+                }
+                Log.i("onNext");
+            }
+        });
     }
 
     @Override
@@ -97,14 +124,33 @@ public class TestActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setReadTheme(@ReadTheme int theme) {
+        updateThemeView(theme);
+        AppSettings.saveReadTheme(theme);
+    }
+
+    private void updateThemeView(@ReadTheme int theme) {
+        mThemeWhiteView.setActivated(theme == ReadTheme.WHITE);
+        mThemeBrownView.setActivated(theme == ReadTheme.BROWN);
+        mThemeGreenView.setActivated(theme == ReadTheme.GREEN);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc, R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view})
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+            R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager })
     public void onViewClicked(View view) {
         switch (view.getId()) {
+        case R.id.read_view_pager:
+            if (!hideReadToolBar()) {
+                mReadBottomBar.setVisibility(View.VISIBLE);
+                mToolbar.setVisibility(View.VISIBLE);
+            }
+            break;
         case R.id.brightness_min:
             break;
         case R.id.brightness_max:
@@ -118,19 +164,13 @@ public class TestActivity extends BaseActivity {
         case R.id.more_setting_view:
             break;
         case R.id.theme_white_view:
-            mThemeWhiteView.setActivated(true);
-            mThemeBrownView.setActivated(false);
-            mThemeGreenView.setActivated(false);
+            setReadTheme(ReadTheme.WHITE);
             break;
         case R.id.theme_brown_view:
-            mThemeWhiteView.setActivated(false);
-            mThemeBrownView.setActivated(true);
-            mThemeGreenView.setActivated(false);
+            setReadTheme(ReadTheme.BROWN);
             break;
         case R.id.theme_green_view:
-            mThemeWhiteView.setActivated(false);
-            mThemeBrownView.setActivated(false);
-            mThemeGreenView.setActivated(true);
+            setReadTheme(ReadTheme.GREEN);
             break;
         case R.id.day_night_view:
             break;
@@ -148,5 +188,14 @@ public class TestActivity extends BaseActivity {
         case R.id.toc_view:
             break;
         }
+    }
+
+    private boolean hideReadToolBar() {
+        if (mReadBottomBar.getVisibility() == View.VISIBLE) {
+            mReadBottomBar.setVisibility(View.GONE);
+            mToolbar.setVisibility(View.GONE);
+            return true;
+        }
+        return false;
     }
 }

@@ -18,6 +18,7 @@ public class BookListDetailPresenter extends BasePresenter<BookListDetailContrac
     @Override
     public boolean start() {
         if (mBookListDetail == null) {
+            mView.onLoading(true);
             ZhuiShuSQApi.getPool().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -35,6 +36,7 @@ public class BookListDetailPresenter extends BasePresenter<BookListDetailContrac
             @Override
             public void run() {
                 if (mView != null) {
+                    mView.onLoading(false);
                     mView.onInitData(mBookListDetail);
                 }
             }

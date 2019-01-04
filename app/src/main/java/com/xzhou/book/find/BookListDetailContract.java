@@ -8,6 +8,8 @@ public interface BookListDetailContract {
     }
 
     interface View extends BaseContract.View<Presenter> {
+        void onLoading(boolean loading);
+
         void onInitData(Entities.BookListDetail detail);
     }
 }

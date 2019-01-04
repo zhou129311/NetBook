@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingStart="15dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="15dp"
-                android:paddingBottom="10dp">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:paddingBottom="10dp"
+       android:paddingEnd="15dp"
+       android:paddingStart="15dp"
+       android:paddingTop="10dp">
 
     <TextView
         android:id="@+id/chapter_title"
@@ -16,46 +16,54 @@
         android:maxLines="1"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
-        tools:text="第一章：我是章节标题"/>
+        android:visibility="visible"
+        tools:text="第一章：我是章节标题"
+        tools:visibility="visible"/>
 
     <com.xzhou.book.widget.JustifyTextView
         android:id="@+id/chapter_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/battery_view"
-        android:layout_below="@id/chapter_title"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="8dp"
+        android:layout_below="@id/chapter_title"
         android:layout_marginBottom="8dp"
-        android:textColor="@color/common_h1"/>
+        android:layout_marginTop="8dp"
+        android:textColor="@color/common_h1"
+        android:visibility="visible"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/page_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
+        android:visibility="gone"
         tools:ignore="RelativeOverlap"
-        tools:text="1/7"/>
+        tools:text="1/7"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/battery_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:background="@mipmap/reader_battery_bg_normal"
         android:gravity="center"
+        android:paddingBottom="2dp"
+        android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:paddingTop="2dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
         android:textColor="@color/common_h2"
         android:textSize="10dp"
+        android:visibility="visible"
         tools:ignore="SpUsage"
-        tools:text="98"/>
+        tools:text="98"
+        tools:visibility="visible"/>
 
     <TextClock
         android:id="@+id/page_time"
@@ -67,6 +75,7 @@
         android:format24Hour="HH:mm"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
-        tools:text="12:08"/>
-
-</RelativeLayout>
+        android:visibility="visible"
+        tools:text="12:08"
+        tools:visibility="visible"/>
+</merge>
