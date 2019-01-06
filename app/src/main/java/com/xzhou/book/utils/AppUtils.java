@@ -1,11 +1,15 @@
 package com.xzhou.book.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
@@ -204,5 +208,50 @@ public class AppUtils {
 
     private static long toYears(long date) {
         return toMonths(date) / 365L;
+    }
+
+    /**
+     * 获得当前屏幕亮度值 0~100
+     */
+    public static int getScreenBrightness() {
+        int screenBrightness = 255;
+        try {
+            screenBrightness = Settings.System.getInt(MyApp.getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return screenBrightness / 255 * 100;
+    }
+
+    public static void setScreenBrightness(int brightness, Activity activity) {
+        Window localWindow = activity.getWindow();
+        WindowManager.LayoutParams lp = localWindow.getAttributes();
+        if (brightness == -1) {
+            lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        } else {
+            if (brightness <= 5) {
+                brightness = 5;
+            }
+            lp.screenBrightness = brightness / 100.0F;
+        }
+        localWindow.setAttributes(lp);
+    }
+
+    public static void setFullScreen(boolean fullScreen, Activity activity) {
+        Window window = activity.getWindow();
+        WindowManager.LayoutParams lp = window.getAttributes();
+        if (fullScreen) {
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            window.setAttributes(lp);
+        } else {
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.setAttributes(lp);
+        }
+    }
+
+    public static void deleteBookCache(String bookId) {
+        AppSettings.deleteReadProgress(bookId);
+        AppSettings.deleteChapterList(bookId);
+        FileUtils.deleteBookDir(bookId);
     }
 }

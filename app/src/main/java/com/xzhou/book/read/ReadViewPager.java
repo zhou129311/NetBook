@@ -11,7 +11,8 @@ import android.view.MotionEvent;
 import com.xzhou.book.utils.AppUtils;
 
 public class ReadViewPager extends ViewPager {
-
+    private boolean isCanScroll = true; //是否可以切换页面
+    private boolean isCanTouch = true; //是否可以手势滑动
     private Rect mRect = new Rect();
     private float mDownX;
     private float mDownY;
@@ -50,6 +51,22 @@ public class ReadViewPager extends ViewPager {
         mOnClickListener = listener;
     }
 
+
+    public void setScanScroll(boolean isCanScroll) {
+        this.isCanScroll = isCanScroll;
+    }
+
+    public void setScanTouch(boolean isCanScroll) {
+        this.isCanTouch = isCanScroll;
+    }
+
+    @Override
+    public void scrollTo(int x, int y) {
+        if (isCanScroll) {
+            super.scrollTo(x, y);
+        }
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
@@ -76,7 +93,12 @@ public class ReadViewPager extends ViewPager {
             }
             break;
         }
-        return super.onTouchEvent(ev);
+        return isCanTouch && super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return isCanTouch && super.onInterceptTouchEvent(ev);
     }
 
     @Override

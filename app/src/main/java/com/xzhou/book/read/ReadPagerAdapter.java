@@ -5,17 +5,42 @@ import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Log;
+
 import java.util.List;
 
 public class ReadPagerAdapter extends PagerAdapter {
     private List<ReadPager> mList;
+    private @Constant.ReadTheme
+    int mTheme = AppSettings.getReadTheme();
 
-    ReadPagerAdapter(List<ReadPager> list) {
+    public ReadPagerAdapter(List<ReadPager> list) {
         mList = list;
     }
 
     public int getRealCount() {
         return mList.size();
+    }
+
+    public void setReadTheme(int theme) {
+        if (mTheme != theme) {
+            mTheme = theme;
+            for (ReadPager pager : mList) {
+                pager.setReadTheme(mTheme);
+            }
+        }
+    }
+
+    public void setBattery(int battery) {
+        for (ReadPager pager : mList) {
+            pager.setBattery(battery);
+        }
+    }
+
+    public ReadPager getItem(int position) {
+        return mList.get(position % mList.size());
     }
 
     @Override
@@ -37,7 +62,10 @@ public class ReadPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         ReadPager view = mList.get(position % mList.size());
-        view.reset();
+        Log.i("instantiateItem::view = " + view + ",position=" + position);
+        //view.reset();
+        //view.setReadTheme(mTheme);
+        view.setLoadState(true);
         ViewGroup parent = (ViewGroup) view.getParent();
         if (parent != null) {
             parent.removeView(view);

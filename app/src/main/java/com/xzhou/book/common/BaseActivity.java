@@ -97,6 +97,14 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        if (mPresenter != null) {
+            mPresenter.destroy();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mPresenter != null) {

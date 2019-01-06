@@ -42,21 +42,27 @@ public class SPUtils {
 
     public SPUtils putBoolean(String key, boolean value) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(key, value);
-        editor.apply();
+        editor.putBoolean(key, value).apply();
         return this;
     }
 
     public SPUtils putString(String key, String value) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(key, value);
-        editor.apply();
+        editor.putString(key, value).apply();
         return this;
     }
 
     public SPUtils putInt(String key, int value) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(key, value);
+        editor.putInt(key, value).apply();
+        return this;
+    }
+
+    public SPUtils delete(String... keys) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        for (String key : keys) {
+            editor.remove(key);
+        }
         editor.apply();
         return this;
     }

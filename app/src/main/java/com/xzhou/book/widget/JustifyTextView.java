@@ -22,7 +22,7 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
     }
 
     public int getMaxLineCount() {
-        return getMeasuredWidth() / (int) (getTextSize() + getTextSize());
+        return getMeasuredHeight() / getLineHeight();
     }
 
     @Override

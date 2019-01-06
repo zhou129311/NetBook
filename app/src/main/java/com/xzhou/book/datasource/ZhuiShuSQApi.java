@@ -155,29 +155,31 @@ public class ZhuiShuSQApi {
      *
      * @return BookMixAToc
      */
-    public static HttpResult getBookMixToc(String bookId) {
+    public static Entities.BookMixAToc getBookMixToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-toc", bookId);
-        return OkHttpUtils.get(request, Entities.BookMixAToc.TYPE, null);
+        return (Entities.BookMixAToc) OkHttpUtils.getObject(request, Entities.BookMixAToc.TYPE, null);
     }
 
     /**
-     * @param bookId 书源ID
+     * 获取章节列表
+     *
+     * @param bookId bookId
      * @return BookMixAToc
      */
-    public static HttpResult getBookMixAToc(String bookId) {
+    public static Entities.BookMixAToc getBookMixAToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-atoc", bookId);
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "chapters");
-        return OkHttpUtils.get(request, Entities.BookMixAToc.TYPE, params);
+        return (Entities.BookMixAToc) OkHttpUtils.getObject(request, Entities.BookMixAToc.TYPE, params);
     }
 
     /**
      * @param url getBookMixAToc中获取的link
      * @return ChapterRead
      */
-    public static HttpResult getChapterRead(String url) {
+    public static Entities.ChapterRead getChapterRead(String url) {
         HttpRequest request = new HttpRequest("http://chapter2.zhuishushenqi.com/chapter", url);
-        return OkHttpUtils.get(request, Entities.ChapterRead.TYPE, null);
+        return (Entities.ChapterRead) OkHttpUtils.getObject(request, Entities.ChapterRead.TYPE, null);
     }
 
     /**

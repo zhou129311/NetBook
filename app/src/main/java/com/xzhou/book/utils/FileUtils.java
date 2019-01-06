@@ -10,10 +10,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 public class FileUtils {
+
+    public static boolean hasCacheChapter(String bookId, int chapter) {
+        File file = getChapterFile(bookId, chapter);
+        return file.exists() && file.length() > 10;
+    }
+
     public static String getChapterPath(String bookId, int chapter) {
         return getBookDir(bookId) + File.separator + chapter + ".txt";
     }
@@ -23,11 +27,18 @@ public class FileUtils {
     }
 
     public static String getBookDir(String bookId) {
-        File file = new File(getFilePath(MyApp.getContext()), bookId);
+        File file = new File(getCachePath(MyApp.getContext()), bookId);
         if (!file.exists()) {
             file.mkdirs();
         }
         return file.getAbsolutePath();
+    }
+
+    public static void deleteBookDir(String bookId) {
+        File file = new File(getCachePath(MyApp.getContext()), bookId);
+        if (file.exists()) {
+            deleteFileOrDirectory(file);
+        }
     }
 
     public static String getFilePath(Context context) {
@@ -56,14 +67,17 @@ public class FileUtils {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
-    public static void writeFile(String filePathAndName, String fileContent) {
+    public static void writeFile(String filePath, String content, boolean isAppend) {
+        FileOutputStream fos = null;
         try {
-            OutputStream outstream = new FileOutputStream(filePathAndName);
-            OutputStreamWriter out = new OutputStreamWriter(outstream);
-            out.write(fileContent);
-            out.close();
-        } catch (java.io.IOException e) {
+            fos = new FileOutputStream(filePath, isAppend);
+            byte[] bytes = content.getBytes();
+            fos.write(bytes);
+            fos.close();
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            AppUtils.close(fos);
         }
     }
 

@@ -3,18 +3,18 @@
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="360" >
+        android:toDegrees="360">
     <shape
         android:innerRadiusRatio="3"
         android:shape="ring"
         android:thicknessRatio="8"
-        android:useLevel="false" >
+        android:useLevel="false">
         <gradient
-            android:centerColor="#FFDC35"
+            android:centerColor="@color/light_black"
             android:centerY="0.50"
-            android:endColor="#CE0000"
-            android:startColor="#FFFFFF"
+            android:endColor="@color/light_black"
+            android:startColor="@color/light_black"
             android:type="sweep"
-            android:useLevel="false" />
+            android:useLevel="false"/>
     </shape>
 </rotate>

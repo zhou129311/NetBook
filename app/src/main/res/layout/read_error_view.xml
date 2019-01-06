@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerInParent="true"
-              android:gravity="center_horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
               android:orientation="vertical">
 
     <ImageView
@@ -33,10 +32,10 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_add_book_btn"
         android:gravity="center"
-        android:paddingBottom="10dp"
-        android:paddingEnd="40dp"
         android:paddingStart="40dp"
         android:paddingTop="10dp"
+        android:paddingEnd="40dp"
+        android:paddingBottom="10dp"
         android:text="@string/read_error_retry"
         android:textColor="@color/white"
         android:textSize="14dp"

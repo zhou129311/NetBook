@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:paddingBottom="10dp"
-       android:paddingEnd="15dp"
-       android:paddingStart="15dp"
-       android:paddingTop="10dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="15dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/chapter_title"
@@ -16,54 +16,46 @@
         android:maxLines="1"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
-        android:visibility="visible"
-        tools:text="第一章：我是章节标题"
-        tools:visibility="visible"/>
+        tools:text="第一章：我是章节标题"/>
 
     <com.xzhou.book.widget.JustifyTextView
         android:id="@+id/chapter_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/battery_view"
-        android:layout_alignParentEnd="true"
         android:layout_below="@id/chapter_title"
-        android:layout_marginBottom="8dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
-        android:textColor="@color/common_h1"
-        android:visibility="visible"
-        tools:visibility="visible"/>
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/common_h1"/>
 
     <TextView
         android:id="@+id/page_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
-        android:visibility="gone"
         tools:ignore="RelativeOverlap"
-        tools:text="1/7"
-        tools:visibility="visible"/>
+        tools:text="1/7"/>
 
     <TextView
         android:id="@+id/battery_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:background="@mipmap/reader_battery_bg_normal"
         android:gravity="center"
-        android:paddingBottom="2dp"
-        android:paddingEnd="8dp"
         android:paddingStart="8dp"
         android:paddingTop="2dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="2dp"
         android:textColor="@color/common_h2"
         android:textSize="10dp"
-        android:visibility="visible"
         tools:ignore="SpUsage"
-        tools:text="98"
-        tools:visibility="visible"/>
+        tools:text="98"/>
 
     <TextClock
         android:id="@+id/page_time"
@@ -75,7 +67,51 @@
         android:format24Hour="HH:mm"
         android:textColor="@color/common_h2"
         android:textSize="14sp"
-        android:visibility="visible"
-        tools:text="12:08"
-        tools:visibility="visible"/>
-</merge>
+        tools:text="12:08"/>
+
+    <LinearLayout
+        android:id="@+id/read_page_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/error_image"
+            android:layout_width="133dp"
+            android:layout_height="133dp"
+            android:scaleType="center"
+            android:src="@mipmap/ic_reader_no_network"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/error_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/read_error_no_network"
+            android:textColor="@color/common_h2"
+            android:textSize="15sp"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/retry_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_add_book_btn"
+            android:gravity="center"
+            android:paddingStart="40dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="10dp"
+            android:text="@string/read_error_retry"
+            android:textColor="@color/white"
+            android:textSize="14dp"
+            tools:ignore="ContentDescription,SpUsage"/>
+
+    </LinearLayout>
+</RelativeLayout>

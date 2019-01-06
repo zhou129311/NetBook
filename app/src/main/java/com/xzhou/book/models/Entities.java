@@ -277,7 +277,7 @@ public class Entities {
     }
 
     public static class BookMixAToc {
-        public static final Type TYPE = new TypeToken<HttpResult<BookMixAToc>>() {
+        public static final Type TYPE = new TypeToken<BookMixAToc>() {
         }.getType();
 
         public MixToc mixToc;
@@ -287,46 +287,36 @@ public class Entities {
             public String book;
             public String chaptersUpdated;
             public int chaptersCount1;
-
             public List<Chapters> chapters;
+        }
+    }
 
-            public static class Chapters {
-                public String title;
-                public String link;
-                public String id;
-                public int currency;
-                public boolean unreadble;
-                public boolean isVip;
+    public static class Chapters {
+        public static final Type TYPE = new TypeToken<List<Chapters>>() {
+        }.getType();
 
-                public Chapters(String title, String link) {
-                    this.title = title;
-                    this.link = link;
-                }
-            }
+        public String title;
+        public String link;
+        public String id;
+        public int currency;
+        public boolean unreadble;
+        public boolean isVip;
+
+        public Chapters(String title, String link) {
+            this.title = title;
+            this.link = link;
         }
     }
 
     public static class ChapterRead {
-        public static final Type TYPE = new TypeToken<HttpResult<ChapterRead>>() {
+        public static final Type TYPE = new TypeToken<ChapterRead>() {
         }.getType();
         public Chapter chapter;
+    }
 
-        public static class Chapter {
-            public String title;
-            public String body;
-            public String cpContent;
-
-            public Chapter(String title, String body) {
-                this.title = title;
-                this.body = body;
-            }
-
-            public Chapter(String title, String body, String cpContent) {
-                this.title = title;
-                this.body = body;
-                this.cpContent = cpContent;
-            }
-        }
+    public static class Chapter {
+        public String title;
+        public String body;
     }
 
     public static class HotWord {

@@ -16,10 +16,22 @@
     </style>
 
     <style name="ReadTheme" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:statusBarColor">@color/black</item>
         <item name="colorPrimary">@color/reader_menu_bg_color</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="titleTextColor">@color/white</item>
         <item name="actionMenuTextColor">@color/book_read_top_text</item>
+    </style>
+
+    <style name="TocDialogTheme" parent="AlertDialog.AppCompat">
+        <item name="android:background">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
     </style>
 
     <style name="CommonTitleTextStyle">
