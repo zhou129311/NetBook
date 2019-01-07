@@ -23,7 +23,7 @@ import com.xzhou.book.widget.JustifyTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ReadPager extends RelativeLayout {
+public class ReadPage extends RelativeLayout {
     private static final String TAG = "ReadPager";
     @BindView(R.id.chapter_title)
     TextView mChapterTitle;
@@ -47,22 +47,21 @@ public class ReadPager extends RelativeLayout {
     private @Constant.ReadTheme
     int mTheme;
     private PageContent mPageContent;
-    private boolean isPageEnd;
     //    private ReadActivity mActivity;
     private ReadPageListener mListener;
 
     public interface ReadPageListener {
         void onInit();
 
-        void onRetryLoad();
+        void onReload();
     }
 
-    public ReadPager(Context context) {
+    public ReadPage(Context context) {
         this(context, null);
 //        mActivity = (ReadActivity) context;
     }
 
-    public ReadPager(Context context, AttributeSet attrs) {
+    public ReadPage(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
     }
@@ -94,17 +93,15 @@ public class ReadPager extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onRetryLoad();
+                    mListener.onReload();
                 }
             }
         });
     }
 
     private void initLoadingView(Context context) {
-        if (mLoadingView == null) {
-            mLoadingView = (ProgressBar) LayoutInflater.from(context).inflate(R.layout.common_load_view, null);
-            mLoadingView.setVisibility(VISIBLE);
-        }
+        mLoadingView = (ProgressBar) LayoutInflater.from(context).inflate(R.layout.common_load_view, null);
+        mLoadingView.setVisibility(VISIBLE);
     }
 
     public void setBattery(int battery) {
@@ -138,40 +135,35 @@ public class ReadPager extends RelativeLayout {
         return false;
     }
 
-    public void setPageContent(PageContent pageContent, String title, String number, @ReadPresenter.Error int error) {
-        isPageEnd = false;
-        mPageContent = pageContent;
-        reset();
-        mChapterTitle.setText(title == null ? "" : title);
-        mPageNumber.setText(number == null ? "" : number);
-        if (pageContent != null) {
-            mChapterContent.setText(mPageContent.getPageContent());
-        } else {
-            if (error == ReadPresenter.Error.END) {
-                isPageEnd = true;
-                return;
-            }
-            mChapterContent.setText("");
-            switch (error) {
-            case ReadPresenter.Error.CONNECTION_FAIL:
-                mErrorImage.setImageResource(R.mipmap.ic_reader_connection_error);
-                mErrorHint.setText(R.string.read_error_connect_fail);
-                break;
-            case ReadPresenter.Error.NO_CONTENT:
-                mErrorImage.setImageResource(R.mipmap.ic_reader_error_no_content);
-                mErrorHint.setText(R.string.read_error_no_content);
-                break;
-            case ReadPresenter.Error.NO_NETWORK:
-                mErrorImage.setImageResource(R.mipmap.ic_reader_no_network);
-                mErrorHint.setText(R.string.read_error_no_network);
-                break;
-            }
-            setErrorView(true);
+    public void setPageContent(PageContent page) {
+        mPageContent = page;
+        setLoadState(page.isLoading);
+        mChapterTitle.setText(page.chapterTitle);
+        mPageNumber.setText(page.curPagePos);
+        mChapterContent.setText(mPageContent.getPageContent());
+        setErrorView(page.error != ReadPresenter.Error.NONE);
+        switch (page.error) {
+        case ReadPresenter.Error.CONNECTION_FAIL:
+            mErrorImage.setImageResource(R.mipmap.ic_reader_connection_error);
+            mErrorHint.setText(R.string.read_error_connect_fail);
+            break;
+        case ReadPresenter.Error.NO_CONTENT:
+            mErrorImage.setImageResource(R.mipmap.ic_reader_error_no_content);
+            mErrorHint.setText(R.string.read_error_no_content);
+            break;
+        case ReadPresenter.Error.NO_NETWORK:
+            mErrorImage.setImageResource(R.mipmap.ic_reader_no_network);
+            mErrorHint.setText(R.string.read_error_no_network);
+            break;
         }
     }
 
     public boolean isPageEnd() {
-        return isPageEnd;
+        return mPageContent != null && mPageContent.isEnd;
+    }
+
+    public boolean isPageStart() {
+        return mPageContent != null && mPageContent.isStart;
     }
 
     public PageContent getPageContent() {
@@ -179,15 +171,15 @@ public class ReadPager extends RelativeLayout {
     }
 
     public void saveReadProgress() {
-        if (mPageContent != null) {
-            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.startPos, mPageContent.endPos);
+        if (mPageContent != null && mPageContent.mPageLines != null) {
+            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos);
         }
     }
 
     public void reset() {
         mChapterTitle.setText("");
-        mChapterContent.setText("");
         mPageNumber.setText("");
+        mChapterContent.setText("");
         setErrorView(false);
         setLoadState(false);
     }

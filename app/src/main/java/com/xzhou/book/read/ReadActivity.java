@@ -1,28 +1,35 @@
 package com.xzhou.book.read;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.xzhou.book.BookManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.common.CommonDialog;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -30,7 +37,6 @@ import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,27 +48,29 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @BindView(R.id.read_view_pager)
     ReadViewPager mReadViewPager;
 
+    @BindView(R.id.read_abl_top_menu)
+    AppBarLayout mReadTopBar;
     @BindView(R.id.read_bottom_bar)
     LinearLayout mReadBottomBar;
 
     @BindView(R.id.read_setting_layout)
     ConstraintLayout mReadSettingLayout;
-    @BindView(R.id.brightness_min)
-    ImageView mBrightnessMin;
+    //    @BindView(R.id.brightness_min)
+//    ImageView mBrightnessMin;
     @BindView(R.id.brightness_seek_bar)
     SeekBar mBrightnessSeekBar;
-    @BindView(R.id.brightness_max)
-    ImageView mBrightnessMax;
+    //    @BindView(R.id.brightness_max)
+//    ImageView mBrightnessMax;
     @BindView(R.id.brightness_checkbox)
     CheckBox mBrightnessCheckbox;
-    @BindView(R.id.auto_reader_view)
-    TextView mAutoReaderView;
-    @BindView(R.id.text_size_dec)
-    ImageView mTextSizeDec;
-    @BindView(R.id.text_size_inc)
-    ImageView mTextSizeInc;
-    @BindView(R.id.more_setting_view)
-    TextView mMoreSettingView;
+    //    @BindView(R.id.auto_reader_view)
+//    TextView mAutoReaderView;
+//    @BindView(R.id.text_size_dec)
+//    ImageView mTextSizeDec;
+//    @BindView(R.id.text_size_inc)
+//    ImageView mTextSizeInc;
+//    @BindView(R.id.more_setting_view)
+//    TextView mMoreSettingView;
     @BindView(R.id.theme_white_view)
     ImageView mThemeWhiteView;
     @BindView(R.id.theme_brown_view)
@@ -70,21 +78,18 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @BindView(R.id.theme_green_view)
     ImageView mThemeGreenView;
 
-    @BindView(R.id.day_night_view)
-    TextView mDayNightView;
-    @BindView(R.id.orientation_view)
-    TextView mOrientationView;
-    @BindView(R.id.setting_view)
-    TextView mSettingView;
-    @BindView(R.id.download_view)
-    TextView mDownloadView;
-    @BindView(R.id.toc_view)
-    TextView mTocView;
+    // tool bar show hide anim
+    private Animation mTopInAnim;
+    private Animation mTopOutAnim;
+    private Animation mBottomInAnim;
+    private Animation mBottomOutAnim;
 
-    private ReadPagerAdapter mPagerAdapter;
     private BookManager.LocalBook mBook;
     private List<Entities.Chapters> mChaptersList;
-    private BookTocDialog mBookTocDialog;
+    private CommonDialog mBookTocDialog;
+    private ReadPageManager[] mPageManagers = new ReadPageManager[3];
+    private int mCurChapter;
+    private boolean isInitTextView;
     private int mPrePosition;
 
     public static void startActivity(Context context, BookManager.LocalBook book) {
@@ -98,25 +103,30 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_read);
-        mToolbar.setVisibility(View.GONE);
-        mReadBottomBar.setVisibility(View.GONE);
+        initMenuAnim();
+        hideReadToolBar();
         initBrightness();
         initReadPageView();
         updateThemeView(AppSettings.getReadTheme());
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = registerReceiver(mBatteryReceiver, filter);
-        if (intent != null) {
-            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1); //电量最大值
-            int curBattery = (level / scale) * 100;
-            mPagerAdapter.setBattery(curBattery);
-        }
+        updateBattery(intent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mBatteryReceiver);
+    }
+
+    private void initMenuAnim() {
+        if (mTopInAnim != null) return;
+        mReadTopBar.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+
+        mTopInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_in);
+        mTopOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_out);
+        mBottomInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_bottom_in);
+        mBottomOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_bottom_out);
     }
 
     @Override
@@ -179,57 +189,58 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
-    public void initChapterList(List<Entities.Chapters> list, PageContent pageContent, String chapterTitle,
-                                String pageNumber, @ReadPresenter.Error int error) {
+    public void initChapterList(List<Entities.Chapters> list) {
+        if (list == null) {
+            ToastUtils.showShortToast("未找到本书内容，请检查网络后重试");
+            finish();
+            return;
+        }
         mChaptersList = list;
-        if (list != null && list.size() > 0) {
+    }
+
+    @Override
+    public void onUpdatePages(PageContent[] pageContent) {
+        if (pageContent != null && pageContent.length == 3) {
             mReadViewPager.setScanTouch(true);
-        }
-        Log.i(TAG, "initChapterList:" + chapterTitle + "," + pageNumber + "," + error);
-        ReadPager curPage = mPagerAdapter.getItem(mReadViewPager.getCurrentItem());
-        curPage.setPageContent(pageContent, chapterTitle, pageNumber, error);
-    }
-
-    @Override
-    public void onUpdateNextPage(PageContent pageContent, String chapterTitle, String pageNumber, @ReadPresenter.Error int error) {
-        int curPos = mReadViewPager.getCurrentItem();
-        if (curPos < Integer.MAX_VALUE) {
-            ReadPager nextPage = mPagerAdapter.getItem(curPos + 1);
-            nextPage.setPageContent(pageContent, chapterTitle, pageNumber, error);
-        }
-    }
-
-    @Override
-    public void onUpdatePrePage(PageContent pageContent, String chapterTitle, String pageNumber, @ReadPresenter.Error int error) {
-        int curPos = mReadViewPager.getCurrentItem();
-        if (curPos > 0) {
-            ReadPager prePage = mPagerAdapter.getItem(curPos - 1);
-            prePage.setPageContent(pageContent, chapterTitle, pageNumber, error);
+            for (int i = 0; i < 3; i++) {
+                mPageManagers[i].getReadPage().setPageContent(pageContent[i]);
+                if (pageContent[i].isShow) {
+                    if (i == 0) {
+                        mPrePosition = i;
+                    }
+                    mCurChapter = pageContent[i].chapter;
+                    mReadViewPager.setCurrentItem(i, false);
+                }
+            }
+        } else {
+            mReadViewPager.setScanTouch(false);
         }
     }
 
     private void initReadPageView() {
-        List<ReadPager> pagers = new ArrayList<>();
-        final ReadPager pager = new ReadPager(this);
-        pager.setReadPageListener(new ReadPager.ReadPageListener() {
-            @Override
-            public void onInit() {
-                int maxLineCount = pager.mChapterContent.getMaxLineCount();
-                int width = pager.mChapterContent.getWidth();
-                Log.i(TAG, "onInit:" + maxLineCount + "," + width);
-                mPresenter.setTextViewParams(maxLineCount, pager.mChapterContent.getPaint(), width);
-                mPresenter.start();
-            }
+        for (int i = 0; i < mPageManagers.length; i++) {
+            final ReadPage page = new ReadPage(this);
+            page.setReadPageListener(new ReadPage.ReadPageListener() {
+                @Override
+                public void onInit() {
+                    if (!isInitTextView) {
+                        isInitTextView = true;
+                        int maxLineCount = page.mChapterContent.getMaxLineCount();
+                        int width = page.mChapterContent.getWidth();
+                        Log.i(TAG, "onInit:" + maxLineCount + "," + width);
+                        mPresenter.setTextViewParams(maxLineCount, page.mChapterContent.getPaint(), width);
+                        mPresenter.start();
+                    }
+                }
 
-            @Override
-            public void onRetryLoad() {
+                @Override
+                public void onReload() {
 
-            }
-        });
-        pagers.add(pager);
-        pagers.add(new ReadPager(this));
-        pagers.add(new ReadPager(this));
-        mPagerAdapter = new ReadPagerAdapter(pagers);
+                }
+            });
+            mPageManagers[i] = new ReadPageManager();
+            mPageManagers[i].setReadPage(page);
+        }
         mReadViewPager.setOffscreenPageLimit(3);
         mReadViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
             @Override
@@ -237,10 +248,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 if (hideReadToolBar()) {
                     return;
                 }
-                Log.i("onPrevious");
                 int curPos = mReadViewPager.getCurrentItem();
                 if (curPos <= 0) {
-                    ToastUtils.showShortToast("没有上一页了");
+                    if (mPageManagers[0].getReadPage().isPageStart()) {
+                        ToastUtils.showShortToast("已经是第一页了");
+                    }
                     return;
                 }
                 mReadViewPager.setCurrentItem(curPos - 1, false);
@@ -251,9 +263,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 if (hideReadToolBar()) {
                     return;
                 }
-                Log.i("onNext");
                 int curPos = mReadViewPager.getCurrentItem();
-                ReadPager nextPage = mPagerAdapter.getItem(curPos + 1);
+                if (curPos > 2) {
+                    return;
+                }
+                ReadPage nextPage = mPageManagers[curPos + 1].getReadPage();
                 if (nextPage.isPageEnd()) {
                     ToastUtils.showShortToast("没有下一页了");
                     return;
@@ -268,17 +282,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
             @Override
             public void onPageSelected(int position) {
-                Log.i(TAG, "onPageSelected::position = " + position + ",mPrePosition = " + mPrePosition);
-                if (position > 0) {
-                    mPagerAdapter.getItem(position - 1).reset();
-                }
-                mPagerAdapter.getItem(position + 1).reset();
-                if (mPrePosition > position) {
-                    mPresenter.previous();
-                } else if (mPrePosition < position) {
+                Log.i(TAG, "mPrePosition=" + mPrePosition + " ,position=" + position);
+                hideReadToolBar();
+                if (position > mPrePosition) {
                     mPresenter.next();
+                } else if (position < mPrePosition) {
+                    mPresenter.previous();
                 }
-                mPrePosition = position;
             }
 
             @Override
@@ -286,22 +296,28 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
         });
         mReadViewPager.setScanTouch(false);
-        mReadViewPager.setAdapter(mPagerAdapter);
-        mReadViewPager.setCurrentItem(0);
-        ReadPager curPager = mPagerAdapter.getItem(0);
-        mPrePosition = 0;
-        curPager.setLoadState(true);
+        mReadViewPager.setAdapter(new MyPagerAdapter());
     }
 
     private boolean hideReadToolBar() {
         if (mReadBottomBar.getVisibility() == View.VISIBLE) {
-            AppUtils.setFullScreen(true, this);
+            mReadTopBar.startAnimation(mTopOutAnim);
+            mReadBottomBar.startAnimation(mBottomOutAnim);
             mReadSettingLayout.setVisibility(View.GONE);
             mReadBottomBar.setVisibility(View.GONE);
-            mToolbar.setVisibility(View.GONE);
+            mReadTopBar.setVisibility(View.GONE);
+            hideSystemBar();
             return true;
         }
         return false;
+    }
+
+    private void showReadToolBar() {
+        mReadBottomBar.setVisibility(View.VISIBLE);
+        mReadTopBar.setVisibility(View.VISIBLE);
+        mReadTopBar.startAnimation(mTopInAnim);
+        mReadBottomBar.startAnimation(mBottomInAnim);
+        showSystemBar();
     }
 
     private void setReadTheme(@Constant.ReadTheme int theme) {
@@ -313,7 +329,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mThemeWhiteView.setActivated(theme == Constant.ReadTheme.WHITE);
         mThemeBrownView.setActivated(theme == Constant.ReadTheme.BROWN);
         mThemeGreenView.setActivated(theme == Constant.ReadTheme.GREEN);
-        mPagerAdapter.setReadTheme(theme);
+        updatePageTheme(theme);
     }
 
     private void initBrightness() {
@@ -321,7 +337,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mBrightnessCheckbox.setChecked(isSystem);
         mBrightnessSeekBar.setEnabled(!isSystem);
         mBrightnessSeekBar.setMax(100);
-        mBrightnessSeekBar.setProgress(AppSettings.getBrightness());
+        mBrightnessSeekBar.setProgress(AppSettings.getBrightness(this));
         mBrightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -348,27 +364,25 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
         if (checked) {
             AppUtils.setScreenBrightness(-1, this);
         } else {
-            AppUtils.setScreenBrightness(AppSettings.getBrightness(), this);
+            AppUtils.setScreenBrightness(AppSettings.getBrightness(this), this);
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.read_view_pager:
             if (!hideReadToolBar()) {
-                AppUtils.setFullScreen(false, this);
-                mReadBottomBar.setVisibility(View.VISIBLE);
-                mToolbar.setVisibility(View.VISIBLE);
+                showReadToolBar();
             }
             break;
         case R.id.brightness_min: {
@@ -419,32 +433,94 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 ToastUtils.showShortToast("未找到章节列表");
                 return;
             }
-            ReadPager curPage = mPagerAdapter.getItem(mReadViewPager.getCurrentItem());
             if (mBookTocDialog == null) {
-                mBookTocDialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
-                mBookTocDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
+                final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
+                dialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
                     @Override
                     public void onClickItem(int chapter, Entities.Chapters chapters) {
 
                     }
                 });
+                mBookTocDialog = CommonDialog.newInstance(new CommonDialog.OnCallDialog() {
+                    @Override
+                    public Dialog getDialog(Context context) {
+                        return dialog;
+                    }
+                }, true);
             }
-            PageContent pageContent = curPage.getPageContent();
-            mBookTocDialog.setCurChapter(pageContent == null ? 0 : pageContent.chapter);
-            mBookTocDialog.show();
+            mBookTocDialog.show(getSupportFragmentManager(), "TocDialog");
+            //((BookTocDialog) mBookTocDialog.getDialog()).setCurChapter(mCurChapter);
             break;
+        }
+    }
+
+    private void updatePageTheme(int theme) {
+        for (ReadPageManager page : mPageManagers) {
+            page.getReadPage().setReadTheme(theme);
+        }
+    }
+
+    private void updateBattery(Intent intent) {
+        if (intent != null) {
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1); //电量最大值
+            int curBattery = (level / scale) * 100;
+            for (ReadPageManager page : mPageManagers) {
+                page.getReadPage().setBattery(curBattery);
+            }
         }
     }
 
     private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 100);
-                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100); //电量最大值
-                int curBattery = (level / scale) * 100;
-                mPagerAdapter.setBattery(curBattery);
-            }
+            updateBattery(intent);
         }
     };
+
+    private void showSystemBar() {
+        //显示
+        AppUtils.showUnStableStatusBar(this);
+//        if (isFullScreen) {
+//            AppUtils.showUnStableNavBar(this);
+//        }
+    }
+
+    private void hideSystemBar() {
+        //隐藏
+        AppUtils.hideStableStatusBar(this);
+//        if (isFullScreen) {
+//            AppUtils.hideStableNavBar(this);
+//        }
+    }
+
+    private class MyPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View) object);
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            View view = mPageManagers[position].getPageView();
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null) {
+                parent.removeView(view);
+            }
+            container.addView(view);
+            return view;
+        }
+    }
 }

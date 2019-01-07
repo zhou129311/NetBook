@@ -1,13 +1,16 @@
 package com.xzhou.book.utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -16,11 +19,27 @@ import com.xzhou.book.R;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class AppUtils {
+    private static final int UNSTABLE_STATUS = View.SYSTEM_UI_FLAG_FULLSCREEN;
+    private static final int UNSTABLE_NAV = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+    private static final int STABLE_STATUS = View.SYSTEM_UI_FLAG_FULLSCREEN |
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    private static final int STABLE_NAV = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    private static final int EXPAND_STATUS = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+    private static final int EXPAND_NAV = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
     private static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA);
     private static final long ONE_MINUTE = 60000L;
     private static final long ONE_HOUR = 3600000L;
@@ -213,14 +232,11 @@ public class AppUtils {
     /**
      * 获得当前屏幕亮度值 0~100
      */
-    public static int getScreenBrightness() {
-        int screenBrightness = 255;
-        try {
-            screenBrightness = Settings.System.getInt(MyApp.getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return screenBrightness / 255 * 100;
+    public static int getScreenBrightness(Activity activity) {
+        Window localWindow = activity.getWindow();
+        WindowManager.LayoutParams lp = localWindow.getAttributes();
+        float screenBrightness = lp.screenBrightness;
+        return (int) (screenBrightness / 255 * 100);
     }
 
     public static void setScreenBrightness(int brightness, Activity activity) {
@@ -237,16 +253,93 @@ public class AppUtils {
         localWindow.setAttributes(lp);
     }
 
-    public static void setFullScreen(boolean fullScreen, Activity activity) {
-        Window window = activity.getWindow();
-        WindowManager.LayoutParams lp = window.getAttributes();
-        if (fullScreen) {
-            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            window.setAttributes(lp);
-        } else {
-            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            window.setAttributes(lp);
+    @TargetApi(19)
+    private static void setFlag(Activity activity, int flag) {
+        View decorView = activity.getWindow().getDecorView();
+        int option = decorView.getSystemUiVisibility() | flag;
+        decorView.setSystemUiVisibility(option);
+    }
+
+    //取消flag
+    @TargetApi(19)
+    private static void clearFlag(Activity activity, int flag) {
+        View decorView = activity.getWindow().getDecorView();
+        int option = decorView.getSystemUiVisibility() & (~flag);
+        decorView.setSystemUiVisibility(option);
+    }
+
+    @TargetApi(19)
+    public static void hideUnStableStatusBar(Activity activity) {
+        //设置隐藏StatusBar(点击任意地方会恢复)
+        setFlag(activity, UNSTABLE_STATUS);
+    }
+
+    public static void showUnStableStatusBar(Activity activity) {
+        clearFlag(activity, UNSTABLE_STATUS);
+    }
+
+    public static void showUnStableNavBar(Activity activity) {
+        clearFlag(activity, UNSTABLE_NAV);
+    }
+
+    public static void hideStableStatusBar(Activity activity) {
+        //App全屏，隐藏StatusBar
+        setFlag(activity, STABLE_STATUS);
+    }
+
+    public static void showStableStatusBar(Activity activity) {
+        clearFlag(activity, STABLE_STATUS);
+    }
+
+    public static void hideStableNavBar(Activity activity) {
+        //App全屏，隐藏StatusBar
+        setFlag(activity, STABLE_NAV);
+    }
+
+    /**
+     * 获取状态栏的高度
+     */
+    public static int getStatusBarHeight() {
+        Resources resources = MyApp.getContext().getResources();
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        return resources.getDimensionPixelSize(resourceId);
+    }
+
+    /**
+     * 获取虚拟按键的高度
+     */
+    public static int getNavigationBarHeight() {
+        int navigationBarHeight = 0;
+        Resources rs = MyApp.getContext().getResources();
+        int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (id > 0 && hasNavigationBar()) {
+            navigationBarHeight = rs.getDimensionPixelSize(id);
         }
+        return navigationBarHeight;
+    }
+
+    /**
+     * 是否存在虚拟按键
+     */
+    private static boolean hasNavigationBar() {
+        boolean hasNavigationBar = false;
+        Resources rs = MyApp.getContext().getResources();
+        int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
+        if (id > 0) {
+            hasNavigationBar = rs.getBoolean(id);
+        }
+        try {
+            Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method m = systemPropertiesClass.getMethod("get", String.class);
+            String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+            if ("1".equals(navBarOverride)) {
+                hasNavigationBar = false;
+            } else if ("0".equals(navBarOverride)) {
+                hasNavigationBar = true;
+            }
+        } catch (Exception ignored) {
+        }
+        return hasNavigationBar;
     }
 
     public static void deleteBookCache(String bookId) {

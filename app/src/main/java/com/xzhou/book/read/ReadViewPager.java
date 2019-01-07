@@ -1,22 +1,24 @@
 package com.xzhou.book.read;
 
 import android.content.Context;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import com.xzhou.book.utils.AppUtils;
 
 public class ReadViewPager extends ViewPager {
     private boolean isCanScroll = true; //是否可以切换页面
     private boolean isCanTouch = true; //是否可以手势滑动
-    private Rect mRect = new Rect();
+    private RectF mCenterRect = new RectF();
     private float mDownX;
     private float mDownY;
     private int mCenterX;
+    private boolean isMove = false;
 
     private OnClickChangePageListener mClickChangePageListener;
     private OnClickListener mOnClickListener;
@@ -34,11 +36,16 @@ public class ReadViewPager extends ViewPager {
     public ReadViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mCenterX = AppUtils.getScreenWidth() / 2;
-        int left = AppUtils.getScreenWidth() / 3;
-        int right = left * 2;
-        int top = AppUtils.getScreenHeight() / 3;
-        int bottom = top * 2;
-        mRect.set(left, top, right, bottom);
+        float left = AppUtils.getScreenWidth() / 3;
+        float right = left * 2;
+        float top = AppUtils.getScreenHeight() / 3;
+        float bottom = top * 2;
+        mCenterRect.set(left, top, right, bottom);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
 
     }
 
@@ -50,7 +57,6 @@ public class ReadViewPager extends ViewPager {
     public void setOnClickListener(OnClickListener listener) {
         mOnClickListener = listener;
     }
-
 
     public void setScanScroll(boolean isCanScroll) {
         this.isCanScroll = isCanScroll;
@@ -73,11 +79,18 @@ public class ReadViewPager extends ViewPager {
         case MotionEvent.ACTION_DOWN:
             mDownX = ev.getRawX();
             mDownY = ev.getRawY();
+            isMove = false;
             return true;
+        case MotionEvent.ACTION_MOVE:
+            int slop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+            if (!isMove) {
+                isMove = Math.abs(mDownX - ev.getRawX()) > slop || Math.abs(mDownY - ev.getRawY()) > slop;
+            }
+            break;
         case MotionEvent.ACTION_UP:
             float upX = ev.getRawX();
             float upY = ev.getRawY();
-            if (Math.abs(upX - mDownX) < 5 && Math.abs(upY - mDownY) < 10) {
+            if (!isMove) {
                 if (hasClickCenterRect(upX, upY)) {
                     return performClick();
                 } else if (upX <= mCenterX) {
@@ -111,6 +124,6 @@ public class ReadViewPager extends ViewPager {
     }
 
     private boolean hasClickCenterRect(float x, float y) {
-        return x > mRect.left && x < mRect.right && y < mRect.bottom && y > mRect.top;
+        return mCenterRect.contains(x, y);
     }
 }

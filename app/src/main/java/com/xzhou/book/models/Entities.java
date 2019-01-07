@@ -138,7 +138,7 @@ public class Entities {
 
     public static class ImageText {
         public String name;
-        public @IdRes
+        public @DrawableRes
         int resId;
 
         public ImageText(String name, int resId) {

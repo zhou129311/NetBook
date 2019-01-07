@@ -19,11 +19,8 @@ public interface ReadContract {
 
     interface View extends BaseContract.View<Presenter> {
 
-        void initChapterList(List<Entities.Chapters> list, PageContent pageContent, String chapterTitle, String pageNumber, @ReadPresenter.Error int error);
+        void initChapterList(List<Entities.Chapters> list);
 
-        void onUpdatePrePage(PageContent pageContent, String chapterTitle, String pageNumber, @ReadPresenter.Error int error);
-
-        void onUpdateNextPage(PageContent pageContent, String chapterTitle, String pageNumber, @ReadPresenter.Error int error);
-
+        void onUpdatePages(PageContent[] pageContent);
     }
 }

@@ -67,6 +67,7 @@ public class BookTocDialog extends Dialog {
 
     public void setCurChapter(int curChapter) {
         mCurChapter = curChapter;
+        mAdapter.notifyDataSetChanged();
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

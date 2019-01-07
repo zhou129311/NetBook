@@ -230,7 +230,7 @@ public class Indicator extends LinearLayout {
             view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mViewPager.setCurrentItem(j);
+                    mViewPager.setCurrentItem(j, false);
                 }
             });
         }

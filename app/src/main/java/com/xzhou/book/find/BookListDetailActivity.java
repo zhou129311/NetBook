@@ -20,6 +20,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;

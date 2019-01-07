@@ -21,6 +21,7 @@ import com.xzhou.book.community.CommunityPresenter;
 import com.xzhou.book.find.FindContract;
 import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
+import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.widget.Indicator;
 import com.xzhou.book.utils.ToastUtils;
 
@@ -86,11 +87,11 @@ public class MainActivity extends BaseActivity {
         if (mViewPager.getCurrentItem() != FRAGMENT_BOOKSHELF) {
             setCurFragment(FRAGMENT_BOOKSHELF);
         } else {
-            if (SystemClock.elapsedRealtime() - mLastBackPressedTime > 1500) {
+            if (SystemClock.elapsedRealtime() - mLastBackPressedTime < 1500) {
                 super.onBackPressed();
             } else {
                 mLastBackPressedTime = SystemClock.elapsedRealtime();
-                ToastUtils.showShortToast(R.string.exit_tips);
+                SnackBarUtils.makeShort(getContentView(), getString(R.string.exit_tips)).show(getResources().getColor(R.color.colorPrimary));
             }
         }
     }

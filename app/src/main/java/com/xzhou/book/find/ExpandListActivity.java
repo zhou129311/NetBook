@@ -15,6 +15,8 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
+import com.xzhou.book.common.MyGridLayoutManager;
+import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;

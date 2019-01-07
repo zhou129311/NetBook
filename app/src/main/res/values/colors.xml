@@ -42,6 +42,8 @@
     <color name="read_theme_brown">#a29d89</color>
     <color name="read_theme_night">#000000</color>
 
+    <color name="read_slide_bg">#222222</color>
+
     <color name="book_detail_author_bg">#a2de6014</color>
 
     <color name="seek_bar_background">#595959</color>

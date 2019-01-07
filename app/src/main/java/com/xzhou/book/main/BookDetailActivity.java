@@ -21,6 +21,8 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.GridItemDecoration;
+import com.xzhou.book.common.MyGridLayoutManager;
+import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.models.Entities;

@@ -1,5 +1,7 @@
 package com.xzhou.book.utils;
 
+import android.app.Activity;
+
 import com.google.gson.Gson;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant.ReadTheme;
@@ -13,8 +15,8 @@ public class AppSettings {
     private static final String PRE_KEY_BRIGHTNESS_SYSTEM = "pre_key_brightness_system";
     private static final String PRE_KEY_BRIGHTNESS = "pre_key_brightness";
 
-    public static int getBrightness() {
-        return SPUtils.get().getInt(PRE_KEY_BRIGHTNESS, AppUtils.getScreenBrightness());
+    public static int getBrightness(Activity activity) {
+        return SPUtils.get().getInt(PRE_KEY_BRIGHTNESS, AppUtils.getScreenBrightness(activity));
     }
 
     public static void saveBrightness(int value) {
@@ -58,17 +60,15 @@ public class AppSettings {
         SPUtils.get().delete(bookId);
     }
 
-    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos, int bufEndPos) {
+    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos) {
         SPUtils.get().putInt(getChapterKey(bookId), chapter)
-                .putInt(getStartPosKey(bookId), bufBeginPos)
-                .putInt(getEndPosKey(bookId), bufEndPos);
+                .putInt(getStartPosKey(bookId), bufBeginPos);
     }
 
     public static int[] getReadProgress(String bookId) {
         int chapter = SPUtils.get().getInt(getChapterKey(bookId), 0);
         int startPos = SPUtils.get().getInt(getStartPosKey(bookId), 0);
-        int endPos = SPUtils.get().getInt(getEndPosKey(bookId), 0);
-        return new int[]{chapter, startPos, endPos};
+        return new int[] { chapter, startPos };
     }
 
     public static void deleteChapterList(String bookId) {

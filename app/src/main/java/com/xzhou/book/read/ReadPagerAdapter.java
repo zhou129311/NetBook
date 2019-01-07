@@ -12,11 +12,11 @@ import com.xzhou.book.utils.Log;
 import java.util.List;
 
 public class ReadPagerAdapter extends PagerAdapter {
-    private List<ReadPager> mList;
+    private List<ReadPage> mList;
     private @Constant.ReadTheme
     int mTheme = AppSettings.getReadTheme();
 
-    public ReadPagerAdapter(List<ReadPager> list) {
+    public ReadPagerAdapter(List<ReadPage> list) {
         mList = list;
     }
 
@@ -27,19 +27,19 @@ public class ReadPagerAdapter extends PagerAdapter {
     public void setReadTheme(int theme) {
         if (mTheme != theme) {
             mTheme = theme;
-            for (ReadPager pager : mList) {
+            for (ReadPage pager : mList) {
                 pager.setReadTheme(mTheme);
             }
         }
     }
 
     public void setBattery(int battery) {
-        for (ReadPager pager : mList) {
+        for (ReadPage pager : mList) {
             pager.setBattery(battery);
         }
     }
 
-    public ReadPager getItem(int position) {
+    public ReadPage getItem(int position) {
         return mList.get(position % mList.size());
     }
 
@@ -61,7 +61,7 @@ public class ReadPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        ReadPager view = mList.get(position % mList.size());
+        ReadPage view = mList.get(position % mList.size());
         Log.i("instantiateItem::view = " + view + ",position=" + position);
         //view.reset();
         //view.setReadTheme(mTheme);

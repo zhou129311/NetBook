@@ -18,12 +18,11 @@ import java.util.List;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.END, Error.NONE})
+    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
         int NO_CONTENT = 2;
-        int END = 3;
         int NONE = 4;
     }
 
@@ -35,10 +34,15 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private int mMaxLineCount;
     private Paint mPaint;
     private int mTextViewWidth;
+    private PageContent[] mPageContents = new PageContent[3];
 
     ReadPresenter(ReadContract.View view, BookManager.LocalBook book) {
         super(view);
         mBook = book;
+        for (int i = 0; i < mPageContents.length; i++) {
+            mPageContents[i] = new PageContent();
+            mPageContents[i].bookId = mBook._id;
+        }
         mCurBuffer = new ChapterBuffer(mBook._id);
         mPreBuffer = new ChapterBuffer(mBook._id);
         mNextBuffer = new ChapterBuffer(mBook._id);
@@ -58,22 +62,30 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             AppSettings.saveChapterList(mBook._id, mChaptersList);
                         }
                     }
-                    @Error int error = Error.NONE;
-                    PageContent curPage = null;
-                    String pageNumber = null;
-                    String title = null;
+                    initChaptersList();
+
                     if (mChaptersList != null) {
-                        int[] readProgress = AppSettings.getReadProgress(mBook._id);
-                        int chapter = readProgress[0];
-                        int startPos = readProgress[1];
-                        int endPos = readProgress[2];
-                        if (chapter < 0 || chapter > mChaptersList.size()) {
+                        int chapterSize = mChaptersList.size();
+                        int[] progress = AppSettings.getReadProgress(mBook._id);
+                        int chapter = progress[0], startPos = progress[1];
+                        if (chapter < 0 || chapter > chapterSize) {
                             chapter = 0;
                             startPos = 0;
-                            endPos = 0;
                         }
                         Entities.Chapters chapters = mChaptersList.get(chapter);
-                        title = chapters.title;
+                        if (chapter == 0) {
+                            mPageContents[0].clear();
+                            mPageContents[0].isLoading = true;
+                            mPageContents[0].isShow = true;
+                            mPageContents[0].isStart = true;
+                            mPageContents[0].chapterTitle = chapters.title;
+                            if (chapterSize > 1) {
+                                mPageContents[1].clear();
+                                mPageContents[1].chapterTitle = mChaptersList.get(1).title;
+                                mPageContents[1].isEnd = chapterSize == 2;
+                            }
+                        }
+                        int error = Error.NO_CONTENT;
                         boolean success = false;
                         if (FileUtils.hasCacheChapter(mBook._id, chapter)) {
                             success = mCurBuffer.openCacheBookChapter(chapter);
@@ -85,29 +97,26 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
                             }
                         }
-                        Log.i(TAG, "success = " + success);
+                        Log.i(TAG, "chapter load success = " + success);
                         if (success) {
                             mCurBuffer.calcPageLines(mMaxLineCount, mPaint, mTextViewWidth);
                             int curChapterPageCount = mCurBuffer.getPageCount();
                             if (curChapterPageCount > 0) {
-                                curPage = mCurBuffer.getPageForReadPos(startPos);
-                                pageNumber = getPageNumber(curPage.pageNumber, curChapterPageCount);
-                                if (curPage.pageNumber == 0 && chapter == 0 && curChapterPageCount > 1) {
-                                    updateNextPage(mCurBuffer.getPageForPos(1), title
-                                            , getPageNumber(curPage.pageNumber + 1, curChapterPageCount), error);
-                                }
+                                PageLines pageLines = mCurBuffer.getPageForReadPos(startPos);
+//                                if (pageLines.pageNumber == 0 && curChapterPageCount > 1) {
+//
+//                                }
+//                                pageNumber = getPageNumber(curPage.pageNumber, curChapterPageCount);
+//                                if (curPage.pageNumber == 0 && chapter == 0 && curChapterPageCount > 1) {
+//                                    updateNextPage(mCurBuffer.getPageForPos(1), title
+//                                            , getPageNumber(curPage.pageNumber + 1, curChapterPageCount), error);
+//                                }
                             }
                         } else {
                             error = Error.NO_CONTENT;
                         }
 
-                        int preChapter = chapter - 1;
-                        int nextChapter = chapter + 1;
-
                     }
-
-
-                    setChaptersList(curPage, title, pageNumber, error);
                 }
             });
             return true;
@@ -138,43 +147,33 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         mPaint = null;
     }
 
-    private void setChaptersList(final PageContent pageContent, final String chapterTitle, final String pageNumber,
-                                 final @ReadPresenter.Error int error) {
+    private void preparePageContents(int curChapter, int readPos) {
+
+    }
+
+    private void initChaptersList() {
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
-                    mView.initChapterList(mChaptersList, pageContent, chapterTitle, pageNumber, error);
+                    mView.initChapterList(mChaptersList);
                 }
             }
         });
     }
 
-    private void updatePrePage(final PageContent pageContent, final String chapterTitle, final String pageNumber,
-                               final @ReadPresenter.Error int error) {
+    private void updatePages() {
         MyApp.getHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
-                    mView.onUpdatePrePage(pageContent, chapterTitle, pageNumber, error);
+                    mView.onUpdatePages(mPageContents);
                 }
             }
         });
     }
 
-    private void updateNextPage(final PageContent pageContent, final String chapterTitle, final String pageNumber,
-                                final @ReadPresenter.Error int error) {
-        MyApp.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onUpdateNextPage(pageContent, chapterTitle, pageNumber, error);
-                }
-            }
-        });
-    }
-
-    public static String getPageNumber(int page, int size) {
+    private static String getPageNumber(int page, int size) {
         if (size > 0) {
             return (page + 1) + "/" + size;
         } else {
