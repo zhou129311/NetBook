@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<com.xzhou.book.widget.SwipeLayout
     android:id="@+id/read_dl_slide"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    app:right_id="@id/end_ll_view">
 
     <RelativeLayout
+        android:id="@+id/read_rl_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:elevation="5dp">
 
         <com.xzhou.book.read.ReadViewPager
             android:id="@+id/read_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true"/>
+            android:layout_height="match_parent"/>
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/read_abl_top_menu"
@@ -35,12 +37,14 @@
 
     <!--侧滑栏-->
     <LinearLayout
+        android:id="@+id/end_ll_view"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:layout_gravity="end"
         android:background="@color/read_slide_bg"
         android:orientation="vertical"
         android:paddingBottom="40dp"
         android:paddingTop="20dp">
+
+
     </LinearLayout>
-</android.support.v4.widget.DrawerLayout>
+</com.xzhou.book.widget.SwipeLayout>

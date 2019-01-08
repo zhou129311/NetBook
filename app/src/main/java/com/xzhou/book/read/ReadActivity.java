@@ -36,6 +36,7 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
+import com.xzhou.book.widget.SwipeLayout;
 
 import java.util.List;
 
@@ -45,6 +46,12 @@ import butterknife.OnClick;
 
 public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View {
     private static final String TAG = "ReadActivity";
+    //    @BindView(R.id.read_rl_view)
+//    RelativeLayout mMainLayout;
+//    @BindView(R.id.end_ll_view)
+//    LinearLayout mEndSlideView;
+    @BindView(R.id.read_dl_slide)
+    SwipeLayout mSwipeLayout;
     @BindView(R.id.read_view_pager)
     ReadViewPager mReadViewPager;
 
@@ -111,6 +118,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = registerReceiver(mBatteryReceiver, filter);
         updateBattery(intent);
+        mSwipeLayout.setOnStateListener(new SwipeLayout.OnStateListener() {
+            @Override
+            public void onOpen() {
+                showReadToolBar();
+            }
+
+            @Override
+            public void onClose() {
+            }
+        });
     }
 
     @Override
@@ -201,19 +218,18 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void onUpdatePages(PageContent[] pageContent) {
         if (pageContent != null && pageContent.length == 3) {
-            mReadViewPager.setScanTouch(true);
+            mReadViewPager.setCanTouch(true);
             for (int i = 0; i < 3; i++) {
                 mPageManagers[i].getReadPage().setPageContent(pageContent[i]);
                 if (pageContent[i].isShow) {
-                    if (i == 0) {
-                        mPrePosition = i;
-                    }
+                    mPrePosition = i;
                     mCurChapter = pageContent[i].chapter;
                     mReadViewPager.setCurrentItem(i, false);
                 }
             }
         } else {
-            mReadViewPager.setScanTouch(false);
+            mPageManagers[mReadViewPager.getCurrentItem()].getReadPage().setErrorView(true);
+            mReadViewPager.setCanTouch(false);
         }
     }
 
@@ -227,7 +243,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                         isInitTextView = true;
                         int maxLineCount = page.mChapterContent.getMaxLineCount();
                         int width = page.mChapterContent.getWidth();
-                        Log.i(TAG, "onInit:" + maxLineCount + "," + width);
                         mPresenter.setTextViewParams(maxLineCount, page.mChapterContent.getPaint(), width);
                         mPresenter.start();
                     }
@@ -264,7 +279,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                     return;
                 }
                 int curPos = mReadViewPager.getCurrentItem();
-                if (curPos > 2) {
+                if (curPos >= 2) {
                     return;
                 }
                 ReadPage nextPage = mPageManagers[curPos + 1].getReadPage();
@@ -282,12 +297,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
             @Override
             public void onPageSelected(int position) {
-                Log.i(TAG, "mPrePosition=" + mPrePosition + " ,position=" + position);
+                Log.i(TAG, "onPageSelected:mPrePosition=" + mPrePosition + " ,position=" + position);
+                mPageManagers[position].getReadPage().checkLoading();
                 hideReadToolBar();
                 if (position > mPrePosition) {
-                    mPresenter.next();
+                    mPresenter.loadNextPage();
                 } else if (position < mPrePosition) {
-                    mPresenter.previous();
+                    mPresenter.loadPreviousPage();
                 }
             }
 
@@ -295,7 +311,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             public void onPageScrollStateChanged(int state) {
             }
         });
-        mReadViewPager.setScanTouch(false);
+        mReadViewPager.setSwipeLayout(mSwipeLayout);
+        mReadViewPager.setCanTouch(false);
         mReadViewPager.setAdapter(new MyPagerAdapter());
     }
 
@@ -313,11 +330,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void showReadToolBar() {
-        mReadBottomBar.setVisibility(View.VISIBLE);
-        mReadTopBar.setVisibility(View.VISIBLE);
-        mReadTopBar.startAnimation(mTopInAnim);
-        mReadBottomBar.startAnimation(mBottomInAnim);
-        showSystemBar();
+        if (mReadBottomBar.getVisibility() != View.VISIBLE) {
+            mReadBottomBar.setVisibility(View.VISIBLE);
+            mReadTopBar.setVisibility(View.VISIBLE);
+            mReadTopBar.startAnimation(mTopInAnim);
+            mReadBottomBar.startAnimation(mBottomInAnim);
+            showSystemBar();
+        }
     }
 
     private void setReadTheme(@Constant.ReadTheme int theme) {
@@ -381,6 +400,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.read_view_pager:
+            if (mSwipeLayout.isMenuOpen()) {
+                mSwipeLayout.smoothToCloseMenu();
+                hideReadToolBar();
+                return;
+            }
             if (!hideReadToolBar()) {
                 showReadToolBar();
             }
@@ -434,7 +458,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 return;
             }
             if (mBookTocDialog == null) {
-                final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
+                List<Entities.Chapters> list = mChaptersList.subList(0, 3);
+                final BookTocDialog dialog = BookTocDialog.createDialog(this, list, mBook);
+                dialog.setCurChapter(mCurChapter);
                 dialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
                     @Override
                     public void onClickItem(int chapter, Entities.Chapters chapters) {
@@ -449,7 +475,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 }, true);
             }
             mBookTocDialog.show(getSupportFragmentManager(), "TocDialog");
-            //((BookTocDialog) mBookTocDialog.getDialog()).setCurChapter(mCurChapter);
+            if (mBookTocDialog.getDialog() != null) {
+                ((BookTocDialog) mBookTocDialog.getDialog()).setCurChapter(mCurChapter);
+            }
             break;
         }
     }

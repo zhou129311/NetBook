@@ -15,4 +15,5 @@
           android:paddingBottom="12dp"
           android:textColor="@color/light_black"
           android:textSize="15sp"
-          tools:text="1.第一章 八十大寿"/>
+          android:text="1.第一章 八十大寿"
+          tools:ignore="HardcodedText"/>

@@ -215,9 +215,9 @@ public class TagGroup extends ViewGroup {
             if (child.getVisibility() != GONE) {
                 rowWidth += childWidth;
                 if (rowWidth > widthSize) { // Next line.
-                    rowWidth = childWidth; // The next row width.
+                    rowWidth = childWidth; // The loadNextPage row width.
                     height += rowMaxHeight + verticalSpacing;
-                    rowMaxHeight = childHeight; // The next row max height.
+                    rowMaxHeight = childHeight; // The loadNextPage row max height.
                     row++;
                 } else { // This line.
                     rowMaxHeight = Math.max(rowMaxHeight, childHeight);
@@ -377,7 +377,7 @@ public class TagGroup extends ViewGroup {
     }
 
     /**
-     * Set the tags. It will remove all previous tags first.
+     * Set the tags. It will remove all loadPreviousPage tags first.
      *
      * @param tags the tag list to set.
      */
@@ -458,7 +458,7 @@ public class TagGroup extends ViewGroup {
     }
 
     /**
-     * Append a INPUT tag to this group. It will throw an exception if there has a previous INPUT tag.
+     * Append a INPUT tag to this group. It will throw an exception if there has a loadPreviousPage INPUT tag.
      *
      * @param tag the tag text.
      */
@@ -615,7 +615,7 @@ public class TagGroup extends ViewGroup {
             final TagView tag = (TagView) v;
             if (isAppendMode) {
                 if (tag.mState == TagView.STATE_INPUT) {
-                    // If the clicked tag is in INPUT state, uncheck the previous checked tag if exists.
+                    // If the clicked tag is in INPUT state, uncheck the loadPreviousPage checked tag if exists.
                     final TagView checkedTag = getCheckedTag();
                     if (checkedTag != null) {
                         checkedTag.setChecked(false);
@@ -625,7 +625,7 @@ public class TagGroup extends ViewGroup {
                     if (tag.isChecked) {
                         deleteTag(tag);
                     } else {
-                        // If the clicked tag is unchecked, uncheck the previous checked tag if exists,
+                        // If the clicked tag is unchecked, uncheck the loadPreviousPage checked tag if exists,
                         // then check the clicked tag.
                         final TagView checkedTag = getCheckedTag();
                         if (checkedTag != null) {

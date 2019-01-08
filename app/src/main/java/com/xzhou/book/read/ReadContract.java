@@ -12,9 +12,9 @@ public interface ReadContract {
 
         void setTextViewParams(int maxLineCount, Paint paint, int width);
 
-        void previous();
+        void loadPreviousPage();
 
-        void next();
+        void loadNextPage();
     }
 
     interface View extends BaseContract.View<Presenter> {

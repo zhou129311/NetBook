@@ -4,19 +4,23 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
-import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.widget.SwipeLayout;
 
 public class ReadViewPager extends ViewPager {
     private boolean isCanScroll = true; //是否可以切换页面
     private boolean isCanTouch = true; //是否可以手势滑动
-    private RectF mCenterRect = new RectF();
-    private float mDownX;
+    private boolean isCanLeftTouch = true; //是否可以左滑
+    private SwipeLayout mSwipeLayout;
+    private float mDownX, mLastX;
     private float mDownY;
+    private int mScaledTouchSlop;
+    private RectF mCenterRect = new RectF();
     private int mCenterX;
     private boolean isMove = false;
 
@@ -35,35 +39,28 @@ public class ReadViewPager extends ViewPager {
 
     public ReadViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mCenterX = AppUtils.getScreenWidth() / 2;
-        float left = AppUtils.getScreenWidth() / 3;
-        float right = left * 2;
-        float top = AppUtils.getScreenHeight() / 3;
-        float bottom = top * 2;
-        mCenterRect.set(left, top, right, bottom);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
+        ViewConfiguration configuration = ViewConfiguration.get(getContext());
+        mScaledTouchSlop = configuration.getScaledTouchSlop();
     }
 
     public void setOnClickChangePageListener(OnClickChangePageListener listener) {
         mClickChangePageListener = listener;
     }
 
-    @Override
-    public void setOnClickListener(OnClickListener listener) {
-        mOnClickListener = listener;
-    }
-
-    public void setScanScroll(boolean isCanScroll) {
+    public void setCanScroll(boolean isCanScroll) {
         this.isCanScroll = isCanScroll;
     }
 
-    public void setScanTouch(boolean isCanScroll) {
+    public void setCanTouch(boolean isCanScroll) {
         this.isCanTouch = isCanScroll;
+    }
+
+    public void setCanLeftTouch(boolean canLeftTouch) {
+        isCanLeftTouch = canLeftTouch;
+    }
+
+    public void setSwipeLayout(SwipeLayout layout) {
+        mSwipeLayout = layout;
     }
 
     @Override
@@ -74,24 +71,51 @@ public class ReadViewPager extends ViewPager {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mCenterX = getMeasuredWidth() / 2;
+        float left = getMeasuredWidth() / 3;
+        float right = left * 2;
+        float top = getMeasuredHeight() / 4;
+        float bottom = top * 3;
+        mCenterRect.set(left, top, right, bottom);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            mDownX = ev.getRawX();
+            mLastX = mDownX = ev.getRawX();
             mDownY = ev.getRawY();
             isMove = false;
             return true;
         case MotionEvent.ACTION_MOVE:
-            int slop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
             if (!isMove) {
-                isMove = Math.abs(mDownX - ev.getRawX()) > slop || Math.abs(mDownY - ev.getRawY()) > slop;
+                isMove = Math.abs(mDownX - ev.getRawX()) > mScaledTouchSlop || Math.abs(mDownY - ev.getRawY()) > mScaledTouchSlop;
+            }
+            if (hasCurEndPager() || !isCanLeftTouch) {
+                if (mDownX - ev.getRawX() > 0) {
+                    //左滑
+                    int deltaX = (int) (mLastX - ev.getRawX());
+                    mSwipeLayout.onMove(deltaX);
+                    mLastX = ev.getRawX();
+                    return false;
+                } else {
+                    if (mSwipeLayout.getCurrentState() != SwipeLayout.STATE_CLOSED) {
+                        //右滑
+                        mSwipeLayout.smoothToCloseMenu();
+                        return false;
+                    }
+                }
             }
             break;
         case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_CANCEL:
+            mSwipeLayout.onUpOrCancel();
             float upX = ev.getRawX();
             float upY = ev.getRawY();
             if (!isMove) {
-                if (hasClickCenterRect(upX, upY)) {
+                if (mCenterRect.contains(upX, upY)) {
                     return performClick();
                 } else if (upX <= mCenterX) {
                     if (mClickChangePageListener != null) {
@@ -110,8 +134,8 @@ public class ReadViewPager extends ViewPager {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return isCanTouch && super.onInterceptTouchEvent(ev);
+    public void setOnClickListener(OnClickListener listener) {
+        mOnClickListener = listener;
     }
 
     @Override
@@ -123,7 +147,19 @@ public class ReadViewPager extends ViewPager {
         return super.performClick();
     }
 
-    private boolean hasClickCenterRect(float x, float y) {
-        return mCenterRect.contains(x, y);
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!isCanTouch) {
+            return false;
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    public boolean hasCurEndPager() {
+        PagerAdapter adapter = getAdapter();
+        if (adapter == null) {
+            return false;
+        }
+        return getCurrentItem() == (adapter.getCount() - 1);
     }
 }

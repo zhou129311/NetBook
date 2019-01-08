@@ -35,14 +35,16 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private Paint mPaint;
     private int mTextViewWidth;
     private PageContent[] mPageContents = new PageContent[3];
+    private int mCurPage;
+    private int mCurChapter;
 
     ReadPresenter(ReadContract.View view, BookManager.LocalBook book) {
         super(view);
         mBook = book;
-        for (int i = 0; i < mPageContents.length; i++) {
-            mPageContents[i] = new PageContent();
-            mPageContents[i].bookId = mBook._id;
-        }
+//        for (int i = 0; i < mPageContents.length; i++) {
+//            mPageContents[i] = new PageContent();
+//            mPageContents[i].bookId = mBook._id;
+//        }
         mCurBuffer = new ChapterBuffer(mBook._id);
         mPreBuffer = new ChapterBuffer(mBook._id);
         mNextBuffer = new ChapterBuffer(mBook._id);
@@ -50,6 +52,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     @Override
     public boolean start() {
+        final int[] progress = AppSettings.getReadProgress(mBook._id);
+        mCurChapter = progress[0];
+        mCurPage = progress[2];
         if (mChaptersList == null) {
             ZhuiShuSQApi.getPool().execute(new Runnable() {
                 @Override
@@ -63,36 +68,24 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         }
                     }
                     initChaptersList();
-
+                    int readPos = progress[1];
                     if (mChaptersList != null) {
                         int chapterSize = mChaptersList.size();
-                        int[] progress = AppSettings.getReadProgress(mBook._id);
-                        int chapter = progress[0], startPos = progress[1];
-                        if (chapter < 0 || chapter > chapterSize) {
-                            chapter = 0;
-                            startPos = 0;
+                        if (mCurChapter < 0 || mCurChapter > chapterSize) {
+                            mCurChapter = 0;
+                            readPos = 0;
                         }
-                        Entities.Chapters chapters = mChaptersList.get(chapter);
-                        if (chapter == 0) {
-                            mPageContents[0].clear();
-                            mPageContents[0].isLoading = true;
-                            mPageContents[0].isShow = true;
-                            mPageContents[0].isStart = true;
-                            mPageContents[0].chapterTitle = chapters.title;
-                            if (chapterSize > 1) {
-                                mPageContents[1].clear();
-                                mPageContents[1].chapterTitle = mChaptersList.get(1).title;
-                                mPageContents[1].isEnd = chapterSize == 2;
-                            }
+                        Entities.Chapters chapters = mChaptersList.get(mCurChapter);
+                        if (mCurChapter == 0) {
                         }
                         int error = Error.NO_CONTENT;
                         boolean success = false;
-                        if (FileUtils.hasCacheChapter(mBook._id, chapter)) {
-                            success = mCurBuffer.openCacheBookChapter(chapter);
+                        if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
+                            success = mCurBuffer.openCacheBookChapter(mCurChapter);
                         } else {
                             Entities.ChapterRead chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
                             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
-                                success = mCurBuffer.openNetBookChapter(chapterRead.chapter, chapter);
+                                success = mCurBuffer.openNetBookChapter(chapterRead.chapter, mCurChapter);
                             } else {
                                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
                             }
@@ -102,14 +95,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             mCurBuffer.calcPageLines(mMaxLineCount, mPaint, mTextViewWidth);
                             int curChapterPageCount = mCurBuffer.getPageCount();
                             if (curChapterPageCount > 0) {
-                                PageLines pageLines = mCurBuffer.getPageForReadPos(startPos);
+                                PageLines pageLines = mCurBuffer.getPageForReadPos(readPos);
 //                                if (pageLines.pageNumber == 0 && curChapterPageCount > 1) {
 //
 //                                }
-//                                pageNumber = getPageNumber(curPage.pageNumber, curChapterPageCount);
+//                                pageNumber = getStringPageNumber(curPage.pageNumber, curChapterPageCount);
 //                                if (curPage.pageNumber == 0 && chapter == 0 && curChapterPageCount > 1) {
 //                                    updateNextPage(mCurBuffer.getPageForPos(1), title
-//                                            , getPageNumber(curPage.pageNumber + 1, curChapterPageCount), error);
+//                                            , getStringPageNumber(curPage.pageNumber + 1, curChapterPageCount), error);
 //                                }
                             }
                         } else {
@@ -132,12 +125,12 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     @Override
-    public void previous() {
+    public void loadPreviousPage() {
 
     }
 
     @Override
-    public void next() {
+    public void loadNextPage() {
 
     }
 
@@ -149,6 +142,16 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     private void preparePageContents(int curChapter, int readPos) {
 
+    }
+
+    private PageContent createNewPageContent(PageLines lines, String title, int chapter, int chapterPages) {
+        PageContent pageContent = new PageContent();
+        pageContent.bookId = mBook._id;
+        pageContent.chapterTitle = title;
+        pageContent.mPageLines = lines;
+        pageContent.chapter = chapter;
+        pageContent.curPagePos = getStringPageNumber(lines.page, chapterPages);
+        return pageContent;
     }
 
     private void initChaptersList() {
@@ -173,7 +176,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         });
     }
 
-    private static String getPageNumber(int page, int size) {
+    private static String getStringPageNumber(int page, int size) {
         if (size > 0) {
             return (page + 1) + "/" + size;
         } else {

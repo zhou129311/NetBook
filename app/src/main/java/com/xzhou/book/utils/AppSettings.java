@@ -57,18 +57,20 @@ public class AppSettings {
     }
 
     public static void deleteReadProgress(String bookId) {
-        SPUtils.get().delete(bookId);
+        SPUtils.get().delete(getChapterKey(bookId), getStartPosKey(bookId), getPageKey(bookId));
     }
 
-    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos) {
+    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos, int page) {
         SPUtils.get().putInt(getChapterKey(bookId), chapter)
-                .putInt(getStartPosKey(bookId), bufBeginPos);
+                .putInt(getStartPosKey(bookId), bufBeginPos)
+                .putInt(getPageKey(bookId), page);
     }
 
     public static int[] getReadProgress(String bookId) {
         int chapter = SPUtils.get().getInt(getChapterKey(bookId), 0);
         int startPos = SPUtils.get().getInt(getStartPosKey(bookId), 0);
-        return new int[] { chapter, startPos };
+        int page = SPUtils.get().getInt(getPageKey(bookId), 0);
+        return new int[] { chapter, startPos, page };
     }
 
     public static void deleteChapterList(String bookId) {
@@ -112,7 +114,7 @@ public class AppSettings {
         return bookId + "-startPos";
     }
 
-    private static String getEndPosKey(String bookId) {
-        return bookId + "-endPos";
+    private static String getPageKey(String bookId) {
+        return bookId + "-Page";
     }
 }

@@ -8,7 +8,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ViewDragHelper;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +21,7 @@ import com.xzhou.book.R;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;

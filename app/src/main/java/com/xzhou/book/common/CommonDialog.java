@@ -52,6 +52,11 @@ public class CommonDialog extends DialogFragment {
     }
 
     @Override
+    public Dialog getDialog() {
+        return super.getDialog();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         Dialog dialog = getDialog();

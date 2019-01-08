@@ -137,6 +137,10 @@ public class ReadPage extends RelativeLayout {
 
     public void setPageContent(PageContent page) {
         mPageContent = page;
+        if (mPageContent == null || mPageContent.mPageLines == null) {
+            reset();
+            return;
+        }
         setLoadState(page.isLoading);
         mChapterTitle.setText(page.chapterTitle);
         mPageNumber.setText(page.curPagePos);
@@ -155,6 +159,12 @@ public class ReadPage extends RelativeLayout {
             mErrorImage.setImageResource(R.mipmap.ic_reader_no_network);
             mErrorHint.setText(R.string.read_error_no_network);
             break;
+        }
+    }
+
+    public void checkLoading() {
+        if (mPageContent == null || mPageContent.mPageLines == null) {
+            setLoadState(true);
         }
     }
 
@@ -177,6 +187,7 @@ public class ReadPage extends RelativeLayout {
     }
 
     public void reset() {
+        mPageContent = null;
         mChapterTitle.setText("");
         mPageNumber.setText("");
         mChapterContent.setText("");
@@ -198,6 +209,7 @@ public class ReadPage extends RelativeLayout {
 
     public void setErrorView(boolean visible) {
         if (visible) {
+            mChapterContent.setText("");
             mErrorView.setVisibility(VISIBLE);
         } else {
             mErrorView.setVisibility(GONE);
