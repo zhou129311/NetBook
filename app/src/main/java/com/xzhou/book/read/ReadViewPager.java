@@ -23,6 +23,7 @@ public class ReadViewPager extends ViewPager {
     private RectF mCenterRect = new RectF();
     private int mCenterX;
     private boolean isMove = false;
+    private ReadPageManager[] mPageManagers;
 
     private OnClickChangePageListener mClickChangePageListener;
     private OnClickListener mOnClickListener;
@@ -57,6 +58,10 @@ public class ReadViewPager extends ViewPager {
 
     public void setCanLeftTouch(boolean canLeftTouch) {
         isCanLeftTouch = canLeftTouch;
+    }
+
+    public void setPageManagers(ReadPageManager[] pageManagers) {
+        mPageManagers = pageManagers;
     }
 
     public void setSwipeLayout(SwipeLayout layout) {
@@ -160,6 +165,14 @@ public class ReadViewPager extends ViewPager {
         if (adapter == null) {
             return false;
         }
-        return getCurrentItem() == (adapter.getCount() - 1);
+        int curPos = getCurrentItem();
+        if (curPos == (adapter.getCount() - 1)) {
+            return true;
+        }
+        PageContent page = mPageManagers[curPos + 1].getReadPage().getPageContent();
+        if (page != null && page.isEnd) {
+            return true;
+        }
+        return false;
     }
 }

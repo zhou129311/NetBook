@@ -121,11 +121,13 @@ public class FileUtils {
 
     public static String getCharset(String fileName) {
         BufferedInputStream bis = null;
+        FileInputStream fis = null;
         String charset = "GBK";
         byte[] first3Bytes = new byte[3];
         try {
             boolean checked = false;
-            bis = new BufferedInputStream(new FileInputStream(fileName));
+            fis = new FileInputStream(fileName);
+            bis = new BufferedInputStream(fis);
             bis.mark(0);
             int read = bis.read(first3Bytes, 0, 3);
             if (read == -1)
@@ -174,13 +176,8 @@ public class FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            AppUtils.close(bis);
+            AppUtils.close(fis);
         }
 
         return charset;

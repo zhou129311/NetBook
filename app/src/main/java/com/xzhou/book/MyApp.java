@@ -3,12 +3,15 @@ package com.xzhou.book;
 import android.app.Application;
 import android.os.Handler;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.LruCache;
 
+import com.xzhou.book.read.ChapterBuffer;
 import com.xzhou.book.utils.AppSettings;
 
 public class MyApp extends Application {
     private static MyApp mInstance;
     private static Handler mHandler;
+    private LruCache<Integer, ChapterBuffer> mCacheChapterBuffers;
 
     @Override
     public void onCreate() {
@@ -16,7 +19,7 @@ public class MyApp extends Application {
         mInstance = this;
         mHandler = new Handler();
         initNightMode();
-
+        mCacheChapterBuffers = new LruCache<>();
     }
 
     public static Handler getHandler() {

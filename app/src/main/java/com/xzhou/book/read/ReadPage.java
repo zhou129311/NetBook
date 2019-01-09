@@ -143,7 +143,7 @@ public class ReadPage extends RelativeLayout {
         }
         setLoadState(page.isLoading);
         mChapterTitle.setText(page.chapterTitle);
-        mPageNumber.setText(page.curPagePos);
+        mPageNumber.setText(page.getCurPagePos());
         mChapterContent.setText(mPageContent.getPageContent());
         setErrorView(page.error != ReadPresenter.Error.NONE);
         switch (page.error) {
@@ -182,7 +182,7 @@ public class ReadPage extends RelativeLayout {
 
     public void saveReadProgress() {
         if (mPageContent != null && mPageContent.mPageLines != null) {
-            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos);
+            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos, mPageContent.mPageLines.page);
         }
     }
 
@@ -209,6 +209,7 @@ public class ReadPage extends RelativeLayout {
 
     public void setErrorView(boolean visible) {
         if (visible) {
+            setLoadState(false);
             mChapterContent.setText("");
             mErrorView.setVisibility(VISIBLE);
         } else {

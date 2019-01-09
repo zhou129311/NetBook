@@ -13,6 +13,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -207,9 +208,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @Override
     public void initChapterList(List<Entities.Chapters> list) {
-        if (list == null) {
+        if (list == null || list.size() <= 0) {
             ToastUtils.showShortToast("未找到本书内容，请检查网络后重试");
-            finish();
             return;
         }
         mChaptersList = list;
@@ -218,10 +218,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void onUpdatePages(PageContent[] pageContent) {
         if (pageContent != null && pageContent.length == 3) {
-            mReadViewPager.setCanTouch(true);
+            mReadViewPager.setCanTouch(false);
             for (int i = 0; i < 3; i++) {
                 mPageManagers[i].getReadPage().setPageContent(pageContent[i]);
-                if (pageContent[i].isShow) {
+                if (pageContent[i] != null && pageContent[i].isShow) {
+                    if (!TextUtils.isEmpty(pageContent[i].chapterTitle)) {
+                        mReadViewPager.setCanTouch(true);
+                    }
                     mPrePosition = i;
                     mCurChapter = pageContent[i].chapter;
                     mReadViewPager.setCurrentItem(i, false);
@@ -250,12 +253,14 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
                 @Override
                 public void onReload() {
-
+                    mPresenter.reloadCurPage();
                 }
             });
             mPageManagers[i] = new ReadPageManager();
             mPageManagers[i].setReadPage(page);
         }
+        mReadViewPager.setPageManagers(mPageManagers);
+        mReadViewPager.setSwipeLayout(mSwipeLayout);
         mReadViewPager.setOffscreenPageLimit(3);
         mReadViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
             @Override
@@ -311,9 +316,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             public void onPageScrollStateChanged(int state) {
             }
         });
-        mReadViewPager.setSwipeLayout(mSwipeLayout);
         mReadViewPager.setCanTouch(false);
         mReadViewPager.setAdapter(new MyPagerAdapter());
+        mReadViewPager.setCurrentItem(0, false);
     }
 
     private boolean hideReadToolBar() {

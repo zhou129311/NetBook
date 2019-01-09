@@ -23,12 +23,12 @@ public class ChapterBuffer {
     private String mCharset = "UTF-8";
     private int mReadPos = 0;
 
-    public ChapterBuffer(String bookId) {
+    public ChapterBuffer(String bookId, int chapter) {
         mBookId = bookId;
+        mChapter = chapter;
     }
 
-    public boolean openCacheBookChapter(int chapter) {
-        mChapter = chapter;
+    public boolean openCacheBookChapter() {
         boolean success = false;
         File file = FileUtils.getChapterFile(mBookId, mChapter);
         if (file.exists() && file.length() > 10) {
@@ -53,9 +53,9 @@ public class ChapterBuffer {
         return success;
     }
 
-    public boolean openNetBookChapter(Entities.Chapter data, int chapter) {
+    public boolean openNetBookChapter(Entities.Chapter data) {
         mCharset = "UTF-8";
-        File file = FileUtils.getChapterFile(mBookId, chapter);
+        File file = FileUtils.getChapterFile(mBookId, mChapter);
         FileUtils.writeFile(file.getAbsolutePath(), formatContent(data.body), false);
         try {
             mBuffer = data.body.getBytes(mCharset);
@@ -123,7 +123,7 @@ public class ChapterBuffer {
         PageLines pageContent = new PageLines();
         pageContent.lines = new ArrayList<>();
         pageContent.startPos = mReadPos;
-        pageContent.pageNumber = pageNumber;
+        pageContent.page = pageNumber;
         while (pageContent.lines.size() < maxLineCount && mReadPos < mBufferLen) {
             byte[] paragraph = readParagraphForward(mReadPos);
             mReadPos += paragraph.length;
@@ -162,9 +162,9 @@ public class ChapterBuffer {
     }
 
     public PageLines getPageForPos(int pageNumber) {
-        if (pageNumber > getPageCount()) {
+        if (pageNumber > getPageCount() || pageNumber < 0) {
             Log.e(TAG, "getPageForPos " + pageNumber + " error!");
-            return null;
+            return mPageList.get(0);
         }
         return mPageList.get(pageNumber);
     }

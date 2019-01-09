@@ -12,6 +12,10 @@ public interface ReadContract {
 
         void setTextViewParams(int maxLineCount, Paint paint, int width);
 
+        void loadChapter(int chapter);
+
+        void reloadCurPage();
+
         void loadPreviousPage();
 
         void loadNextPage();

@@ -7,11 +7,11 @@ public class PageContent {
     public int chapter;
     public PageLines mPageLines;
     public String chapterTitle = "";
-    public String curPagePos = "";
     public boolean isLoading; //章节内容是否加载中
     public boolean isShow;
-    public boolean isEnd; //最后一页
-    public boolean isStart; //第一页
+    public boolean isEnd; //是否最后一页
+    public boolean isStart; //是否第一页
+    public int pageSize; //当前章节总页数
 
     public @ReadPresenter.Error
     int error = ReadPresenter.Error.NONE;
@@ -20,12 +20,21 @@ public class PageContent {
         if (mPageLines != null) {
             mPageLines = null;
         }
+        pageSize = 0;
         chapterTitle = "";
-        curPagePos = "";
         isShow = false;
         isLoading = false;
         isEnd = false;
         isStart = false;
+        error = ReadPresenter.Error.NONE;
+    }
+
+    public String getCurPagePos() {
+        if (pageSize > 0 && mPageLines != null) {
+            return (mPageLines.page + 1) + "/" + pageSize;
+        } else {
+            return "";
+        }
     }
 
     public String getPageContent() {
