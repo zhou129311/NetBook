@@ -65,7 +65,7 @@ public class ReadPagerAdapter extends PagerAdapter {
         Log.i("instantiateItem::view = " + view + ",position=" + position);
         //view.reset();
         //view.setReadTheme(mTheme);
-        view.setLoadState(true);
+        //view.setLoadState(true);
         ViewGroup parent = (ViewGroup) view.getParent();
         if (parent != null) {
             parent.removeView(view);

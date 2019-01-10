@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 android:paddingStart="15dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="15dp"
+                android:paddingEnd="12dp"
                 android:paddingBottom="10dp">
 
     <TextView
@@ -49,9 +49,9 @@
         android:background="@mipmap/reader_battery_bg_normal"
         android:gravity="center"
         android:paddingStart="8dp"
-        android:paddingTop="2dp"
+        android:paddingTop="1dp"
         android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="1.5dp"
         android:textColor="@color/common_h2"
         android:textSize="10dp"
         tools:ignore="SpUsage"

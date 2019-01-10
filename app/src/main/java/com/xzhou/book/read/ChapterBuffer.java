@@ -165,7 +165,7 @@ public class ChapterBuffer {
     }
 
     public PageLines getPageForPos(int pageNumber) {
-        if (pageNumber > getPageCount() || pageNumber < 0) {
+        if (pageNumber >= getPageCount() || pageNumber < 0) {
             Log.e(TAG, "getPageForPos " + pageNumber + " error!");
             return mPageList.get(0);
         }

@@ -16,9 +16,9 @@ public interface ReadContract {
 
         void reloadCurPage(int itemPosition);
 
-        void loadPreviousPage(int itemPosition);
+        void loadPreviousPage(int itemPosition, PageContent pageContent);
 
-        void loadNextPage(int itemPosition);
+        void loadNextPage(int itemPosition, PageContent pageContent);
     }
 
     interface View extends BaseContract.View<Presenter> {

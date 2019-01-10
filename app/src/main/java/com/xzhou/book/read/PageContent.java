@@ -4,7 +4,7 @@ import com.xzhou.book.utils.Log;
 
 public class PageContent {
     public String bookId;
-    public int chapter;
+    public int chapter = -1;
     public PageLines mPageLines;
     public String chapterTitle = "";
     public boolean isLoading; //章节内容是否加载中
@@ -20,6 +20,7 @@ public class PageContent {
         if (mPageLines != null) {
             mPageLines = null;
         }
+        chapter = -1;
         pageSize = 0;
         chapterTitle = "";
         isShow = false;
@@ -47,5 +48,17 @@ public class PageContent {
             sb.append(line);
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "PageContent{" +
+                "bookId='" + bookId + '\'' +
+                ", chapter=" + chapter +
+                ", chapterTitle='" + chapterTitle + '\'' +
+                ", isEnd=" + isEnd +
+                ", isStart=" + isStart +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

@@ -98,6 +98,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private ReadPageManager[] mPageManagers = new ReadPageManager[3];
     private int mCurChapter;
     private int mPrePosition;
+    private int mCurPosition;
+    private int mScrollState = ViewPager.SCROLL_STATE_IDLE;
 
     public static void startActivity(Context context, BookManager.LocalBook book) {
         Intent intent = new Intent(context, ReadActivity.class);
@@ -259,10 +261,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             @Override
             public void onLayout(boolean isFirst) {
                 Log.i(TAG, "onLayout::isFirst = " + isFirst);
-                int maxLineCount = page.mChapterContent.getMaxLineCount();
-                int width = page.mChapterContent.getWidth();
-                PageLines pageLines = page.getPageContent() == null ? null : page.getPageContent().mPageLines;
-                mPresenter.setTextViewParams(maxLineCount, page.mChapterContent.getPaint(), width, pageLines);
+                ReadPage curPage = mPageManagers[mReadViewPager.getCurrentItem()].getReadPage();
+                int maxLineCount = curPage.mChapterContent.getMaxLineCount();
+                int width = curPage.mChapterContent.getWidth();
+                PageLines pageLines = curPage.getPageContent() == null ? null : curPage.getPageContent().mPageLines;
+                mPresenter.setTextViewParams(maxLineCount, curPage.mChapterContent.getPaint(), width, pageLines);
                 if (isFirst) {
                     mPresenter.start();
                 }
@@ -311,23 +314,35 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
             @Override
             public void onPageSelected(int position) {
+                mCurPosition = position;
                 Log.i(TAG, "onPageSelected:mPrePosition=" + mPrePosition + " ,position=" + position);
-                mPageManagers[position].getReadPage().checkLoading();
-                hideReadToolBar();
-                if (position > mPrePosition) {
-                    mPresenter.loadNextPage(position);
-                } else if (position < mPrePosition) {
-                    mPresenter.loadPreviousPage(position);
-                }
+                changePage();
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                mScrollState = state;
+                Log.i(TAG, "onPageScrollStateChanged=" + state);
+                changePage();
             }
         });
         mReadViewPager.setCanTouch(false);
         mReadViewPager.setAdapter(new MyPagerAdapter());
         mReadViewPager.setCurrentItem(0, false);
+    }
+
+    private void changePage() {
+        if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
+            ReadPage readPage = mPageManagers[mCurPosition].getReadPage();
+            PageContent pageContent = readPage.getPageContent();
+            readPage.checkLoading();
+            hideReadToolBar();
+            if (mCurPosition > mPrePosition) {
+                mPresenter.loadNextPage(mCurPosition, pageContent);
+            } else if (mCurPosition < mPrePosition) {
+                mPresenter.loadPreviousPage(mCurPosition, pageContent);
+            }
+        }
     }
 
     private boolean hideReadToolBar() {
@@ -407,7 +422,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({ R.id.brightness_checkbox })
+    @OnCheckedChanged({R.id.brightness_checkbox})
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -418,9 +433,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -449,8 +464,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.auto_reader_view:
             break;
         case R.id.text_size_dec:
+            updateFontSize(true);
             break;
         case R.id.text_size_inc:
+            updateFontSize(false);
             break;
         case R.id.more_setting_view:
             break;
@@ -482,13 +499,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 return;
             }
             if (mBookTocDialog == null) {
-                List<Entities.Chapters> list = mChaptersList.subList(0, 3);
-                final BookTocDialog dialog = BookTocDialog.createDialog(this, list, mBook);
+                final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
                 dialog.setCurChapter(mCurChapter);
                 dialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
                     @Override
                     public void onClickItem(int chapter, Entities.Chapters chapters) {
-
+                        mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter);
+                        mBookTocDialog.dismiss();
                     }
                 });
                 mBookTocDialog = CommonDialog.newInstance(new CommonDialog.OnCallDialog() {
@@ -506,6 +523,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
+    private void updateFontSize(boolean isDec) {
+        for (ReadPageManager page : mPageManagers) {
+            if (isDec) {
+                page.getReadPage().decFontSize();
+            } else {
+                page.getReadPage().incFontSize();
+            }
+        }
+    }
+
     private void updatePageTheme(int theme) {
         for (ReadPageManager page : mPageManagers) {
             page.getReadPage().setReadTheme(theme);
@@ -516,7 +543,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         if (intent != null) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1); //电量最大值
-            int curBattery = (level / scale) * 100;
+            Log.i(TAG, "updateBattery ::" + level + "," + scale);
+            int curBattery = (int) (((float) level / (float) scale) * 100f);
             for (ReadPageManager page : mPageManagers) {
                 page.getReadPage().setBattery(curBattery);
             }
@@ -566,7 +594,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = mPageManagers[position].getPageView();
+            View view = mPageManagers[position].getReadPage();
             ViewGroup parent = (ViewGroup) view.getParent();
             if (parent != null) {
                 parent.removeView(view);

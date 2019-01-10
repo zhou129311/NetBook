@@ -239,7 +239,7 @@ public class AppUtils {
         Window localWindow = activity.getWindow();
         WindowManager.LayoutParams lp = localWindow.getAttributes();
         float screenBrightness = lp.screenBrightness;
-        return (int) (screenBrightness / 255 * 100);
+        return (int) (screenBrightness / 255f * 100f);
     }
 
     public static void setScreenBrightness(int brightness, Activity activity) {

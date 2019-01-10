@@ -50,6 +50,7 @@ public class ReadPage extends RelativeLayout {
     //    private ReadActivity mActivity;
     private TextLayoutListener mListener;
     private OnReloadListener mOnReloadListener;
+    private int mPreHeight;
 
     public interface TextLayoutListener {
         void onLayout(boolean isFirst);
@@ -82,11 +83,14 @@ public class ReadPage extends RelativeLayout {
         ButterKnife.bind(this, view);
 
         mChapterContent.setTextColor(context.getResources().getColor(R.color.common_h1));
-        mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, AppSettings.getFontSize());
+        int fontSize = AppSettings.getFontSize();
+        mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
+        mChapterContent.setLineSpacing(0, 1.1f);
         mChapterContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 mChapterContent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mPreHeight = mChapterContent.getMeasuredHeight();
                 if (mListener != null) {
                     mListener.onLayout(true);
                 }
@@ -104,6 +108,17 @@ public class ReadPage extends RelativeLayout {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (mPreHeight != mChapterContent.getMeasuredHeight()) {
+            mPreHeight = mChapterContent.getMeasuredHeight();
+            if (mListener != null) {
+                mListener.onLayout(false);
+            }
+        }
     }
 
     private void initLoadingView(Context context) {
@@ -133,20 +148,39 @@ public class ReadPage extends RelativeLayout {
         }
     }
 
-    public boolean setFontSize(int fontSizePx) {
-        if (fontSizePx != (int) mChapterContent.getTextSize()) {
-            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSizePx);
-            AppSettings.saveFontSize(fontSizePx);
-            return true;
+    public void decFontSize() {
+        int curSize = (int) mChapterContent.getTextSize();
+        if (curSize > AppUtils.dip2px(16)) {
+            int size = curSize - 2;
+            mChapterContent.setLineSpacing(size / 3, 1);
+            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+            AppSettings.saveFontSize(size);
+            if (mListener != null) {
+                mListener.onLayout(false);
+            }
         }
-        return false;
+    }
+
+    public void incFontSize() {
+        int curSize = (int) mChapterContent.getTextSize();
+        if (curSize < AppUtils.dip2px(28)) {
+            int size = curSize + 2;
+            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+            AppSettings.saveFontSize(size);
+            if (mListener != null) {
+                mListener.onLayout(false);
+            }
+        }
     }
 
     public void setPageContent(PageContent page) {
         mPageContent = page;
-        if (mPageContent == null || mPageContent.mPageLines == null) {
+        if (mPageContent == null) {
             reset();
             return;
+        }
+        if (page.isShow) {
+            saveReadProgress();
         }
         setLoadState(page.isLoading);
         mChapterTitle.setText(page.chapterTitle);
@@ -189,6 +223,7 @@ public class ReadPage extends RelativeLayout {
 
     public void saveReadProgress() {
         if (mPageContent != null && mPageContent.mPageLines != null) {
+            Log.i(TAG, "saveReadProgress::" + mPageContent);
             AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos);
         }
     }

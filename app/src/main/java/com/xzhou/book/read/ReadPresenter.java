@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
+    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -38,6 +38,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private int mTextViewWidth;
     private int mCurChapter;
     private PageContent[] mOldPageContents;
+    private int mCurPage;
 
     ReadPresenter(ReadContract.View view, BookManager.LocalBook book) {
         super(view);
@@ -67,7 +68,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         return;
                     }
 
-                    loadReadProgress();
+                    loadReadProgress(0);
                 }
             });
             return true;
@@ -75,7 +76,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         return false;
     }
 
-    private void loadReadProgress() {
+    private void loadReadProgress(int item) {
         int[] progress = AppSettings.getReadProgress(mBook._id);
         mCurChapter = progress[0];
         int readPos = progress[1];
@@ -111,7 +112,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 return;
             }
         }
-        showError(0, error);
+        showError(item, error);
     }
 
     @Override
@@ -136,42 +137,88 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     @Override
-    public void loadChapter(final int item,final int chapter) {
+    public void loadChapter(final int item, final int chapter) {
         Log.i(TAG, "loadChapter::" + chapter);
         showLoading(item);
         mSinglePool.execute(new Runnable() {
             @Override
             public void run() {
                 AppSettings.saveReadProgress(mBook._id, chapter, 0);
-                loadReadProgress();
+                loadReadProgress(item);
             }
         });
     }
 
     @Override
-    public void reloadCurPage(int item) {
+    public void reloadCurPage(final int item) {
         Log.i(TAG, "reloadCurPage");
         if (!start()) {
             showLoading(item);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    loadReadProgress();
+                    loadReadProgress(item);
                 }
             });
         }
     }
 
     @Override
-    public void loadPreviousPage(int item) {
-        Log.i(TAG, "loadPreviousPage");
-
+    public void loadPreviousPage(final int item, final PageContent pageContent) {
+        Log.i(TAG, "loadPreviousPage::item = " + item);
+        if (pageContent == null) {
+            Log.e(TAG, "loadPreviousPage::pageContent = null");
+        } else if (pageContent.isStart) {
+            Log.i(TAG, "loadPreviousPage::pageContent.isStart = true");
+        } else {
+            if (pageContent.chapter < 0 || pageContent.pageSize <= 0) {
+                Log.e(TAG, "loadPreviousPage::pageContent.chapter < 0");
+                return;
+            }
+            mSinglePool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCurChapter = pageContent.chapter;
+                    ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
+                    if (curBuffer == null) {
+                        showLoading(item);
+                        AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
+                        loadReadProgress(item);
+                    } else {
+                        preparePageContents(curBuffer, mCurChapter, pageContent.mPageLines, pageContent.pageSize);
+                    }
+                }
+            });
+        }
     }
 
     @Override
-    public void loadNextPage(int item) {
+    public void loadNextPage(final int item, final PageContent pageContent) {
         Log.i(TAG, "loadNextPage");
-
+        if (pageContent == null) {
+            Log.e(TAG, "loadNextPage::pageContent = null");
+        } else if (pageContent.isEnd) {
+            Log.i(TAG, "loadNextPage::pageContent.isEnd = true");
+        } else {
+            if (pageContent.chapter < 0) {
+                Log.e(TAG, "loadNextPage::pageContent.chapter < 0 ," + pageContent);
+                return;
+            }
+            mSinglePool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mCurChapter = pageContent.chapter;
+                    ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
+                    if (curBuffer == null) {
+                        AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
+                        showLoading(item);
+                        loadReadProgress(item);
+                    } else {
+                        preparePageContents(curBuffer, mCurChapter, pageContent.mPageLines, pageContent.pageSize);
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -181,14 +228,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     private void preparePageContents(ChapterBuffer curBuffer, int chapter, PageLines curPageLine, int curChapterPageCount) {
+        mCurPage = curPageLine.page;
         PageContent[] pageContents = new PageContent[3];
         Entities.Chapters curChapters = mChaptersList.get(chapter);
         if (chapter == 0 && curPageLine.page == 0) { //第一章且第一页
             pageContents[0] = createShowPageContent(curPageLine, curChapters.title, chapter, curChapterPageCount);
             pageContents[0].isStart = true;
             if (curChapterPageCount > 1) {
-                PageLines page1 = curBuffer.getPageForPos(1);
-                pageContents[1] = createNewPageContent(page1, curChapters.title, chapter, curChapterPageCount);
+                pageContents[1] = createNewPageContent(curBuffer.getPageForPos(1), curChapters.title, chapter, curChapterPageCount);
                 if (curChapterPageCount > 2) {
                     pageContents[2] = createNewPageContent(curBuffer.getPageForPos(2), curChapters.title, chapter, curChapterPageCount);
                 } else {
@@ -212,7 +259,15 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         pageContents[2] = createNonePageContent(mChaptersList.get(chapter + 1).title, chapter + 1, false);
                     }
                 } else { //大于两页
-                    pageContents[2] = createNewPageContent(curBuffer.getPageForPos(curPageLine.page + 1), curChapters.title, chapter, curChapterPageCount);
+                    if (curChapterPageCount > curPageLine.page + 1) {
+                        pageContents[2] = createNewPageContent(curBuffer.getPageForPos(curPageLine.page + 1), curChapters.title, chapter, curChapterPageCount);
+                    } else {
+                        if (hasEndChapter(chapter)) { //当前章节为最后一章
+                            pageContents[2] = createNonePageContent(curChapters.title, chapter, true);
+                        } else {
+                            pageContents[2] = createNonePageContent(mChaptersList.get(chapter + 1).title, chapter + 1, false);
+                        }
+                    }
                 }
             } else {//非第一章、第一页
                 pageContents[0] = createNonePageContent(mChaptersList.get(chapter - 1).title, chapter - 1, false);
