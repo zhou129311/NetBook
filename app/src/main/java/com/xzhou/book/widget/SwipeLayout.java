@@ -101,7 +101,9 @@ public class SwipeLayout extends LinearLayout {
             if (Math.abs(dy) > Math.abs(dx)) return false;
 
             int deltaX = (int) (mLastX - event.getX());
-            onMove(deltaX);
+            if (onMove(deltaX)) {
+                return true;
+            }
             mLastX = event.getX();
             break;
         case MotionEvent.ACTION_UP:
@@ -115,14 +117,14 @@ public class SwipeLayout extends LinearLayout {
         return super.onTouchEvent(event);
     }
 
-    public void onMove(int deltaX) {
+    public boolean onMove(int deltaX) {
         if (deltaX > 0) {
             currentState = STATE_MOVING_LEFT;
             if (deltaX >= menuWidth || getScrollX() + deltaX >= menuWidth) {
                 //右边缘检测
                 scrollTo(menuWidth, 0);
                 currentState = STATE_OPEN;
-                return;
+                return true;
             }
         } else {
             //向右滑动
@@ -131,10 +133,11 @@ public class SwipeLayout extends LinearLayout {
                 //左边缘检测
                 scrollTo(0, 0);
                 currentState = STATE_CLOSED;
-                return;
+                return true;
             }
         }
         scrollBy(deltaX, 0);
+        return false;
     }
 
     public void onUpOrCancel() {

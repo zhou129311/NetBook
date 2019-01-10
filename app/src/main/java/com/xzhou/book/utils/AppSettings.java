@@ -60,17 +60,15 @@ public class AppSettings {
         SPUtils.get().delete(getChapterKey(bookId), getStartPosKey(bookId), getPageKey(bookId));
     }
 
-    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos, int page) {
+    public static void saveReadProgress(String bookId, int chapter, int bufBeginPos) {
         SPUtils.get().putInt(getChapterKey(bookId), chapter)
-                .putInt(getStartPosKey(bookId), bufBeginPos)
-                .putInt(getPageKey(bookId), page);
+                .putInt(getStartPosKey(bookId), bufBeginPos);
     }
 
     public static int[] getReadProgress(String bookId) {
         int chapter = SPUtils.get().getInt(getChapterKey(bookId), 0);
         int startPos = SPUtils.get().getInt(getStartPosKey(bookId), 0);
-        int page = SPUtils.get().getInt(getPageKey(bookId), 0);
-        return new int[] { chapter, startPos, page };
+        return new int[] { chapter, startPos };
     }
 
     public static void deleteChapterList(String bookId) {

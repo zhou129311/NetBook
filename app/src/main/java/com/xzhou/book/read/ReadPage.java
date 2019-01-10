@@ -48,11 +48,14 @@ public class ReadPage extends RelativeLayout {
     int mTheme;
     private PageContent mPageContent;
     //    private ReadActivity mActivity;
-    private ReadPageListener mListener;
+    private TextLayoutListener mListener;
+    private OnReloadListener mOnReloadListener;
 
-    public interface ReadPageListener {
-        void onInit();
+    public interface TextLayoutListener {
+        void onLayout(boolean isFirst);
+    }
 
+    public interface OnReloadListener {
         void onReload();
     }
 
@@ -66,8 +69,12 @@ public class ReadPage extends RelativeLayout {
         initView(context);
     }
 
-    public void setReadPageListener(ReadPageListener listener) {
+    public void setTextLayoutListener(TextLayoutListener listener) {
         mListener = listener;
+    }
+
+    public void setOnReloadListener(OnReloadListener listener) {
+        mOnReloadListener = listener;
     }
 
     private void initView(Context context) {
@@ -81,7 +88,7 @@ public class ReadPage extends RelativeLayout {
             public void onGlobalLayout() {
                 mChapterContent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 if (mListener != null) {
-                    mListener.onInit();
+                    mListener.onLayout(true);
                 }
             }
         });
@@ -92,8 +99,8 @@ public class ReadPage extends RelativeLayout {
         mRetryBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListener != null) {
-                    mListener.onReload();
+                if (mOnReloadListener != null) {
+                    mOnReloadListener.onReload();
                 }
             }
         });
@@ -182,7 +189,7 @@ public class ReadPage extends RelativeLayout {
 
     public void saveReadProgress() {
         if (mPageContent != null && mPageContent.mPageLines != null) {
-            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos, mPageContent.mPageLines.page);
+            AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos);
         }
     }
 

@@ -6,19 +6,40 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class JustifyTextView extends android.support.v7.widget.AppCompatTextView {
 
     private int mLineY;
     private int mViewWidth;
+    private int mScreenHeight;
 
     public JustifyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mScreenHeight = getResources().getDisplayMetrics().heightPixels;
+                Log.i("zx", mScreenHeight + " =  mScreenHeight");
+            }
+        });
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        int h = getResources().getDisplayMetrics().heightPixels;
+        Log.i("zx", " onLayout  h = " + h);
+        if (h != mScreenHeight) {
+            mScreenHeight = h;
+            Log.i("zx", this + " navigation bar change");
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        Log.i("zx", " onSizeChanged  h = " + h);
     }
 
     public int getMaxLineCount() {

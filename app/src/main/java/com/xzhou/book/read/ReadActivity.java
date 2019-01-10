@@ -97,7 +97,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private CommonDialog mBookTocDialog;
     private ReadPageManager[] mPageManagers = new ReadPageManager[3];
     private int mCurChapter;
-    private boolean isInitTextView;
     private int mPrePosition;
 
     public static void startActivity(Context context, BookManager.LocalBook book) {
@@ -164,8 +163,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -193,6 +192,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            hideReadToolBar();
+            return true;
+        }
         switch (item.getItemId()) {
         case R.id.menu_community:
             return true;
@@ -239,26 +243,31 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private void initReadPageView() {
         for (int i = 0; i < mPageManagers.length; i++) {
             final ReadPage page = new ReadPage(this);
-            page.setReadPageListener(new ReadPage.ReadPageListener() {
-                @Override
-                public void onInit() {
-                    if (!isInitTextView) {
-                        isInitTextView = true;
-                        int maxLineCount = page.mChapterContent.getMaxLineCount();
-                        int width = page.mChapterContent.getWidth();
-                        mPresenter.setTextViewParams(maxLineCount, page.mChapterContent.getPaint(), width);
-                        mPresenter.start();
-                    }
-                }
-
+            final int position = i;
+            page.setOnReloadListener(new ReadPage.OnReloadListener() {
                 @Override
                 public void onReload() {
-                    mPresenter.reloadCurPage();
+                    mPresenter.reloadCurPage(position);
                 }
             });
             mPageManagers[i] = new ReadPageManager();
             mPageManagers[i].setReadPage(page);
         }
+        final ReadPage page = mPageManagers[0].getReadPage();
+        page.setTextLayoutListener(new ReadPage.TextLayoutListener() {
+
+            @Override
+            public void onLayout(boolean isFirst) {
+                Log.i(TAG, "onLayout::isFirst = " + isFirst);
+                int maxLineCount = page.mChapterContent.getMaxLineCount();
+                int width = page.mChapterContent.getWidth();
+                PageLines pageLines = page.getPageContent() == null ? null : page.getPageContent().mPageLines;
+                mPresenter.setTextViewParams(maxLineCount, page.mChapterContent.getPaint(), width, pageLines);
+                if (isFirst) {
+                    mPresenter.start();
+                }
+            }
+        });
         mReadViewPager.setPageManagers(mPageManagers);
         mReadViewPager.setSwipeLayout(mSwipeLayout);
         mReadViewPager.setOffscreenPageLimit(3);
@@ -306,9 +315,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 mPageManagers[position].getReadPage().checkLoading();
                 hideReadToolBar();
                 if (position > mPrePosition) {
-                    mPresenter.loadNextPage();
+                    mPresenter.loadNextPage(position);
                 } else if (position < mPrePosition) {
-                    mPresenter.loadPreviousPage();
+                    mPresenter.loadPreviousPage(position);
                 }
             }
 
@@ -385,6 +394,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
+    public void onBackPressed() {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            hideReadToolBar();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
@@ -403,13 +422,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
             R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            hideReadToolBar();
+            return;
+        }
         switch (view.getId()) {
         case R.id.read_view_pager:
-            if (mSwipeLayout.isMenuOpen()) {
-                mSwipeLayout.smoothToCloseMenu();
-                hideReadToolBar();
-                return;
-            }
             if (!hideReadToolBar()) {
                 showReadToolBar();
             }

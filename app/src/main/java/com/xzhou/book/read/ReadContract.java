@@ -10,15 +10,15 @@ import java.util.List;
 public interface ReadContract {
     interface Presenter extends BaseContract.Presenter {
 
-        void setTextViewParams(int maxLineCount, Paint paint, int width);
+        void setTextViewParams(int maxLineCount, Paint paint, int width, PageLines pageLines);
 
-        void loadChapter(int chapter);
+        void loadChapter(int itemPosition, int chapter);
 
-        void reloadCurPage();
+        void reloadCurPage(int itemPosition);
 
-        void loadPreviousPage();
+        void loadPreviousPage(int itemPosition);
 
-        void loadNextPage();
+        void loadNextPage(int itemPosition);
     }
 
     interface View extends BaseContract.View<Presenter> {

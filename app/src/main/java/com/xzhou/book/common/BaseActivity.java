@@ -11,10 +11,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
-import com.xzhou.book.utils.AppUtils;
 
 import java.lang.reflect.Method;
 
@@ -43,17 +43,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
         mUnbinder = ButterKnife.bind(this);
-        mToolbar = findViewById(R.id.common_toolbar);
-        if (mToolbar != null) {
-            initToolBar();
-            setSupportActionBar(mToolbar);
-            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
-        }
+        configToolBar();
         mPresenter = createPresenter();
     }
 
@@ -61,17 +51,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     public void setContentView(android.view.View view) {
         super.setContentView(view);
         mUnbinder = ButterKnife.bind(this);
-        mToolbar = findViewById(R.id.common_toolbar);
-        if (mToolbar != null) {
-            initToolBar();
-            setSupportActionBar(mToolbar);
-            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
-        }
+        configToolBar();
         mPresenter = createPresenter();
     }
 
@@ -79,6 +59,11 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     public void setContentView(android.view.View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
         mUnbinder = ButterKnife.bind(this);
+        configToolBar();
+        mPresenter = createPresenter();
+    }
+
+    private void configToolBar() {
         mToolbar = findViewById(R.id.common_toolbar);
         if (mToolbar != null) {
             initToolBar();
@@ -90,10 +75,9 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
                 }
             });
         }
-        mPresenter = createPresenter();
     }
 
-    protected View getContentView(){
+    protected View getContentView() {
         return this.findViewById(android.R.id.content);
     }
 

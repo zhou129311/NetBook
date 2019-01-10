@@ -39,7 +39,7 @@ public class ChapterBuffer {
                 mBuffer = new byte[(int) mBufferLen];
                 raf = new RandomAccessFile(file, "r");
                 int i = raf.read(mBuffer);
-                Log.i(TAG, "i = " + i);
+                Log.i(TAG, "mBufferLen = " + i);
                 if (i == -1 || i == mBufferLen) {
                     success = true;
                 }
@@ -56,9 +56,12 @@ public class ChapterBuffer {
     public boolean openNetBookChapter(Entities.Chapter data) {
         mCharset = "UTF-8";
         File file = FileUtils.getChapterFile(mBookId, mChapter);
-        FileUtils.writeFile(file.getAbsolutePath(), formatContent(data.body), false);
+        String body = formatContent(data.body);
+        FileUtils.writeFile(file.getAbsolutePath(), body, false);
         try {
-            mBuffer = data.body.getBytes(mCharset);
+            mBuffer = body.getBytes(mCharset);
+            mBufferLen = mBuffer.length;
+            Log.i(TAG, "mBufferLen = " + mBufferLen);
             return true;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
