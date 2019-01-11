@@ -2,6 +2,8 @@ package com.xzhou.book.read;
 
 import com.xzhou.book.utils.Log;
 
+import java.util.List;
+
 public class PageContent {
     public String bookId;
     public int chapter = -1;
@@ -43,11 +45,15 @@ public class PageContent {
             Log.e("getPageContent is null");
             return "";
         }
-        StringBuilder sb = new StringBuilder();
-        for (String line : mPageLines.lines) {
-            sb.append(line);
+        return mPageLines.getPageContent();
+    }
+
+    public List<String> getLines() {
+        if (mPageLines == null) {
+            Log.e("getLines is null");
+            return null;
         }
-        return sb.toString();
+        return mPageLines.lines;
     }
 
     @Override
@@ -58,7 +64,9 @@ public class PageContent {
                 ", chapterTitle='" + chapterTitle + '\'' +
                 ", isEnd=" + isEnd +
                 ", isStart=" + isStart +
+                ", isShow=" + isShow +
                 ", pageSize=" + pageSize +
+                ", page=" + (mPageLines != null ? mPageLines.page : "null") +
                 '}';
     }
 }

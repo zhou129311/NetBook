@@ -14,7 +14,7 @@ public interface ReadContract {
 
         void loadChapter(int itemPosition, int chapter);
 
-        void reloadCurPage(int itemPosition);
+        void reloadCurPage(int itemPosition, PageContent pageContent);
 
         void loadPreviousPage(int itemPosition, PageContent pageContent);
 

@@ -172,6 +172,10 @@ public class ChapterBuffer {
         return mPageList.get(pageNumber);
     }
 
+    public PageLines getEndPage() {
+        return mPageList.get(mPageList.size() - 1);
+    }
+
     public int getPageCount() {
         return mPageList.size();
     }

@@ -54,7 +54,7 @@ public class BookTocDialog extends Dialog {
         mView = LayoutInflater.from(context).inflate(R.layout.dialog_toc, null);
         ButterKnife.bind(this, mView);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = (int) (AppUtils.getScreenWidth() * 0.85);
+        lp.width = (int) (AppUtils.getScreenWidth() * 0.9);
         lp.height = (int) (AppUtils.getScreenHeight() * 0.9);
         mTocTitle.setText(mLocalBook.title);
         mAdapter = new Adapter(context);

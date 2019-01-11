@@ -85,7 +85,7 @@ public class ReadPage extends RelativeLayout {
         mChapterContent.setTextColor(context.getResources().getColor(R.color.common_h1));
         int fontSize = AppSettings.getFontSize();
         mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
-        mChapterContent.setLineSpacing(0, 1.1f);
+        mChapterContent.setLineSpacing(0, 1.2f);
         mChapterContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -98,7 +98,7 @@ public class ReadPage extends RelativeLayout {
         });
 
         mTheme = AppSettings.getReadTheme();
-        setReadTheme(mTheme);
+        setReadTheme(mTheme, true);
         initLoadingView(context);
         mRetryBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -130,8 +130,8 @@ public class ReadPage extends RelativeLayout {
         mBatteryView.setText(String.valueOf(battery));
     }
 
-    public void setReadTheme(int theme) {
-        if (mTheme != theme) {
+    public void setReadTheme(int theme, boolean isForce) {
+        if (mTheme != theme || isForce) {
             Log.i(TAG, "setReadTheme:" + mTheme);
             mTheme = theme;
             int batteryRes = R.mipmap.reader_battery_bg_normal;
@@ -148,10 +148,14 @@ public class ReadPage extends RelativeLayout {
         }
     }
 
+    public int getTheme() {
+        return mTheme;
+    }
+
     public void decFontSize() {
         int curSize = (int) mChapterContent.getTextSize();
-        if (curSize > AppUtils.dip2px(16)) {
-            int size = curSize - 2;
+        if (curSize >= AppUtils.dip2px(16)) {
+            int size = curSize - 4;
             mChapterContent.setLineSpacing(size / 3, 1);
             mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
             AppSettings.saveFontSize(size);
@@ -163,8 +167,8 @@ public class ReadPage extends RelativeLayout {
 
     public void incFontSize() {
         int curSize = (int) mChapterContent.getTextSize();
-        if (curSize < AppUtils.dip2px(28)) {
-            int size = curSize + 2;
+        if (curSize <= AppUtils.dip2px(28)) {
+            int size = curSize + 4;
             mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
             AppSettings.saveFontSize(size);
             if (mListener != null) {
@@ -185,7 +189,10 @@ public class ReadPage extends RelativeLayout {
         setLoadState(page.isLoading);
         mChapterTitle.setText(page.chapterTitle);
         mPageNumber.setText(page.getCurPagePos());
-        mChapterContent.setText(mPageContent.getPageContent());
+        mChapterContent.setText(page.getPageContent());
+        if (page.mPageLines != null) {
+            Log.i(TAG, "TextView getLineCount::" + mChapterContent.getLayout().getLineCount() + ", page:" + page.mPageLines.page);
+        }
         setErrorView(page.error != ReadPresenter.Error.NONE);
         switch (page.error) {
         case ReadPresenter.Error.CONNECTION_FAIL:

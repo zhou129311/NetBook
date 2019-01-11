@@ -17,19 +17,24 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
     }
 
     public int getMaxLineCount() {
-        return getMeasuredHeight() / getLineHeight();
+        return (getMeasuredHeight() - (int) (getTextSize() * 0.5f)) / getLineHeight();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         TextPaint paint = getPaint();
+        paint.setSubpixelText(true);
         paint.setColor(getCurrentTextColor());
         paint.drawableState = getDrawableState();
         mViewWidth = getMeasuredWidth();
-        String text = (String) getText();
         mLineY = 0;
-        mLineY += getTextSize();
+        mLineY += getTextSize() * 1.5;
+
         Layout layout = getLayout();
+        if (layout == null) {
+            return;
+        }
+        String text = (String) getText();
         for (int i = 0; i < layout.getLineCount(); i++) {
             int lineStart = layout.getLineStart(i);
             int lineEnd = layout.getLineEnd(i);
@@ -41,7 +46,6 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
             } else {
                 canvas.drawText(line, 0, mLineY, paint);
             }
-
             mLineY += getLineHeight();
         }
     }
@@ -57,8 +61,19 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
             line = line.substring(3);
         }
 
+        int gapCount = line.length() - 1;
+        int i = 0;
+        if (line.length() > 2 && line.charAt(0) == 12288
+                && line.charAt(1) == 12288) {
+            String substring = line.substring(0, 2);
+            float cw = StaticLayout.getDesiredWidth(substring, getPaint());
+            canvas.drawText(substring, x, mLineY, getPaint());
+            x += cw;
+            i += 2;
+        }
+
         float d = (mViewWidth - lineWidth) / line.length() - 1;
-        for (int i = 0; i < line.length(); i++) {
+        for (; i < line.length(); i++) {
             String c = String.valueOf(line.charAt(i));
             float cw = StaticLayout.getDesiredWidth(c, getPaint());
             canvas.drawText(c, x, mLineY, getPaint());

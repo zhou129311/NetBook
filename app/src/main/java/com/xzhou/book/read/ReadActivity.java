@@ -194,11 +194,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mSwipeLayout.isMenuOpen()) {
-            mSwipeLayout.smoothToCloseMenu();
-            hideReadToolBar();
-            return true;
-        }
         switch (item.getItemId()) {
         case R.id.menu_community:
             return true;
@@ -249,7 +244,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             page.setOnReloadListener(new ReadPage.OnReloadListener() {
                 @Override
                 public void onReload() {
-                    mPresenter.reloadCurPage(position);
+                    mPresenter.reloadCurPage(position,page.getPageContent());
                 }
             });
             mPageManagers[i] = new ReadPageManager();
@@ -263,7 +258,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 Log.i(TAG, "onLayout::isFirst = " + isFirst);
                 ReadPage curPage = mPageManagers[mReadViewPager.getCurrentItem()].getReadPage();
                 int maxLineCount = curPage.mChapterContent.getMaxLineCount();
-                int width = curPage.mChapterContent.getWidth();
+                int width = curPage.mChapterContent.getMeasuredWidth();
                 PageLines pageLines = curPage.getPageContent() == null ? null : curPage.getPageContent().mPageLines;
                 mPresenter.setTextViewParams(maxLineCount, curPage.mChapterContent.getPaint(), width, pageLines);
                 if (isFirst) {
@@ -332,6 +327,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void changePage() {
+        if (mCurPosition == mPrePosition) {
+            return;
+        }
         if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
             ReadPage readPage = mPageManagers[mCurPosition].getReadPage();
             PageContent pageContent = readPage.getPageContent();
@@ -422,7 +420,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -433,9 +431,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -472,13 +470,19 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.more_setting_view:
             break;
         case R.id.theme_white_view:
-            setReadTheme(Constant.ReadTheme.WHITE);
+            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.WHITE) {
+                setReadTheme(Constant.ReadTheme.WHITE);
+            }
             break;
         case R.id.theme_brown_view:
-            setReadTheme(Constant.ReadTheme.BROWN);
+            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.BROWN) {
+                setReadTheme(Constant.ReadTheme.BROWN);
+            }
             break;
         case R.id.theme_green_view:
-            setReadTheme(Constant.ReadTheme.GREEN);
+            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.GREEN) {
+                setReadTheme(Constant.ReadTheme.GREEN);
+            }
             break;
         case R.id.day_night_view:
             break;
@@ -535,7 +539,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     private void updatePageTheme(int theme) {
         for (ReadPageManager page : mPageManagers) {
-            page.getReadPage().setReadTheme(theme);
+            page.getReadPage().setReadTheme(theme, false);
         }
     }
 
