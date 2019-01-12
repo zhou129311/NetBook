@@ -160,7 +160,7 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
     }
 
     private void setList(final List<MultiItemEntity> list, final boolean isLoadMore) {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {

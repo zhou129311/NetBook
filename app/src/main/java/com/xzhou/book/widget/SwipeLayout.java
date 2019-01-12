@@ -124,6 +124,9 @@ public class SwipeLayout extends LinearLayout {
                 //右边缘检测
                 scrollTo(menuWidth, 0);
                 currentState = STATE_OPEN;
+                if (mStateListener != null) {
+                    mStateListener.onOpen();
+                }
                 return true;
             }
         } else {
@@ -133,6 +136,9 @@ public class SwipeLayout extends LinearLayout {
                 //左边缘检测
                 scrollTo(0, 0);
                 currentState = STATE_CLOSED;
+                if (mStateListener != null) {
+                    mStateListener.onClose();
+                }
                 return true;
             }
         }
@@ -182,31 +188,26 @@ public class SwipeLayout extends LinearLayout {
         return currentState;
     }
 
-    /**
-     * 判断menu此时的状态
-     *
-     * @return true 打开状态 false 处于关闭状态
-     */
     public boolean isMenuOpen() {
         return getScrollX() >= menuWidth;
     }
 
-    /**
-     * 判断menu此时的状态
-     *
-     * @return true 关闭状态 false 未关闭状态
-     */
     public boolean isMenuClosed() {
         return getScrollX() <= 0;
     }
 
-    /**
-     * 关闭菜单
-     */
     public void smoothToCloseMenu() {
         if (currentState != STATE_CLOSED) {
             int sx = getScrollX();
             mScroller.startScroll(sx, 0, -sx, 0, 300);
+            invalidate();
+        }
+    }
+
+    public void smoothToOpenMenu() {
+        if (currentState == STATE_CLOSED) {
+            int sx = getScrollX();
+            mScroller.startScroll(sx, 0, menuWidth - sx, 0, 300);
             invalidate();
         }
     }

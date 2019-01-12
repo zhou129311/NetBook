@@ -137,7 +137,8 @@ public class ChapterBuffer {
             }
             while (paragraphStr.length() > 0) {
                 int paintSize = paint.breakText(paragraphStr, true, width, null);
-                pageContent.lines.add(paragraphStr.substring(0, paintSize));
+                String line = paragraphStr.substring(0, paintSize);
+                pageContent.lines.add(line);
                 paragraphStr = paragraphStr.substring(paintSize);
                 if (pageContent.lines.size() >= maxLineCount) {
                     break;

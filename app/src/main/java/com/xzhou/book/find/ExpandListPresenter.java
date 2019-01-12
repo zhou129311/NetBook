@@ -116,7 +116,7 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
     }
 
     private void initData() {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {

@@ -1,7 +1,5 @@
 package com.xzhou.book.read;
 
-import com.xzhou.book.utils.Log;
-
 import java.util.List;
 
 public class PageContent {
@@ -42,7 +40,6 @@ public class PageContent {
 
     public String getPageContent() {
         if (mPageLines == null) {
-            Log.e("getPageContent is null");
             return "";
         }
         return mPageLines.getPageContent();
@@ -50,7 +47,6 @@ public class PageContent {
 
     public List<String> getLines() {
         if (mPageLines == null) {
-            Log.e("getLines is null");
             return null;
         }
         return mPageLines.lines;
@@ -65,6 +61,7 @@ public class PageContent {
                 ", isEnd=" + isEnd +
                 ", isStart=" + isStart +
                 ", isShow=" + isShow +
+                ", isLoading=" + isLoading +
                 ", pageSize=" + pageSize +
                 ", page=" + (mPageLines != null ? mPageLines.page : "null") +
                 '}';

@@ -58,7 +58,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
     }
 
     private void setBookDetail() {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
@@ -69,7 +69,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
     }
 
     private void setBookHotReviews(final List<MultiItemEntity> list) {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
@@ -80,7 +80,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
     }
 
     private void setBookCommend(final List<MultiItemEntity> list) {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {

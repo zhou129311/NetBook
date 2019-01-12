@@ -2,52 +2,85 @@ package com.xzhou.book.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+
+import java.util.List;
 
 public class JustifyTextView extends android.support.v7.widget.AppCompatTextView {
 
     private int mLineY;
     private int mViewWidth;
+    private List<String> mLines;
+    private int mLineHeight;
 
     public JustifyTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     public int getMaxLineCount() {
-        return (getMeasuredHeight() - (int) (getTextSize() * 0.5f)) / getLineHeight();
+        return getMeasuredHeight() / mLineHeight;
+    }
+
+    @Override
+    public void setTextSize(int unit, float size) {
+        super.setTextSize(unit, size);
+        int lineSpace = (int) (getTextSize() * 0.5f);
+        mLineHeight = (int) getTextSize() + lineSpace;
+    }
+
+    public void setLines(List<String> lines) {
+        mLines = lines;
+        postInvalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         TextPaint paint = getPaint();
-        paint.setSubpixelText(true);
         paint.setColor(getCurrentTextColor());
-        paint.drawableState = getDrawableState();
+        //paint.drawableState = getDrawableState();
         mViewWidth = getMeasuredWidth();
-        mLineY = 0;
-        mLineY += getTextSize() * 1.5;
+        mLineY = mLineHeight;
 
-        Layout layout = getLayout();
-        if (layout == null) {
+        if (mLines == null) {
+            canvas.drawText("", 0, mLineY, paint);
             return;
         }
-        String text = (String) getText();
-        for (int i = 0; i < layout.getLineCount(); i++) {
-            int lineStart = layout.getLineStart(i);
-            int lineEnd = layout.getLineEnd(i);
-            String line = text.substring(lineStart, lineEnd);
+//        Layout layout = getLayout();
+//        if (layout == null) {
+//            return;
+//        }
+        //String text = (String) getText();
 
-            float width = StaticLayout.getDesiredWidth(text, lineStart, lineEnd, getPaint());
-            if (needScale(line) && i < layout.getLineCount() - 1) {
+        //int mw = getMeasuredWidth();
+        for (int i = 0, size = mLines.size(); i < size; i++) {
+            String line = mLines.get(i);
+            //int paintSize = paint.breakText(text, true, mw, null);
+            //String line = text.substring(0, paintSize);
+            float width = StaticLayout.getDesiredWidth(line, paint);
+            if (needScale(line) && i < size - 1) {
                 drawScaledText(canvas, line, width);
             } else {
                 canvas.drawText(line, 0, mLineY, paint);
             }
-            mLineY += getLineHeight();
+            //text = text.substring(paintSize);
+            mLineY += mLineHeight;
         }
+
+//        for (int i = 0; i < layout.getLineCount(); i++) {
+//            int lineStart = layout.getLineStart(i);
+//            int lineEnd = layout.getLineEnd(i);
+//            String line = text.substring(lineStart, lineEnd);
+//
+//            float width = StaticLayout.getDesiredWidth(text, lineStart, lineEnd, getPaint());
+//            if (needScale(line) && i < layout.getLineCount() - 1) {
+//                drawScaledText(canvas, line, width);
+//            } else {
+//                canvas.drawText(line, 0, mLineY, paint);
+//            }
+//            mLineY += getLineHeight();
+//        }
     }
 
     private void drawScaledText(Canvas canvas, String line, float lineWidth) {
@@ -61,7 +94,7 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
             line = line.substring(3);
         }
 
-        int gapCount = line.length() - 1;
+        //int gapCount = line.length() - 1;
         int i = 0;
         if (line.length() > 2 && line.charAt(0) == 12288
                 && line.charAt(1) == 12288) {

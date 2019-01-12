@@ -48,12 +48,12 @@ public class AppSettings {
         SPUtils.get().putBoolean(PRE_KEY_ISNIGHT, night);
     }
 
-    public static void saveFontSize(int fontSizePx) {
-        SPUtils.get().putInt(PRE_KEY_FONT_SIZE, fontSizePx);
+    public static void saveFontSizeSp(int fontSizeSp) {
+        SPUtils.get().putInt(PRE_KEY_FONT_SIZE, fontSizeSp);
     }
 
-    public static int getFontSize() {
-        return SPUtils.get().getInt(PRE_KEY_FONT_SIZE, AppUtils.dip2px(16));
+    public static int getFontSizeSp() {
+        return SPUtils.get().getInt(PRE_KEY_FONT_SIZE, 16);
     }
 
     public static void deleteReadProgress(String bookId) {

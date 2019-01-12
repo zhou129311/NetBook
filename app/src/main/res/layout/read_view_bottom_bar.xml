@@ -84,8 +84,9 @@
 
         <ImageView
             android:id="@+id/text_size_dec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:scaleType="center"
             android:src="@drawable/sel_text_size_dec"
             app:layout_constraintBottom_toBottomOf="@id/auto_reader_view"
             app:layout_constraintEnd_toStartOf="@id/text_size_inc"
@@ -95,9 +96,10 @@
 
         <ImageView
             android:id="@+id/text_size_inc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:src="@drawable/sel_text_size_inc"
+            android:scaleType="center"
             app:layout_constraintBottom_toBottomOf="@id/auto_reader_view"
             app:layout_constraintEnd_toStartOf="@id/auto_reader_view"
             app:layout_constraintStart_toEndOf="@id/text_size_dec"

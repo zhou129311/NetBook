@@ -13,6 +13,10 @@
     <color name="green">#5FB236</color>
     <color name="transparent">#00000000</color>
 
+    <color name="read_load_progress">#f0e7e6e6</color>
+    <color name="read_load_bg_progress">#c82e2e2e</color>
+    <color name="read_load_bg">#d03b3939</color>
+
     <color name="indicator_normal">#d48479</color>
 
     <color name="light_white">#EEEEEE</color>

@@ -22,4 +22,13 @@ public class PageLines {
         }
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return "PageLines{" +
+                "page=" + page +
+                ", startPos=" + startPos +
+                ", endPos=" + endPos +
+                '}';
+    }
 }

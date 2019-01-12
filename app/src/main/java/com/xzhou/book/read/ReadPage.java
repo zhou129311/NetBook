@@ -1,15 +1,13 @@
 package com.xzhou.book.read;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,7 +41,7 @@ public class ReadPage extends RelativeLayout {
     @BindView(R.id.retry_btn)
     TextView mRetryBtn;
 
-    private ProgressBar mLoadingView;
+    private ReadLoadView mLoadingView;
     private @Constant.ReadTheme
     int mTheme;
     private PageContent mPageContent;
@@ -83,9 +81,8 @@ public class ReadPage extends RelativeLayout {
         ButterKnife.bind(this, view);
 
         mChapterContent.setTextColor(context.getResources().getColor(R.color.common_h1));
-        int fontSize = AppSettings.getFontSize();
-        mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
-        mChapterContent.setLineSpacing(0, 1.2f);
+        int fontSize = AppSettings.getFontSizeSp();
+        mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mChapterContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -122,8 +119,7 @@ public class ReadPage extends RelativeLayout {
     }
 
     private void initLoadingView(Context context) {
-        mLoadingView = (ProgressBar) LayoutInflater.from(context).inflate(R.layout.common_load_view, null);
-        mLoadingView.setVisibility(VISIBLE);
+        mLoadingView = new ReadLoadView(context);
     }
 
     public void setBattery(int battery) {
@@ -153,27 +149,20 @@ public class ReadPage extends RelativeLayout {
     }
 
     public void decFontSize() {
-        int curSize = (int) mChapterContent.getTextSize();
-        if (curSize >= AppUtils.dip2px(16)) {
-            int size = curSize - 4;
-            mChapterContent.setLineSpacing(size / 3, 1);
-            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-            AppSettings.saveFontSize(size);
-            if (mListener != null) {
-                mListener.onLayout(false);
-            }
+        int curSize = AppUtils.px2dip((int) mChapterContent.getTextSize());
+        if (curSize >= 16) {
+            int size = curSize - 2;
+            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+            AppSettings.saveFontSizeSp(size);
         }
     }
 
     public void incFontSize() {
-        int curSize = (int) mChapterContent.getTextSize();
-        if (curSize <= AppUtils.dip2px(28)) {
-            int size = curSize + 4;
-            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-            AppSettings.saveFontSize(size);
-            if (mListener != null) {
-                mListener.onLayout(false);
-            }
+        int curSize = AppUtils.px2dip((int) mChapterContent.getTextSize());
+        if (curSize <= 28) {
+            int size = curSize + 2;
+            mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+            AppSettings.saveFontSizeSp(size);
         }
     }
 
@@ -189,10 +178,8 @@ public class ReadPage extends RelativeLayout {
         setLoadState(page.isLoading);
         mChapterTitle.setText(page.chapterTitle);
         mPageNumber.setText(page.getCurPagePos());
-        mChapterContent.setText(page.getPageContent());
-        if (page.mPageLines != null) {
-            Log.i(TAG, "TextView getLineCount::" + mChapterContent.getLayout().getLineCount() + ", page:" + page.mPageLines.page);
-        }
+        //mChapterContent.setText(page.getPageContent());
+        mChapterContent.setLines(page.isLoading ? null : page.getLines());
         setErrorView(page.error != ReadPresenter.Error.NONE);
         switch (page.error) {
         case ReadPresenter.Error.CONNECTION_FAIL:
@@ -239,7 +226,7 @@ public class ReadPage extends RelativeLayout {
         mPageContent = null;
         mChapterTitle.setText("");
         mPageNumber.setText("");
-        mChapterContent.setText("");
+        mChapterContent.setLines(null);
         setErrorView(false);
         setLoadState(false);
     }
@@ -247,19 +234,43 @@ public class ReadPage extends RelativeLayout {
     public void setLoadState(boolean isLoading) {
         if (isLoading) {
             if (indexOfChild(mLoadingView) == -1) {
-                LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                int radius = AppUtils.dip2px(45);
+                LayoutParams lp = new LayoutParams(radius, radius);
                 lp.addRule(RelativeLayout.CENTER_IN_PARENT);
                 addView(mLoadingView, lp);
+                ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int value = (int) animation.getAnimatedValue();
+                        if (value < 100) {
+                            mLoadingView.setProgress(value);
+                        } else {
+                            removeView(mLoadingView);
+                        }
+                    }
+                });
+                animator.setRepeatCount(0);
+                animator.setDuration(2000);
+                animator.start();
             }
         } else {
-            removeView(mLoadingView);
+//            if (mLoadingView.isAttachedToWindow()) {
+//                mLoadingView.setProgress(100);
+//            }
+//            postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    removeView(mLoadingView);
+//                }
+//            }, 200);
         }
     }
 
     public void setErrorView(boolean visible) {
         if (visible) {
             setLoadState(false);
-            mChapterContent.setText("");
+            mChapterContent.setLines(null);
             mErrorView.setVisibility(VISIBLE);
         } else {
             mErrorView.setVisibility(GONE);

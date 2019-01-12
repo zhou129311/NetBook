@@ -183,7 +183,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
     }
 
     private void setPostDetail(final Object detail) {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
@@ -198,7 +198,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
     }
 
     private void setCommentData(final List<MultiItemEntity> list, final boolean isLoadMore) {
-        MyApp.getHandler().post(new Runnable() {
+        MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {

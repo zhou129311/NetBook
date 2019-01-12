@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
@@ -18,7 +17,6 @@ import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
-import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -91,6 +89,7 @@ public class BookTocDialog extends Dialog {
                 } else {
                     mListView.setFastScrollAlwaysVisible(true);
                 }
+                mListView.setSelection(mCurChapter);
             }
         });
     }
