@@ -49,6 +49,7 @@ public class ReadPage extends RelativeLayout {
     private TextLayoutListener mListener;
     private OnReloadListener mOnReloadListener;
     private int mPreHeight;
+    private ValueAnimator mLoadAnimator;
 
     public interface TextLayoutListener {
         void onLayout(boolean isFirst);
@@ -233,37 +234,54 @@ public class ReadPage extends RelativeLayout {
 
     public void setLoadState(boolean isLoading) {
         if (isLoading) {
+            mLoadingView.setProgress(0);
             if (indexOfChild(mLoadingView) == -1) {
                 int radius = AppUtils.dip2px(45);
-                LayoutParams lp = new LayoutParams(radius, radius);
-                lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                LayoutParams lp = (LayoutParams) mLoadingView.getLayoutParams();
+                if (lp == null) {
+                    lp = new LayoutParams(radius, radius);
+                    lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+                }
                 addView(mLoadingView, lp);
-                ValueAnimator animator = ValueAnimator.ofInt(0, 100);
+                if (mLoadAnimator == null) {
+                    mLoadAnimator = ValueAnimator.ofInt(0, 95);
+                    mLoadAnimator.setRepeatCount(0);
+                    mLoadAnimator.setDuration(5000);
+                }
+                mLoadAnimator.removeAllUpdateListeners();
+                mLoadAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int value = (int) animation.getAnimatedValue();
+                        mLoadingView.setProgress(value);
+                    }
+                });
+                mLoadAnimator.start();
+            }
+        } else {
+            if (mLoadAnimator != null) {
+                mLoadAnimator.removeAllUpdateListeners();
+                mLoadAnimator.cancel();
+            }
+            int curProgress = (int) mLoadingView.getProgress();
+            if (curProgress < 100) {
+                ValueAnimator animator = ValueAnimator.ofInt(curProgress, 100);
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         int value = (int) animation.getAnimatedValue();
-                        if (value < 100) {
-                            mLoadingView.setProgress(value);
-                        } else {
+                        mLoadingView.setProgress(value);
+                        if (value >= 100) {
                             removeView(mLoadingView);
                         }
                     }
                 });
                 animator.setRepeatCount(0);
-                animator.setDuration(2000);
+                animator.setDuration((100 - curProgress) * 4);
                 animator.start();
+            } else {
+                removeView(mLoadingView);
             }
-        } else {
-//            if (mLoadingView.isAttachedToWindow()) {
-//                mLoadingView.setProgress(100);
-//            }
-//            postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    removeView(mLoadingView);
-//                }
-//            }, 200);
         }
     }
 

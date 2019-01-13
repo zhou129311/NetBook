@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
+    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -386,6 +386,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 }
             }
         }
+        PageContent[] newPages = getLoadingOrErrorNewPages(page, pageContents);
+        if (newPages != null) {
+            pageContents = newPages;
+        }
         updatePages(pageContents);
     }
 
@@ -409,8 +413,16 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             }
             pageContents[i].isLoading = false;
         }
+        PageContent[] newPages = getLoadingOrErrorNewPages(page, pageContents);
+        if (newPages != null) {
+            pageContents = newPages;
+        }
+        updatePages(pageContents);
+    }
+
+    private PageContent[] getLoadingOrErrorNewPages(int page, PageContent[] pageContents) {
         PageContent[] newPages = null;
-        if (mChaptersList.size() > 0) {
+        if (mChaptersList != null && mChaptersList.size() > 0) {
             if (page == 0 && mCurChapter > 0) {
                 newPages = new PageContent[3];
                 int preChapter = mCurChapter - 1;
@@ -435,10 +447,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 newPages[0] = pageContents[1];
             }
         }
-        if (newPages != null) {
-            pageContents = newPages;
-        }
-        updatePages(pageContents);
+        return newPages;
     }
 
     private boolean hasEndChapter(int chapter) {

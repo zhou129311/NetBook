@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import com.xzhou.book.BookManager;
-import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonDialog;
@@ -95,7 +94,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     private BookManager.LocalBook mBook;
     private List<Entities.Chapters> mChaptersList;
-    private CommonDialog mBookTocDialog;
     private ReadPageManager[] mPageManagers = new ReadPageManager[3];
     private int mCurChapter;
     private int mPrePosition;
@@ -175,10 +173,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         super.finish();
         if (mBook != null && !mBook.isBookshelf) {
             AppUtils.deleteBookCache(mBook._id);
-        }
-        if (mBookTocDialog != null) {
-            mBookTocDialog.dismiss();
-            mBookTocDialog = null;
         }
     }
 
@@ -422,7 +416,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({ R.id.brightness_checkbox })
+    @OnCheckedChanged({R.id.brightness_checkbox})
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -433,9 +427,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -506,27 +500,33 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 ToastUtils.showShortToast("未找到章节列表");
                 return;
             }
-            if (mBookTocDialog == null) {
-                final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
-                dialog.setCurChapter(mCurChapter);
-                dialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
-                    @Override
-                    public void onClickItem(int chapter, Entities.Chapters chapters) {
-                        mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter);
-                        mBookTocDialog.dismiss();
-                        mBookTocDialog = null;
-                    }
-                });
-                mBookTocDialog = CommonDialog.newInstance(new CommonDialog.OnCallDialog() {
-                    @Override
-                    public Dialog getDialog(Context context) {
-                        return dialog;
-                    }
-                }, true);
-            }
-            mBookTocDialog.show(getSupportFragmentManager(), "TocDialog");
+
+            final CommonDialog fragmentDialog = getDialog();
+            fragmentDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
+                @Override
+                public void onClickItem(int chapter, Entities.Chapters chapters) {
+                    mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter);
+                    fragmentDialog.dismissAllowingStateLoss();
+                }
+            });
+            fragmentDialog.setChapter(mCurChapter);
+            fragmentDialog.show(getSupportFragmentManager(), "TocDialog");
             break;
         }
+    }
+
+    private CommonDialog getDialog() {
+        CommonDialog fragmentDialog = (CommonDialog) getSupportFragmentManager().findFragmentByTag("TocDialog");
+        if (fragmentDialog == null) {
+            final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
+            fragmentDialog = CommonDialog.newInstance(new CommonDialog.OnCallDialog() {
+                @Override
+                public Dialog getDialog(Context context) {
+                    return dialog;
+                }
+            }, true);
+        }
+        return fragmentDialog;
     }
 
     private void relayoutPageContent() {

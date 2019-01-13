@@ -1,24 +1,24 @@
 package com.xzhou.book.common;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.xzhou.book.read.BookTocDialog;
 
 public class CommonDialog extends DialogFragment {
 
     private OnDialogCancelListener mCancelListener;
 
     private OnCallDialog mOnCallDialog;
+
+    private BookTocDialog.OnItemClickListener mItemClickListener;
 
     public interface OnDialogCancelListener {
         void onCancel();
@@ -30,6 +30,16 @@ public class CommonDialog extends DialogFragment {
 
     public static CommonDialog newInstance(OnCallDialog call, boolean cancelable) {
         return newInstance(call, cancelable, null);
+    }
+
+    public void setChapter(int chapter) {
+        Bundle data = new Bundle();
+        data.putInt("chapter", chapter);
+        setArguments(data);
+    }
+
+    public void setOnItemClickListener(BookTocDialog.OnItemClickListener listener) {
+        mItemClickListener = listener;
     }
 
     public static CommonDialog newInstance(OnCallDialog call, boolean cancelable, OnDialogCancelListener cancelListener) {
@@ -54,6 +64,21 @@ public class CommonDialog extends DialogFragment {
     @Override
     public Dialog getDialog() {
         return super.getDialog();
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        super.show(manager, tag);
+        Bundle data = getArguments();
+        Dialog dialog = getDialog();
+        if (data != null && dialog instanceof BookTocDialog) {
+            BookTocDialog tocDialog = (BookTocDialog) dialog;
+            int chapter = data.getInt("chapter", -1);
+            if (chapter > -1) {
+                tocDialog.setCurChapter(chapter);
+            }
+            tocDialog.setOnItemClickListener(mItemClickListener);
+        }
     }
 
     @Override
