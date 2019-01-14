@@ -1,6 +1,5 @@
 package com.xzhou.book.read;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,23 +13,21 @@ import com.xzhou.book.utils.AppUtils;
 
 public class ReadLoadView extends View {
 
-    private Paint progressBarPaint;
-    private Paint progressBackgroundPaint;
-    private Paint backgroundPaint;
+    private Paint mProgressPaint;
+    private Paint mProgressBackgroundPaint;
+    private Paint mBackgroundPaint;
 
     private float mRadius;
     private RectF mArcBounds = new RectF();
     private RectF mBackgroundBounds = new RectF();
 
-    float drawUpto = 0;
-
-    private int progressColor;
-    private int progressBackgroundColor;
-    private int backgroundColor;
-    private float strokeWidth;
-    private float backgroundWidth;
-    private float maxValue;
-    private ValueAnimator mAnimator = ValueAnimator.ofInt(0, 100);
+    private float mProgress = 0;
+    private int mProgressColor;
+    private int mProgressBackgroundColor;
+    private int mBackgroundColor;
+    private float mStrokeWidth;
+    private float mBackgroundWidth;
+    private float mMaxValue;
 
     public ReadLoadView(Context context) {
         this(context, null);
@@ -46,36 +43,36 @@ public class ReadLoadView extends View {
     }
 
     private void initPaints() {
-        progressColor = getResources().getColor(R.color.read_load_progress);
-        progressBackgroundColor = getResources().getColor(R.color.read_load_bg_progress);
-        backgroundColor = getResources().getColor(R.color.read_load_bg);
-        strokeWidth = 4;
-        backgroundWidth = 4;
-        maxValue = 100;
+        mProgressColor = getResources().getColor(R.color.read_load_progress);
+        mProgressBackgroundColor = getResources().getColor(R.color.read_load_bg_progress);
+        mBackgroundColor = getResources().getColor(R.color.read_load_bg);
+        mStrokeWidth = 4;
+        mBackgroundWidth = 4;
+        mMaxValue = 100;
 
-        progressBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        progressBarPaint.setStyle(Paint.Style.FILL);
-        progressBarPaint.setColor(progressColor);
-        progressBarPaint.setStyle(Paint.Style.STROKE);
-        progressBarPaint.setStrokeWidth(AppUtils.dip2px(strokeWidth));
-        progressBarPaint.setStrokeCap(Paint.Cap.ROUND);
-        String pc = String.format("#%06X", (0xFFFFFF & progressColor));
-        progressBarPaint.setColor(Color.parseColor(pc));
+        mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mProgressPaint.setStyle(Paint.Style.FILL);
+        mProgressPaint.setColor(mProgressColor);
+        mProgressPaint.setStyle(Paint.Style.STROKE);
+        mProgressPaint.setStrokeWidth(AppUtils.dip2px(mStrokeWidth));
+        mProgressPaint.setStrokeCap(Paint.Cap.ROUND);
+        String pc = String.format("#%06X", (0xFFFFFF & mProgressColor));
+        mProgressPaint.setColor(Color.parseColor(pc));
 
-        progressBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        progressBackgroundPaint.setStyle(Paint.Style.FILL);
-        progressBackgroundPaint.setColor(progressBackgroundColor);
-        progressBackgroundPaint.setStyle(Paint.Style.STROKE);
-        progressBackgroundPaint.setStrokeWidth(AppUtils.dip2px(backgroundWidth));
-        progressBackgroundPaint.setStrokeCap(Paint.Cap.SQUARE);
-        String bc = String.format("#%06X", (0xFFFFFF & progressBackgroundColor));
-        progressBackgroundPaint.setColor(Color.parseColor(bc));
+        mProgressBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mProgressBackgroundPaint.setStyle(Paint.Style.FILL);
+        mProgressBackgroundPaint.setColor(mProgressBackgroundColor);
+        mProgressBackgroundPaint.setStyle(Paint.Style.STROKE);
+        mProgressBackgroundPaint.setStrokeWidth(AppUtils.dip2px(mBackgroundWidth));
+        mProgressBackgroundPaint.setStrokeCap(Paint.Cap.SQUARE);
+        String bc = String.format("#%06X", (0xFFFFFF & mProgressBackgroundColor));
+        mProgressBackgroundPaint.setColor(Color.parseColor(bc));
 
-        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        backgroundPaint.setColor(backgroundColor);
-        String pbc = String.format("#%06X", (0xFFFFFF & backgroundColor));
-        backgroundPaint.setColor(Color.parseColor(pbc));
+        mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBackgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mBackgroundPaint.setColor(mBackgroundColor);
+        String pbc = String.format("#%06X", (0xFFFFFF & mBackgroundColor));
+        mBackgroundPaint.setColor(Color.parseColor(pbc));
 
         //paint.setAntiAlias(true);
     }
@@ -106,82 +103,82 @@ public class ReadLoadView extends View {
 
         mBackgroundBounds.set(0, 0, mRadius * 2, mRadius * 2);
 
-        canvas.drawArc(mBackgroundBounds, 0f, 360f, false, backgroundPaint);
-        canvas.drawArc(mArcBounds, 0f, 360f, false, progressBackgroundPaint);
-        canvas.drawArc(mArcBounds, 270f, drawUpto / getMaxValue() * 360, false, progressBarPaint);
+        canvas.drawArc(mBackgroundBounds, 0f, 360f, false, mBackgroundPaint);
+        canvas.drawArc(mArcBounds, 0f, 360f, false, mProgressBackgroundPaint);
+        canvas.drawArc(mArcBounds, 270f, mProgress / getMaxValue() * 360, false, mProgressPaint);
     }
 
     public void setProgress(float f) {
-        drawUpto = f;
+        mProgress = f;
         invalidate();
     }
 
     public float getProgress() {
-        return drawUpto;
+        return mProgress;
     }
 
     public float getProgressPercentage() {
-        return drawUpto / getMaxValue() * 100;
+        return mProgress / getMaxValue() * 100;
     }
 
     public void setProgressColor(int color) {
-        progressColor = color;
-        progressBarPaint.setColor(color);
+        mProgressColor = color;
+        mProgressPaint.setColor(color);
         invalidate();
     }
 
     public void setProgressColor(String color) {
-        progressBarPaint.setColor(Color.parseColor(color));
+        mProgressPaint.setColor(Color.parseColor(color));
         invalidate();
     }
 
     public void setBackgroundColor(int color) {
-        backgroundColor = color;
-        backgroundPaint.setColor(color);
+        mBackgroundColor = color;
+        mBackgroundPaint.setColor(color);
         invalidate();
     }
 
     public void setBackgroundColor(String color) {
-        backgroundPaint.setColor(Color.parseColor(color));
+        mBackgroundPaint.setColor(Color.parseColor(color));
         invalidate();
     }
 
     public void setProgressBackgroundColor(int color) {
-        progressBackgroundColor = color;
-        progressBackgroundPaint.setColor(color);
+        mProgressBackgroundColor = color;
+        mProgressBackgroundPaint.setColor(color);
         invalidate();
     }
 
     public void setProgressBackgroundColor(String color) {
-        progressBackgroundPaint.setColor(Color.parseColor(color));
+        mProgressBackgroundPaint.setColor(Color.parseColor(color));
         invalidate();
     }
 
     public float getMaxValue() {
-        return maxValue;
+        return mMaxValue;
     }
 
     public void setMaxValue(float max) {
-        maxValue = max;
+        mMaxValue = max;
         invalidate();
     }
 
     public void setStrokeWidth(float width) {
-        strokeWidth = width;
+        mStrokeWidth = width;
         invalidate();
     }
 
     public float getStrokeWidth() {
-        return strokeWidth;
+        return mStrokeWidth;
     }
 
     public void setBackgroundWidth(float width) {
-        backgroundWidth = width;
+        mBackgroundWidth = width;
         invalidate();
     }
 
     public float getBackgroundWidth() {
-        return backgroundWidth;
+        return mBackgroundWidth;
     }
 }
 

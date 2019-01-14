@@ -416,7 +416,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -427,9 +427,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -496,7 +496,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.download_view:
             break;
         case R.id.toc_view:
-            if (mChaptersList == null) {
+            if (mChaptersList == null || mChaptersList.size() < 1) {
                 ToastUtils.showShortToast("未找到章节列表");
                 return;
             }
@@ -505,8 +505,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             fragmentDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
                 @Override
                 public void onClickItem(int chapter, Entities.Chapters chapters) {
+                    Log.i(TAG, "onClickItem::" + chapter);
                     mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter);
-                    fragmentDialog.dismissAllowingStateLoss();
+                    fragmentDialog.dismiss();
                 }
             });
             fragmentDialog.setChapter(mCurChapter);

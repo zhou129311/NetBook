@@ -166,11 +166,7 @@ public class ReadViewPager extends ViewPager {
             return false;
         }
         int curPos = getCurrentItem();
-        if (curPos == (adapter.getCount() - 1)) {
-            PageContent page = mPageManagers[curPos].getReadPage().getPageContent();
-            return page != null && page.isEnd;
-        }
-        PageContent page = mPageManagers[curPos + 1].getReadPage().getPageContent();
+        PageContent page = mPageManagers[curPos].getReadPage().getPageContent();
         return page != null && page.isEnd;
     }
 }

@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.xzhou.book.read.BookTocDialog;
+import com.xzhou.book.utils.Log;
 
 public class CommonDialog extends DialogFragment {
 
@@ -67,8 +68,8 @@ public class CommonDialog extends DialogFragment {
     }
 
     @Override
-    public void show(FragmentManager manager, String tag) {
-        super.show(manager, tag);
+    public void onResume() {
+        super.onResume();
         Bundle data = getArguments();
         Dialog dialog = getDialog();
         if (data != null && dialog instanceof BookTocDialog) {
@@ -96,6 +97,7 @@ public class CommonDialog extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
+        mItemClickListener = null;
         if (mCancelListener != null) {
             mCancelListener.onCancel();
         }

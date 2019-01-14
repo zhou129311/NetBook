@@ -17,6 +17,7 @@ import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
+import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -131,6 +132,9 @@ public class BookTocDialog extends Dialog {
             } else {
                 textView = (TextView) mInflater.inflate(R.layout.item_view_toc, parent, false);
             }
+            if (position == 9) {
+                Log.i("zx", "position = " + position + "," + FileUtils.hasCacheChapter(mLocalBook._id, position));
+            }
             if (mCurChapter == position) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_toc_item_activated, 0, 0, 0);
             } else if (FileUtils.hasCacheChapter(mLocalBook._id, position)) {
@@ -142,6 +146,7 @@ public class BookTocDialog extends Dialog {
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.i("zx", "onClick :" + position + "," + mItemClickListener);
                     if (mItemClickListener != null) {
                         mItemClickListener.onClickItem(position, item);
                     }

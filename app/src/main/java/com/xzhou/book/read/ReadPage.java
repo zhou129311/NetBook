@@ -45,7 +45,6 @@ public class ReadPage extends RelativeLayout {
     private @Constant.ReadTheme
     int mTheme;
     private PageContent mPageContent;
-    //    private ReadActivity mActivity;
     private TextLayoutListener mListener;
     private OnReloadListener mOnReloadListener;
     private int mPreHeight;
@@ -61,7 +60,6 @@ public class ReadPage extends RelativeLayout {
 
     public ReadPage(Context context) {
         this(context, null);
-//        mActivity = (ReadActivity) context;
     }
 
     public ReadPage(Context context, AttributeSet attrs) {
@@ -129,7 +127,7 @@ public class ReadPage extends RelativeLayout {
 
     public void setReadTheme(int theme, boolean isForce) {
         if (mTheme != theme || isForce) {
-            Log.i(TAG, "setReadTheme:" + mTheme);
+//            Log.i(TAG, "setReadTheme:" + mTheme);
             mTheme = theme;
             int batteryRes = R.mipmap.reader_battery_bg_normal;
             switch (mTheme) {

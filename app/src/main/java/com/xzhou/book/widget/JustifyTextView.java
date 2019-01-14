@@ -2,9 +2,11 @@ package com.xzhou.book.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 
 import java.util.List;
 
@@ -25,7 +27,11 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
 
     @Override
     public void setTextSize(int unit, float size) {
-        super.setTextSize(unit, size);
+        if (mLines != null) {
+            getPaint().setTextSize(TypedValue.applyDimension(unit, size, getResources().getDisplayMetrics()));
+        } else {
+            super.setTextSize(unit, size);
+        }
         int lineSpace = (int) (getTextSize() * 0.5f);
         mLineHeight = (int) getTextSize() + lineSpace;
     }
@@ -39,48 +45,41 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
     protected void onDraw(Canvas canvas) {
         TextPaint paint = getPaint();
         paint.setColor(getCurrentTextColor());
-        //paint.drawableState = getDrawableState();
+        paint.drawableState = getDrawableState();
         mViewWidth = getMeasuredWidth();
         mLineY = mLineHeight;
 
-        if (mLines == null) {
-            canvas.drawText("", 0, mLineY, paint);
-            return;
-        }
-//        Layout layout = getLayout();
-//        if (layout == null) {
-//            return;
-//        }
-        //String text = (String) getText();
-
-        //int mw = getMeasuredWidth();
-        for (int i = 0, size = mLines.size(); i < size; i++) {
-            String line = mLines.get(i);
-            //int paintSize = paint.breakText(text, true, mw, null);
-            //String line = text.substring(0, paintSize);
-            float width = StaticLayout.getDesiredWidth(line, paint);
-            if (needScale(line) && i < size - 1) {
-                drawScaledText(canvas, line, width);
-            } else {
-                canvas.drawText(line, 0, mLineY, paint);
+        if (mLines != null) {
+            for (int i = 0, size = mLines.size(); i < size; i++) {
+                String line = mLines.get(i);
+                float width = StaticLayout.getDesiredWidth(line, paint);
+                if (needScale(line) && i < size - 1) {
+                    drawScaledText(canvas, line, width);
+                } else {
+                    canvas.drawText(line, 0, mLineY, paint);
+                }
+                mLineY += mLineHeight;
             }
-            //text = text.substring(paintSize);
-            mLineY += mLineHeight;
-        }
+        } else {
+            String text = (String) getText();
+            Layout layout = getLayout();
+            if (layout == null) {
+                return;
+            }
+            for (int i = 0; i < layout.getLineCount(); i++) {
+                int lineStart = layout.getLineStart(i);
+                int lineEnd = layout.getLineEnd(i);
+                String line = text.substring(lineStart, lineEnd);
 
-//        for (int i = 0; i < layout.getLineCount(); i++) {
-//            int lineStart = layout.getLineStart(i);
-//            int lineEnd = layout.getLineEnd(i);
-//            String line = text.substring(lineStart, lineEnd);
-//
-//            float width = StaticLayout.getDesiredWidth(text, lineStart, lineEnd, getPaint());
-//            if (needScale(line) && i < layout.getLineCount() - 1) {
-//                drawScaledText(canvas, line, width);
-//            } else {
-//                canvas.drawText(line, 0, mLineY, paint);
-//            }
-//            mLineY += getLineHeight();
-//        }
+                float width = StaticLayout.getDesiredWidth(text, lineStart, lineEnd, getPaint());
+                if (needScale(line) && i < layout.getLineCount() - 1) {
+                    drawScaledText(canvas, line, width);
+                } else {
+                    canvas.drawText(line, 0, mLineY, paint);
+                }
+                mLineY += getLineHeight();
+            }
+        }
     }
 
     private void drawScaledText(Canvas canvas, String line, float lineWidth) {
