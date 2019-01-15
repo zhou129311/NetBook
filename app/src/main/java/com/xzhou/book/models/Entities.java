@@ -301,6 +301,7 @@ public class Entities {
         public int currency;
         public boolean unreadble;
         public boolean isVip;
+        public boolean hasLocal;
 
         public Chapters(String title, String link) {
             this.title = title;

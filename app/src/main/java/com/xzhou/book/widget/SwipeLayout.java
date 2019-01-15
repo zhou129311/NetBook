@@ -207,7 +207,7 @@ public class SwipeLayout extends LinearLayout {
     public void smoothToOpenMenu() {
         if (currentState == STATE_CLOSED) {
             int sx = getScrollX();
-            mScroller.startScroll(sx, 0, menuWidth - sx, 0, 300);
+            mScroller.startScroll(sx, 0, menuWidth - sx, 0, 600);
             invalidate();
         }
     }

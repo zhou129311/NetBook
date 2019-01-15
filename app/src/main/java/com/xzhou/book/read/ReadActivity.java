@@ -1,8 +1,10 @@
 package com.xzhou.book.read;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
@@ -26,8 +28,10 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.xzhou.book.BookManager;
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonDialog;
@@ -45,12 +49,12 @@ import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
-public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View {
+public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View, DownloadManager.DownloadCallback {
     private static final String TAG = "ReadActivity";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
-//    @BindView(R.id.end_ll_view)
-//    LinearLayout mEndSlideView;
+    @BindView(R.id.end_ll_view)
+    LinearLayout mEndSlideView;
     @BindView(R.id.read_dl_slide)
     SwipeLayout mSwipeLayout;
     @BindView(R.id.read_view_pager)
@@ -59,7 +63,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @BindView(R.id.read_abl_top_menu)
     AppBarLayout mReadTopBar;
     @BindView(R.id.read_bottom_bar)
-    LinearLayout mReadBottomBar;
+    ConstraintLayout mReadBottomBar;
+    @BindView(R.id.download_progress_tv)
+    TextView mDownloadTv;
 
     @BindView(R.id.read_setting_layout)
     ConstraintLayout mReadSettingLayout;
@@ -138,8 +144,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void initMenuAnim() {
-        if (mTopInAnim != null) return;
         mReadTopBar.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+        mEndSlideView.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
 
         mTopInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_in);
         mTopOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_out);
@@ -174,6 +180,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         if (mBook != null && !mBook.isBookshelf) {
             AppUtils.deleteBookCache(mBook._id);
         }
+        DownloadManager.get().removeCallback(mBook._id);
     }
 
     @Override
@@ -288,9 +295,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 if (curPos >= 2) {
                     return;
                 }
-                ReadPage nextPage = mPageManagers[curPos + 1].getReadPage();
-                if (nextPage.isPageEnd()) {
-                    ToastUtils.showShortToast("没有下一页了");
+                ReadPage page = mPageManagers[curPos].getReadPage();
+                if (page.isPageEnd()) {
                     mSwipeLayout.smoothToOpenMenu();
                     return;
                 }
@@ -458,11 +464,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.auto_reader_view:
             break;
         case R.id.text_size_dec:
-            Log.d(TAG, "click text_size_dec");
             updateFontSize(true);
             break;
         case R.id.text_size_inc:
-            Log.d(TAG, "click text_size_inc");
             updateFontSize(false);
             break;
         case R.id.more_setting_view:
@@ -494,6 +498,22 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
             break;
         case R.id.download_view:
+            if (mChaptersList == null || mChaptersList.size() < 1) {
+                ToastUtils.showShortToast("未找到章节列表");
+                return;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("缓存多少章？").setItems(new String[] { "后面五十章", "后面全部", "全部" }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mReadSettingLayout.setVisibility(View.GONE);
+                    DownloadManager.get().addCallback(mBook._id, ReadActivity.this);
+                    DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList);
+                    DownloadManager.get().startDownload(mBook._id, download);
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
             break;
         case R.id.toc_view:
             if (mChaptersList == null || mChaptersList.size() < 1) {
@@ -587,6 +607,32 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 //        if (isFullScreen) {
 //            AppUtils.hideStableNavBar(this);
 //        }
+    }
+
+    @Override
+    public void onStartDownload() {
+        mDownloadTv.setVisibility(View.VISIBLE);
+        mDownloadTv.setText(getString(R.string.book_read_download_start, mBook.title));
+    }
+
+    @Override
+    public void onProgress(int progress, int max) {
+        mDownloadTv.setVisibility(View.VISIBLE);
+        mDownloadTv.setText(getString(R.string.book_read_download_progress, mBook.title, progress, max));
+    }
+
+    @Override
+    public void onEndDownload(int failedCount, int error) {
+        mDownloadTv.setVisibility(View.VISIBLE);
+        if (error == DownloadManager.ERROR_NO_NETWORK) {
+            mDownloadTv.setText(R.string.book_read_download_error);
+        } else {
+            String text = getString(R.string.book_read_download_complete, mBook.title);
+            if (failedCount > 0) {
+                text = getString(R.string.book_read_download_complete2, mBook.title, failedCount);
+            }
+            mDownloadTv.setText(text);
+        }
     }
 
     private class MyPagerAdapter extends PagerAdapter {

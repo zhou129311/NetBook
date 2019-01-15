@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#b83020</color>
-    <color name="colorPrimaryDark">#883120</color>
+    <color name="colorPrimary">#B93221</color>
+    <color name="colorPrimaryDark">#A72600</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="white">#ffffffff</color>
@@ -46,7 +46,13 @@
     <color name="read_theme_brown">#a29d89</color>
     <color name="read_theme_night">#000000</color>
 
+    <color name="reader_mode_brown_text_color">#ff3b3220</color>
+    <color name="reader_mode_green_text_color">#ff15350f</color>
+    <color name="reader_mode_white_text_color">#ff383635</color>
+
     <color name="read_slide_bg">#222222</color>
+    <color name="read_download_bg">#3d3d3d</color>
+    <color name="read_end_page_text_color">#8c8c8c</color>
 
     <color name="book_detail_author_bg">#a2de6014</color>
 

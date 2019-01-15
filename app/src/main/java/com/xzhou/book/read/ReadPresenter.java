@@ -68,6 +68,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         return;
                     }
 
+                    for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                        mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                    }
+
                     Entities.Chapters chapters = mChaptersList.get(mCurChapter);
                     int[] progress = AppSettings.getReadProgress(mBook._id);
                     mCurChapter = progress[0];
@@ -119,11 +123,13 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             curBuffer = new ChapterBuffer(mBook._id, mCurChapter);
         }
         if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
+            chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();
         } else {
             Entities.ChapterRead chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
                 success = curBuffer.openNetBookChapter(chapterRead.chapter);
+                chapters.hasLocal = true;
             } else {
                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
             }
@@ -287,7 +293,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadPreviousPage::item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadPreviousPage::pageContent = null");
-        } else if (pageContent.isStart) {
+        } else if (pageContent.isStart && pageContent.mPageLines != null && pageContent.mPageLines.page == 0) {
             Log.i(TAG, "loadPreviousPage::pageContent.isStart = true");
         } else {
             if (pageContent.chapter < 0) {
@@ -321,7 +327,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadNextPage:item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadNextPage::pageContent = null");
-        } else if (pageContent.isEnd) {
+        } else if (pageContent.isEnd && pageContent.mPageLines != null && pageContent.mPageLines.page == pageContent.pageSize) {
             Log.i(TAG, "loadNextPage::pageContent.isEnd = true");
         } else {
             if (pageContent.chapter < 0) {

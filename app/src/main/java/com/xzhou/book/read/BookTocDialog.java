@@ -132,12 +132,9 @@ public class BookTocDialog extends Dialog {
             } else {
                 textView = (TextView) mInflater.inflate(R.layout.item_view_toc, parent, false);
             }
-            if (position == 9) {
-                Log.i("zx", "position = " + position + "," + FileUtils.hasCacheChapter(mLocalBook._id, position));
-            }
             if (mCurChapter == position) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_toc_item_activated, 0, 0, 0);
-            } else if (FileUtils.hasCacheChapter(mLocalBook._id, position)) {
+            } else if (item.hasLocal) {
                 textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_toc_item_download, 0, 0, 0);
             } else {
                 textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_toc_item_normal, 0, 0, 0);
@@ -146,7 +143,6 @@ public class BookTocDialog extends Dialog {
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("zx", "onClick :" + position + "," + mItemClickListener);
                     if (mItemClickListener != null) {
                         mItemClickListener.onClickItem(position, item);
                     }

@@ -73,14 +73,21 @@
     <string name="manage_bookmark">管理</string>
     <string name="clear_bookmark">清除</string>
     <string name="book_read_download_error">网络异常，已取消下载</string>
-    <string name="book_read_download_complete">缓存完成，失败%1$d章</string>
-    <string name="book_read_alreday_download">已缓存过:%1$s(%2$d/%3$d)&#8230;</string>
+    <string name="book_read_download_complete">缓存完成:%1$s</string>
+    <string name="book_read_download_complete2">缓存完成:%1$s(失败%2$d章)</string>
     <string name="book_read_download_progress">正在缓存:%1$s(%2$d/%3$d)&#8230;</string>
+    <string name="book_read_download_start">准备缓存:%1$s&#8230;</string>
     <string name="net_error">网络异常</string>
     <string name="book_read_add_book">添书</string>
     <string name="book_read_would_you_like_to_add_this_to_the_book_shelf">是否将本书加入书架？</string>
     <string name="book_read_join_the_book_shelf">加入书架</string>
     <string name="book_read_not">不了</string>
+
+    <string name="book_read_end_hint">千万要记得对那些「肯掏钱买书的人」说声谢谢，因为没有他们，也就没有新书可以看了。</string>
+    <string name="book_read_end_hint_author">——东野圭吾</string>
+    <string name="other_source">其他来源</string>
+    <string name="relate_book">相似书籍</string>
+    <string name="book_discussion">社区话题</string>
 
     <string name="category_book_msg">%1$d人在追&#160;&#160;|&#160;&#160;%2$s%%读者留存</string>
     <string name="subject_book_msg">共%1$d本书&#160;&#160;|&#160;&#160;%2$d人收藏</string>

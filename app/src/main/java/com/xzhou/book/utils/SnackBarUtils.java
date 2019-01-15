@@ -25,6 +25,11 @@ public class SnackBarUtils {
         return new SnackBarUtils(snackbar);
     }
 
+    public static SnackBarUtils makeIndefinite(View view, String text) {
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
+        return new SnackBarUtils(snackbar);
+    }
+
     public void show(@ColorInt int color) {
         setSnackBarBackColor(color).show();
         mSnackbar.show();

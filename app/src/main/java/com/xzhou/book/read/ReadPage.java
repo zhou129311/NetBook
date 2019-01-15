@@ -158,7 +158,7 @@ public class ReadPage extends RelativeLayout {
 
     public void incFontSize() {
         int curSize = AppUtils.px2dip((int) mChapterContent.getTextSize());
-        if (curSize <= 28) {
+        if (curSize <= 32) {
             int size = curSize + 2;
             mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
             AppSettings.saveFontSizeSp(size);
@@ -216,7 +216,7 @@ public class ReadPage extends RelativeLayout {
 
     public void saveReadProgress() {
         if (mPageContent != null && mPageContent.mPageLines != null) {
-            Log.i(TAG, "saveReadProgress::" + mPageContent);
+//            Log.i(TAG, "saveReadProgress::" + mPageContent);
             AppSettings.saveReadProgress(mPageContent.bookId, mPageContent.chapter, mPageContent.mPageLines.startPos);
         }
     }
@@ -242,7 +242,7 @@ public class ReadPage extends RelativeLayout {
                 }
                 addView(mLoadingView, lp);
                 if (mLoadAnimator == null) {
-                    mLoadAnimator = ValueAnimator.ofInt(0, 95);
+                    mLoadAnimator = ValueAnimator.ofInt(0, 90);
                     mLoadAnimator.setRepeatCount(0);
                     mLoadAnimator.setDuration(5000);
                 }
