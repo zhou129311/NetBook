@@ -1,7 +1,7 @@
 package com.xzhou.book.bookshelf;
 
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BaseContract;
+import com.xzhou.book.db.BookProvider;
 
 import java.util.List;
 
@@ -14,14 +14,14 @@ public interface BookshelfContract {
     }
 
     interface View extends BaseContract.View<Presenter> {
-        void showLoading();
+        void onLoadingState(boolean loading);
 
-        void hideLoading();
+        void onDataChange(List<BookProvider.LocalBook> books);
 
-        void onDataChange(List<Entities.NetBook> books);
+        void onBookshelfUpdated(boolean update);
 
-        void onAdd(Entities.NetBook book);
+        void onAdd(int position, BookProvider.LocalBook book);
 
-        void onRemove(Entities.NetBook book);
+        void onRemove(BookProvider.LocalBook book);
     }
 }

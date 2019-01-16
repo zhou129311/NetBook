@@ -117,7 +117,7 @@
                     android:layout_marginTop="@dimen/book_detail_margin">
 
                     <com.xzhou.book.widget.DrawableButton
-                        android:id="@+id/detail_collector"
+                        android:id="@+id/detail_join"
                         style="@style/BookDetailBtn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

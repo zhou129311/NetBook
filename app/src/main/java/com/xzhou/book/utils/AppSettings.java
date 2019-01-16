@@ -14,6 +14,19 @@ public class AppSettings {
     private static final String PRE_KEY_THEME = "pre_key_theme";
     private static final String PRE_KEY_BRIGHTNESS_SYSTEM = "pre_key_brightness_system";
     private static final String PRE_KEY_BRIGHTNESS = "pre_key_brightness";
+    private static final String PRE_KEY_BOOKSHELF_ORDER = "pre_key_bookshelf_order";
+
+    public static final int PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME = 0;
+    public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
+    public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 2;
+
+    public static int getBookshelfOrder() {
+        return SPUtils.get().getInt(PRE_KEY_BOOKSHELF_ORDER, PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME);
+    }
+
+    public static void saveBookshelfOrder(int value) {
+        SPUtils.get().putInt(PRE_KEY_BOOKSHELF_ORDER, value);
+    }
 
     public static int getBrightness(Activity activity) {
         return SPUtils.get().getInt(PRE_KEY_BRIGHTNESS, AppUtils.getScreenBrightness(activity));

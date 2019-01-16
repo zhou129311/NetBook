@@ -475,9 +475,6 @@ public class Entities {
         public List<String> categories;
         public Object gender; // MLGB, 偶尔是String，偶尔是Array
 
-        // me add
-        public boolean isSaveBookshelf;
-
         public String cover() {
             return ZhuiShuSQApi.IMG_BASE_URL + cover;
         }

@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -80,16 +81,15 @@ public class Indicator extends LinearLayout {
             if (drawable instanceof BitmapDrawable) {
                 mBitmap = ((BitmapDrawable) drawable).getBitmap();
             } else if (drawable instanceof NinePatchDrawable) {
-                // .9图处理
                 Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
                 drawable.draw(canvas);
                 mBitmap = bitmap;
             }
-        } else {
+        } /*else {
             mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bg_tab_widget_v3);
-        }
+        }*/
         a.recycle();
 
         mPaint = new Paint();
@@ -104,9 +104,6 @@ public class Indicator extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         switch (mIndicatorStyle) {
         case STYLE_LINE:
-            /*
-             * 下划线指示器:宽与item相等,高是item的1/10
-             */
             mIndicatorWidth = w / mTabVisibleCount;
             mIndicatorHeight = h / 10;
             mTranslationX = 0;
@@ -115,9 +112,6 @@ public class Indicator extends LinearLayout {
             break;
         case STYLE_SQUARE:
         case STYLE_BITMAP:
-            /*
-             * 方形/图标指示器:宽,高与item相等
-             */
             mIndicatorWidth = w / mTabVisibleCount;
             mIndicatorHeight = h;
             mTranslationX = 0;

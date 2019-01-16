@@ -1,6 +1,7 @@
 package com.xzhou.book.common;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,11 +46,11 @@ public class TabActivity extends BaseActivity {
     private ListPopupWindow mListPopupWindow;
     private SparseArrayCompat<FiltrateAdapter> mFiltrateAdapterList = new SparseArrayCompat<>();
 
-    public static void startActivity(Activity activity, Entities.TabData data) {
+    public static void startActivity(Context activity, Entities.TabData data) {
         startActivity(activity, data, 0);
     }
 
-    public static void startActivity(Activity activity, Entities.TabData data, int tabId) {
+    public static void startActivity(Context activity, Entities.TabData data, int tabId) {
         if (data == null) {
             throw new NullPointerException("data cannot be null");
         }

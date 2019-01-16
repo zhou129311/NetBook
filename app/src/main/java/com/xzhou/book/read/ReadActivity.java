@@ -26,15 +26,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.xzhou.book.BookManager;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonDialog;
+import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -54,7 +54,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
     @BindView(R.id.end_ll_view)
-    LinearLayout mEndSlideView;
+    ReadSlideView mEndSlideView;
     @BindView(R.id.read_dl_slide)
     SwipeLayout mSwipeLayout;
     @BindView(R.id.read_view_pager)
@@ -98,7 +98,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private Animation mBottomInAnim;
     private Animation mBottomOutAnim;
 
-    private BookManager.LocalBook mBook;
+    private BookProvider.LocalBook mBook;
     private List<Entities.Chapters> mChaptersList;
     private ReadPageManager[] mPageManagers = new ReadPageManager[3];
     private int mCurChapter;
@@ -106,7 +106,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private int mCurPosition;
     private int mScrollState = ViewPager.SCROLL_STATE_IDLE;
 
-    public static void startActivity(Context context, BookManager.LocalBook book) {
+    public static void startActivity(Context context, BookProvider.LocalBook book) {
         Intent intent = new Intent(context, ReadActivity.class);
         intent.putExtra("localBook", book);
         context.startActivity(intent);
@@ -135,6 +135,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             public void onClose() {
             }
         });
+        DownloadManager.get().addCallback(mBook._id, ReadActivity.this);
     }
 
     @Override
@@ -158,12 +159,12 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         super.initToolBar();
         mBook = getIntent().getParcelableExtra("localBook");
         if (mBook == null) {
-            mBook = new BookManager.LocalBook();
-            mBook._id = "591ed23b1861e2e332db308e";
-            mBook.title = "超神机械师";
-//            ToastUtils.showShortToast("出现错误，打开失败");
-//            finish();
-//            return;
+//            mBook = new BookProvider.LocalBook();
+//            mBook._id = "591ed23b1861e2e332db308e";
+//            mBook.title = "超神机械师";
+            ToastUtils.showShortToast("出现错误，打开失败");
+            finish();
+            return;
         }
         mToolbar.setTitle(mBook.title);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
@@ -172,6 +173,37 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            hideReadToolBar();
+        } else if (!mBook.isBookshelf) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.book_read_add_book_title)
+                    .setMessage(R.string.book_read_add_book_msg)
+                    .setNegativeButton(R.string.book_read_not_add, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    })
+                    .setPositiveButton(R.string.book_read_join, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            BookProvider.insertOrUpdate(mBook);
+                            finish();
+                            //add
+                        }
+                    });
+            builder.show();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -198,12 +230,14 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_community:
+            AppUtils.startDiscussionByBook(mActivity, mBook.title, mBook._id, 0);
             return true;
         case R.id.menu_change_source:
             return true;
         case R.id.menu_change_mode:
             return true;
         case R.id.menu_book_detail:
+            BookDetailActivity.startActivity(mActivity, mBook._id);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -409,16 +443,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
-    public void onBackPressed() {
-        if (mSwipeLayout.isMenuOpen()) {
-            mSwipeLayout.smoothToCloseMenu();
-            hideReadToolBar();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
@@ -507,7 +531,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mReadSettingLayout.setVisibility(View.GONE);
-                    DownloadManager.get().addCallback(mBook._id, ReadActivity.this);
                     DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList);
                     DownloadManager.get().startDownload(mBook._id, download);
                     dialog.dismiss();

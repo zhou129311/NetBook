@@ -12,12 +12,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.xzhou.book.BookManager;
 import com.xzhou.book.R;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.FileUtils;
-import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -35,18 +33,18 @@ public class BookTocDialog extends Dialog {
     private List<Entities.Chapters> mChaptersList;
     private int mCurChapter;
     private Adapter mAdapter;
-    private BookManager.LocalBook mLocalBook;
+    private BookProvider.LocalBook mLocalBook;
     private OnItemClickListener mItemClickListener;
 
     public interface OnItemClickListener {
         void onClickItem(int chapter, Entities.Chapters chapters);
     }
 
-    public static BookTocDialog createDialog(Context context, List<Entities.Chapters> list, BookManager.LocalBook book) {
+    public static BookTocDialog createDialog(Context context, List<Entities.Chapters> list, BookProvider.LocalBook book) {
         return new BookTocDialog(context, list, book);
     }
 
-    private BookTocDialog(@NonNull Context context, List<Entities.Chapters> list, BookManager.LocalBook book) {
+    private BookTocDialog(@NonNull Context context, List<Entities.Chapters> list, BookProvider.LocalBook book) {
         super(context, R.style.TocDialogTheme);
         mChaptersList = list;
         mLocalBook = book;

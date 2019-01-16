@@ -14,7 +14,7 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal"
         rvp:indicator_src="@mipmap/bg_tab_widget_v3"
-        rvp:indicator_style="bitmap"
+        rvp:indicator_style="triangle"
         rvp:item_count="3"
         rvp:text_color_hightlight="@color/white"
         rvp:text_color_normal="@color/indicator_normal"/>

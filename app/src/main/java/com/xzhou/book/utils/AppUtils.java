@@ -18,10 +18,11 @@ import android.view.WindowManager;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
+import com.xzhou.book.common.TabActivity;
+import com.xzhou.book.models.Entities;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,6 +56,27 @@ public class AppUtils {
     private static final String ONE_DAY_AGO = "天前";
     private static final String ONE_MONTH_AGO = "月前";
     private static final String ONE_YEAR_AGO = "年前";
+
+    /**
+     * @param tabId 0 讨论 1 书评
+     */
+    public static void startDiscussionByBook(Context context, String title, String bookId, int tabId) {
+        Entities.TabData data = new Entities.TabData();
+        data.title = title;
+        data.source = Constant.TabSource.SOURCE_COMMUNITY;
+        data.filtrate = new String[] { AppUtils.getString(R.string.sort_default),
+                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count) };
+        data.params = new String[] { bookId };
+        TabActivity.startActivity(context, data, tabId);
+    }
+
+    public static void startRecommendByBook(Context context, String bookId) {
+        Entities.TabData data = new Entities.TabData();
+        data.title = context.getString(R.string.book_detail_recommend_book_list);
+        data.source = Constant.TabSource.SOURCE_RECOMMEND;
+        data.params = new String[] { bookId };
+        TabActivity.startActivity(context, data);
+    }
 
     public static String getString(int resId) {
         return MyApp.getContext().getResources().getString(resId);

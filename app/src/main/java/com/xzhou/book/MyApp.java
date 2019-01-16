@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.xzhou.book.db.BookManager;
 import com.xzhou.book.utils.AppSettings;
 
 public class MyApp extends Application {
@@ -17,6 +18,7 @@ public class MyApp extends Application {
         mInstance = this;
         mHandler = new Handler();
         initNightMode();
+        BookManager.get().init();
     }
 
     public static Handler getHandler() {

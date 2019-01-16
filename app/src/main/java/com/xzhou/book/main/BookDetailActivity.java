@@ -25,11 +25,14 @@ import com.xzhou.book.common.MyGridLayoutManager;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.community.PostsDetailActivity;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.utils.ImageLoader;
+import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.DrawableButton;
 import com.xzhou.book.widget.RatingBar;
 import com.xzhou.book.widget.TagColor;
@@ -57,10 +60,10 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     TextView detailWordCount;
     @BindView(R.id.detail_last_updated)
     TextView detailLastUpdated;
-    @BindView(R.id.detail_collector)
-    DrawableButton detailCollector;
+    @BindView(R.id.detail_join)
+    DrawableButton mJoinBtn;
     @BindView(R.id.detail_read)
-    DrawableButton detailRead;
+    DrawableButton mReadBtn;
     @BindView(R.id.detail_lat_follower)
     TextView detailLatFollower;
     @BindView(R.id.detail_retention_ratio)
@@ -160,6 +163,14 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         startData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mDetail != null) {
+            updateJoinBtn(BookProvider.hasCacheData(mDetail._id));
+        }
+    }
+
     private void startData() {
         if (mPresenter.start()) {
             mPlaceView.setVisibility(View.VISIBLE);
@@ -187,12 +198,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             detailBookCat.setText(getString(R.string.book_detail_cat, detail.cat));
             detailWordCount.setText(AppUtils.formatWordCount(detail.wordCount));
             detailLastUpdated.setText(AppUtils.getDescriptionTimeFromDateString(detail.updated));
-            detailCollector.setActivated(detail.isSaveBookshelf);
-            if (!detailCollector.isActivated()) {
-                detailCollector.setText(R.string.book_detail_join_collection);
-            } else {
-                detailCollector.setText(R.string.book_detail_remove_collection);
-            }
+            updateJoinBtn(BookProvider.hasCacheData(mDetail._id));
             detailLatFollower.setText(String.valueOf(detail.latelyFollower));
             detailRetentionRatio.setText(AppUtils.isEmpty(detail.retentionRatio) ?
                     "-" : String.format(getString(R.string.book_detail_retention_ratio), detail.retentionRatio));
@@ -202,6 +208,15 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             initCommunity();
         } else {
             mLoadErrorView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateJoinBtn(boolean activated) {
+        mJoinBtn.setActivated(activated);
+        if (!mJoinBtn.isActivated()) {
+            mJoinBtn.setText(R.string.book_detail_join_collection);
+        } else {
+            mJoinBtn.setText(R.string.book_detail_remove_collection);
         }
     }
 
@@ -221,7 +236,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
                     data.source = TabSource.SOURCE_TAG;
-                    data.params = new String[]{tag};
+                    data.params = new String[] { tag };
                     TabActivity.startActivity(mActivity, data);
                 }
             });
@@ -234,7 +249,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         detailGroupCommunity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDiscussionByBook(mDetail.title, mDetail._id, 0);
+                AppUtils.startDiscussionByBook(mActivity, mDetail.title, mDetail._id, 0);
             }
         });
     }
@@ -277,8 +292,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_collector, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
+    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_join, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -288,13 +303,23 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
             data.source = TabSource.SOURCE_AUTHOR;
-            data.params = new String[]{data.title};
+            data.params = new String[] { data.title };
             TabActivity.startActivity(mActivity, data);
             break;
         }
-        case R.id.detail_collector:
+        case R.id.detail_join:
+            if (BookProvider.hasCacheData(mDetail._id)) {
+                BookProvider.delete(mDetail._id);
+                updateJoinBtn(false);
+                ToastUtils.showShortToast(getString(R.string.book_detail_has_remove_the_book_shelf, mDetail.title));
+            } else {
+                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail));
+                updateJoinBtn(true);
+                ToastUtils.showShortToast(getString(R.string.book_detail_has_joined_the_book_shelf, mDetail.title));
+            }
             break;
         case R.id.detail_read:
+            ReadActivity.startActivity(mActivity, new BookProvider.LocalBook(mDetail));
             break;
         case R.id.detail_intro:
             if (detailIntro.getMaxLines() == 4) {
@@ -304,27 +329,13 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             }
             break;
         case R.id.detail_more_reviews:
-            startDiscussionByBook(mDetail.title, mDetail._id, 1);
+            AppUtils.startDiscussionByBook(mActivity, mDetail.title, mDetail._id, 1);
             break;
         case R.id.detail_more_recommend: {
-            Entities.TabData data = new Entities.TabData();
-            data.title = detailRecommend.getText().toString();
-            data.source = TabSource.SOURCE_RECOMMEND;
-            data.params = new String[]{getIntent().getStringExtra(EXTRA_BOOK_ID)};
-            TabActivity.startActivity(mActivity, data);
+            AppUtils.startRecommendByBook(mActivity, getIntent().getStringExtra(EXTRA_BOOK_ID));
             break;
         }
         }
-    }
-
-    private void startDiscussionByBook(String title, String bookId, int tabId) {
-        Entities.TabData data = new Entities.TabData();
-        data.title = title;
-        data.source = TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[]{AppUtils.getString(R.string.sort_default),
-                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count)};
-        data.params = new String[]{bookId};
-        TabActivity.startActivity(mActivity, data, tabId);
     }
 
     @Override

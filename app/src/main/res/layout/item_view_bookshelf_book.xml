@@ -24,6 +24,7 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/book_item_margin_h"
         android:layout_toEndOf="@id/book_image"
+        android:layout_toStartOf="@id/book_checkbox"
         android:orientation="vertical">
 
         <TextView
@@ -55,18 +56,18 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="15dp"
-        android:visibility="gone"
+        android:visibility="invisible"
         tools:visibility="visible"/>
 
     <ImageView
-        android:id="@+id/book_updated"
+        android:id="@+id/book_updated_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
         android:src="@mipmap/reader_topic_dot"
-        android:visibility="gone"
+        android:visibility="invisible"
         tools:ignore="ContentDescription"
         tools:visibility="visible"/>
 

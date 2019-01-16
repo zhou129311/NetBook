@@ -4,6 +4,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 
 import java.util.ArrayList;

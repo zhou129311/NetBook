@@ -5,10 +5,10 @@ import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.LruCache;
 
-import com.xzhou.book.BookManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -32,7 +32,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     private ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
-    private BookManager.LocalBook mBook;
+    private BookProvider.LocalBook mBook;
     private List<Entities.Chapters> mChaptersList;
     private LruCache<String, ChapterBuffer> mCacheChapterBuffers = new LruCache<>(3);
     private int mMaxLineCount;
@@ -41,7 +41,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private int mCurChapter;
     private PageContent[] mOldPageContents;
 
-    ReadPresenter(ReadContract.View view, BookManager.LocalBook book) {
+    ReadPresenter(ReadContract.View view, BookProvider.LocalBook book) {
         super(view);
         mBook = book;
     }
@@ -53,6 +53,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
+                    if (mBook.isBookshelf) {
+                        BookProvider.insertOrUpdate(mBook);
+                    }
                     mChaptersList = AppSettings.getChapterList(mBook._id);
                     if (mChaptersList == null) {
                         Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBook._id);
@@ -129,7 +132,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             Entities.ChapterRead chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
                 success = curBuffer.openNetBookChapter(chapterRead.chapter);
-                chapters.hasLocal = true;
             } else {
                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
             }
