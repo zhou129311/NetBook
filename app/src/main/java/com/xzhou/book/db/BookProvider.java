@@ -31,7 +31,7 @@ public class BookProvider {
     static final String COLUMN_ADD_TIME = "add_time";
     static final String COLUMN_CUR_SOURCE = "cur_source";
 
-    private static final String[] PROJECTION = new String[] {
+    private static final String[] PROJECTION = new String[]{
             COLUMN_ID, COLUMN_COVER, COLUMN_TITLE, COLUMN_LAST_CHAPTER,
             COLUMN_UPDATED, COLUMN_LAST_READ_TIME, COLUMN_CUR_SOURCE, COLUMN_ADD_TIME
     };
@@ -81,7 +81,7 @@ public class BookProvider {
             lastChapter = in.readString();
             cover = in.readString();
             curSource = in.readString();
-            isBookshelf = in.readBoolean();
+            isBookshelf = in.readInt() == 1;
         }
 
         public boolean isBookshelf() {
@@ -120,7 +120,7 @@ public class BookProvider {
             dest.writeString(lastChapter);
             dest.writeString(cover);
             dest.writeString(curSource);
-            dest.writeBoolean(isBookshelf);
+            dest.writeInt(isBookshelf ? 1 : 0);
         }
 
         @Override
@@ -181,7 +181,7 @@ public class BookProvider {
             long time = System.currentTimeMillis();
             ContentValues values = new ContentValues();
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { book._id };
+            String[] args = new String[]{book._id};
             values.put(COLUMN_LAST_READ_TIME, time);
             MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
         } catch (Exception e) {
@@ -199,7 +199,7 @@ public class BookProvider {
             ContentValues values = book.toContentValues();
             book.isBookshelf = true;
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { book._id };
+            String[] args = new String[]{book._id};
             if (hasCacheData(book._id)) {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
@@ -226,7 +226,7 @@ public class BookProvider {
     public static void delete(String booId, final String title) {
         try {
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { booId };
+            String[] args = new String[]{booId};
             MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
             MyApp.runUI(new Runnable() {
                 @Override
@@ -242,7 +242,7 @@ public class BookProvider {
 
     public static boolean hasCacheData(String bookId) {
         String where = COLUMN_ID + "=?";
-        String[] args = new String[] { bookId };
+        String[] args = new String[]{bookId};
         try (Cursor cursor = MyApp.getContext().getContentResolver().query(BookProviderImpl.BOOKSHELF_CONTENT_URI, null,
                 where, args, null)) {
             return (cursor != null && cursor.getCount() > 0);
