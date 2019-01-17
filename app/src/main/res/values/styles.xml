@@ -23,9 +23,12 @@
         <item name="actionMenuTextColor">@color/book_read_top_text</item>
     </style>
 
-    <style name="TocDialogTheme" parent="AlertDialog.AppCompat">
+    <style name="SettingTheme" parent="NavigationBarTheme">
+        <item name="android:windowBackground">@color/light_white</item>
+    </style>
+
+    <style name="DialogTheme" parent="AlertDialog.AppCompat">
         <item name="android:background">@null</item>
-        <item name="android:windowMinWidthMinor">90%</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
@@ -125,6 +128,34 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="SettingLabel">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/common_h3</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+    </style>
+
+    <style name="SettingItem">
+        <item name="android:background">@drawable/touch_bg</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">20dp</item>
+    </style>
+
+    <style name="SettingItemSwitch">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/touch_bg</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/common_h1</item>
     </style>
 
 </resources>

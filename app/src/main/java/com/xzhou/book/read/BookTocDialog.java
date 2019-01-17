@@ -45,7 +45,7 @@ public class BookTocDialog extends Dialog {
     }
 
     private BookTocDialog(@NonNull Context context, List<Entities.Chapters> list, BookProvider.LocalBook book) {
-        super(context, R.style.TocDialogTheme);
+        super(context, R.style.DialogTheme);
         mChaptersList = list;
         mLocalBook = book;
         mView = LayoutInflater.from(context).inflate(R.layout.dialog_toc, null);

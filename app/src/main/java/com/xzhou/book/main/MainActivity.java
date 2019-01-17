@@ -77,6 +77,7 @@ public class MainActivity extends BaseActivity {
         case R.id.action_night_mode:
             break;
         case R.id.action_settings:
+            SettingsActivity.startActivity(this);
             break;
         }
         return super.onOptionsItemSelected(item);

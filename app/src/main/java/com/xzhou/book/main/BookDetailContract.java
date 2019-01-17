@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface BookDetailContract {
     interface Presenter extends BaseContract.Presenter {
+        boolean download();
     }
 
     interface View extends BaseContract.View<Presenter> {
@@ -17,5 +18,11 @@ public interface BookDetailContract {
         void onInitReviews(List<MultiItemEntity> list);
 
         void onInitRecommend(List<MultiItemEntity> list);
+
+        void onStartDownload();
+
+        void onProgress(int progress, int max);
+
+        void onEndDownload(int failedCount, int error);
     }
 }

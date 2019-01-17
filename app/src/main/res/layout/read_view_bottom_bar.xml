@@ -210,7 +210,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@mipmap/ic_menu_settings_normal"
-            android:text="@string/book_read_settings"/>
+            android:text="@string/settings"/>
 
         <TextView
             android:id="@+id/download_view"

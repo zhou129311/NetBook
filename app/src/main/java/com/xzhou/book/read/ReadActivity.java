@@ -180,7 +180,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
             hideReadToolBar();
-        } else if (!mBook.isBookshelf) {
+        } else if (!mBook.isBookshelf()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.book_read_add_book_title)
                     .setMessage(R.string.book_read_add_book_msg)
@@ -195,7 +195,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            BookProvider.insertOrUpdate(mBook);
+                            BookProvider.insertOrUpdate(mBook, true);
                             finish();
                             //add
                         }
@@ -209,10 +209,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void finish() {
         super.finish();
-        if (mBook != null && !mBook.isBookshelf) {
-            AppUtils.deleteBookCache(mBook._id);
-        }
-        DownloadManager.get().removeCallback(mBook._id);
+        DownloadManager.get().removeCallback(mBook._id, this);
     }
 
     @Override
@@ -530,9 +527,15 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             builder.setTitle("缓存多少章？").setItems(new String[] { "后面五十章", "后面全部", "全部" }, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    if (!mBook.isBookshelf()) {
+                        BookProvider.insertOrUpdate(mBook, true);
+                    }
                     mReadSettingLayout.setVisibility(View.GONE);
                     DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList);
-                    DownloadManager.get().startDownload(mBook._id, download);
+                    boolean rel = DownloadManager.get().startDownload(mBook._id, download);
+                    if (!rel) {
+                        ToastUtils.showShortToast("正在缓存中...");
+                    }
                     dialog.dismiss();
                 }
             });

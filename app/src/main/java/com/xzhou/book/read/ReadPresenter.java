@@ -49,17 +49,25 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     @Override
     public boolean start() {
         if (mChaptersList == null) {
-            final int newItem = showLoading(0);
+            final int[] progress = AppSettings.getReadProgress(mBook._id);
+            mCurChapter = progress[0];
+            final int readPos = progress[1];
+            final int newItem = showLoading((mCurChapter == 0 && readPos == 0) ? 0 : 1);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (mBook.isBookshelf) {
-                        BookProvider.insertOrUpdate(mBook);
+                    if (mBook.isBookshelf()) {
+                        BookProvider.updateReadTime(mBook);
                     }
                     mChaptersList = AppSettings.getChapterList(mBook._id);
                     if (mChaptersList == null) {
                         Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBook._id);
                         if (mixAToc != null && mixAToc.mixToc != null && mixAToc.mixToc.chapters != null) {
+                            if (mChaptersList != null) {
+                                for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                                    mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                                }
+                            }
                             mChaptersList = mixAToc.mixToc.chapters;
                             AppSettings.saveChapterList(mBook._id, mChaptersList);
                         }
@@ -71,14 +79,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         return;
                     }
 
-                    for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                        mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                    }
-
                     Entities.Chapters chapters = mChaptersList.get(mCurChapter);
-                    int[] progress = AppSettings.getReadProgress(mBook._id);
-                    mCurChapter = progress[0];
-
                     if (mCurChapter == 0) {
                         if (hasEndChapter(mCurChapter)) {
                             mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, true);
@@ -95,8 +96,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         mOldPageContents[1] = createNonePageContent(chapters.title, mCurChapter, false);
                         mOldPageContents[2] = createNonePageContent(mChaptersList.get(mCurChapter + 1).title, mCurChapter + 1, hasEndChapter(mCurChapter + 1));
                     }
-
-                    loadReadProgress(newItem);
+                    loadReadProgress(mCurChapter, readPos, newItem, false);
                 }
             });
             return true;
@@ -110,8 +110,11 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     private void loadReadProgress(int item, boolean isEnd) {
         int[] progress = AppSettings.getReadProgress(mBook._id);
-        mCurChapter = progress[0];
-        int readPos = progress[1];
+        loadReadProgress(progress[0], progress[1], item, isEnd);
+    }
+
+    private void loadReadProgress(int chapter, int readPos, int item, boolean isEnd) {
+        mCurChapter = chapter;
         if (mCurChapter < 0 || mCurChapter >= mChaptersList.size()) {
             mCurChapter = 0;
             readPos = 0;

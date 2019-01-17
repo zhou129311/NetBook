@@ -42,11 +42,12 @@ import okhttp3.Response;
 public class OkHttpUtils {
     private static OkHttpClient sGetClient;
     private static final int CACHE_MAXAGE = 60; // s
+    private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
     private static OkHttpClient getClient() {
         if (sGetClient == null) {
             File httpCacheDirectory = new File(FileUtils.getCachePath(MyApp.getContext()), "okhttps");
-            Cache cache = new Cache(httpCacheDirectory, 20 * 1024 * 1024);
+            Cache cache = new Cache(httpCacheDirectory, CACHE_SIZE);
             OkHttpClient.Builder builder = new OkHttpClient.Builder()
                     .addNetworkInterceptor(interceptor)
                     .readTimeout(6, TimeUnit.SECONDS)
@@ -123,7 +124,7 @@ public class OkHttpUtils {
         }
     }
 
-    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{new X509TrustManager() {
+    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
@@ -136,7 +137,7 @@ public class OkHttpUtils {
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
         }
-    }};
+    } };
 
     public static <T> Entities.HttpResult get(HttpRequest request, Type typeOfT, HashMap<String, String> params) {
         return (Entities.HttpResult) getObject(request, typeOfT, params);
@@ -161,7 +162,9 @@ public class OkHttpUtils {
         try {
             Response response = getClient().newCall(req).execute();
             String body = response.body().string();
-            loge("get url = " + url + "\nresponse =" + body);
+            if (!url.contains("chapter2.zhuishushenqi.com")) {
+                loge("get url = " + url + "\nresponse =" + body);
+            }
             return new Gson().fromJson(body, typeOfT);
         } catch (Exception e) {
             Log.e("get", e);
@@ -179,7 +182,7 @@ public class OkHttpUtils {
         try {
             Response response = getClient().newCall(req).execute();
             String body = response.body().string();
-            loge("post cover = " + url + ", content = " + content + "\nresponse =" + body);
+            loge("post url = " + url + ", content = " + content + "\nresponse =" + body);
             Entities.HttpResult result = new Gson().fromJson(body, typeOfT);
             return result;
         } catch (Exception e) {

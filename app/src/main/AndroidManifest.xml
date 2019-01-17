@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.xzhou.book">
+<manifest package="com.xzhou.book"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -65,6 +65,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".main.SettingsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingTheme"/>
+        <activity android:name=".search.SearchActivity"/>
 
         <provider
             android:name=".db.BookProviderImpl"

@@ -54,7 +54,7 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
         MyApp.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
+                mView.onLoadingState(false);
             }
         }, 2000);
     }

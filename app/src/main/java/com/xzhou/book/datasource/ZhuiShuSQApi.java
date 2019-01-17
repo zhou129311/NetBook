@@ -470,21 +470,6 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 第三方登陆
-     *
-     * @return Login
-     */
-    public static HttpResult login(String platform_uid, String platform_token, String platform_code) {
-        HttpRequest request = new HttpRequest("/user/login");
-        HashMap<String, String> body = new HashMap<>();
-        body.put("platform_uid", platform_uid);
-        body.put("platform_token", platform_token);
-        body.put("platform_code", platform_code);
-        String content = new JSONObject(body).toString();
-        return OkHttpUtils.post(request, Entities.Login.TYPE, content);
-    }
-
-    /**
      * 获取bookId对应的讨论列表
      *
      * @param bookId bookId
@@ -561,5 +546,20 @@ public class ZhuiShuSQApi {
             params.put("distillate", "true");
         }
         return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
+    }
+
+    /**
+     * 第三方登陆
+     *
+     * @return Login
+     */
+    public static HttpResult login(String platform_uid, String platform_token, String platform_code) {
+        HttpRequest request = new HttpRequest("/user/login");
+        HashMap<String, String> body = new HashMap<>();
+        body.put("platform_uid", platform_uid);
+        body.put("platform_token", platform_token);
+        body.put("platform_code", platform_code);
+        String content = new JSONObject(body).toString();
+        return OkHttpUtils.post(request, Entities.Login.TYPE, content);
     }
 }

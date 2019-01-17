@@ -1,16 +1,20 @@
 package com.xzhou.book.main;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
-import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.FileUtils;
+import com.xzhou.book.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> implements BookDetailContract.Presenter {
+public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> implements BookDetailContract.Presenter
+        , DownloadManager.DownloadCallback {
     private static final String TAG = "BookDetailPresenter";
 
     private final String mBookId;
@@ -19,6 +23,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
     BookDetailPresenter(BookDetailContract.View view, String bookId) {
         super(view);
         mBookId = bookId;
+        DownloadManager.get().addCallback(mBookId, this);
     }
 
     @Override
@@ -58,6 +63,31 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
         return false;
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        DownloadManager.get().removeCallback(mBookId, this);
+    }
+
+    @Override
+    public boolean download() {
+        if (DownloadManager.get().hasDownloading(mBookId)) {
+            return false;
+        }
+        ZhuiShuSQApi.getPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBookId);
+                if (mixAToc != null && mixAToc.mixToc != null && mixAToc.mixToc.chapters != null && mixAToc.mixToc.chapters.size() > 0) {
+                    DownloadManager.Download download = DownloadManager.createDownload(DownloadManager.CHAPTER_ALL, 0,
+                            mixAToc.mixToc.chapters);
+                    DownloadManager.get().startDownload(mBookId, download);
+                }
+            }
+        });
+        return true;
+    }
+
     private void setBookDetail() {
         MyApp.runUI(new Runnable() {
             @Override
@@ -89,5 +119,26 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
                 }
             }
         });
+    }
+
+    @Override
+    public void onStartDownload() {
+        if (mView != null) {
+            mView.onStartDownload();
+        }
+    }
+
+    @Override
+    public void onProgress(int progress, int max) {
+        if (mView != null) {
+            mView.onProgress(progress, max);
+        }
+    }
+
+    @Override
+    public void onEndDownload(int failedCount, int error) {
+        if (mView != null) {
+            mView.onEndDownload(failedCount, error);
+        }
     }
 }

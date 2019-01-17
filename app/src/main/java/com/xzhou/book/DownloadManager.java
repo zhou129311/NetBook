@@ -2,10 +2,12 @@ package com.xzhou.book;
 
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,8 @@ public class DownloadManager {
 
     private static DownloadManager sInstance;
     private ExecutorService mPool = Executors.newFixedThreadPool(3);
-    private Map<String, DownloadCallback> mCallbackMap = new HashMap<>();
+    private final Map<String, List<DownloadCallback>> mCallbackMap = new HashMap<>();
+    private final Map<String, Download> mDownloadMap = new HashMap<>();
 
     public static class Download {
         public List<Entities.Chapters> list;
@@ -76,20 +79,25 @@ public class DownloadManager {
     private DownloadManager() {
     }
 
-    public void startDownload(final String bookId, final Download download) {
+    public boolean startDownload(final String bookId, final Download download) {
+        if (hasDownloading(bookId)) {
+            return false;
+        }
+        notifyStart(bookId);
+        mDownloadMap.put(bookId, download);
         mPool.execute(new Runnable() {
             @Override
             public void run() {
                 if (download.isValid() && !download.isPause) {
-                    notifyStart(bookId);
                     int error = ERROR_NONE;
                     int fail = 0;
+                    int exist = 0;
                     for (int i = download.start; i < download.end; i++) {
                         if (download.isPause) {
                             break;
                         }
                         Entities.Chapters chapter = download.list.get(i);
-                        if (!FileUtils.hasCacheChapter(bookId, i)) {
+                        if (!chapter.hasLocal && !FileUtils.hasCacheChapter(bookId, i)) {
                             Entities.ChapterRead data = ZhuiShuSQApi.getChapterRead(chapter.link);
                             if (data != null && data.chapter != null && data.chapter.body != null) {
                                 File file = FileUtils.getChapterFile(bookId, i);
@@ -104,60 +112,98 @@ public class DownloadManager {
                                 }
                             }
                         } else {
+                            exist++;
                             chapter.hasLocal = true;
                         }
-                        notifyProgress(bookId, i + 1, download.list.size());
+                        if ((i + 1) - exist > 0) {
+                            notifyProgress(bookId, i + 1, download.list.size());
+                        }
                     }
                     notifyEnd(bookId, fail, error);
+                    AppSettings.saveChapterList(bookId, download.list);
+                    mDownloadMap.remove(bookId);
                 }
             }
         });
+        return true;
+    }
+
+    public void pauseDownload(String bookId) {
+        Download download = mDownloadMap.get(bookId);
+        if (download != null) {
+            download.isPause = true;
+        }
     }
 
     public void addCallback(String bookId, DownloadCallback callback) {
-        mCallbackMap.put(bookId, callback);
+        List<DownloadCallback> list = mCallbackMap.get(bookId);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        list.add(callback);
+        mCallbackMap.put(bookId, list);
     }
 
-    public void removeCallback(String bookId) {
-        mCallbackMap.remove(bookId);
+    public void removeCallback(String bookId, DownloadCallback callback) {
+        List<DownloadCallback> list = mCallbackMap.get(bookId);
+        if (list != null) {
+            list.remove(callback);
+            if (list.size() < 1) {
+                mCallbackMap.remove(bookId);
+            }
+        }
     }
 
-    public boolean hasCallback(String bookId) {
-        return mCallbackMap.containsKey(bookId);
+    public boolean hasDownloading(String bookId) {
+        return mDownloadMap.containsKey(bookId);
     }
 
     private void notifyStart(String bookId) {
-        final DownloadCallback callback = mCallbackMap.get(bookId);
-        if (callback != null) {
-            MyApp.runUI(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onStartDownload();
+        List<DownloadCallback> list = mCallbackMap.get(bookId);
+        if (list != null && list.size() > 0) {
+            for (final DownloadCallback callback : list) {
+                if (callback != null) {
+                    MyApp.runUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onStartDownload();
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
     private void notifyProgress(String bookId, final int progress, final int max) {
-        final DownloadCallback callback = mCallbackMap.get(bookId);
-        if (callback != null) {
-            MyApp.runUI(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onProgress(progress, max);
+        List<DownloadCallback> list = mCallbackMap.get(bookId);
+        if (list != null && list.size() > 0) {
+            for (final DownloadCallback callback : list) {
+                if (callback != null) {
+                    MyApp.runUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onProgress(progress, max);
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
     private void notifyEnd(String bookId, final int failedCount, final int error) {
-        final DownloadCallback callback = mCallbackMap.get(bookId);
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                callback.onEndDownload(failedCount, error);
+        List<DownloadCallback> list = mCallbackMap.get(bookId);
+        if (list != null && list.size() > 0) {
+            for (final DownloadCallback callback : list) {
+                if (callback != null) {
+                    MyApp.runUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onEndDownload(failedCount, error);
+                        }
+                    });
+                }
             }
-        });
+        }
     }
 
 }

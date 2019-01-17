@@ -6,12 +6,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.xzhou.book.read.BookTocDialog;
-import com.xzhou.book.utils.Log;
 
 public class CommonDialog extends DialogFragment {
 
@@ -29,10 +27,6 @@ public class CommonDialog extends DialogFragment {
         Dialog getDialog(Context context);
     }
 
-    public static CommonDialog newInstance(OnCallDialog call, boolean cancelable) {
-        return newInstance(call, cancelable, null);
-    }
-
     public void setChapter(int chapter) {
         Bundle data = new Bundle();
         data.putInt("chapter", chapter);
@@ -43,10 +37,12 @@ public class CommonDialog extends DialogFragment {
         mItemClickListener = listener;
     }
 
+    public static CommonDialog newInstance(OnCallDialog call, boolean cancelable) {
+        return newInstance(call, cancelable, null);
+    }
+
     public static CommonDialog newInstance(OnCallDialog call, boolean cancelable, OnDialogCancelListener cancelListener) {
         CommonDialog instance = new CommonDialog();
-        Bundle bundle = new Bundle();
-        instance.setArguments(bundle);
         instance.setCancelable(cancelable);
         instance.mCancelListener = cancelListener;
         instance.mOnCallDialog = call;

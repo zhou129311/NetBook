@@ -9,10 +9,10 @@ import com.xzhou.book.R;
 
 public class SnackBarUtils {
 
-    private Snackbar mSnackbar;
+    private Snackbar mSnackBar;
 
     private SnackBarUtils(Snackbar snackbar) {
-        mSnackbar = snackbar;
+        mSnackBar = snackbar;
     }
 
     public static SnackBarUtils makeShort(View view, String text) {
@@ -32,7 +32,24 @@ public class SnackBarUtils {
 
     public void show(@ColorInt int color) {
         setSnackBarBackColor(color).show();
-        mSnackbar.show();
+    }
+
+    public void setText(String text) {
+        if (mSnackBar != null) {
+            mSnackBar.setText(text);
+        }
+    }
+
+    public void show() {
+        if (mSnackBar != null && !mSnackBar.isShown()) {
+            mSnackBar.show();
+        }
+    }
+
+    public void hide() {
+        if (mSnackBar != null && mSnackBar.isShown()) {
+            mSnackBar.dismiss();
+        }
     }
 
     public void show(@ColorInt int color, String actionText, View.OnClickListener listener) {
@@ -51,10 +68,10 @@ public class SnackBarUtils {
     }
 
     private Snackbar setSnackBarBackColor(@ColorInt int color) {
-        View snackBarView = getSnackBarLayout(mSnackbar);
+        View snackBarView = getSnackBarLayout(mSnackBar);
         if (snackBarView != null) {
             snackBarView.setBackgroundColor(color);
         }
-        return mSnackbar;
+        return mSnackBar;
     }
 }

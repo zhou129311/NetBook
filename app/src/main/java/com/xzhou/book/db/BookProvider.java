@@ -6,12 +6,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
+import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
+import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +45,7 @@ public class BookProvider {
         public String lastChapter;
         public String cover;
         public String curSource;
-        public boolean isBookshelf;
+        private boolean isBookshelf;
 
         public LocalBook(Entities.BookDetail detail) {
             _id = detail._id;
@@ -78,6 +81,11 @@ public class BookProvider {
             lastChapter = in.readString();
             cover = in.readString();
             curSource = in.readString();
+            isBookshelf = in.readBoolean();
+        }
+
+        public boolean isBookshelf() {
+            return isBookshelf || BookProvider.hasCacheData(_id);
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -112,6 +120,22 @@ public class BookProvider {
             dest.writeString(lastChapter);
             dest.writeString(cover);
             dest.writeString(curSource);
+            dest.writeBoolean(isBookshelf);
+        }
+
+        @Override
+        public String toString() {
+            return "LocalBook{" +
+                    "_id='" + _id + '\'' +
+                    ", updated=" + updated +
+                    ", readTime=" + readTime +
+                    ", addTime=" + addTime +
+                    ", title='" + title + '\'' +
+                    ", lastChapter='" + lastChapter + '\'' +
+                    ", cover='" + cover + '\'' +
+                    ", curSource='" + curSource + '\'' +
+                    ", isBookshelf=" + isBookshelf +
+                    '}';
         }
     }
 
@@ -152,7 +176,20 @@ public class BookProvider {
         return list;
     }
 
-    public static void insertOrUpdate(LocalBook book) {
+    public static void updateReadTime(LocalBook book) {
+        try {
+            long time = System.currentTimeMillis();
+            ContentValues values = new ContentValues();
+            String where = COLUMN_ID + "=?";
+            String[] args = new String[] { book._id };
+            values.put(COLUMN_LAST_READ_TIME, time);
+            MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertOrUpdate(final LocalBook book, boolean setReadTime) {
         if (book == null) {
             Log.e(TAG, "insertOrUpdate error , book = null");
             return;
@@ -164,25 +201,40 @@ public class BookProvider {
             String where = COLUMN_ID + "=?";
             String[] args = new String[] { book._id };
             if (hasCacheData(book._id)) {
-                values.put(COLUMN_LAST_READ_TIME, time);
+                if (setReadTime) {
+                    values.put(COLUMN_LAST_READ_TIME, time);
+                }
                 MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
             } else {
-                values.put(COLUMN_LAST_READ_TIME, time);
+                if (setReadTime) {
+                    values.put(COLUMN_LAST_READ_TIME, time);
+                }
                 values.put(COLUMN_ADD_TIME, time);
                 MyApp.getContext().getContentResolver().insert(BookProviderImpl.BOOKSHELF_CONTENT_URI, values);
+                MyApp.runUI(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_joined_the_book_shelf, book.title));
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void delete(String booId) {
+    public static void delete(String booId, final String title) {
         try {
             String where = COLUMN_ID + "=?";
             String[] args = new String[] { booId };
-            if (hasCacheData(booId)) {
-                MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
-            }
+            MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
+            MyApp.runUI(new Runnable() {
+                @Override
+                public void run() {
+                    ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_remove_the_book_shelf, title));
+                }
+            });
+            DownloadManager.get().pauseDownload(booId);
         } catch (Exception e) {
             e.printStackTrace();
         }

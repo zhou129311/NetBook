@@ -62,11 +62,11 @@
     <string name="book_read_landscape">横屏</string>
     <string name="book_read_portrait">竖屏</string>
     <string name="book_read_feedback">反馈</string>
-    <string name="book_read_settings">设置</string>
     <string name="book_read_download">缓存</string>
     <string name="read_settings_brightness_hint">跟随系统</string>
     <string name="read_settings_auto_read">自动阅读</string>
     <string name="read_settings_more">更多设置</string>
+    <string name="read_settings">阅读设置</string>
     <string name="book_read_mark">书签</string>
     <string name="book_read_toc">目录</string>
     <string name="add_bookmark">新增书签</string>
@@ -115,7 +115,18 @@
     <string name="book_review_the_scoring">给书评打分</string>
     <string name="book_review_detail_score">楼主打分:</string>
 
-    <string name="menu_main_settings">设置</string>
+    <string name="settings">设置</string>
+    <string name="bookshelf_sort">书架排序</string>
+    <string name="bookshelf_sort_add">按最近添加</string>
+    <string name="bookshelf_sort_update">按更新时间</string>
+    <string name="bookshelf_sort_read">按最近阅读</string>
+    <string name="download_read_book">边看边存</string>
+    <string name="download_read_book_none">未开启</string>
+    <string name="download_read_book_5">自动缓存后面五章</string>
+    <string name="download_read_book_10">自动缓存后面十章</string>
+    <string name="saving_traffic_mode">省流量模式（无图模式）</string>
+    <string name="clear_cache">清除缓存</string>
+
     <string name="menu_main_scan_local_book">扫描本地书籍</string>
 
     <string name="exit_tips">再按一次退出程序</string>

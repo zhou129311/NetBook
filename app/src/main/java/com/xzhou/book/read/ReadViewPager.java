@@ -40,8 +40,9 @@ public class ReadViewPager extends ViewPager {
 
     public ReadViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        ViewConfiguration configuration = ViewConfiguration.get(getContext());
-        mScaledTouchSlop = configuration.getScaledTouchSlop();
+//        ViewConfiguration configuration = ViewConfiguration.get(getContext());
+//        mScaledTouchSlop = configuration.getScaledTouchSlop();
+        mScaledTouchSlop = 5;
     }
 
     public void setOnClickChangePageListener(OnClickChangePageListener listener) {

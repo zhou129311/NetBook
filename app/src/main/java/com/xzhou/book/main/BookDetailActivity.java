@@ -32,6 +32,7 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.utils.ImageLoader;
+import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.DrawableButton;
 import com.xzhou.book.widget.RatingBar;
@@ -118,6 +119,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     ProgressBar mLoadView;
 
     private Entities.BookDetail mDetail;
+    private SnackBarUtils mSnackBar;
 
     public static void startActivity(Context context, String bookId) {
         Intent intent = new Intent(context, BookDetailActivity.class);
@@ -150,8 +152,13 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_download) {
-
+        if (item.getItemId() == R.id.menu_download && mDetail != null) {
+            if (!mPresenter.download()) {
+                ToastUtils.showShortToast("正在缓存中...");
+            } else {
+                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail), false);
+                updateJoinBtn(true);
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -272,6 +279,51 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
+    @Override
+    public void onStartDownload() {
+        String text = getString(R.string.book_read_download_start, mDetail.title);
+        if (mSnackBar == null) {
+            mSnackBar = SnackBarUtils.makeIndefinite(getContentView(), text);
+            mSnackBar.show(getResources().getColor(R.color.colorPrimary));
+        } else {
+            mSnackBar.show();
+            mSnackBar.setText(text);
+        }
+    }
+
+    @Override
+    public void onProgress(int progress, int max) {
+        String text = getString(R.string.book_read_download_progress, mDetail.title, progress, max);
+        if (mSnackBar == null) {
+            mSnackBar = SnackBarUtils.makeIndefinite(getContentView(), text);
+            mSnackBar.show(getResources().getColor(R.color.colorPrimary));
+        } else {
+            mSnackBar.show();
+            mSnackBar.setText(text);
+        }
+    }
+
+    @Override
+    public void onEndDownload(int failedCount, int error) {
+        String text = getString(R.string.book_read_download_complete, mDetail.title);
+        if (failedCount > 0) {
+            text = getString(R.string.book_read_download_complete2, mDetail.title, failedCount);
+        }
+        if (mSnackBar == null) {
+            mSnackBar = SnackBarUtils.makeIndefinite(getContentView(), text);
+            mSnackBar.show(getResources().getColor(R.color.colorPrimary));
+        } else {
+            mSnackBar.show();
+            mSnackBar.setText(text);
+        }
+        getContentView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSnackBar.hide();
+            }
+        }, 2000);
+    }
+
     private void initRecyclerView(List<MultiItemEntity> list, final RecyclerView recyclerView) {
         Adapter adapter = new Adapter(list);
         adapter.bindToRecyclerView(recyclerView);
@@ -309,13 +361,11 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
         case R.id.detail_join:
             if (BookProvider.hasCacheData(mDetail._id)) {
-                BookProvider.delete(mDetail._id);
+                BookProvider.delete(mDetail._id, mDetail.title);
                 updateJoinBtn(false);
-                ToastUtils.showShortToast(getString(R.string.book_detail_has_remove_the_book_shelf, mDetail.title));
             } else {
-                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail));
+                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail), false);
                 updateJoinBtn(true);
-                ToastUtils.showShortToast(getString(R.string.book_detail_has_joined_the_book_shelf, mDetail.title));
             }
             break;
         case R.id.detail_read:

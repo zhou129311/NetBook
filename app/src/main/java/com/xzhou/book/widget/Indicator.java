@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -74,7 +73,6 @@ public class Indicator extends LinearLayout {
         mTextSize = a.getDimension(R.styleable.Indicator_text_size, 15);
         mIndicatorColor = a.getColor(R.styleable.Indicator_indicator_color, D_INDICATOR_COLOR);
         mIndicatorStyle = a.getInt(R.styleable.Indicator_indicator_style, STYLE_LINE);
-
         Drawable drawable = a.getDrawable(R.styleable.Indicator_indicator_src);
 
         if (drawable != null) {
@@ -87,9 +85,11 @@ public class Indicator extends LinearLayout {
                 drawable.draw(canvas);
                 mBitmap = bitmap;
             }
-        } /*else {
-            mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bg_tab_widget_v3);
-        }*/
+        } else {
+            if (mIndicatorStyle == STYLE_BITMAP) {
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bg_tab_widget_v3);
+            }
+        }
         a.recycle();
 
         mPaint = new Paint();
@@ -97,6 +97,7 @@ public class Indicator extends LinearLayout {
         mPaint.setColor(mIndicatorColor);
         mPaint.setStyle(Style.FILL);
 
+        mPath = new Path();
     }
 
     @Override
@@ -108,7 +109,6 @@ public class Indicator extends LinearLayout {
             mIndicatorHeight = h / 10;
             mTranslationX = 0;
             mRectF = new Rect(0, 0, mIndicatorWidth, mIndicatorHeight);
-
             break;
         case STYLE_SQUARE:
         case STYLE_BITMAP:
@@ -146,7 +146,7 @@ public class Indicator extends LinearLayout {
             canvas.translate(mTranslationX, 0);
             // 笔锋圆滑度
             // mPaint.setPathEffect(new CornerPathEffect(10));
-            mPath = new Path();
+            mPath.reset();
             int midOfTab = getWidth() / mTabVisibleCount / 2;
             mPath.moveTo(midOfTab, getHeight() - mIndicatorHeight);
             mPath.lineTo(midOfTab - mIndicatorWidth / 2, getHeight());
@@ -224,7 +224,7 @@ public class Indicator extends LinearLayout {
             view.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mViewPager.setCurrentItem(j, false);
+                    mViewPager.setCurrentItem(j, true);
                 }
             });
         }
@@ -254,7 +254,6 @@ public class Indicator extends LinearLayout {
                 && getChildCount() > mTabVisibleCount
                 && position < (getChildCount() - 2)) {
             if (mTabVisibleCount != 1) {
-
                 int xValue = (position - (mTabVisibleCount - 2)) * tabWidth
                         + (int) (tabWidth * offset);
                 this.scrollTo(xValue, 0);
