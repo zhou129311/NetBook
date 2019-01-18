@@ -29,6 +29,8 @@
     <string name="book_list_count">共%1$d本书&#160;&#160;|&#160;&#160;%2$d人收藏</string>
 
     <string name="search">搜索</string>
+    <string name="search_history">搜索历史</string>
+    <string name="search_clear_history">清空</string>
     <string name="search_hot_search">大家都在搜</string>
     <string name="search_change_a_lot">换一批</string>
     <string name="search_result_h2">%1$d人在追&#160;&#160;|&#160;&#160;%2$s%%读者留存&#160;&#160;|&#160;&#160;%3$s著</string>
@@ -172,5 +174,9 @@
     <string name="read_error_no_network">没网，连不上呀\n请检测网络后重试</string>
     <string name="read_error_no_content">本章暂无文字\n未找到本章的文字内容</string>
     <string name="read_error_retry">重试</string>
+
+    <!--search-->
+    <string name="search_hint">输入书名或者作者名</string>
+    <string name="search_advanced">没有你想要的小说? 点击精确搜索</string>
 
 </resources>

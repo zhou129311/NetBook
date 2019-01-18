@@ -524,7 +524,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 return;
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("缓存多少章？").setItems(new String[] { "后面五十章", "后面全部", "全部" }, new DialogInterface.OnClickListener() {
+            builder.setTitle("缓存多少章？").setItems(DownloadManager.DOWNLOAD_ITEMS, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (!mBook.isBookshelf()) {

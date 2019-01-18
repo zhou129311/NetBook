@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/search_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorPrimary"
+        android:elevation="1dp">
+
+        <ImageView
+            android:id="@+id/back_iv"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:src="@mipmap/ab_back"
+            tools:ignore="ContentDescription"/>
+
+        <View
+            android:id="@+id/div_1"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/back_iv"
+            android:background="@color/light_black"/>
+
+        <EditText
+            android:id="@+id/search_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/div_1"
+            android:layout_toStartOf="@id/div_2"
+            android:background="@null"
+            android:gravity="center_vertical|start"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/common_h3"
+            android:textCursorDrawable="@color/white"
+            android:textSize="16dp"
+            tools:ignore="Autofill,SpUsage"/>
+
+        <ImageView
+            android:id="@+id/clear_et_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignEnd="@id/search_et"
+            android:layout_centerVertical="true"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:scaleType="center"
+            android:src="@drawable/sel_search_clear"
+            android:visibility="gone"
+            tools:ignore="ContentDescription"/>
+
+        <View
+            android:id="@+id/div_2"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@id/search_iv"
+            android:background="@color/light_black"/>
+
+        <ImageView
+            android:id="@+id/search_iv"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:scaleType="center"
+            android:src="@mipmap/ic_action_search"
+            tools:ignore="ContentDescription"/>
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_toolbar"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/auto_complete_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_toolbar"
+        android:visibility="gone"/>
+</RelativeLayout>

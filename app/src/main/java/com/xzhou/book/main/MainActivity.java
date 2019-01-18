@@ -21,6 +21,7 @@ import com.xzhou.book.community.CommunityPresenter;
 import com.xzhou.book.find.FindContract;
 import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
+import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.widget.Indicator;
 import com.xzhou.book.utils.ToastUtils;
@@ -70,7 +71,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_search:
-            ToastUtils.showShortToast("该功能正在开发中...");
+            SearchActivity.startActivity(this);
             break;
         case R.id.action_scan_local_book:
             break;

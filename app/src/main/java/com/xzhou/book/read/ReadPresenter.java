@@ -63,12 +63,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     if (mChaptersList == null) {
                         Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBook._id);
                         if (mixAToc != null && mixAToc.mixToc != null && mixAToc.mixToc.chapters != null) {
-                            if (mChaptersList != null) {
-                                for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                                    mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                                }
-                            }
                             mChaptersList = mixAToc.mixToc.chapters;
+                            for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                                mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                            }
                             AppSettings.saveChapterList(mBook._id, mChaptersList);
                         }
                     }

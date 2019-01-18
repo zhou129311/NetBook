@@ -3,6 +3,7 @@ package com.xzhou.book.utils;
 import android.app.Activity;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant.ReadTheme;
 
@@ -15,10 +16,54 @@ public class AppSettings {
     private static final String PRE_KEY_BRIGHTNESS_SYSTEM = "pre_key_brightness_system";
     private static final String PRE_KEY_BRIGHTNESS = "pre_key_brightness";
     private static final String PRE_KEY_BOOKSHELF_ORDER = "pre_key_bookshelf_order";
+    private static final String PRE_KEY_SEARCH_HISTORY = "pre_key_search_history";
+    private static final String PRE_KEY_SAVING_TRAFFIC = "pre_key_saving_traffic";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 2;
+
+    public static boolean HAS_SAVING_TRAFFIC = false;
+
+    public static void init() {
+        HAS_SAVING_TRAFFIC = isSavingTraffic();
+    }
+
+    public static boolean isSavingTraffic() {
+        return SPUtils.get().getBoolean(PRE_KEY_SAVING_TRAFFIC, false);
+    }
+
+    public static void setSavingTraffic(boolean enable) {
+        HAS_SAVING_TRAFFIC = enable;
+        SPUtils.get().putBoolean(PRE_KEY_SAVING_TRAFFIC, enable);
+    }
+
+    public static List<String> getSearchHistory() {
+        List<String> list = null;
+        String listStr = SPUtils.get().getString(PRE_KEY_SEARCH_HISTORY);
+        if (listStr != null) {
+            try {
+                list = new Gson().fromJson(listStr, new TypeToken<List<String>>() {
+                }.getType());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    public static void saveHistory(List<String> list) {
+        String listStr = null;
+        try {
+            listStr = new Gson().toJson(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (listStr == null) {
+            listStr = "";
+        }
+        SPUtils.get().putString(PRE_KEY_SEARCH_HISTORY, listStr);
+    }
 
     public static int getBookshelfOrder() {
         return SPUtils.get().getInt(PRE_KEY_BOOKSHELF_ORDER, PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME);
@@ -102,7 +147,7 @@ public class AppSettings {
 
     public static List<Entities.Chapters> getChapterList(String bookId) {
         List<Entities.Chapters> chapters = null;
-        String listStr = SPUtils.get().getString(getChapterListKey(bookId), null);
+        String listStr = SPUtils.get().getString(getChapterListKey(bookId));
         if (listStr != null) {
             try {
                 chapters = new Gson().fromJson(listStr, Entities.Chapters.TYPE);

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.xzhou.book.MyApp;
 
+import java.util.Set;
+
 public class SPUtils {
     private static SPUtils mInstance;
     private SharedPreferences mPreferences;
@@ -32,6 +34,10 @@ public class SPUtils {
         return mPreferences.getString(key, null);
     }
 
+    public Set<String> getStringSet(String key) {
+        return mPreferences.getStringSet(key, null);
+    }
+
     public int getInt(String key, int defaultVal) {
         return mPreferences.getInt(key, defaultVal);
     }
@@ -49,6 +55,12 @@ public class SPUtils {
     public SPUtils putString(String key, String value) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(key, value).apply();
+        return this;
+    }
+
+    public SPUtils putStringSet(String key, Set<String> value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putStringSet(key, value).apply();
         return this;
     }
 

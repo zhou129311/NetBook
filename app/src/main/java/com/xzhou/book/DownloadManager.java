@@ -23,6 +23,10 @@ public class DownloadManager {
     public static final int CHAPTER_LATER_ALL = 1;
     public static final int CHAPTER_ALL = 2;
 
+    public static final String[] DOWNLOAD_ITEMS = new String[] {
+            "后面五十章", "后面全部", "全部"
+    };
+
     private static DownloadManager sInstance;
     private ExecutorService mPool = Executors.newFixedThreadPool(3);
     private final Map<String, List<DownloadCallback>> mCallbackMap = new HashMap<>();

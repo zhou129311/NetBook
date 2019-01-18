@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView android:id="@+id/auto_complete_tv"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@drawable/touch_bg"
+          android:drawablePadding="30dp"
+          android:drawableStart="@mipmap/search_prompt_magnificant"
+          android:ellipsize="end"
+          android:gravity="center_vertical"
+          android:maxLines="1"
+          android:padding="15dp"
+          android:textColor="@color/common_h1"
+          android:textSize="16sp"
+          tools:text="我吃西红柿"/>

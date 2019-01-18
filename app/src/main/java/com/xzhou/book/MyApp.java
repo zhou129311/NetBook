@@ -19,6 +19,7 @@ public class MyApp extends Application {
         mHandler = new Handler();
         initNightMode();
         BookManager.get().init();
+        AppSettings.init();
     }
 
     public static Handler getHandler() {

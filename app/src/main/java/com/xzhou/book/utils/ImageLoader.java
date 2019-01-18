@@ -7,6 +7,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
@@ -19,11 +20,15 @@ import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.util.Util;
+import com.xzhou.book.BuildConfig;
 
 import java.io.File;
 import java.security.MessageDigest;
 
 public class ImageLoader {
+
+    private static GlideRoundTransform sRoundTransform = new GlideRoundTransform();
+    private static GlideCircleTransform sCircleTransform = new GlideCircleTransform();
 
     private static RequestOptions getOptions(@DrawableRes int placeholder, @DrawableRes int error) {
         if (error != 0) {
@@ -37,11 +42,11 @@ public class ImageLoader {
     }
 
     private static RequestOptions getCircleOptions(@DrawableRes int placeholder) {
-        return new RequestOptions().centerInside().placeholder(placeholder).transform(new GlideCircleTransform());
+        return new RequestOptions().centerInside().placeholder(placeholder).transform(sCircleTransform);
     }
 
     private static RequestOptions getRoundOptions(@DrawableRes int placeholder) {
-        return new RequestOptions().centerInside().placeholder(placeholder).transform(new GlideRoundTransform());
+        return new RequestOptions().centerInside().placeholder(placeholder).transform(sRoundTransform);
     }
 
     public static void showImageFile(Context context, ImageView imageView, @NonNull File file, @DrawableRes int placeholder) {
@@ -70,6 +75,9 @@ public class ImageLoader {
     }
 
     public static void showImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC) {
+            uri = idToUri(placeholder);
+        }
         Glide.with(context).load(uri).apply(getOptions(placeholder)).into(imageView);
     }
 
@@ -78,10 +86,16 @@ public class ImageLoader {
     }
 
     public static void showCircleImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC) {
+            uri = idToUri(placeholder);
+        }
         Glide.with(context).load(uri).apply(getCircleOptions(placeholder)).into(imageView);
     }
 
     public static void showRoundImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC) {
+            uri = idToUri(placeholder);
+        }
         Glide.with(context).load(uri).apply(getRoundOptions(placeholder)).into(imageView);
     }
 
@@ -95,6 +109,10 @@ public class ImageLoader {
 
     public static void resumeRequests(Context context) {
         Glide.with(context).resumeRequests();
+    }
+
+    public static String idToUri(int resourceId) {
+        return "android.resource://" + BuildConfig.APPLICATION_ID + "/" + resourceId;
     }
 
     private static class GlideCircleTransform extends BitmapTransformation {
