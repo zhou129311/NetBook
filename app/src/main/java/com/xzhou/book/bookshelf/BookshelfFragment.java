@@ -18,6 +18,7 @@ import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.MainActivity;
 import com.xzhou.book.read.ReadActivity;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
@@ -56,7 +57,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
+        mRecyclerView.addItemDecoration(new LineItemDecoration());
 
         mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeLayout.setOnRefreshListener(mRefreshListener);
@@ -66,7 +67,9 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start();
+        if (mPresenter.start()) {
+            mPresenter.refresh();
+        }
     }
 
     @Override
@@ -156,7 +159,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
             String sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated);
             helper.setRoundImageUrl(R.id.book_image, item.cover, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.title)
-                    .setText(R.id.book_subhead, sub + ":" + item.lastChapter)
+                    .setText(R.id.book_subhead, sub + " : " + item.lastChapter)
                     .setGone(R.id.book_updated_iv, item.updated > item.readTime);
             helper.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

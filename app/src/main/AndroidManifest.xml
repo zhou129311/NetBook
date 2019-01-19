@@ -69,7 +69,14 @@
             android:name=".main.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SettingTheme"/>
-        <activity android:name=".search.SearchActivity"/>
+        <activity
+            android:name=".search.SearchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".read.ReadSourceActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
 
         <provider
             android:name=".db.BookProviderImpl"

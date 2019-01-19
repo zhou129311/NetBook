@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#A72600</color>
-    <color name="colorPrimaryDark">#B93221</color>
+    <color name="colorPrimary">#b93221</color>
+    <color name="colorPrimaryDark">#893221</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="white">#ffffffff</color>
@@ -52,7 +52,8 @@
 
     <color name="read_slide_bg">#222222</color>
     <color name="read_download_bg">#3d3d3d</color>
-    <color name="read_end_page_text_color">#8c8c8c</color>
+    <color name="slide_text_color">#8c8c8c</color>
+    <color name="slide_text_color_dark">#636363</color>
 
     <color name="book_detail_author_bg">#a2de6014</color>
 

@@ -15,6 +15,7 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -61,9 +62,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     }
                     mChaptersList = AppSettings.getChapterList(mBook._id);
                     if (mChaptersList == null) {
-                        Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBook._id);
-                        if (mixAToc != null && mixAToc.mixToc != null && mixAToc.mixToc.chapters != null) {
-                            mChaptersList = mixAToc.mixToc.chapters;
+                        Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
+                        if (aToc != null && aToc.chapters != null) {
+                            mChaptersList = aToc.chapters;
                             for (int i = 0, size = mChaptersList.size(); i < size; i++) {
                                 mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
                             }
@@ -360,6 +361,26 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     @Override
+    public void loadAllSource() {
+        ZhuiShuSQApi.getPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
+                if (list != null) {
+                    Iterator<Entities.BookSource> iter = list.iterator();
+                    while (iter.hasNext()) {
+                        Entities.BookSource source = iter.next();
+                        if (ZhuiShuSQApi.IGNORE_HOST.equals(source.host)) {
+                            iter.remove();
+                        }
+                    }
+                    updateBookSource(list);
+                }
+            }
+        });
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         mPaint = null;
@@ -584,6 +605,17 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             public void run() {
                 if (mView != null) {
                     mView.initChapterList(mChaptersList);
+                }
+            }
+        });
+    }
+
+    private void updateBookSource(final List<Entities.BookSource> list) {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onUpdateSource(list);
                 }
             }
         });

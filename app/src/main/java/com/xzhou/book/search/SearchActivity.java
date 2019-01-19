@@ -88,6 +88,7 @@ public class SearchActivity extends BaseActivity {
                 if (TextUtils.isEmpty(text)) {
                     mSearchIv.setEnabled(false);
                     mClearEtIv.setVisibility(View.GONE);
+                    showFragment(TAB_HISTORY);
                 } else {
                     mSearchIv.setEnabled(true);
                     mClearEtIv.setVisibility(View.VISIBLE);
@@ -108,13 +109,26 @@ public class SearchActivity extends BaseActivity {
                 return false;
             }
         });
+        getResultFragment().setOnAutoCompleteListener(new ResultFragment.OnAutoCompleteListener() {
+            @Override
+            public void onUpdate(List<String> list) {
+                updateAutoCompletes(list);
+            }
+        });
+        getHistoryFragment().setOnHistoryListener(new HistoryFragment.OnHistoryListener() {
+            @Override
+            public void onClick(String history) {
+                search(history);
+            }
+        });
     }
 
     private void search(String key) {
         showFragment(TAB_RESULT);
-        if (mCurFragment instanceof ResultFragment) {
-            ((ResultFragment) mCurFragment).search(key);
-        }
+        mSearchEt.setText(key);
+        mSearchEt.setSelection(key.length());
+        getResultFragment().search(key);
+        getHistoryFragment().addNewHistory(key);
     }
 
     private void showFragment(int tab) {
@@ -133,9 +147,7 @@ public class SearchActivity extends BaseActivity {
             ft.show(fragment);
         } else {
             fragment = mFragments.get(tab);
-            if (fragment != null) {
-                ft.add(R.id.content, fragment, getTagName(tab));
-            }
+            ft.add(R.id.content, fragment, getTagName(tab));
         }
         ft.commitAllowingStateLoss();
         mCurFragment = fragment;
@@ -170,12 +182,14 @@ public class SearchActivity extends BaseActivity {
             mFragments.put(TAB_RESULT, fragment);
         }
         mPresenter = new SearchPresenter((SearchContract.View) fragment);
-        ((ResultFragment) fragment).setOnAutoCompleteListener(new ResultFragment.OnAutoCompleteListener() {
-            @Override
-            public void onUpdate(List<String> list) {
-                updateAutoCompletes(list);
-            }
-        });
+    }
+
+    private HistoryFragment getHistoryFragment() {
+        return (HistoryFragment) mFragments.get(TAB_HISTORY);
+    }
+
+    private ResultFragment getResultFragment() {
+        return (ResultFragment) mFragments.get(TAB_RESULT);
     }
 
     private String getTagName(int tab) {
@@ -183,7 +197,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void updateAutoCompletes(List<String> list) {
-        if (list == null || list.size() <= 0) {
+        if (list == null || list.size() <= 0 || mCurFragment instanceof ResultFragment) {
             mRecyclerView.setVisibility(View.GONE);
             if (mAdapter != null) {
                 mAdapter.setNewData(null);
@@ -233,7 +247,7 @@ public class SearchActivity extends BaseActivity {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchEt.setText(item);
+                    search(item);
                 }
             });
         }

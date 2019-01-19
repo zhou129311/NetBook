@@ -5,10 +5,9 @@ import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.db.BookManager;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.utils.AppSettings;
-import com.xzhou.book.utils.FileUtils;
-import com.xzhou.book.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,10 +76,14 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
-                Entities.BookMixAToc mixAToc = ZhuiShuSQApi.getBookMixAToc(mBookId);
-                if (mixAToc != null && mixAToc.mixToc != null && mixAToc.mixToc.chapters != null && mixAToc.mixToc.chapters.size() > 0) {
-                    DownloadManager.Download download = DownloadManager.createDownload(DownloadManager.CHAPTER_ALL, 0,
-                            mixAToc.mixToc.chapters);
+                BookProvider.LocalBook book = BookManager.get().findById(mBookId);
+                String id = null;
+                if (book != null) {
+                    id = book.sourceId;
+                }
+                Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBookId, id);
+                if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
+                    DownloadManager.Download download = DownloadManager.createDownload(DownloadManager.CHAPTER_ALL, 0, aToc.chapters);
                     DownloadManager.get().startDownload(mBookId, download);
                 }
             }

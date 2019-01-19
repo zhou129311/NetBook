@@ -60,7 +60,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         mAdapter.setHeaderAndEmpty(true);
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 0, 0));
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(view.getContext()));
         mAdapter.setEnableLoadMore(true);
         mAdapter.disableLoadMoreIfNotFullPage();
@@ -85,15 +85,19 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         mAdapter.addHeaderView(headerView);
 
         Bundle bundle = getArguments();
-        if (bundle != null) {
+        if (bundle != null && TextUtils.isEmpty(mKey)) {
             mKey = bundle.getString(EXTRA_SEARCH_KEY);
-            if (!TextUtils.isEmpty(mKey)) {
-                mPresenter.search(mKey);
-            }
+        }
+        if (!TextUtils.isEmpty(mKey)) {
+            mPresenter.search(mKey);
         }
     }
 
     public void search(String key) {
+        if (!isAdded()) {
+            mKey = key;
+            return;
+        }
         if (!TextUtils.isEmpty(key) && !key.equals(mKey)) {
             mPresenter.search(key);
         } else {

@@ -47,7 +47,7 @@ public class BookManager {
     }
 
     public BookProvider.LocalBook findById(String bookId) {
-        if (bookId == null) {
+        if (TextUtils.isEmpty(bookId)) {
             return null;
         }
         synchronized (mList) {

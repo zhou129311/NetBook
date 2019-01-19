@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:paddingStart="18dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="@drawable/touch_bg">
 
     <TextView
         android:id="@+id/history_content_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/history_delete_iv"
+        android:drawablePadding="15dp"
+        android:drawableStart="@mipmap/search_history_mark"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingEnd="20dp"
+        android:paddingStart="18dp"
         android:textColor="@color/common_h2"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        tools:text="哈哈哈"/>
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/history_delete_iv"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:scaleType="center"
+        android:src="@mipmap/ugcbook_delete"
+        tools:ignore="ContentDescription"/>
+</RelativeLayout>

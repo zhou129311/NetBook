@@ -1,5 +1,7 @@
 package com.xzhou.book.datasource;
 
+import android.text.TextUtils;
+
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.Entities.HttpResult;
 
@@ -14,6 +16,7 @@ public class ZhuiShuSQApi {
     public static final String TAG = "ZhuiShuSQApi";
     public static final String IMG_BASE_URL = "http://statics.zhuishushenqi.com";
     public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
+    public static final String IGNORE_HOST = "vip.zhuishushenqi.com";
 
     public static final String DURATION = "duration";
     public static final String DISTILLATE = "distillate";
@@ -30,6 +33,26 @@ public class ZhuiShuSQApi {
             mPool = Executors.newFixedThreadPool(5);
         }
         return mPool;
+    }
+
+    public static void getAggregationSource(String bookId) {
+        HttpRequest request = new HttpRequest("/aggregation-source/by-book");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("book", "bookId");
+        params.put("v", "5");
+    }
+
+    /**
+     * 根据bookids获取最近更新
+     *
+     * @param bookIds xxxx,xxxxx,xxxx
+     */
+    public static List<Entities.Updated> getBookshelfUpdated(String bookIds) {
+        HttpRequest request = new HttpRequest("/book");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("view", "updated");
+        params.put("id", bookIds);
+        return (List<Entities.Updated>) OkHttpUtils.getObject(request, Entities.Updated.TYPE, params);
     }
 
     /**
@@ -161,12 +184,29 @@ public class ZhuiShuSQApi {
     }
 
     /**
-     * 获取章节列表
+     * 获取混合源章节列表
      *
-     * @param bookId bookId
+     * @param bookId   bookId
+     * @param sourceId sourceId
      * @return BookMixAToc
      */
-    public static Entities.BookMixAToc getBookMixAToc(String bookId) {
+    public static Entities.BookAToc getBookMixAToc(String bookId, String sourceId) {
+        Entities.BookAToc aToc = null;
+        if (!TextUtils.isEmpty(sourceId)) { //获取其他源
+            HttpRequest request = new HttpRequest("/atoc", sourceId);
+            HashMap<String, String> params = new HashMap<>();
+            params.put("view", "chapters");
+            aToc = (Entities.BookAToc) OkHttpUtils.getObject(request, Entities.BookAToc.TYPE, params);
+        } else { //默认源
+            Entities.BookMixAToc mixAToc = getBookMixAToc(bookId);
+            if (mixAToc != null) {
+                aToc = mixAToc.mixToc;
+            }
+        }
+        return aToc;
+    }
+
+    private static Entities.BookMixAToc getBookMixAToc(String bookId) {
         HttpRequest request = new HttpRequest("/mix-atoc", bookId);
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "chapters");
@@ -187,7 +227,7 @@ public class ZhuiShuSQApi {
      *
      * @param book bookid
      */
-    public List<Entities.BookSource> getBookSource(String book) {
+    public static List<Entities.BookSource> getBookSource(String book) {
         HttpRequest request = new HttpRequest("/atoc");
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "summary");

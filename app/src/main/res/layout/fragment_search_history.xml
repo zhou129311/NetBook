@@ -21,12 +21,13 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="13dp"
         android:layout_marginTop="15dp"
+        android:background="@drawable/touch_bg"
         android:drawablePadding="10dp"
         android:drawableStart="@drawable/sel_delete_history"
         android:gravity="center"
         android:padding="5dp"
         android:text="@string/search_clear_history"
-        android:textColor="@color/common_h2"
+        android:textColor="@color/clear_history_color"
         android:textSize="13sp"
         tools:ignore="RelativeOverlap"/>
 
@@ -36,5 +37,5 @@
         android:layout_height="match_parent"
         android:layout_below="@id/clear_history_tv"
         android:layout_marginTop="5dp"
-        android:overScrollMode="ifContentScrolls"/>
+        android:overScrollMode="never"/>
 </RelativeLayout>

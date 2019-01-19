@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="18dp">
+
+    <TextView
+        android:id="@+id/chapter_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/cur_check_source"
+        android:textColor="@color/slide_text_color"
+        android:textSize="13sp"
+        tools:text="我是章节标题"/>
+
+    <TextView
+        android:id="@+id/source_host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chapter_title"
+        android:textColor="@color/slide_text_color_dark"
+        android:textSize="11sp"
+        tools:text="com.xxx.sss"/>
+
+    <TextView
+        android:id="@+id/update_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chapter_title"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/source_host"
+        android:textColor="@color/slide_text_color_dark"
+        android:textSize="12sp"
+        tools:text="17小时前"/>
+
+    <TextView
+        android:id="@+id/cur_check_source"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/bg_source_checked"
+        android:paddingBottom="1dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="1dp"
+        android:text="@string/cur_checked"
+        android:textColor="@color/slide_text_color_dark"
+        android:textSize="10sp"/>
+</RelativeLayout>

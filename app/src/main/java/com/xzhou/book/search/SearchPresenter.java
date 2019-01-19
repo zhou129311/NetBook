@@ -93,6 +93,7 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
                         mView.onLoadMore(list);
                     } else {
                         mView.onSearchResult(list);
+                        mView.onAutoComplete(null);
                     }
                 }
             }

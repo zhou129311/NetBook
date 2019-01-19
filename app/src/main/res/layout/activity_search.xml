@@ -34,6 +34,7 @@
             android:layout_toEndOf="@id/div_1"
             android:layout_toStartOf="@id/div_2"
             android:background="@null"
+            android:cursorVisible="true"
             android:gravity="center_vertical|start"
             android:hint="@string/search_hint"
             android:imeOptions="actionSearch"
@@ -43,7 +44,7 @@
             android:paddingStart="15dp"
             android:textColor="@color/white"
             android:textColorHint="@color/common_h3"
-            android:textCursorDrawable="@color/white"
+            android:textCursorDrawable="@drawable/cursor_color"
             android:textSize="16dp"
             tools:ignore="Autofill,SpUsage"/>
 

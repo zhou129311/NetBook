@@ -53,7 +53,6 @@ public class BookTocDialog extends Dialog {
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.width = (int) (AppUtils.getScreenWidth() * 0.9);
         lp.height = (int) (AppUtils.getScreenHeight() * 0.9);
-        mTocTitle.setText(mLocalBook.title);
         mAdapter = new Adapter(context);
         mListView.setAdapter(mAdapter);
         setContentView(mView, lp);
@@ -88,6 +87,7 @@ public class BookTocDialog extends Dialog {
                 } else {
                     mListView.setFastScrollAlwaysVisible(true);
                 }
+                mTocTitle.setText(mLocalBook.getTitle());
                 mListView.setSelection(mCurChapter);
             }
         });
@@ -137,7 +137,7 @@ public class BookTocDialog extends Dialog {
             } else {
                 textView.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_toc_item_normal, 0, 0, 0);
             }
-            textView.setText(item.title);
+            textView.setText((position + 1) + ". " + item.title);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

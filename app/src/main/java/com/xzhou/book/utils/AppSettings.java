@@ -59,7 +59,7 @@ public class AppSettings {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (listStr == null) {
+        if (list == null || list.size() <= 0) {
             listStr = "";
         }
         SPUtils.get().putString(PRE_KEY_SEARCH_HISTORY, listStr);

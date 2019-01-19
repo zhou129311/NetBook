@@ -179,4 +179,9 @@
     <string name="search_hint">输入书名或者作者名</string>
     <string name="search_advanced">没有你想要的小说? 点击精确搜索</string>
 
+    <!--source-->
+    <string name="change_source_dialog_title">更换来源将会删除之前的缓存章节，是否继续？</string>
+    <string name="change">更换</string>
+    <string name="cur_checked">当前选择</string>
+
 </resources>

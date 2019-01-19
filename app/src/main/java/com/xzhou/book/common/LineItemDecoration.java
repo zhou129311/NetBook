@@ -20,7 +20,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     private int mMarginLeft;
 
     public LineItemDecoration() {
-        this(false, 60, 0);
+        this(false, 70, 0);
     }
 
     public LineItemDecoration(int spanCount) {
@@ -28,7 +28,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     public LineItemDecoration(boolean isShowBottom) {
-        this(isShowBottom, 60, 0);
+        this(isShowBottom, 70, 0);
     }
 
     public LineItemDecoration(boolean isShowBottom, int marginLeft, int spanCount) {

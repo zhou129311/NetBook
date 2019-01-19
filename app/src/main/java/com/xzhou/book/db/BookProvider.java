@@ -1,9 +1,11 @@
 package com.xzhou.book.db;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.DownloadManager;
@@ -30,21 +32,23 @@ public class BookProvider {
     static final String COLUMN_LAST_READ_TIME = "read_time";
     static final String COLUMN_ADD_TIME = "add_time";
     static final String COLUMN_CUR_SOURCE = "cur_source";
+    static final String COLUMN_CUR_SOURCE_ID = "cur_source_id";
 
-    private static final String[] PROJECTION = new String[]{
+    private static final String[] PROJECTION = new String[] {
             COLUMN_ID, COLUMN_COVER, COLUMN_TITLE, COLUMN_LAST_CHAPTER,
-            COLUMN_UPDATED, COLUMN_LAST_READ_TIME, COLUMN_CUR_SOURCE, COLUMN_ADD_TIME
+            COLUMN_UPDATED, COLUMN_LAST_READ_TIME, COLUMN_CUR_SOURCE, COLUMN_ADD_TIME, COLUMN_CUR_SOURCE_ID
     };
 
     public static class LocalBook implements MultiItemEntity, Parcelable {
         public String _id;
+        public String sourceId;
         public long updated;
         public long readTime;
         public long addTime;
         public String title;
         public String lastChapter;
         public String cover;
-        public String curSource;
+        public String curSourceHost;
         private boolean isBookshelf;
 
         public LocalBook(Entities.BookDetail detail) {
@@ -53,7 +57,7 @@ public class BookProvider {
             title = detail.title;
             lastChapter = detail.lastChapter;
             cover = detail.cover();
-            curSource = detail.site;
+            curSourceHost = detail.site;
         }
 
         public LocalBook() {
@@ -66,9 +70,10 @@ public class BookProvider {
             values.put(COLUMN_UPDATED, updated);
             values.put(COLUMN_LAST_READ_TIME, readTime);
             values.put(COLUMN_COVER, cover);
-            values.put(COLUMN_CUR_SOURCE, curSource);
+            values.put(COLUMN_CUR_SOURCE, curSourceHost);
             values.put(COLUMN_LAST_CHAPTER, lastChapter);
             values.put(COLUMN_ADD_TIME, addTime);
+            values.put(COLUMN_CUR_SOURCE_ID, sourceId);
             return values;
         }
 
@@ -80,12 +85,17 @@ public class BookProvider {
             title = in.readString();
             lastChapter = in.readString();
             cover = in.readString();
-            curSource = in.readString();
+            curSourceHost = in.readString();
             isBookshelf = in.readInt() == 1;
+            sourceId = in.readString();
         }
 
         public boolean isBookshelf() {
             return isBookshelf || BookProvider.hasCacheData(_id);
+        }
+
+        public String getTitle() {
+            return TextUtils.isEmpty(curSourceHost) ? title : curSourceHost + "-" + title;
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -119,8 +129,9 @@ public class BookProvider {
             dest.writeString(title);
             dest.writeString(lastChapter);
             dest.writeString(cover);
-            dest.writeString(curSource);
+            dest.writeString(curSourceHost);
             dest.writeInt(isBookshelf ? 1 : 0);
+            dest.writeString(sourceId);
         }
 
         @Override
@@ -133,7 +144,7 @@ public class BookProvider {
                     ", title='" + title + '\'' +
                     ", lastChapter='" + lastChapter + '\'' +
                     ", cover='" + cover + '\'' +
-                    ", curSource='" + curSource + '\'' +
+                    ", curSourceHost='" + curSourceHost + '\'' +
                     ", isBookshelf=" + isBookshelf +
                     '}';
         }
@@ -167,9 +178,10 @@ public class BookProvider {
             book.readTime = cursor.getLong(cursor.getColumnIndex(COLUMN_LAST_READ_TIME));
             book.updated = cursor.getLong(cursor.getColumnIndex(COLUMN_UPDATED));
             book.title = cursor.getString(cursor.getColumnIndex(COLUMN_TITLE));
-            book.curSource = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE));
+            book.curSourceHost = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE));
             book.lastChapter = cursor.getString(cursor.getColumnIndex(COLUMN_LAST_CHAPTER));
             book.addTime = cursor.getLong(cursor.getColumnIndex(COLUMN_ADD_TIME));
+            book.sourceId = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE_ID));
             book.isBookshelf = true;
             list.add(book);
         }
@@ -181,12 +193,41 @@ public class BookProvider {
             long time = System.currentTimeMillis();
             ContentValues values = new ContentValues();
             String where = COLUMN_ID + "=?";
-            String[] args = new String[]{book._id};
+            String[] args = new String[] { book._id };
             values.put(COLUMN_LAST_READ_TIME, time);
             MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void updateLocalBooks(List<LocalBook> books) {
+        if (books == null || books.size() < 1) {
+            return;
+        }
+        ArrayList<ContentProviderOperation> ops = loadUpdatedCPO(books);
+        if (ops.size() > 0) {
+            try {
+                MyApp.getContext().getContentResolver().applyBatch(BookProviderImpl.BOOKSHELF_CONTENT_URI.getAuthority(), ops);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static ArrayList<ContentProviderOperation> loadUpdatedCPO(List<LocalBook> books) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        for (LocalBook book : books) {
+            ops.add(createUpdateOperation(book));
+        }
+        return ops;
+    }
+
+    private static ContentProviderOperation createUpdateOperation(LocalBook book) {
+        return ContentProviderOperation.newUpdate(BookProviderImpl.BOOKSHELF_CONTENT_URI)
+                .withValues(book.toContentValues())
+                .withYieldAllowed(true)
+                .build();
     }
 
     public static void insertOrUpdate(final LocalBook book, boolean setReadTime) {
@@ -199,7 +240,7 @@ public class BookProvider {
             ContentValues values = book.toContentValues();
             book.isBookshelf = true;
             String where = COLUMN_ID + "=?";
-            String[] args = new String[]{book._id};
+            String[] args = new String[] { book._id };
             if (hasCacheData(book._id)) {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
@@ -226,7 +267,7 @@ public class BookProvider {
     public static void delete(String booId, final String title) {
         try {
             String where = COLUMN_ID + "=?";
-            String[] args = new String[]{booId};
+            String[] args = new String[] { booId };
             MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
             MyApp.runUI(new Runnable() {
                 @Override
@@ -242,7 +283,7 @@ public class BookProvider {
 
     public static boolean hasCacheData(String bookId) {
         String where = COLUMN_ID + "=?";
-        String[] args = new String[]{bookId};
+        String[] args = new String[] { bookId };
         try (Cursor cursor = MyApp.getContext().getContentResolver().query(BookProviderImpl.BOOKSHELF_CONTENT_URI, null,
                 where, args, null)) {
             return (cursor != null && cursor.getCount() > 0);
@@ -268,5 +309,4 @@ public class BookProvider {
         }
         return sortOrder;
     }
-
 }

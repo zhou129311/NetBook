@@ -51,6 +51,8 @@ import butterknife.OnClick;
 
 public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View, DownloadManager.DownloadCallback {
     private static final String TAG = "ReadActivity";
+
+    private static final String EXTRA_BOOK = "localBook";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
     @BindView(R.id.end_ll_view)
@@ -108,7 +110,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         Intent intent = new Intent(context, ReadActivity.class);
-        intent.putExtra("localBook", book);
+        intent.putExtra(EXTRA_BOOK, book);
         context.startActivity(intent);
     }
 
@@ -116,6 +118,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mBook = getIntent().getParcelableExtra(EXTRA_BOOK);
+        if (mBook == null && savedInstanceState != null) {
+            mBook = savedInstanceState.getParcelable(EXTRA_BOOK);
+        }
+        if (mBook == null) {
+            ToastUtils.showShortToast("出现错误，打开失败");
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_read);
         initMenuAnim();
         hideReadToolBar();
@@ -129,13 +141,25 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             @Override
             public void onOpen() {
                 showReadToolBar();
+                mReadViewPager.setCanTouch(false);
             }
 
             @Override
             public void onClose() {
+                mReadViewPager.setCanTouch(true);
             }
         });
         DownloadManager.get().addCallback(mBook._id, ReadActivity.this);
+        mEndSlideView.setBook(mBook, this);
+        mPresenter.loadAllSource();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null) {
+            outState.putParcelable(EXTRA_BOOK, mBook);
+        }
     }
 
     @Override
@@ -157,15 +181,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     protected void initToolBar() {
         super.initToolBar();
-        mBook = getIntent().getParcelableExtra("localBook");
-        if (mBook == null) {
-//            mBook = new BookProvider.LocalBook();
-//            mBook._id = "591ed23b1861e2e332db308e";
-//            mBook.title = "超神机械师";
-            ToastUtils.showShortToast("出现错误，打开失败");
-            finish();
-            return;
-        }
         mToolbar.setTitle(mBook.title);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
     }
@@ -269,6 +284,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             mPageManagers[mReadViewPager.getCurrentItem()].getReadPage().setErrorView(true);
             mReadViewPager.setCanTouch(false);
         }
+    }
+
+    @Override
+    public void onUpdateSource(List<Entities.BookSource> list) {
+        mEndSlideView.setSource(list);
     }
 
     private void initReadPageView() {
@@ -465,7 +485,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
         switch (view.getId()) {
         case R.id.read_view_pager:
-            if (!hideReadToolBar()) {
+            if (!hideReadToolBar() && mSwipeLayout.isMenuClosed()) {
                 showReadToolBar();
             }
             break;

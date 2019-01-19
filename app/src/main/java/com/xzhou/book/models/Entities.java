@@ -256,16 +256,16 @@ public class Entities {
         public static final Type TYPE = new TypeToken<List<BookSource>>() {
         }.getType();
 
-        public String _id;
+        public String _id;//"5ae1820df5f2af0100f45a3a"
         public String lastChapter;
-        public String link;
-        public String source;
-        public String name;
+        public String link;// "http://book.my716.com/getBooks.aspx?method\u003dchapterList\u0026bookId\u003d2292476"
+        public String source;// "my176"
+        public String name;//176小说
         public boolean isCharge;
         public int chaptersCount;
         public String updated;
         public boolean starting;
-        public String host;
+        public String host;//"book.my716.com"
     }
 
     public static class Recommend {
@@ -280,15 +280,22 @@ public class Entities {
         public static final Type TYPE = new TypeToken<BookMixAToc>() {
         }.getType();
 
-        public MixToc mixToc;
+        public BookAToc mixToc;
+    }
 
-        public static class MixToc {
-            public String _id;
-            public String book;
-            public String chaptersUpdated;
-            public int chaptersCount1;
-            public List<Chapters> chapters;
-        }
+    public static class BookAToc {
+        public static final Type TYPE = new TypeToken<BookAToc>() {
+        }.getType();
+
+        public String _id; //sourceId
+        public String book;// bookId
+        public String link; // "http://book.my716.com/getBooks.aspx?method=chapterList&bookId=2292476"
+        public String source;//my176
+        public String name;//176小说
+        public String host;//book.my716.com
+        public String chaptersUpdated;
+        public String updated;
+        public List<Chapters> chapters;
     }
 
     public static class Chapters {
@@ -1157,7 +1164,7 @@ public class Entities {
     }
 
     public static class Login {
-        public static final Type TYPE = new TypeToken<HttpResult<Login>>() {
+        public static final Type TYPE = new TypeToken<Login>() {
         }.getType();
         public UserBean user;
         public String token;
@@ -1171,5 +1178,18 @@ public class Entities {
             public String gender;
             public String type;
         }
+    }
+
+    public static class Updated {
+        public static final Type TYPE = new TypeToken<List<Updated>>() {
+        }.getType();
+
+        public String _id;
+        public String author;
+        public boolean allowMonthly;
+        public String referenceSource;
+        public String updated;
+        public String chaptersCount;
+        public String lastChapter;
     }
 }

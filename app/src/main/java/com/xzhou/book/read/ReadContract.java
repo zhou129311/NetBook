@@ -19,6 +19,8 @@ public interface ReadContract {
         void loadPreviousPage(int itemPosition, PageContent pageContent);
 
         void loadNextPage(int itemPosition, PageContent pageContent);
+
+        void loadAllSource();
     }
 
     interface View extends BaseContract.View<Presenter> {
@@ -26,5 +28,7 @@ public interface ReadContract {
         void initChapterList(List<Entities.Chapters> list);
 
         void onUpdatePages(PageContent[] pageContent);
+
+        void onUpdateSource(List<Entities.BookSource> list);
     }
 }
