@@ -70,6 +70,9 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
     }
 
     private List<Entities.SearchBook> getSearchResult() {
+        if (mDataNumber % PAGE_SIZE != 0) {
+            return new ArrayList<>();
+        }
         List<Entities.SearchBook> list = null;
         int start = mDataNumber;
         int limit = start + PAGE_SIZE;

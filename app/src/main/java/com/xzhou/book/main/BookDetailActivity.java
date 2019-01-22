@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
@@ -306,6 +307,12 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     @Override
     public void onEndDownload(int failedCount, int error) {
+        if (error != DownloadManager.ERROR_NONE) {
+            String e = getString(error == DownloadManager.ERROR_NO_NETWORK ? R.string.book_read_download_error_net
+                    : R.string.book_read_download_error_topic);
+            SnackBarUtils.makeShort(getContentView(), e).show(getResources().getColor(R.color.colorPrimary));
+            return;
+        }
         String text = getString(R.string.book_read_download_complete, mDetail.title);
         if (failedCount > 0) {
             text = getString(R.string.book_read_download_complete2, mDetail.title, failedCount);
@@ -362,7 +369,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
         case R.id.detail_join:
             if (BookProvider.hasCacheData(mDetail._id)) {
-                BookProvider.delete(mDetail._id, mDetail.title);
+                BookProvider.delete(mDetail._id, mDetail.title, true);
                 updateJoinBtn(false);
             } else {
                 BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail), false);

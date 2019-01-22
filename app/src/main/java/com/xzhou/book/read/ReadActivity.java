@@ -322,6 +322,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mReadViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
             @Override
             public void onPrevious() {
+                if (mSwipeLayout.isMenuOpen()) {
+                    mSwipeLayout.smoothToCloseMenu();
+                    return;
+                }
                 if (hideReadToolBar()) {
                     return;
                 }
@@ -339,6 +343,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
             @Override
             public void onNext() {
+                if (mSwipeLayout.isMenuOpen()) {
+                    mSwipeLayout.smoothToCloseMenu();
+                    return;
+                }
                 if (hideReadToolBar()) {
                     return;
                 }
@@ -670,8 +678,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void onEndDownload(int failedCount, int error) {
         mDownloadTv.setVisibility(View.VISIBLE);
-        if (error == DownloadManager.ERROR_NO_NETWORK) {
-            mDownloadTv.setText(R.string.book_read_download_error);
+        if (error != DownloadManager.ERROR_NONE) {
+            mDownloadTv.setText(error == DownloadManager.ERROR_NO_NETWORK ? R.string.book_read_download_error_net : R.string.book_read_download_error_topic);
         } else {
             String text = getString(R.string.book_read_download_complete, mBook.title);
             if (failedCount > 0) {

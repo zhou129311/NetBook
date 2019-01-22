@@ -3,26 +3,35 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/touch_bg"
-                android:paddingBottom="@dimen/book_item_margin_v"
-                android:paddingEnd="@dimen/book_item_margin_h"
-                android:paddingStart="@dimen/book_item_margin_h"
-                android:paddingTop="@dimen/book_item_margin_v">
+                android:background="@drawable/touch_bg">
 
     <ImageView
         android:id="@+id/book_image"
         android:layout_width="45dp"
         android:layout_height="58dp"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/book_item_margin_v"
+        android:layout_marginEnd="@dimen/book_item_margin_h"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:layout_marginTop="@dimen/book_item_margin_v"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_cover_default"
+        tools:ignore="ContentDescription"/>
+
+    <ImageView
+        android:id="@+id/book_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:scaleType="center"
+        android:src="@mipmap/label_book_top"
+        android:visibility="gone"
         tools:ignore="ContentDescription"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="@dimen/book_item_margin_h"
         android:layout_toEndOf="@id/book_image"
         android:layout_toStartOf="@id/book_checkbox"
         android:orientation="vertical">
@@ -43,19 +52,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:ellipsize="end"
-            android:singleLine="true"
+            android:maxLines="1"
             android:textColor="@color/common_h2"
             android:textSize="13sp"
             tools:text="13小时前:灌口二郎神显圣 第1037章..."/>
+
+        <TextView
+            android:id="@+id/download_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="正在缓存:%1$s(%2$d/%3$d)&#8230;"
+            tools:visibility="visible"/>
     </LinearLayout>
 
-    <CheckBox
+    <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/book_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="@dimen/book_item_margin_h"
+        android:buttonTint="@color/colorPrimary"
         android:visibility="invisible"
         tools:visibility="visible"/>
 
@@ -65,10 +88,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="@dimen/book_item_margin_h"
         android:src="@mipmap/reader_topic_dot"
         android:visibility="invisible"
         tools:ignore="ContentDescription"
         tools:visibility="visible"/>
-
 </RelativeLayout>

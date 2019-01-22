@@ -18,6 +18,7 @@ public class DownloadManager {
 
     public static final int ERROR_NONE = 0;
     public static final int ERROR_NO_NETWORK = 1;
+    public static final int ERROR_NO_TOPIC = 2;
 
     public static final int CHAPTER_LATER_50 = 0;
     public static final int CHAPTER_LATER_ALL = 1;
@@ -28,7 +29,7 @@ public class DownloadManager {
     };
 
     private static DownloadManager sInstance;
-    private ExecutorService mPool = Executors.newFixedThreadPool(3);
+    private ExecutorService mPool = Executors.newSingleThreadExecutor();
     private final Map<String, List<DownloadCallback>> mCallbackMap = new HashMap<>();
     private final Map<String, Download> mDownloadMap = new HashMap<>();
 
@@ -41,6 +42,10 @@ public class DownloadManager {
         public boolean isValid() {
             return list != null && list.size() >= end && end > start && start >= 0;
         }
+    }
+
+    public static Download createAllDownload(List<Entities.Chapters> list) {
+        return createDownload(CHAPTER_ALL, 0, list);
     }
 
     public static Download createDownload(int which, int curChapter, List<Entities.Chapters> list) {
@@ -123,9 +128,9 @@ public class DownloadManager {
                             notifyProgress(bookId, i + 1, download.list.size());
                         }
                     }
-                    notifyEnd(bookId, fail, error);
                     AppSettings.saveChapterList(bookId, download.list);
                     mDownloadMap.remove(bookId);
+                    notifyEnd(bookId, fail, error);
                 }
             }
         });

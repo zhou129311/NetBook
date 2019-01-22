@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_common"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/remove_selected_book"
+        android:textColor="@color/black"
+        android:textSize="20sp"/>
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:button="@drawable/checkbox_delete_shelf"
+        android:checked="true"
+        android:paddingStart="8dp"
+        android:paddingEnd="0dp"
+        android:text="@string/delete_local_cache"
+        android:textColor="@color/common_h2"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"/>
+
+    <TextView
+        android:id="@+id/cancel_tv"
+        style="@style/DialogBtnText"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/touch_bg"
+        android:text="@string/cancel"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@id/ok_tv"
+        app:layout_constraintTop_toBottomOf="@id/checkbox"/>
+
+    <TextView
+        android:id="@+id/ok_tv"
+        style="@style/DialogBtnText"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/touch_bg"
+        android:text="@string/confirm"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkbox"/>
+
+</android.support.constraint.ConstraintLayout>

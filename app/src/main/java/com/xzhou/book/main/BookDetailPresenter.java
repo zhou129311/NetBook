@@ -8,6 +8,8 @@ import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.db.BookManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.AppUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,10 +83,20 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
                 if (book != null) {
                     id = book.sourceId;
                 }
-                Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBookId, id);
-                if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
-                    DownloadManager.Download download = DownloadManager.createDownload(DownloadManager.CHAPTER_ALL, 0, aToc.chapters);
+                List<Entities.Chapters> chaptersList = AppSettings.getChapterList(mBookId);
+                if (chaptersList == null) {
+                    Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBookId, id);
+                    if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
+                        chaptersList = aToc.chapters;
+                        AppSettings.saveChapterList(mBookId, chaptersList);
+                    }
+                }
+                if (chaptersList != null && chaptersList.size() > 0) {
+                    DownloadManager.Download download = DownloadManager.createAllDownload(chaptersList);
                     DownloadManager.get().startDownload(mBookId, download);
+                } else {
+                    int error = AppUtils.isNetworkAvailable() ? DownloadManager.ERROR_NO_TOPIC : DownloadManager.ERROR_NO_NETWORK;
+                    onEndDownload(0, error);
                 }
             }
         });
@@ -126,22 +138,37 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
 
     @Override
     public void onStartDownload() {
-        if (mView != null) {
-            mView.onStartDownload();
-        }
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onStartDownload();
+                }
+            }
+        });
     }
 
     @Override
-    public void onProgress(int progress, int max) {
-        if (mView != null) {
-            mView.onProgress(progress, max);
-        }
+    public void onProgress(final int progress, final int max) {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onProgress(progress, max);
+                }
+            }
+        });
     }
 
     @Override
-    public void onEndDownload(int failedCount, int error) {
-        if (mView != null) {
-            mView.onEndDownload(failedCount, error);
-        }
+    public void onEndDownload(final int failedCount, final int error) {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onEndDownload(failedCount, error);
+                }
+            }
+        });
     }
 }

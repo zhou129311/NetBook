@@ -7,11 +7,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import com.xzhou.book.widget.SwipeLayout;
 
 public class ReadViewPager extends ViewPager {
+    private static final String TAG = "ReadViewPager";
     private boolean isCanScroll = true; //是否可以切换页面
     private boolean isCanTouch = true; //是否可以手势滑动
     private boolean isCanLeftTouch = true; //是否可以左滑
@@ -39,9 +42,8 @@ public class ReadViewPager extends ViewPager {
 
     public ReadViewPager(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-//        ViewConfiguration configuration = ViewConfiguration.get(getContext());
-//        mScaledTouchSlop = configuration.getScaledTouchSlop();
-        mScaledTouchSlop = 5;
+        ViewConfiguration configuration = ViewConfiguration.get(getContext());
+        mScaledTouchSlop = configuration.getScaledTouchSlop();
     }
 
     public void setOnClickChangePageListener(OnClickChangePageListener listener) {
@@ -88,6 +90,7 @@ public class ReadViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        Log.d(TAG, "onTouchEvent:" + ev);
         switch (ev.getAction()) {
         case MotionEvent.ACTION_DOWN:
             mLastX = mDownX = ev.getRawX();

@@ -74,7 +74,8 @@
     <string name="add_bookmark">新增书签</string>
     <string name="manage_bookmark">管理</string>
     <string name="clear_bookmark">清除</string>
-    <string name="book_read_download_error">网络异常，已取消下载</string>
+    <string name="book_read_download_error_net">网络异常，缓存失败</string>
+    <string name="book_read_download_error_topic">目录获取异常，缓存失败</string>
     <string name="book_read_download_complete">缓存完成:%1$s</string>
     <string name="book_read_download_complete2">缓存完成:%1$s(失败%2$d章)</string>
     <string name="book_read_download_progress">正在缓存:%1$s(%2$d/%3$d)&#8230;</string>
@@ -132,12 +133,14 @@
     <string name="menu_main_scan_local_book">扫描本地书籍</string>
 
     <string name="exit_tips">再按一次退出程序</string>
+    <string name="delete">删除</string>
+    <string name="delete_count">删除(%1$d)</string>
     <string name="remove_selected_book">移除所选书籍</string>
     <string name="delete_local_cache">同时删除本地缓存</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
     <string name="cancel_selected_all">取消全选</string>
-    <string name="selected_all">全选</string>
+    <string name="select_all">全选</string>
     <string name="has_not_selected_delete_book">你没有选择要删的书哦</string>
     <string name="add_the_book_you_like">添加你喜欢的小说</string>
     <string name="network_error_tips">加载失败，请检查网络或稍后再试</string>

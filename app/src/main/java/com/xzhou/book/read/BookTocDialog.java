@@ -1,5 +1,6 @@
 package com.xzhou.book.read;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -50,9 +51,10 @@ public class BookTocDialog extends Dialog {
         mLocalBook = book;
         mView = LayoutInflater.from(context).inflate(R.layout.dialog_toc, null);
         ButterKnife.bind(this, mView);
+        View decorView = ((Activity) context).getWindow().getDecorView();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.width = (int) (AppUtils.getScreenWidth() * 0.9);
-        lp.height = (int) (AppUtils.getScreenHeight() * 0.9);
+        lp.width = (int) (decorView.getWidth() * 0.85);
+        lp.height = (int) (decorView.getHeight() * 0.9);
         mAdapter = new Adapter(context);
         mListView.setAdapter(mAdapter);
         setContentView(mView, lp);

@@ -86,8 +86,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        BookshelfFragment f = (BookshelfFragment) mFragment.get(FRAGMENT_BOOKSHELF);
         if (mViewPager.getCurrentItem() != FRAGMENT_BOOKSHELF) {
             setCurFragment(FRAGMENT_BOOKSHELF);
+        } else if (f.hasEdit()) {
+            f.cancelEdit();
         } else {
             if (SystemClock.elapsedRealtime() - mLastBackPressedTime < 1500) {
                 super.onBackPressed();

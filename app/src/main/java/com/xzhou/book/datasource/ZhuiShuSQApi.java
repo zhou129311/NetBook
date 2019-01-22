@@ -52,7 +52,7 @@ public class ZhuiShuSQApi {
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "updated");
         params.put("id", bookIds);
-        return (List<Entities.Updated>) OkHttpUtils.getObject(request, Entities.Updated.TYPE, params);
+        return (List<Entities.Updated>) OkHttpUtils.getObject(request, Entities.Updated.TYPE, params, false);
     }
 
     /**
@@ -196,7 +196,7 @@ public class ZhuiShuSQApi {
             HttpRequest request = new HttpRequest("/atoc", sourceId);
             HashMap<String, String> params = new HashMap<>();
             params.put("view", "chapters");
-            aToc = (Entities.BookAToc) OkHttpUtils.getObject(request, Entities.BookAToc.TYPE, params);
+            aToc = (Entities.BookAToc) OkHttpUtils.getObject(request, Entities.BookAToc.TYPE, params, true);
         } else { //默认源
             Entities.BookMixAToc mixAToc = getBookMixAToc(bookId);
             if (mixAToc != null) {
@@ -210,7 +210,7 @@ public class ZhuiShuSQApi {
         HttpRequest request = new HttpRequest("/mix-atoc", bookId);
         HashMap<String, String> params = new HashMap<>();
         params.put("view", "chapters");
-        return (Entities.BookMixAToc) OkHttpUtils.getObject(request, Entities.BookMixAToc.TYPE, params);
+        return (Entities.BookMixAToc) OkHttpUtils.getObject(request, Entities.BookMixAToc.TYPE, params, true);
     }
 
     /**
@@ -286,9 +286,9 @@ public class ZhuiShuSQApi {
      *
      * @return List<BookListTags>
      */
-    public static HttpResult getBookListTags() {
+    public static List<Entities.BookListTags> getBookListTags() {
         HttpRequest request = new HttpRequest("/book-list/tagType");
-        return OkHttpUtils.get(request, Entities.BookListTags.TYPE, null);
+        return (List<Entities.BookListTags>) OkHttpUtils.getObject(request, Entities.BookListTags.TYPE, null);
     }
 
     /**

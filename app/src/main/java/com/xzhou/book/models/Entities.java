@@ -558,7 +558,7 @@ public class Entities {
     }
 
     public static class BookListTags {
-        public static final Type TYPE = new TypeToken<HttpResult<List<BookListTags>>>() {
+        public static final Type TYPE = new TypeToken<List<BookListTags>>() {
         }.getType();
 
         public String name;

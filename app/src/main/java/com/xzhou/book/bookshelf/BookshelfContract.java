@@ -11,6 +11,8 @@ public interface BookshelfContract {
 
         void refresh();
 
+        void download(BookProvider.LocalBook localBook);
+
     }
 
     interface View extends BaseContract.View<Presenter> {
@@ -18,10 +20,12 @@ public interface BookshelfContract {
 
         void onDataChange(List<BookProvider.LocalBook> books);
 
-        void onBookshelfUpdated(boolean update);
+        void onBookshelfUpdated(boolean update, String error);
 
         void onAdd(int position, BookProvider.LocalBook book);
 
         void onRemove(BookProvider.LocalBook book);
+
+        void onUpdateDownloadState(BookProvider.LocalBook localBook);
     }
 }

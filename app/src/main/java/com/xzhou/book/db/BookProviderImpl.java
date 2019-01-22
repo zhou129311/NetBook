@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BookProviderImpl extends ContentProvider {
     private static final String AUTHORITY = "com.xzhou.book.provider";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "book.db";
     private static final String TABLE_BOOK = "bookshelf";
     //    private static final int MARCH_BOOK = 1;
@@ -89,7 +89,6 @@ public class BookProviderImpl extends ContentProvider {
         }
         int count = db.delete(TABLE_BOOK, selection, selectionArgs);
         if (count > 0) {
-            AppUtils.deleteBookCache(bookId);
             BookManager.get().onDelete(bookId);
             mContext.getContentResolver().notifyChange(uri, null);
         }
@@ -103,6 +102,7 @@ public class BookProviderImpl extends ContentProvider {
         if (count > 0) {
             BookManager.get().onUpdate(loadListInternal(db, null, null));
             mContext.getContentResolver().notifyChange(uri, null);
+            return count;
         }
         return 0;
     }
@@ -137,10 +137,18 @@ public class BookProviderImpl extends ContentProvider {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             switch (oldVersion) {
-            case 1:
+            case 1: {
                 String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_CUR_SOURCE_ID + " TEXT ";
                 db.execSQL(sql);
+                sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_ORDER_TOP + " INTEGER ";
+                db.execSQL(sql);
                 break;
+            }
+            case 2: {
+                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_ORDER_TOP + " INTEGER ";
+                db.execSQL(sql);
+                break;
+            }
             }
         }
 
@@ -153,6 +161,7 @@ public class BookProviderImpl extends ContentProvider {
                     + BookProvider.COLUMN_UPDATED + " LONG, "
                     + BookProvider.COLUMN_LAST_READ_TIME + " LONG, "
                     + BookProvider.COLUMN_ADD_TIME + " LONG, "
+                    + BookProvider.COLUMN_ORDER_TOP + " INTEGER, "
                     + BookProvider.COLUMN_CUR_SOURCE + " TEXT, "
                     + BookProvider.COLUMN_CUR_SOURCE_ID + " TEXT);");
         }

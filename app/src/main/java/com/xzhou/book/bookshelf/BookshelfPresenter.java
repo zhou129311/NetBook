@@ -1,6 +1,8 @@
 package com.xzhou.book.bookshelf;
 
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
+import com.xzhou.book.R;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.db.BookManager;
@@ -8,6 +10,7 @@ import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,12 +73,13 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                 }
                 List<Entities.Updated> list = ZhuiShuSQApi.getBookshelfUpdated(sb.toString());
                 boolean hasUpdated = false;
+                String error = null;
                 List<BookProvider.LocalBook> updateList = new ArrayList<>();
                 if (list != null) {
                     for (Entities.Updated updated : list) {
                         long updatedTime = AppUtils.getTimeFormDateString(updated.updated);
-                        BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
-                        if (localBook.updated < updatedTime) {
+                        final BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
+                        if (localBook != null && localBook.updated < updatedTime) {
                             Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
                             if (aToc != null && aToc.chapters != null) {
                                 List<Entities.Chapters> oldChapters = AppSettings.getChapterList(localBook._id);
@@ -93,6 +97,7 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                                 if (newChapters != null) {
                                     AppSettings.saveChapterList(localBook._id, newChapters);
                                 }
+
                             }
 
                             hasUpdated = true;
@@ -101,11 +106,55 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                             updateList.add(localBook);
                         }
                     }
+                } else {
+                    error = AppUtils.getString(AppUtils.isNetworkAvailable() ? R.string.network_failed : R.string.network_unconnected);
                 }
                 if (hasUpdated) {
                     BookProvider.updateLocalBooks(updateList);
                 }
-                updated(hasUpdated);
+                updated(hasUpdated, error);
+            }
+        });
+    }
+
+    @Override
+    public void download(final BookProvider.LocalBook localBook) {
+        if (DownloadManager.get().hasDownloading(localBook._id)) {
+            ToastUtils.showShortToast("正在缓存中...");
+            return;
+        }
+        ZhuiShuSQApi.getPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                BookProvider.LocalBook book = BookManager.get().findById(localBook._id);
+                String id = null;
+                if (book != null) {
+                    id = book.sourceId;
+                }
+                List<Entities.Chapters> chaptersList = AppSettings.getChapterList(localBook._id);
+                if (chaptersList == null) {
+                    Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, id);
+                    if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
+                        chaptersList = aToc.chapters;
+                        AppSettings.saveChapterList(localBook._id, chaptersList);
+                    }
+                }
+                if (chaptersList != null && chaptersList.size() > 0) {
+                    DownloadManager.Download download = DownloadManager.createAllDownload(chaptersList);
+                    DownloadManager.get().startDownload(localBook._id, download);
+                    if (localBook.checkAddDownloadCallback()) {
+                        updateDownloadStatus(book);
+                        localBook.setUpdateDownloadStateListener(new BookProvider.LocalBook.UpdateDownloadStateListener() {
+                            @Override
+                            public void onUpdate() {
+                                updateDownloadStatus(localBook);
+                            }
+                        });
+                    }
+                } else {
+                    localBook.downloadStatus = AppUtils.getString(R.string.book_read_download_error_topic);
+                    updateDownloadStatus(localBook);
+                }
             }
         });
     }
@@ -115,6 +164,19 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
             @Override
             public void run() {
                 if (mView != null) {
+                    if (list != null) {
+                        for (final BookProvider.LocalBook book : list) {
+                            if (book.checkAddDownloadCallback()) {
+                                updateDownloadStatus(book);
+                                book.setUpdateDownloadStateListener(new BookProvider.LocalBook.UpdateDownloadStateListener() {
+                                    @Override
+                                    public void onUpdate() {
+                                        updateDownloadStatus(book);
+                                    }
+                                });
+                            }
+                        }
+                    }
                     mView.onLoadingState(false);
                     mView.onDataChange(list);
                 }
@@ -144,13 +206,24 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
         });
     }
 
-    private void updated(final boolean updated) {
+    private void updated(final boolean updated, final String error) {
         MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
                     mView.onLoadingState(false);
-                    mView.onBookshelfUpdated(updated);
+                    mView.onBookshelfUpdated(updated, error);
+                }
+            }
+        });
+    }
+
+    private void updateDownloadStatus(final BookProvider.LocalBook localBook) {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onUpdateDownloadState(localBook);
                 }
             }
         });

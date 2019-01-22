@@ -139,11 +139,11 @@ public class OkHttpUtils {
         }
     } };
 
-    public static <T> Entities.HttpResult get(HttpRequest request, Type typeOfT, HashMap<String, String> params) {
-        return (Entities.HttpResult) getObject(request, typeOfT, params);
+    public static Object getObject(HttpRequest request, Type typeOfT, HashMap<String, String> params) {
+        return getObject(request, typeOfT, params, true);
     }
 
-    public static Object getObject(final HttpRequest request, final Type typeOfT, final HashMap<String, String> params) {
+    public static Object getObject(final HttpRequest request, final Type typeOfT, final HashMap<String, String> params, boolean hasCache) {
         String url = HttpRequest.appendQueryUrl(params, request.getTargetUrl());
 
         CacheControl cacheControl;
@@ -153,6 +153,9 @@ public class OkHttpUtils {
             cacheControl = new CacheControl.Builder()
                     .maxAge(CACHE_MAXAGE, TimeUnit.SECONDS)
                     .build();
+        }
+        if (!hasCache) {
+            cacheControl = CacheControl.FORCE_NETWORK;
         }
         Request req = new Request.Builder()
                 .url(url)

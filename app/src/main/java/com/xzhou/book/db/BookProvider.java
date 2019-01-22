@@ -31,11 +31,12 @@ public class BookProvider {
     static final String COLUMN_UPDATED = "updated";
     static final String COLUMN_LAST_READ_TIME = "read_time";
     static final String COLUMN_ADD_TIME = "add_time";
+    static final String COLUMN_ORDER_TOP = "order_top"; //置顶
     static final String COLUMN_CUR_SOURCE = "cur_source";
     static final String COLUMN_CUR_SOURCE_ID = "cur_source_id";
 
     private static final String[] PROJECTION = new String[] {
-            COLUMN_ID, COLUMN_COVER, COLUMN_TITLE, COLUMN_LAST_CHAPTER,
+            COLUMN_ID, COLUMN_COVER, COLUMN_TITLE, COLUMN_LAST_CHAPTER, COLUMN_ORDER_TOP,
             COLUMN_UPDATED, COLUMN_LAST_READ_TIME, COLUMN_CUR_SOURCE, COLUMN_ADD_TIME, COLUMN_CUR_SOURCE_ID
     };
 
@@ -45,11 +46,19 @@ public class BookProvider {
         public long updated;
         public long readTime;
         public long addTime;
+        public boolean hasTop;
         public String title;
         public String lastChapter;
         public String cover;
         public String curSourceHost;
         private boolean isBookshelf;
+
+        public boolean isChecked;
+        public boolean isEdit;
+
+        public String downloadStatus;
+        private UpdateDownloadStateListener mStateListener;
+        private DownloadManager.DownloadCallback mCallback;
 
         public LocalBook(Entities.BookDetail detail) {
             _id = detail._id;
@@ -63,6 +72,77 @@ public class BookProvider {
         public LocalBook() {
         }
 
+        public interface UpdateDownloadStateListener {
+            void onUpdate();
+        }
+
+        public void setUpdateDownloadStateListener(UpdateDownloadStateListener listener) {
+            mStateListener = listener;
+        }
+
+        public boolean checkAddDownloadCallback() {
+            if (DownloadManager.get().hasDownloading(_id)) {
+                downloadStatus = AppUtils.getString(R.string.book_read_download_start, title);
+                if (mCallback == null) {
+                    mCallback = new DownloadManager.DownloadCallback() {
+                        @Override
+                        public void onStartDownload() {
+                            downloadStatus = AppUtils.getString(R.string.book_read_download_start, title);
+                            if (mStateListener != null) {
+                                mStateListener.onUpdate();
+                            }
+                        }
+
+                        @Override
+                        public void onProgress(int progress, int max) {
+                            downloadStatus = AppUtils.getString(R.string.book_read_download_progress, title, progress, max);
+                            if (mStateListener != null) {
+                                mStateListener.onUpdate();
+                            }
+                        }
+
+                        @Override
+                        public void onEndDownload(int failedCount, int error) {
+                            if (error != DownloadManager.ERROR_NONE) {
+                                downloadStatus = AppUtils.getString(error == DownloadManager.ERROR_NO_NETWORK ? R.string.book_read_download_error_net
+                                        : R.string.book_read_download_error_topic);
+                            } else {
+                                if (failedCount > 0) {
+                                    downloadStatus = AppUtils.getString(R.string.book_read_download_complete2, title, failedCount);
+                                } else {
+                                    downloadStatus = AppUtils.getString(R.string.book_read_download_complete, title);
+                                }
+                            }
+                            if (mStateListener != null) {
+                                mStateListener.onUpdate();
+                            }
+                            DownloadManager.get().removeCallback(_id, this);
+                            mStateListener = null;
+                        }
+                    };
+                }
+                DownloadManager.get().addCallback(_id, mCallback);
+                return true;
+            }
+            return false;
+        }
+
+        public void checkRemoveDownloadCallback() {
+            if (mCallback != null) {
+                DownloadManager.get().removeCallback(_id, mCallback);
+            }
+            mStateListener = null;
+            mCallback = null;
+        }
+
+        public boolean isBookshelf() {
+            return isBookshelf || BookProvider.hasCacheData(_id);
+        }
+
+        public String getTitle() {
+            return TextUtils.isEmpty(curSourceHost) ? title : curSourceHost + "-" + title;
+        }
+
         ContentValues toContentValues() {
             final ContentValues values = new ContentValues();
             values.put(COLUMN_ID, _id);
@@ -72,8 +152,8 @@ public class BookProvider {
             values.put(COLUMN_COVER, cover);
             values.put(COLUMN_CUR_SOURCE, curSourceHost);
             values.put(COLUMN_LAST_CHAPTER, lastChapter);
-            values.put(COLUMN_ADD_TIME, addTime);
             values.put(COLUMN_CUR_SOURCE_ID, sourceId);
+            values.put(COLUMN_ORDER_TOP, hasTop ? 1 : 0);
             return values;
         }
 
@@ -87,15 +167,8 @@ public class BookProvider {
             cover = in.readString();
             curSourceHost = in.readString();
             isBookshelf = in.readInt() == 1;
+            hasTop = in.readInt() == 1;
             sourceId = in.readString();
-        }
-
-        public boolean isBookshelf() {
-            return isBookshelf || BookProvider.hasCacheData(_id);
-        }
-
-        public String getTitle() {
-            return TextUtils.isEmpty(curSourceHost) ? title : curSourceHost + "-" + title;
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -131,6 +204,7 @@ public class BookProvider {
             dest.writeString(cover);
             dest.writeString(curSourceHost);
             dest.writeInt(isBookshelf ? 1 : 0);
+            dest.writeInt(hasTop ? 1 : 0);
             dest.writeString(sourceId);
         }
 
@@ -146,6 +220,7 @@ public class BookProvider {
                     ", cover='" + cover + '\'' +
                     ", curSourceHost='" + curSourceHost + '\'' +
                     ", isBookshelf=" + isBookshelf +
+                    ", hasTop=" + hasTop +
                     '}';
         }
     }
@@ -182,6 +257,7 @@ public class BookProvider {
             book.lastChapter = cursor.getString(cursor.getColumnIndex(COLUMN_LAST_CHAPTER));
             book.addTime = cursor.getLong(cursor.getColumnIndex(COLUMN_ADD_TIME));
             book.sourceId = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE_ID));
+            book.hasTop = cursor.getInt(cursor.getColumnIndex(COLUMN_ORDER_TOP)) == 1;
             book.isBookshelf = true;
             list.add(book);
         }
@@ -201,11 +277,30 @@ public class BookProvider {
         }
     }
 
+    public static void updateHasTop(LocalBook book) {
+        try {
+            ContentValues values = new ContentValues();
+            String where = COLUMN_ID + "=?";
+            String[] args = new String[] { book._id };
+            values.put(COLUMN_ORDER_TOP, book.hasTop ? 1 : 0);
+            MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void updateLocalBooks(List<LocalBook> books) {
         if (books == null || books.size() < 1) {
             return;
         }
-        ArrayList<ContentProviderOperation> ops = loadUpdatedCPO(books);
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        for (LocalBook book : books) {
+            ops.add(ContentProviderOperation.newUpdate(BookProviderImpl.BOOKSHELF_CONTENT_URI)
+                    .withSelection(COLUMN_ID + "=?", new String[] { book._id })
+                    .withValues(book.toContentValues())
+                    .withYieldAllowed(true)
+                    .build());
+        }
         if (ops.size() > 0) {
             try {
                 MyApp.getContext().getContentResolver().applyBatch(BookProviderImpl.BOOKSHELF_CONTENT_URI.getAuthority(), ops);
@@ -213,21 +308,6 @@ public class BookProvider {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static ArrayList<ContentProviderOperation> loadUpdatedCPO(List<LocalBook> books) {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-        for (LocalBook book : books) {
-            ops.add(createUpdateOperation(book));
-        }
-        return ops;
-    }
-
-    private static ContentProviderOperation createUpdateOperation(LocalBook book) {
-        return ContentProviderOperation.newUpdate(BookProviderImpl.BOOKSHELF_CONTENT_URI)
-                .withValues(book.toContentValues())
-                .withYieldAllowed(true)
-                .build();
     }
 
     public static void insertOrUpdate(final LocalBook book, boolean setReadTime) {
@@ -264,10 +344,35 @@ public class BookProvider {
         }
     }
 
-    public static void delete(String booId, final String title) {
+    public static void delete(List<String> bookIds, boolean deleteCache) {
+        try {
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+            for (String bookId : bookIds) {
+                DownloadManager.get().pauseDownload(bookId);
+                if (deleteCache) {
+                    AppUtils.deleteBookCache(bookId);
+                }
+                ops.add(ContentProviderOperation.newDelete(BookProviderImpl.BOOKSHELF_CONTENT_URI)
+                        .withSelection(COLUMN_ID + "=?", new String[] { bookId })
+                        .withYieldAllowed(true)
+                        .build());
+            }
+            if (ops.size() > 0) {
+                try {
+                    MyApp.getContext().getContentResolver().applyBatch(BookProviderImpl.BOOKSHELF_CONTENT_URI.getAuthority(), ops);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void delete(String bookId, final String title, boolean deleteCache) {
         try {
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { booId };
+            String[] args = new String[] { bookId };
             MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
             MyApp.runUI(new Runnable() {
                 @Override
@@ -275,7 +380,10 @@ public class BookProvider {
                     ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_remove_the_book_shelf, title));
                 }
             });
-            DownloadManager.get().pauseDownload(booId);
+            DownloadManager.get().pauseDownload(bookId);
+            if (deleteCache) {
+                AppUtils.deleteBookCache(bookId);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -295,18 +403,19 @@ public class BookProvider {
 
     public static String getOrder() {
         int order = AppSettings.getBookshelfOrder();
-        String sortOrder;
+        String sortOrder = COLUMN_ORDER_TOP + " DESC, ";
         switch (order) {
         case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME:
-            sortOrder = COLUMN_UPDATED + " DESC";
+            sortOrder += COLUMN_UPDATED + " DESC";
             break;
         case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_READ_TIME:
-            sortOrder = COLUMN_LAST_READ_TIME + " DESC";
+            sortOrder += COLUMN_LAST_READ_TIME + " DESC";
             break;
         default:
-            sortOrder = COLUMN_ADD_TIME + " DESC";
+            sortOrder += COLUMN_ADD_TIME + " DESC";
             break;
         }
+        Log.d(TAG, "sortOrder = " + sortOrder);
         return sortOrder;
     }
 }
