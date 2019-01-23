@@ -9,29 +9,24 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.xzhou.book.R;
 
-public class CheckDialog extends Dialog {
+public class AlertDialog extends Dialog {
 
-    private CheckDialog(@NonNull Context context) {
+    private AlertDialog(@NonNull Context context) {
         super(context, R.style.DialogTheme);
-    }
-
-    public interface OnPositiveClickListener {
-        void onClick(DialogInterface dialog, boolean isChecked);
     }
 
     public static class Builder {
         private final Context mContext;
         private final LayoutInflater mInflater;
-        private OnPositiveClickListener mPositiveButtonListener;
+        private DialogInterface.OnClickListener mPositiveButtonListener;
         private DialogInterface.OnClickListener mNegativeButtonListener;
         private boolean mCancelable;
         private CharSequence mTitle;
-        private CharSequence mCheckedMessage;
+        private CharSequence mMessage;
         private CharSequence mPositiveButtonText;
         private CharSequence mNegativeButtonText;
 
@@ -41,23 +36,33 @@ public class CheckDialog extends Dialog {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
+        public Builder setTitle(@StringRes int textId) {
+            mTitle = mContext.getText(textId);
+            return this;
+        }
+
         public Builder setTitle(String title) {
             mTitle = title;
             return this;
         }
 
-        public Builder setCheckedMessage(String message) {
-            mCheckedMessage = message;
+        public Builder setMessage(String message) {
+            mMessage = message;
             return this;
         }
 
-        public Builder setPositiveButton(@StringRes int textId, final OnPositiveClickListener listener) {
+        public Builder setMessage(@StringRes int textId) {
+            mMessage = mContext.getText(textId);
+            return this;
+        }
+
+        public Builder setPositiveButton(@StringRes int textId, final DialogInterface.OnClickListener listener) {
             mPositiveButtonText = mContext.getText(textId);
             mPositiveButtonListener = listener;
             return this;
         }
 
-        public Builder setPositiveButton(final OnPositiveClickListener listener) {
+        public Builder setPositiveButton(final DialogInterface.OnClickListener listener) {
             mPositiveButtonListener = listener;
             return this;
         }
@@ -73,24 +78,30 @@ public class CheckDialog extends Dialog {
             return this;
         }
 
-        private CheckDialog create() {
-            final CheckDialog dialog = new CheckDialog(mContext);
+        private AlertDialog create() {
+            final AlertDialog dialog = new AlertDialog(mContext);
             dialog.setCancelable(mCancelable);
             if (mCancelable) {
                 dialog.setCanceledOnTouchOutside(true);
             }
-            View view = mInflater.inflate(R.layout.dialog_checkbox, null);
+            View view = mInflater.inflate(R.layout.dialog_alert, null);
             TextView title = view.findViewById(R.id.title_tv);
             if (mTitle != null) {
                 title.setText(mTitle);
+            } else {
+                title.setVisibility(View.GONE);
             }
-            final CheckBox checkBox = view.findViewById(R.id.checkbox);
-            if (mCheckedMessage != null) {
-                checkBox.setText(mCheckedMessage);
+            final TextView message = view.findViewById(R.id.message_tv);
+            if (mMessage != null) {
+                message.setText(mMessage);
+            } else {
+                message.setVisibility(View.GONE);
             }
             TextView cancel = view.findViewById(R.id.cancel_tv);
             if (mNegativeButtonText != null) {
                 cancel.setText(mNegativeButtonText);
+            } else {
+                cancel.setVisibility(View.GONE);
             }
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -103,12 +114,14 @@ public class CheckDialog extends Dialog {
             TextView ok = view.findViewById(R.id.ok_tv);
             if (mPositiveButtonText != null) {
                 ok.setText(mPositiveButtonText);
+            } else {
+                ok.setVisibility(View.GONE);
             }
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mPositiveButtonListener != null) {
-                        mPositiveButtonListener.onClick(dialog, checkBox.isChecked());
+                        mPositiveButtonListener.onClick(dialog, Dialog.BUTTON_POSITIVE);
                     }
                 }
             });
@@ -121,7 +134,7 @@ public class CheckDialog extends Dialog {
         }
 
         public void show() {
-            final CheckDialog dialog = create();
+            final AlertDialog dialog = create();
             dialog.show();
         }
     }

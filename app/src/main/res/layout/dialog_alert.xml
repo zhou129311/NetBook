@@ -2,43 +2,39 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dialog_common"
-    android:padding="16dp">
+    android:padding="@dimen/dialog_margin">
 
     <TextView
         android:id="@+id/title_tv"
+        style="@style/DialogTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/remove_selected_book"
-        android:textColor="@color/black"
-        android:textSize="20sp"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="我是标题"/>
 
-    <CheckBox
-        android:id="@+id/checkbox"
+    <TextView
+        android:id="@+id/message_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:button="@drawable/checkbox_delete_shelf"
-        android:checked="true"
-        android:paddingStart="8dp"
-        android:paddingEnd="0dp"
-        android:text="@string/delete_local_cache"
-        android:textColor="@color/common_h2"
-        android:textSize="15sp"
-        app:layout_constraintTop_toBottomOf="@id/title_tv"/>
+        android:layout_marginTop="20dp"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"
+        tools:text="我是message"/>
 
     <TextView
         android:id="@+id/cancel_tv"
         style="@style/DialogBtnText"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="30dp"
         android:background="@drawable/touch_bg"
         android:text="@string/cancel"
         android:textColor="@color/black"
         app:layout_constraintEnd_toStartOf="@id/ok_tv"
-        app:layout_constraintTop_toBottomOf="@id/checkbox"/>
+        app:layout_constraintTop_toBottomOf="@id/message_tv"/>
 
     <TextView
         android:id="@+id/ok_tv"
@@ -48,6 +44,6 @@
         android:text="@string/confirm"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/checkbox"/>
-
+        app:layout_constraintTop_toBottomOf="@id/message_tv"
+        tools:text="加入书架"/>
 </android.support.constraint.ConstraintLayout>

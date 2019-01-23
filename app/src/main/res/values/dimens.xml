@@ -8,4 +8,5 @@
     <dimen name="book_detail_margin">17dp</dimen>
     <dimen name="book_item_margin_h">17dp</dimen>
     <dimen name="book_item_margin_v">15dp</dimen>
+    <dimen name="dialog_margin">16dp</dimen>
 </resources>

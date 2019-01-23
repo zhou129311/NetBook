@@ -19,9 +19,9 @@ public class AppSettings {
     private static final String PRE_KEY_SEARCH_HISTORY = "pre_key_search_history";
     private static final String PRE_KEY_SAVING_TRAFFIC = "pre_key_saving_traffic";
 
-    public static final int PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME = 0;
+    public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
-    public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 2;
+    public static final int PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME = 2;
 
     public static boolean HAS_SAVING_TRAFFIC = false;
 

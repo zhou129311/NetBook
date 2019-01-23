@@ -155,7 +155,7 @@ public class BookTocDialog extends Dialog {
     /**
      * Dialog listView自适应高度变化
      */
-    private int getListViewHeightBasedOnChildren(int otherViewHeight, ListView listView, BaseAdapter adapter) {
+    public static int getListViewHeightBasedOnChildren(int otherViewHeight, ListView listView, BaseAdapter adapter) {
         int totalHeight = 0;
         View view = listView.getChildAt(0);
         if (view != null) {

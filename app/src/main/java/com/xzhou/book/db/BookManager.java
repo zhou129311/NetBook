@@ -33,9 +33,14 @@ public class BookManager {
         List<BookProvider.LocalBook> list = BookProvider.loadBookshelfList();
         if (list != null && list.size() > 0) {
             synchronized (mList) {
+                mList.clear();
                 mList.addAll(list);
             }
         }
+    }
+
+    public void reloadList() {
+        onUpdate(BookProvider.loadBookshelfList());
     }
 
     public List<BookProvider.LocalBook> getLocalBooks() {

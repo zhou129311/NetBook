@@ -33,8 +33,8 @@
         android:dividerHeight="1px"
         android:fadeScrollbars="false"
         android:fastScrollEnabled="true"
-        android:paddingEnd="15dp"
-        android:paddingStart="15dp"
+        android:paddingEnd="@dimen/dialog_margin"
+        android:paddingStart="@dimen/dialog_margin"
         android:scrollbarSize="8dp"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbarTrackVertical="@color/gray"/>

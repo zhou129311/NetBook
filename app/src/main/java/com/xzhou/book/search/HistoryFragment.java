@@ -102,6 +102,7 @@ public class HistoryFragment extends BaseFragment {
                 @Override
                 public void onClick(View v) {
                     mAdapter.remove(mList.indexOf(item));
+                    mClearHistoryTv.setEnabled(!mList.isEmpty());
                     AppSettings.saveHistory(mList);
                 }
             });

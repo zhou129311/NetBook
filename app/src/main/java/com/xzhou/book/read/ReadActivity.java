@@ -1,6 +1,5 @@
 package com.xzhou.book.read;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,11 +28,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonDialog;
+import com.xzhou.book.common.ItemDialog;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
@@ -212,7 +213,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                             dialog.dismiss();
                             BookProvider.insertOrUpdate(mBook, true);
                             finish();
-                            //add
                         }
                     });
             builder.show();
@@ -551,7 +551,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 ToastUtils.showShortToast("未找到章节列表");
                 return;
             }
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            ItemDialog.Builder builder = new ItemDialog.Builder(this);
             builder.setTitle("缓存多少章？").setItems(DownloadManager.DOWNLOAD_ITEMS, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

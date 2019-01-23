@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_dialog_common"
+    android:padding="@dimen/dialog_margin">
+
+    <TextView
+        android:id="@+id/title_tv"
+        style="@style/DialogTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="我是标题"/>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/cancel_tv"
+        android:layout_below="@id/title_tv"
+        android:layout_marginTop="10dp"
+        android:divider="@null"/>
+
+    <TextView
+        android:id="@+id/cancel_tv"
+        style="@style/DialogBtnText"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/touch_bg"
+        android:text="@string/cancel"
+        android:textColor="@color/black"/>
+</RelativeLayout>

@@ -35,11 +35,6 @@ public class BookProvider {
     static final String COLUMN_CUR_SOURCE = "cur_source";
     static final String COLUMN_CUR_SOURCE_ID = "cur_source_id";
 
-    private static final String[] PROJECTION = new String[] {
-            COLUMN_ID, COLUMN_COVER, COLUMN_TITLE, COLUMN_LAST_CHAPTER, COLUMN_ORDER_TOP,
-            COLUMN_UPDATED, COLUMN_LAST_READ_TIME, COLUMN_CUR_SOURCE, COLUMN_ADD_TIME, COLUMN_CUR_SOURCE_ID
-    };
-
     public static class LocalBook implements MultiItemEntity, Parcelable {
         public String _id;
         public String sourceId;
@@ -230,7 +225,7 @@ public class BookProvider {
         try {
             String sortOrder = getOrder();
             cursor = MyApp.getContext().getContentResolver().query(BookProviderImpl.BOOKSHELF_CONTENT_URI,
-                    PROJECTION, null, null, sortOrder, null);
+                    null, null, null, sortOrder, null);
             return parseCursor(cursor);
         } catch (Exception e) {
             e.printStackTrace();

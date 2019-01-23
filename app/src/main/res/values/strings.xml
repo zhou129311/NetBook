@@ -120,6 +120,7 @@
 
     <string name="settings">设置</string>
     <string name="bookshelf_sort">书架排序</string>
+    <string name="bookshelf_sort_dialog">书架排序方式</string>
     <string name="bookshelf_sort_add">按最近添加</string>
     <string name="bookshelf_sort_update">按更新时间</string>
     <string name="bookshelf_sort_read">按最近阅读</string>

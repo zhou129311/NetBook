@@ -1,7 +1,6 @@
 package com.xzhou.book.bookshelf;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +20,7 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.ItemDialog;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
@@ -343,7 +343,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                     if (hasEdit() || mSwipeLayout.isRefreshing()) {
                         return true;
                     }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
                     builder.setTitle(item.title).setItems(item.hasTop ? DIALOG_ITEM_TOP : DIALOG_ITEM_UPTOP, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
