@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.AppCompatCheckedTextView
+    android:id="@+id/viewSingleChoiceItem"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:drawableStart="?android:attr/listChoiceIndicatorSingle"
+    android:drawableTint="@color/colorPrimary"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:minHeight="50dp"
+    android:paddingEnd="0dp"
+    android:paddingStart="8dp"
+    android:singleLine="true"
+    android:textColor="@color/black"
+    android:textSize="16sp"
+    tools:ignore="UnusedAttribute"/>

@@ -53,11 +53,13 @@ public class ChapterBuffer {
         return success;
     }
 
-    public boolean openNetBookChapter(Entities.Chapter data) {
+    public boolean openNetBookChapter(Entities.Chapter data, boolean hasSave) {
         mCharset = "UTF-8";
-        //File file = FileUtils.getChapterFile(mBookId, mChapter);
         String body = AppUtils.formatContent(data.body);
-        //FileUtils.writeFile(file.getAbsolutePath(), body, false);
+        if (hasSave) {
+            File file = FileUtils.getChapterFile(mBookId, mChapter);
+            FileUtils.writeFile(file.getAbsolutePath(), body, false);
+        }
         try {
             mBuffer = body.getBytes(mCharset);
             mBufferLen = mBuffer.length;
@@ -146,6 +148,9 @@ public class ChapterBuffer {
             if (readPos >= content.startPos && readPos < content.endPos) {
                 return content;
             }
+        }
+        if (readPos == -1 && mPageList.size() > 0) {
+            return mPageList.get(mPageList.size() - 1);
         }
         return mPageList.get(0);
     }

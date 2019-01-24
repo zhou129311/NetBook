@@ -126,10 +126,13 @@
     <string name="bookshelf_sort_read">按最近阅读</string>
     <string name="download_read_book">边看边存</string>
     <string name="download_read_book_none">未开启</string>
+    <string name="download_read_book_1">自动缓存当前章节</string>
     <string name="download_read_book_5">自动缓存后面五章</string>
     <string name="download_read_book_10">自动缓存后面十章</string>
     <string name="saving_traffic_mode">省流量模式（无图模式）</string>
     <string name="clear_cache">清除缓存</string>
+    <string name="clear_cache_dialog_title">确定清除缓存？</string>
+    <string name="clear_cache_dialog_message">清除缓存会将已缓存的书籍全部删除，是否清除？</string>
 
     <string name="menu_main_scan_local_book">扫描本地书籍</string>
 

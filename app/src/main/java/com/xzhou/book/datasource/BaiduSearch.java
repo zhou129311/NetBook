@@ -15,17 +15,18 @@ public class BaiduSearch {
 
     public static void parse(String key) {
         try {
-            try {
-                key = URLEncoder.encode(key, "gb2312");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
+//            try {
+//                key = URLEncoder.encode(key, "gb2312");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+//            String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             //解析Url获取Document对象
+            String url = "http://www.baidu.com/link?url=QFDcvZ5H1HuhHjrCGhVr9VEkxEjE8-h1rHyAfi-AFt9NptKsRDfWL-I5IejevLXP";
             Document document = Jsoup.connect(url).get();
             //获取网页源码文本内容
             //System.out.println(document.toString());
-            //Log.i(TAG,document.toString());
+            Log.i(TAG, document.toString());
             //获取指定class的内容指定tag的元素
             //Elements elements = document.getAllElements();
 //            Elements divs = document.getElementsByTag("div");

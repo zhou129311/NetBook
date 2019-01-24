@@ -18,6 +18,8 @@ public class SettingItemView extends RelativeLayout {
     TextView mSettingTitle;
     @BindView(R.id.setting_value_tv)
     TextView mSettingValueTv;
+//    @BindView(R.id.setting_loading)
+//    ProgressBar mProgressBar;
 
     private String mTitle;
     private String mValue;
@@ -46,4 +48,17 @@ public class SettingItemView extends RelativeLayout {
         }
     }
 
+    public void setValue(String value) {
+        mValue = value;
+        if (mValue != null) {
+            mSettingValueTv.setText(mValue);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+//        mProgressBar.setVisibility(enabled ? GONE : VISIBLE);
+//        mSettingValueTv.setVisibility(enabled ? VISIBLE : GONE);
+    }
 }

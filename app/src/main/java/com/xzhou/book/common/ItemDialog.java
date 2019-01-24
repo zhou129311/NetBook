@@ -13,6 +13,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class ItemDialog extends Dialog {
                 mListView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 ViewGroup.LayoutParams lp = mView.getLayoutParams();
                 int marginH = getContext().getResources().getDimensionPixelSize(R.dimen.dialog_margin) * 2;
-                int divH = mIsSingleChoice ? (AppUtils.dip2px(40) + mCancelTv.getHeight()) : AppUtils.dip2px(21);
+                int divH = mIsSingleChoice ? (AppUtils.dip2px(25) + mCancelTv.getHeight()) : AppUtils.dip2px(21);
                 int otherH = mTitleView.getHeight() + divH + marginH; //除去listview之外的其他部分高度
                 int height = BookTocDialog.getListViewHeightBasedOnChildren(otherH, mListView, mAdapter);
                 if (height < lp.height) {
@@ -74,6 +75,11 @@ public class ItemDialog extends Dialog {
 
         public Builder setTitle(String title) {
             mTitle = title;
+            return this;
+        }
+
+        public Builder setTitle(@StringRes int textId) {
+            mTitle = mContext.getText(textId);
             return this;
         }
 
@@ -110,6 +116,14 @@ public class ItemDialog extends Dialog {
                 dialog.mTitleView.setText(mTitle);
             }
             dialog.mCancelTv = dialog.mView.findViewById(R.id.cancel_tv);
+            dialog.mCancelTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mNegativeButtonListener != null) {
+                        mNegativeButtonListener.onClick(dialog, Dialog.BUTTON_NEGATIVE);
+                    }
+                }
+            });
             if (mNegativeButtonText != null) {
                 dialog.mCancelTv.setText(mNegativeButtonText);
             } else {
@@ -117,7 +131,23 @@ public class ItemDialog extends Dialog {
             }
             dialog.mListView = dialog.mView.findViewById(R.id.list_view);
             dialog.mListView.setChoiceMode(CHOICE_MODE_SINGLE);
+            dialog.mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    if (mOnClickListener != null) {
+                        mOnClickListener.onClick(dialog, position);
+                    }
+                }
+            });
+            dialog.mAdapter = new Adapter(mItems, mInflater, true);
+            dialog.mListView.setAdapter(dialog.mAdapter);
+            dialog.mListView.setItemChecked(mCheckedItem, true);
 
+            View decorView = ((Activity) mContext).getWindow().getDecorView();
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.width = (int) (decorView.getWidth() * 0.85);
+            lp.height = (int) (decorView.getHeight() * 0.9);
+            dialog.setContentView(dialog.mView, lp);
             return dialog;
         }
 
@@ -132,7 +162,7 @@ public class ItemDialog extends Dialog {
             if (mTitle != null) {
                 dialog.mTitleView.setText(mTitle);
             }
-            dialog.mAdapter = new Adapter(mItems, mInflater);
+            dialog.mAdapter = new Adapter(mItems, mInflater, false);
             dialog.mListView = dialog.mView.findViewById(R.id.list_view);
             dialog.mListView.setAdapter(dialog.mAdapter);
             dialog.mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -152,7 +182,12 @@ public class ItemDialog extends Dialog {
         }
 
         public void show() {
-            final ItemDialog dialog = create();
+            final ItemDialog dialog;
+            if (mIsSingleChoice) {
+                dialog = createSingleChoice();
+            } else {
+                dialog = create();
+            }
             dialog.show();
         }
     }
@@ -160,10 +195,12 @@ public class ItemDialog extends Dialog {
     private static class Adapter extends BaseAdapter {
         private CharSequence[] mItems;
         private final LayoutInflater mInflater;
+        private boolean mIsSingleChoice;
 
-        Adapter(CharSequence[] items, LayoutInflater inflater) {
+        private Adapter(CharSequence[] items, LayoutInflater inflater, boolean isSingleChoice) {
             mInflater = inflater;
             mItems = items;
+            mIsSingleChoice = isSingleChoice;
         }
 
         @Override
@@ -183,14 +220,19 @@ public class ItemDialog extends Dialog {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            TextView textView;
-            if (convertView != null) {
-                textView = (TextView) convertView;
-            } else {
-                textView = (TextView) mInflater.inflate(R.layout.item_view_dialog_text, parent, false);
+            if (convertView == null) {
+                if (mIsSingleChoice) {
+                    convertView = mInflater.inflate(R.layout.item_view_dialog_choice, parent, false);
+                } else {
+                    convertView = mInflater.inflate(R.layout.item_view_dialog_text, parent, false);
+                }
             }
-            textView.setText(mItems[position]);
-            return textView;
+            if (convertView instanceof CheckedTextView) {
+                ((CheckedTextView) convertView).setText(mItems[position]);
+            } else if (convertView instanceof TextView) {
+                ((TextView) convertView).setText(mItems[position]);
+            }
+            return convertView;
         }
     }
 }

@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
+import com.xzhou.book.datasource.BaiduSearch;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 
@@ -30,6 +31,7 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
+                BaiduSearch.parse(mKey);
                 mDataNumber = 0;
                 List<Entities.SearchBook> list = getSearchResult();
                 if (list != null && list.size() > 0) {

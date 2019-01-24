@@ -5,6 +5,7 @@ import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.LruCache;
 
+import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
@@ -52,8 +53,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         if (mChaptersList == null) {
             final int[] progress = AppSettings.getReadProgress(mBook._id);
             mCurChapter = progress[0];
-            final int readPos = progress[1];
-            final int newItem = showLoading((mCurChapter == 0 && readPos == 0) ? 0 : 1);
+            final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -78,6 +78,13 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         return;
                     }
 
+                    if (mCurChapter < 0) {
+                        mCurChapter = 0;
+                        progress[1] = 0;
+                    } else if (mCurChapter >= mChaptersList.size()) {
+                        mCurChapter = mChaptersList.size() - 1;
+                        progress[1] = -1;
+                    }
                     Entities.Chapters chapters = mChaptersList.get(mCurChapter);
                     if (mCurChapter == 0) {
                         if (hasEndChapter(mCurChapter)) {
@@ -95,7 +102,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         mOldPageContents[1] = createNonePageContent(chapters.title, mCurChapter, false);
                         mOldPageContents[2] = createNonePageContent(mChaptersList.get(mCurChapter + 1).title, mCurChapter + 1, hasEndChapter(mCurChapter + 1));
                     }
-                    loadReadProgress(mCurChapter, readPos, newItem, false);
+                    loadReadProgress(mCurChapter, progress[1], newItem, false);
                 }
             });
             return true;
@@ -114,9 +121,12 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     private void loadReadProgress(int chapter, int readPos, int item, boolean isEnd) {
         mCurChapter = chapter;
-        if (mCurChapter < 0 || mCurChapter >= mChaptersList.size()) {
+        if (mCurChapter < 0) {
             mCurChapter = 0;
             readPos = 0;
+        } else if (mCurChapter >= mChaptersList.size()) {
+            mCurChapter = mChaptersList.size() - 1;
+            readPos = -1;
         }
 
         Log.d(TAG, "loadReadProgress = " + mCurChapter + ",readPos = " + readPos);
@@ -127,13 +137,28 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         if (curBuffer == null) {
             curBuffer = new ChapterBuffer(mBook._id, mCurChapter);
         }
+
+        int cacheMode = AppSettings.getReadCacheMode();
+        DownloadManager.Download download = null;
+        switch (cacheMode) {
+        case AppSettings.PRE_VALUE_READ_CACHE_5:
+            download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList);
+            break;
+        case AppSettings.PRE_VALUE_READ_CACHE_10:
+            download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList);
+            break;
+        }
+        if (download != null) {
+            DownloadManager.get().startDownload(mBook._id, download, false);
+        }
+
         if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
             chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();
         } else {
             Entities.ChapterRead chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
-                success = curBuffer.openNetBookChapter(chapterRead.chapter);
+                success = curBuffer.openNetBookChapter(chapterRead.chapter, cacheMode != AppSettings.PRE_VALUE_READ_CACHE_NONE);
             } else {
                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
             }

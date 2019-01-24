@@ -70,6 +70,17 @@ public class DownloadManager {
         return download;
     }
 
+    public static Download createReadCacheDownload(int curChapter, int size, List<Entities.Chapters> list) {
+        Download download = new Download();
+        download.list = list;
+        download.start = curChapter;
+        download.end = download.start + size + 1;
+        if (download.end > list.size()) {
+            download.end = list.size();
+        }
+        return download;
+    }
+
     public interface DownloadCallback {
         void onStartDownload();
 
@@ -88,11 +99,13 @@ public class DownloadManager {
     private DownloadManager() {
     }
 
-    public boolean startDownload(final String bookId, final Download download) {
+    public boolean startDownload(final String bookId, final Download download, final boolean hasNotify) {
         if (hasDownloading(bookId)) {
             return false;
         }
-        notifyStart(bookId);
+        if (hasNotify) {
+            notifyStart(bookId);
+        }
         mDownloadMap.put(bookId, download);
         mPool.execute(new Runnable() {
             @Override
@@ -124,17 +137,25 @@ public class DownloadManager {
                             exist++;
                             chapter.hasLocal = true;
                         }
-                        if ((i + 1) - exist > 0) {
-                            notifyProgress(bookId, i + 1, download.list.size());
+                        if (hasNotify) {
+                            if ((i + 1) - exist > 0) {
+                                notifyProgress(bookId, i + 1, download.list.size());
+                            }
                         }
                     }
                     AppSettings.saveChapterList(bookId, download.list);
                     mDownloadMap.remove(bookId);
-                    notifyEnd(bookId, fail, error);
+                    if (hasNotify) {
+                        notifyEnd(bookId, fail, error);
+                    }
                 }
             }
         });
         return true;
+    }
+
+    public boolean startDownload(final String bookId, final Download download) {
+        return startDownload(bookId, download, true);
     }
 
     public void pauseDownload(String bookId) {

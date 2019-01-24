@@ -2,6 +2,7 @@ package com.xzhou.book.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.format.Formatter;
 
 import com.xzhou.book.MyApp;
 

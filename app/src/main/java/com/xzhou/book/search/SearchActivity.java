@@ -24,6 +24,7 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
+import com.xzhou.book.datasource.BaiduSearch;
 
 import java.util.List;
 

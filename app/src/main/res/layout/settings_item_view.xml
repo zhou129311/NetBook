@@ -7,11 +7,11 @@
 
     <TextView
         android:id="@+id/setting_title"
-        android:textColor="@color/common_h1"
-        android:textSize="16sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
         tools:text="@string/bookshelf_sort"/>
 
     <TextView
@@ -25,6 +25,16 @@
         android:textSize="14sp"
         tools:ignore="RelativeOverlap"
         tools:text="@string/bookshelf_sort_add"/>
+<!--
+    <ProgressBar
+        android:id="@+id/setting_loading"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@id/arrow"
+        android:visibility="gone"/>-->
 
     <ImageView
         android:id="@+id/arrow"

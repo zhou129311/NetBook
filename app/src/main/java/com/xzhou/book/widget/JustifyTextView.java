@@ -32,7 +32,7 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
         } else {
             super.setTextSize(unit, size);
         }
-        int lineSpace = (int) (getTextSize() * 0.5f);
+        int lineSpace = (int) (getTextSize() * 0.55f);
         mLineHeight = (int) getTextSize() + lineSpace;
     }
 

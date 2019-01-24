@@ -16,6 +16,7 @@ public class AppSettings {
     private static final String PRE_KEY_BRIGHTNESS_SYSTEM = "pre_key_brightness_system";
     private static final String PRE_KEY_BRIGHTNESS = "pre_key_brightness";
     private static final String PRE_KEY_BOOKSHELF_ORDER = "pre_key_bookshelf_order";
+    private static final String PRE_KEY_READ_CACHE = "pre_key_read_cache";
     private static final String PRE_KEY_SEARCH_HISTORY = "pre_key_search_history";
     private static final String PRE_KEY_SAVING_TRAFFIC = "pre_key_saving_traffic";
 
@@ -23,12 +24,20 @@ public class AppSettings {
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME = 2;
 
+    public static final int PRE_VALUE_READ_CACHE_NONE = 0;
+    public static final int PRE_VALUE_READ_CACHE_1 = 1;
+    public static final int PRE_VALUE_READ_CACHE_5 = 2;
+    public static final int PRE_VALUE_READ_CACHE_10 = 3;
+
     public static boolean HAS_SAVING_TRAFFIC = false;
 
     public static void init() {
         HAS_SAVING_TRAFFIC = isSavingTraffic();
     }
 
+    /**
+     * @return 省流量模式
+     */
     public static boolean isSavingTraffic() {
         return SPUtils.get().getBoolean(PRE_KEY_SAVING_TRAFFIC, false);
     }
@@ -71,6 +80,14 @@ public class AppSettings {
 
     public static void saveBookshelfOrder(int value) {
         SPUtils.get().putInt(PRE_KEY_BOOKSHELF_ORDER, value);
+    }
+
+    public static int getReadCacheMode() {
+        return SPUtils.get().getInt(PRE_KEY_READ_CACHE, PRE_VALUE_READ_CACHE_NONE);
+    }
+
+    public static void saveReadCacheMode(int value) {
+        SPUtils.get().putInt(PRE_KEY_READ_CACHE, value);
     }
 
     public static int getBrightness(Activity activity) {
