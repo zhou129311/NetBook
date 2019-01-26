@@ -93,6 +93,19 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                 mPresenter.loadMore();
             }
         }, mRecyclerView);
+        mAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                switch (view.getId()) {
+                case R.id.yes_ll_view:
+
+                    break;
+                case R.id.no_ll_view:
+
+                    break;
+                }
+            }
+        });
 
         mCommentSendView.setEnabled(false);
         mEditView.addTextChangedListener(new TextWatcher() {
@@ -320,7 +333,9 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             case Constant.ITEM_TYPE_HELPFUL:
                 Entities.Helpful helpful = (Entities.Helpful) item;
                 holder.setText(R.id.yes_count_text, String.valueOf(helpful.yes))
-                        .setText(R.id.no_count_text, String.valueOf(helpful.no));
+                        .setText(R.id.no_count_text, String.valueOf(helpful.no))
+                        .addOnClickListener(R.id.yes_ll_view)
+                        .addOnClickListener(R.id.no_ll_view);
                 break;
             case Constant.ITEM_TYPE_COMMENT:
                 Entities.Comment comment = (Entities.Comment) item;

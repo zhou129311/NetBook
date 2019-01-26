@@ -10,6 +10,7 @@ import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -79,6 +80,7 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                     for (Entities.Updated updated : list) {
                         long updatedTime = AppUtils.getTimeFormDateString(updated.updated);
                         final BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
+                        Log.d("zx", localBook.title + "localBook.updated = " + localBook.updated + ",updatedTime = " + updatedTime);
                         if (localBook != null && localBook.updated < updatedTime) {
                             Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
                             if (aToc != null && aToc.chapters != null) {

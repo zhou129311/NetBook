@@ -77,6 +77,15 @@
             android:name=".read.ReadSourceActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".search.BaiduResultActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".read.ReadWebActivity"
+            android:screenOrientation="portrait"
+            android:hardwareAccelerated="false"
+            android:theme="@style/NavigationBarTheme"/>
 
         <provider
             android:name=".db.BookProviderImpl"

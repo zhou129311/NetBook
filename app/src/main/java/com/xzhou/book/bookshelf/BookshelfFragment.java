@@ -28,6 +28,7 @@ import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.main.MainActivity;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -311,6 +312,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
             if (showDownloadState) {
                 helper.setText(R.id.download_status, item.downloadStatus);
             }
+            Log.d(TAG, "item.updated = " + item.updated + ",item.readTime = " + item.readTime);
             helper.setRoundImageUrl(R.id.book_image, item.cover, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.title)
                     .setGone(R.id.download_status, showDownloadState)

@@ -125,6 +125,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void search(String key) {
+        mKey = key;
         showFragment(TAB_RESULT);
         mSearchEt.setText(key);
         mSearchEt.setSelection(key.length());

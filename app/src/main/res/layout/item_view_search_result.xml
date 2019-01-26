@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/touch_bg"
-                android:paddingBottom="@dimen/book_item_margin_v"
-                android:paddingEnd="@dimen/book_item_margin_h"
-                android:paddingStart="@dimen/book_item_margin_h"
-                android:paddingTop="@dimen/book_item_margin_v">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/touch_bg"
+    android:paddingBottom="@dimen/book_item_margin_v"
+    android:paddingEnd="@dimen/book_item_margin_h"
+    android:paddingStart="@dimen/book_item_margin_h"
+    android:paddingTop="@dimen/book_item_margin_v">
 
     <ImageView
         android:id="@+id/book_image"
         android:layout_width="45dp"
         android:layout_height="58dp"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/book_item_margin_h"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_cover_default"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/book_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/book_image"
-        android:orientation="vertical">
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/book_h2"
+        app:layout_constraintStart_toEndOf="@id/book_image"
+        app:layout_constraintTop_toTopOf="@id/book_image"
+        tools:text="武侠世界自由行"/>
 
-        <TextView
-            android:id="@+id/book_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="@color/common_h1"
-            android:textSize="16sp"
-            tools:text="武侠世界自由行"/>
+    <TextView
+        android:id="@+id/book_h2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/book_image"
+        app:layout_constraintStart_toEndOf="@id/book_image"
+        app:layout_constraintTop_toBottomOf="@id/book_title"
+        tools:text="549人在追 | 73.4% 读者留存 | 我是作者"/>
 
-        <TextView
-            android:id="@+id/book_h2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="@color/common_h3"
-            android:textSize="13sp"
-            tools:text="549人在追 | 73.4% 读者留存 | 我是作者"/>
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

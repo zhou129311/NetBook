@@ -20,6 +20,7 @@ import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
+import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.CommonLoadMoreView;
 
 import java.util.List;
@@ -79,7 +80,11 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (!TextUtils.isEmpty(mKey)) {
+                    BaiduResultActivity.startActivity(getContext(), mKey);
+                } else {
+                    ToastUtils.showShortToast("请输入关键字进行搜索");
+                }
             }
         });
         mAdapter.addHeaderView(headerView);

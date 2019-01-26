@@ -90,7 +90,7 @@ public class ReadViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        Log.d(TAG, "onTouchEvent:" + ev);
+//        Log.d(TAG, "onTouchEvent:" + ev);
         switch (ev.getAction()) {
         case MotionEvent.ACTION_DOWN:
             mLastX = mDownX = ev.getRawX();

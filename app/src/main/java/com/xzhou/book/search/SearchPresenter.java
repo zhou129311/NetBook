@@ -31,7 +31,6 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
-                BaiduSearch.parse(mKey);
                 mDataNumber = 0;
                 List<Entities.SearchBook> list = getSearchResult();
                 if (list != null && list.size() > 0) {

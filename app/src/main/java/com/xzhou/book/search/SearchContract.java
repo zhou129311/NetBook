@@ -1,6 +1,5 @@
 package com.xzhou.book.search;
 
-import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.common.BaseContract;
 import com.xzhou.book.models.Entities;
 

@@ -40,6 +40,7 @@ public class Constant {
     public static final int ITEM_TYPE_VOTE = 15;
     public static final int ITEM_TYPE_POSTS_REVIEW = 16;
     public static final int ITEM_TYPE_POSTS_HELP = 17;
+    public static final int ITEM_TYPE_BAIDU_BOOK = 18;
 
     public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),
