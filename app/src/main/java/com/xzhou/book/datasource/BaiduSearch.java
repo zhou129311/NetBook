@@ -14,8 +14,17 @@ import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.X509TrustManager;
 
 public class BaiduSearch {
     private static final String TAG = "BaiduSearch";
@@ -33,9 +42,36 @@ public class BaiduSearch {
         }
     }
 
+    public static void trustEveryone() {
+        try {
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            } }, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+        } catch (Exception e) {
+            // e.printStackTrace();
+        }
+    }
+
     public static List<BaiduEntities.BaiduBook> parseSearchKey(String key) {
         List<BaiduEntities.BaiduBook> bookList = null;
         try {
+            trustEveryone();
             try {
                 key = URLEncoder.encode(key, "gb2312");
             } catch (UnsupportedEncodingException e) {
@@ -44,8 +80,8 @@ public class BaiduSearch {
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             //解析Url获取Document对象
 //            String url = "http://www.baidu.com/link?url=QFDcvZ5H1HuhHjrCGhVr9VEkxEjE8-h1rHyAfi-AFt9NptKsRDfWL-I5IejevLXP";
-//            String url = "https://m.biquge5200.cc/info-76215/";
-            Document document = Jsoup.connect(url).get();
+//            String url = "https://m.boluoxs.com/book/271.html";
+            Document document = Jsoup.connect(url).timeout(10000).get();
             //获取网页源码文本内容
 //            logd(TAG, "document:" + document.toString());
 //            获取指定class的内容指定tag的元素
@@ -109,7 +145,7 @@ public class BaiduSearch {
                 } else if (property.equals("og:novel:book_name")) {
                     book.bookName = attributes.get("content");
                 } else if (property.equals("og:novel:read_url")) {
-                    book.readUrl = attributes.get("content");
+                    book.sourceHost = book.readUrl = attributes.get("content");
                 } else if (property.equals("og:novel:latest_chapter_name")) {
                     book.latestChapterName = attributes.get("content");
                 } else if (property.equals("og:novel:latest_chapter_url")) {
@@ -133,10 +169,9 @@ public class BaiduSearch {
                     if (a != null) {
                         book.sourceName = a.text();
                         String host = a.attr("href");
-                        if (!TextUtils.isEmpty(host)) {
+                        if (!TextUtils.isEmpty(host) && host.length() > 3) {
                             book.sourceHost = host;
                         }
-                        logi(TAG, "host=" + host + " ,name=" + a.text());
                         break;
                     }
                 }

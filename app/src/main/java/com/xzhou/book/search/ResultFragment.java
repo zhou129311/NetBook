@@ -75,6 +75,12 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
 
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         mEmptyView = (TextView) inflater.inflate(R.layout.common_empty_view, null);
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.search(mKey);
+            }
+        });
         mAdapter.setEmptyView(mEmptyView);
         TextView headerView = (TextView) inflater.inflate(R.layout.header_view_search_result, null);
         headerView.setOnClickListener(new View.OnClickListener() {

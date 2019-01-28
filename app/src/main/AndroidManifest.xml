@@ -84,8 +84,13 @@
         <activity
             android:name=".read.ReadWebActivity"
             android:screenOrientation="portrait"
-            android:hardwareAccelerated="false"
-            android:theme="@style/NavigationBarTheme"/>
+            android:theme="@style/NavigationBarTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
 
         <provider
             android:name=".db.BookProviderImpl"

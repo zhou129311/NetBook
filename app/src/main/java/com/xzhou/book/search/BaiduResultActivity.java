@@ -108,10 +108,11 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
         @Override
         protected void convert(CommonViewHolder holder, final BaiduEntities.BaiduBook item) {
             Log.i(TAG, "convert:BaiduBook = " + item);
+            String sub = TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " " + item.sourceHost;
             final String mobReadUrl = item.mobReadUrl;
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
-                    .setText(R.id.book_h2, item.sourceName + " " + item.sourceHost);
+                    .setText(R.id.book_h2, sub);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

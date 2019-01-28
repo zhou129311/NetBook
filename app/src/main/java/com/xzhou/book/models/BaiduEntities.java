@@ -34,7 +34,7 @@ public class BaiduEntities {
         }
 
         public boolean hasValid() {
-            return !TextUtils.isEmpty(readUrl) && !TextUtils.isEmpty(bookName);
+            return !TextUtils.isEmpty(readUrl) && !TextUtils.isEmpty(bookName) && !TextUtils.isEmpty(mobReadUrl);
         }
 
         @Override
