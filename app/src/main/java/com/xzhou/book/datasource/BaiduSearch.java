@@ -1,9 +1,11 @@
 package com.xzhou.book.datasource;
 
+import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.xzhou.book.models.BaiduEntities;
+import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;
@@ -15,7 +17,6 @@ import org.jsoup.select.Elements;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,10 @@ public class BaiduSearch {
         }
     }
 
-    public static void trustEveryone() {
+    private static void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @SuppressLint("BadHostnameVerifier")
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
                 }
@@ -52,10 +54,12 @@ public class BaiduSearch {
 
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new X509TrustManager[] { new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                @SuppressLint("TrustAllX509TrustManager")
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
 
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                @SuppressLint("TrustAllX509TrustManager")
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
                 }
 
                 public X509Certificate[] getAcceptedIssuers() {
@@ -102,16 +106,21 @@ public class BaiduSearch {
 //                logd(TAG, "result f13=" + f13);
                 for (int j = 0; j < f13.size(); j++) {
                     Element child = f13.get(j);
-                    //Elements tag = child.getElementsByTag("a");
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     Title t = new Gson().fromJson(title, Title.class);
                     logd(TAG, "title=" + t.toString());
-//                    if (e.id().equals("1")) {
-                    parseResult(t.url, bookList);
-//                    }
-                    //logd(TAG, "cover=" + tag.attr("href"));
+                    if (t.title.contains("百度云网盘")) {
+                        continue;
+                    }
+                    BaiduEntities.BaiduBook book = parseResult(t);
+                    if (book != null && book.hasValid()) {
+                        if (book.readUrl.contains("xsm.chaoshen.cc")) {
+                            continue;
+                        }
+                        Log.i(TAG, "book = " + book);
+                        bookList.add(book);
+                    }
                 }
-//                logd(TAG, "result html=" + e.html());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,17 +128,16 @@ public class BaiduSearch {
         return bookList;
     }
 
-    private static void parseResult(String link, List<BaiduEntities.BaiduBook> bookList) {
+    private static BaiduEntities.BaiduBook parseResult(Title title) {
+        BaiduEntities.BaiduBook book = new BaiduEntities.BaiduBook();
         try {
-            //解析Url获取Document对象
-            Document document = Jsoup.connect(link).get();
-            //获取网页源码文本内容
+            trustEveryone();
+            Document document = Jsoup.connect(title.url).get();
 //            logd(TAG, "document:" + document.toString());
             Element head = document.head();
 //            logi(TAG, "head:" + head.toString());
             Elements metas = head.getElementsByTag("meta");
 //            logi(TAG, "metas:" + metas.toString());
-            BaiduEntities.BaiduBook book = new BaiduEntities.BaiduBook();
             for (Element meta : metas) {
 //                String type = meta.attr("http-equiv");
 //                String content = meta.attr("content");
@@ -142,10 +150,13 @@ public class BaiduSearch {
                 }
                 if (property.equals("og:novel:author")) {
                     book.author = attributes.get("content");
+                } else if (property.equals("author")) {
+                    book.bookName = attributes.get("content");
                 } else if (property.equals("og:novel:book_name")) {
                     book.bookName = attributes.get("content");
                 } else if (property.equals("og:novel:read_url")) {
-                    book.sourceHost = book.readUrl = attributes.get("content");
+                    book.readUrl = attributes.get("content");
+                    book.sourceHost = AppUtils.getHostFromUrl(book.readUrl);
                 } else if (property.equals("og:novel:latest_chapter_name")) {
                     book.latestChapterName = attributes.get("content");
                 } else if (property.equals("og:novel:latest_chapter_url")) {
@@ -157,35 +168,52 @@ public class BaiduSearch {
                     if (content != null && content.contains("url=")) {
                         book.mobReadUrl = content.substring(content.indexOf("url=")).replace("url=", "");
                         logi(TAG, "mobReadUrl=" + book.mobReadUrl);
+                        if (!TextUtils.isEmpty(book.mobReadUrl) && !book.hasValid()) {
+                            book.bookName = title.title;
+                            book.readUrl = book.mobReadUrl;
+                            book.sourceHost = AppUtils.getHostFromUrl(book.readUrl);
+                        }
                     }
                 }
             }
             Element body = document.body();
             Elements header_logo = body.getElementsByClass("header_logo");
+            Elements header_left = body.getElementsByClass("header-left");
 //            logi(TAG, "body=" + body);
             if (header_logo != null) {
                 for (Element h : header_logo) {
                     Elements a = h.getElementsByTag("a");
                     if (a != null) {
                         book.sourceName = a.text();
-                        String host = a.attr("href");
-                        if (!TextUtils.isEmpty(host) && host.length() > 3) {
-                            book.sourceHost = host;
-                        }
-                        break;
+                    }
+                }
+            } else if (header_left != null) {
+                for (Element h : header_left) {
+                    Elements a = h.getElementsByTag("a");
+                    if (a != null) {
+                        book.sourceName = a.attr("title");
                     }
                 }
             }
-
-            if (book.hasValid()) {
-                bookList.add(book);
+            if (TextUtils.isEmpty(book.sourceName)) {
+                int index = title.title.lastIndexOf("-");
+                if (index < 0) {
+                    index = title.title.lastIndexOf("_");
+                }
+                if (index < 0) {
+                    index = title.title.lastIndexOf(" ");
+                }
+                if (index > 0) {
+                    book.sourceName = title.title.substring(index + 1);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return book;
     }
 
-    public static void logd(String tag, String str) {
+    private static void logd(String tag, String str) {
         int max_str_length = 2001;
         while (str.length() > max_str_length) {
             Log.d(tag, str.substring(0, max_str_length));
@@ -194,7 +222,7 @@ public class BaiduSearch {
         Log.d(tag, str);
     }
 
-    public static void logi(String tag, String str) {
+    private static void logi(String tag, String str) {
         int max_str_length = 2001;
         while (str.length() > max_str_length) {
             Log.i(tag, str.substring(0, max_str_length));

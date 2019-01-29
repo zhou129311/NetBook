@@ -137,7 +137,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     @Override
     protected BookDetailContract.Presenter createPresenter() {
-        return new BookDetailPresenter(this, getIntent().getStringExtra(EXTRA_BOOK_ID));
+        String bookId = getIntent().getStringExtra(EXTRA_BOOK_ID);
+        return new BookDetailPresenter(this, bookId);
     }
 
     @Override

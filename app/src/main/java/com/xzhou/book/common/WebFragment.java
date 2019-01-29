@@ -3,13 +3,10 @@ package com.xzhou.book.common;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +15,8 @@ import android.view.ViewGroup;
 import android.webkit.DownloadListener;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -29,7 +28,8 @@ import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
-import java.lang.ref.WeakReference;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import butterknife.BindView;
 
@@ -43,31 +43,7 @@ public class WebFragment extends BaseFragment {
     @BindView(R.id.swipe_container)
     SwipeRefreshLayout mSwipeContainer;
 
-    private MyHandler mHandler;
-
-    private boolean isFinish;
-
-    private static class MyHandler extends Handler {
-        WeakReference<WebFragment> mFragment;
-
-        MyHandler(WebFragment fragment) {
-            mFragment = new WeakReference<>(fragment);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            WebFragment fragment = mFragment.get();
-            if (fragment == null || !fragment.isAdded() || fragment.isDetached()) {
-                return;
-            }
-            String js = getClearAdDivJs(MyApp.getContext());
-            Log.d(TAG, "getClearAdDivJs:" + js);
-            fragment.mWebView.loadUrl(js);
-            if (!fragment.isFinish) {
-                sendEmptyMessageDelayed(1, 1000);
-            }
-        }
-    }
+    private String mHost;
 
     @Override
     public int getLayoutResId() {
@@ -77,12 +53,11 @@ public class WebFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mHandler = new MyHandler(this);
         WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(false);
+        webSettings.setJavaScriptEnabled(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setDatabaseEnabled(true);
-        String dir = getActivity().getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
+        String dir = MyApp.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
         webSettings.setDatabasePath(dir);
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
@@ -100,8 +75,22 @@ public class WebFragment extends BaseFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            String url = bundle.getString("url");
+            final String url = bundle.getString("url");
+            Log.d(TAG, "loadUrl:" + url);
+            mHost = AppUtils.getHostFromUrl(url);
+            Log.i(TAG, "host = " + mHost);
             loadUrl(url);
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        Document document = Jsoup.connect(url).timeout(10000).get();
+//                        System.out.print(document.toString());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }).start();
         }
     }
 
@@ -140,6 +129,9 @@ public class WebFragment extends BaseFragment {
 
         @Override
         public void onProgressChanged(WebView view, int progress) {
+//            String js = getClearAdDivJs(MyApp.getContext());
+//            Log.d(TAG, "getClearAdDivJs:" + js);
+//            mWebView.loadUrl(js);
             mProgress.setProgress(progress);
             if (progress == 100) {
                 mProgress.setVisibility(View.GONE);
@@ -161,19 +153,25 @@ public class WebFragment extends BaseFragment {
 
     private WebViewClient mWebViewClient = new WebViewClient() {
 
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            if (!request.getUrl().toString().contains(mHost)) {
+                return new WebResourceResponse(null, null, null);
+            }
+            return super.shouldInterceptRequest(view, request);
+        }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
             Log.i(TAG, "onPageStarted: " + url);
-            isFinish = false;
-            mHandler.sendEmptyMessage(1);
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             Log.i(TAG, "onPageFinished:" + url);
-            isFinish = true;
         }
 
         @Override
@@ -200,15 +198,15 @@ public class WebFragment extends BaseFragment {
     }
 
     public static String getClearAdDivJs(Context context) {
-        StringBuilder js = new StringBuilder("javascript:");
-        Resources res = context.getResources();
-        String[] adDivs = res.getStringArray(R.array.adBlockDiv);
-        for (int i = 0; i < adDivs.length; i++) {
-            js.append("var adDiv").append(i).append("= document.getElementById('").append(adDivs[i])
-                    .append("');if(adDiv").append(i).append(" != null)adDiv").append(i)
-                    .append(".parentNode.removeChild(adDiv").append(i).append(");");
-        }
-        js.append("var script = document.getElementsByTag('script'); document.body.removeChild(script);");
+        StringBuilder js = new StringBuilder("javaScript:");
+//        Resources res = context.getResources();
+//        String[] adDivs = res.getStringArray(R.array.adBlockDiv);
+//        for (int i = 0; i < adDivs.length; i++) {
+//            js.append("var adDiv").append(i).append("= document.getElementById('").append(adDivs[i])
+//                    .append("');if(adDiv").append(i).append(" != null)adDiv").append(i)
+//                    .append(".parentNode.removeChild(adDiv").append(i).append(");");
+//        }
+        js.append("function setTop(){document.querySelector(\"script[src]\").style.display=\"none\";}setTop();");
         return js.toString();
     }
 }

@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
@@ -71,10 +70,18 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onBackPressed();
+                    if (isNavBackFinish()) {
+                        finish();
+                    } else {
+                        onBackPressed();
+                    }
                 }
             });
         }
+    }
+
+    protected boolean isNavBackFinish() {
+        return false;
     }
 
     protected View getContentView() {

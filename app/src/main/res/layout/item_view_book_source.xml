@@ -3,7 +3,23 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="18dp">
+                android:paddingBottom="18dp"
+                android:paddingTop="18dp">
+
+    <TextView
+        android:id="@+id/first_letter_tv"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="18dp"
+        android:background="@drawable/bg_first_letter"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:visibility="gone"
+        tools:ignore="SpUsage"
+        tools:text="V"
+        tools:visibility="gone"/>
 
     <TextView
         android:id="@+id/chapter_title"
@@ -11,6 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginEnd="5dp"
+        android:layout_marginStart="18dp"
+        android:layout_toEndOf="@id/first_letter_tv"
         android:layout_toStartOf="@id/cur_check_source"
         android:textColor="@color/slide_text_color"
         android:textSize="13sp"
@@ -21,8 +39,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/chapter_title"
+        android:layout_marginStart="18dp"
+        android:layout_toEndOf="@id/first_letter_tv"
         android:textColor="@color/slide_text_color_dark"
         android:textSize="11sp"
+        tools:ignore="SmallSp"
         tools:text="com.xxx.sss"/>
 
     <TextView
@@ -42,6 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_marginEnd="25dp"
         android:background="@drawable/bg_source_checked"
         android:paddingBottom="1dp"
         android:paddingEnd="5dp"
@@ -49,5 +71,6 @@
         android:paddingTop="1dp"
         android:text="@string/cur_checked"
         android:textColor="@color/slide_text_color_dark"
-        android:textSize="10sp"/>
+        android:textSize="10sp"
+        tools:ignore="SmallSp"/>
 </RelativeLayout>

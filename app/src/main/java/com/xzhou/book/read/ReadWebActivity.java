@@ -35,13 +35,18 @@ public class ReadWebActivity extends BaseActivity {
     private Fragment getFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("url", "https://m.boluoxs.com/book/271.html");
+        bundle.putString("url", getIntent().getStringExtra("url"));
         mWebFragment.setArguments(bundle);
         return mWebFragment;
     }
 
     public void setTitle(String title) {
         mToolbar.setTitle(title);
+    }
+
+    @Override
+    protected boolean isNavBackFinish() {
+        return true;
     }
 
     @Override

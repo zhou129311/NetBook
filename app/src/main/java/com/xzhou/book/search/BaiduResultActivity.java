@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
@@ -107,18 +106,21 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
 
         @Override
         protected void convert(CommonViewHolder holder, final BaiduEntities.BaiduBook item) {
-            Log.i(TAG, "convert:BaiduBook = " + item);
-            String sub = TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " " + item.sourceHost;
             final String mobReadUrl = item.mobReadUrl;
+            String sub = (TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " | " + item.sourceHost);
+            if (!TextUtils.isEmpty(item.author)) {
+                sub = item.author + " | " + sub;
+            }
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
                     .setText(R.id.book_h2, sub);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "mobReadUrl = " + mobReadUrl);
                     if (!TextUtils.isEmpty(mobReadUrl)) {
                         ReadWebActivity.startActivity(mActivity, mobReadUrl);
+                    } else {
+                        ReadWebActivity.startActivity(mActivity, item.readUrl);
                     }
                 }
             });

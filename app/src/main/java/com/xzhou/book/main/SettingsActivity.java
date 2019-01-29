@@ -103,7 +103,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         case R.id.book_read_dl_view: {
             ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
             builder.setTitle(R.string.download_read_book)
-                    .setSingleChoiceItems(mCacheItems, AppSettings.getBookshelfOrder(), new DialogInterface.OnClickListener() {
+                    .setSingleChoiceItems(mCacheItems, AppSettings.getReadCacheMode(), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             AppSettings.saveReadCacheMode(which);

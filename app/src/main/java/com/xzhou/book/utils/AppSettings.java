@@ -19,6 +19,9 @@ public class AppSettings {
     private static final String PRE_KEY_READ_CACHE = "pre_key_read_cache";
     private static final String PRE_KEY_SEARCH_HISTORY = "pre_key_search_history";
     private static final String PRE_KEY_SAVING_TRAFFIC = "pre_key_saving_traffic";
+    private static final String PRE_KEY_VOLUME_TURN_PAGE = "pre_key_volume_turn_page";
+    private static final String PRE_KEY_FULL_SCREEN = "pre_key_full_screen";
+    private static final String PRE_KEY_CLICK_NEXT_PAGE = "pre_key_click_next_page";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
@@ -30,9 +33,48 @@ public class AppSettings {
     public static final int PRE_VALUE_READ_CACHE_10 = 3;
 
     public static boolean HAS_SAVING_TRAFFIC = false;
+    public static boolean HAS_VOLUME_TURN_PAGE = true;
+    public static boolean HAS_FULL_SCREEN_MODE = true;
+    public static boolean HAS_CLICK_NEXT_PAGE = true;
 
     public static void init() {
         HAS_SAVING_TRAFFIC = isSavingTraffic();
+        HAS_VOLUME_TURN_PAGE = isVolumeTurnPage();
+        HAS_CLICK_NEXT_PAGE = isClickNextPage();
+        HAS_FULL_SCREEN_MODE = isFullScreenMode();
+    }
+
+    public static boolean isFullScreenMode() {
+        return SPUtils.get().getBoolean(PRE_KEY_FULL_SCREEN, true);
+    }
+
+    public static void saveFullScreenMode(boolean enable) {
+        HAS_FULL_SCREEN_MODE = enable;
+        SPUtils.get().putBoolean(PRE_KEY_FULL_SCREEN, enable);
+    }
+
+    /**
+     * @return 是否全屏点击翻页
+     */
+    public static boolean isClickNextPage() {
+        return SPUtils.get().getBoolean(PRE_KEY_CLICK_NEXT_PAGE, false);
+    }
+
+    public static void saveClickNextPage(boolean enable) {
+        HAS_CLICK_NEXT_PAGE = enable;
+        SPUtils.get().putBoolean(PRE_KEY_CLICK_NEXT_PAGE, enable);
+    }
+
+    /**
+     * @return 是否音量键翻页
+     */
+    public static boolean isVolumeTurnPage() {
+        return SPUtils.get().getBoolean(PRE_KEY_VOLUME_TURN_PAGE, true);
+    }
+
+    public static void saveVolumeTurnPage(boolean enable) {
+        HAS_VOLUME_TURN_PAGE = enable;
+        SPUtils.get().putBoolean(PRE_KEY_VOLUME_TURN_PAGE, enable);
     }
 
     /**

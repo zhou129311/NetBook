@@ -7,10 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.widget.SwipeLayout;
 
 public class ReadViewPager extends ViewPager {
@@ -127,7 +127,11 @@ public class ReadViewPager extends ViewPager {
                     return performClick();
                 } else if (upX <= mCenterX) {
                     if (mClickChangePageListener != null) {
-                        mClickChangePageListener.onPrevious();
+                        if (AppSettings.HAS_CLICK_NEXT_PAGE) {
+                            mClickChangePageListener.onNext();
+                        } else {
+                            mClickChangePageListener.onPrevious();
+                        }
                     }
                 } else {
                     if (mClickChangePageListener != null) {

@@ -15,6 +15,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +54,7 @@ import butterknife.OnClick;
 public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View, DownloadManager.DownloadCallback {
     private static final String TAG = "ReadActivity";
 
-    private static final String EXTRA_BOOK = "localBook";
+    public static final String EXTRA_BOOK = "localBook";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
     @BindView(R.id.end_ll_view)
@@ -130,6 +131,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
 
         setContentView(R.layout.activity_read);
+        mReadTopBar.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+        mEndSlideView.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+        if (!AppSettings.HAS_FULL_SCREEN_MODE) {
+            mReadViewPager.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+        }
         initMenuAnim();
         hideReadToolBar();
         initBrightness();
@@ -164,15 +170,42 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (!AppSettings.HAS_VOLUME_TURN_PAGE) {
+            return super.onKeyUp(keyCode, event);
+        }
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            return true;
+        case KeyEvent.KEYCODE_VOLUME_UP:
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (!AppSettings.HAS_VOLUME_TURN_PAGE) {
+            return super.onKeyUp(keyCode, event);
+        }
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            nextPage();
+            return true;
+        case KeyEvent.KEYCODE_VOLUME_UP:
+            previousPage();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mBatteryReceiver);
     }
 
     private void initMenuAnim() {
-        mReadTopBar.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
-        mEndSlideView.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
-
         mTopInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_in);
         mTopOutAnim = AnimationUtils.loadAnimation(this, R.anim.slide_top_out);
         mBottomInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_bottom_in);
@@ -189,6 +222,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     protected void onResume() {
         super.onResume();
+        if (!AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() == 0) {
+            mReadViewPager.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+            relayoutPageContent();
+        } else if (AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() > 0) {
+            mReadViewPager.setPadding(0, 0, 0, 0);
+            relayoutPageContent();
+        }
+        if (AppSettings.HAS_FULL_SCREEN_MODE && mReadBottomBar.getVisibility() != View.VISIBLE) {
+            hideSystemBar();
+        }
     }
 
     @Override
@@ -245,6 +288,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             AppUtils.startDiscussionByBook(mActivity, mBook.title, mBook._id, 0);
             return true;
         case R.id.menu_change_source:
+            ReadSourceActivity.startActivity(this, mBook);
             return true;
         case R.id.menu_change_mode:
             return true;
@@ -322,46 +366,12 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mReadViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
             @Override
             public void onPrevious() {
-                if (mSwipeLayout.isMenuOpen()) {
-                    mSwipeLayout.smoothToCloseMenu();
-                    return;
-                }
-                if (hideReadToolBar()) {
-                    return;
-                }
-                int curPos = mReadViewPager.getCurrentItem();
-                if (curPos <= 0) {
-                    if (mPageManagers[0].getReadPage().isPageStart()) {
-                        ToastUtils.showShortToast("已经是第一页了");
-                    }
-                    return;
-                }
-                mReadViewPager.setCurrentItem(curPos - 1, false);
-                mCurPosition = curPos - 1;
-                changePage();
+                previousPage();
             }
 
             @Override
             public void onNext() {
-                if (mSwipeLayout.isMenuOpen()) {
-                    mSwipeLayout.smoothToCloseMenu();
-                    return;
-                }
-                if (hideReadToolBar()) {
-                    return;
-                }
-                int curPos = mReadViewPager.getCurrentItem();
-                if (curPos >= 2) {
-                    return;
-                }
-                ReadPage page = mPageManagers[curPos].getReadPage();
-                if (page.isPageEnd()) {
-                    mSwipeLayout.smoothToOpenMenu();
-                    return;
-                }
-                mReadViewPager.setCurrentItem(curPos + 1, false);
-                mCurPosition = curPos + 1;
-                changePage();
+                nextPage();
             }
         });
         mReadViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -384,6 +394,48 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mReadViewPager.setCanTouch(false);
         mReadViewPager.setAdapter(new MyPagerAdapter());
         mReadViewPager.setCurrentItem(0, false);
+    }
+
+    private void previousPage() {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            return;
+        }
+        if (hideReadToolBar()) {
+            return;
+        }
+        int curPos = mReadViewPager.getCurrentItem();
+        if (curPos <= 0) {
+            if (mPageManagers[0].getReadPage().isPageStart()) {
+                ToastUtils.showShortToast("已经是第一页了");
+            }
+            return;
+        }
+        mReadViewPager.setCurrentItem(curPos - 1, false);
+        mCurPosition = curPos - 1;
+        changePage();
+    }
+
+    private void nextPage() {
+        if (mSwipeLayout.isMenuOpen()) {
+            mSwipeLayout.smoothToCloseMenu();
+            return;
+        }
+        if (hideReadToolBar()) {
+            return;
+        }
+        int curPos = mReadViewPager.getCurrentItem();
+        if (curPos >= 2) {
+            return;
+        }
+        ReadPage page = mPageManagers[curPos].getReadPage();
+        if (page.isPageEnd()) {
+            mSwipeLayout.smoothToOpenMenu();
+            return;
+        }
+        mReadViewPager.setCurrentItem(curPos + 1, false);
+        mCurPosition = curPos + 1;
+        changePage();
     }
 
     private void changePage() {
@@ -411,8 +463,14 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             mReadSettingLayout.setVisibility(View.GONE);
             mReadBottomBar.setVisibility(View.GONE);
             mReadTopBar.setVisibility(View.GONE);
-            hideSystemBar();
+            if (AppSettings.HAS_FULL_SCREEN_MODE) {
+                hideSystemBar();
+            }
             return true;
+        } else {
+            if (AppSettings.HAS_FULL_SCREEN_MODE) {
+                hideSystemBar();
+            }
         }
         return false;
     }
@@ -519,6 +577,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             updateFontSize(false);
             break;
         case R.id.more_setting_view:
+            ReadSettingActivity.startActivity(mActivity);
             break;
         case R.id.theme_white_view:
             if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.WHITE) {

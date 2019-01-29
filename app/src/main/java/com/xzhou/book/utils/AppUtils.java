@@ -24,6 +24,7 @@ import com.xzhou.book.models.Entities;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -276,6 +277,9 @@ public class AppUtils {
         Window localWindow = activity.getWindow();
         WindowManager.LayoutParams lp = localWindow.getAttributes();
         float screenBrightness = lp.screenBrightness;
+        if (screenBrightness <= 0) {
+            return 30;
+        }
         return (int) (screenBrightness / 255f * 100f);
     }
 
@@ -386,5 +390,15 @@ public class AppUtils {
         AppSettings.deleteReadProgress(bookId);
         AppSettings.deleteChapterList(bookId);
         FileUtils.deleteBookDir(bookId);
+    }
+
+    public static String getHostFromUrl(String url) {
+        try {
+            URL u = new URL(url);
+            return u.getHost();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

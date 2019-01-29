@@ -91,6 +91,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".read.ReadSettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
 
         <provider
             android:name=".db.BookProviderImpl"
