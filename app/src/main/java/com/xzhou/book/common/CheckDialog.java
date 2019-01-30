@@ -46,8 +46,18 @@ public class CheckDialog extends Dialog {
             return this;
         }
 
+        public Builder setTitle(@StringRes int textId) {
+            mTitle = mContext.getText(textId);
+            return this;
+        }
+
         public Builder setCheckedMessage(String message) {
             mCheckedMessage = message;
+            return this;
+        }
+
+        public Builder setCheckedMessage(@StringRes int textId) {
+            mCheckedMessage = mContext.getText(textId);
             return this;
         }
 

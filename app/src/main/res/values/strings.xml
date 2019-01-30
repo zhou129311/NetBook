@@ -85,6 +85,7 @@
     <string name="book_read_add_book_msg" translatable="false">是否将本书加入书架？</string>
     <string name="book_read_join" translatable="false">加入书架</string>
     <string name="book_read_not_add" translatable="false">不了</string>
+    <string name="book_read_local" translatable="false">本地阅读</string>
 
     <string name="book_read_end_hint" translatable="false">千万要记得对那些「肯掏钱买书的人」说声谢谢，因为没有他们，也就没有新书可以看了。</string>
     <string name="book_read_end_hint_author" translatable="false">——东野圭吾</string>
@@ -195,5 +196,8 @@
     <string name="change" translatable="false">更换</string>
     <string name="cur_checked" translatable="false">当前选择</string>
     <string name="source_title" translatable="false">选择来源</string>
+    <string name="baidu_source" translatable="false">百度搜索其他来源</string>
+    <string name="baidu_source_hint" translatable="false">百度</string>
+    <string name="zhuishu_source_hint" translatable="false">追书的书源</string>
 
 </resources>

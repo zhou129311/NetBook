@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_divider_narrow"
+        android:paddingBottom="10dp"
+        android:paddingEnd="0dp"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:text="@string/baidu_source_hint"
+        android:textColor="@color/common_h3"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/baidu_source_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/touch_bg"
+        android:drawablePadding="16dp"
+        android:drawableStart="@mipmap/baidu"
+        android:paddingBottom="16dp"
+        android:paddingEnd="0dp"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:text="@string/baidu_source"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_divider_narrow"
+        android:paddingBottom="10dp"
+        android:paddingEnd="0dp"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:text="@string/zhuishu_source_hint"
+        android:textColor="@color/common_h3"
+        android:textSize="12sp"/>
+</LinearLayout>

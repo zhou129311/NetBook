@@ -80,7 +80,6 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                     for (Entities.Updated updated : list) {
                         long updatedTime = AppUtils.getTimeFormDateString(updated.updated);
                         final BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
-                        Log.d("zx", localBook.title + "localBook.updated = " + localBook.updated + ",updatedTime = " + updatedTime);
                         if (localBook != null && localBook.updated < updatedTime) {
                             Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
                             if (aToc != null && aToc.chapters != null) {
@@ -103,6 +102,7 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                             }
 
                             hasUpdated = true;
+                            localBook.isShowRed = true;
                             localBook.updated = updatedTime;
                             localBook.lastChapter = updated.lastChapter;
                             updateList.add(localBook);

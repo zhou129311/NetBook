@@ -70,9 +70,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (isNavBackFinish()) {
-                        finish();
-                    } else {
+                    if (!onNavBackClick()) {
                         onBackPressed();
                     }
                 }
@@ -80,7 +78,7 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
         }
     }
 
-    protected boolean isNavBackFinish() {
+    protected boolean onNavBackClick() {
         return false;
     }
 

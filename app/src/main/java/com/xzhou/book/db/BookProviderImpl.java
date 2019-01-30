@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BookProviderImpl extends ContentProvider {
     private static final String AUTHORITY = "com.xzhou.book.provider";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
     private static final String DB_NAME = "book.db";
     private static final String TABLE_BOOK = "bookshelf";
     //    private static final int MARCH_BOOK = 1;
@@ -142,10 +142,19 @@ public class BookProviderImpl extends ContentProvider {
                 db.execSQL(sql);
                 sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_ORDER_TOP + " INTEGER ";
                 db.execSQL(sql);
+                sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER ";
+                db.execSQL(sql);
                 break;
             }
             case 2: {
                 String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_ORDER_TOP + " INTEGER ";
+                db.execSQL(sql);
+                sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER ";
+                db.execSQL(sql);
+                break;
+            }
+            case 3: {
+                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER ";
                 db.execSQL(sql);
                 break;
             }
@@ -162,6 +171,7 @@ public class BookProviderImpl extends ContentProvider {
                     + BookProvider.COLUMN_LAST_READ_TIME + " LONG, "
                     + BookProvider.COLUMN_ADD_TIME + " LONG, "
                     + BookProvider.COLUMN_ORDER_TOP + " INTEGER, "
+                    + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER, "
                     + BookProvider.COLUMN_CUR_SOURCE + " TEXT, "
                     + BookProvider.COLUMN_CUR_SOURCE_ID + " TEXT);");
         }

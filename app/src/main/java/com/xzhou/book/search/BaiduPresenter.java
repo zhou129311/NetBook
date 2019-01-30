@@ -4,6 +4,7 @@ import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.BaiduSearch;
 import com.xzhou.book.models.BaiduEntities;
+import com.xzhou.book.models.Entities;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,19 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
             public void run() {
                 List<BaiduEntities.BaiduBook> list = BaiduSearch.parseSearchKey(key);
                 updateSearchResult(list);
+            }
+        });
+    }
+
+    @Override
+    public void getChapterList(final String readUrl) {
+        mPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Entities.Chapters> list = BaiduSearch.parseChapterListTxbc(readUrl, null);
+                if (list != null && list.size() > 0) {
+
+                }
             }
         });
     }

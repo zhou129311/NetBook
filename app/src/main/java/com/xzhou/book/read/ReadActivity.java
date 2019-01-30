@@ -265,6 +265,16 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 2) {
+            mBook = data.getParcelableExtra(EXTRA_BOOK);
+            getIntent().putExtra(EXTRA_BOOK, mBook);
+            recreate();
+        }
+    }
+
+    @Override
     public void finish() {
         super.finish();
         DownloadManager.get().removeCallback(mBook._id, this);

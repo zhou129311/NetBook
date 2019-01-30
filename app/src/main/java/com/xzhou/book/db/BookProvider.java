@@ -11,6 +11,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
+import com.xzhou.book.models.BaiduEntities;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -34,6 +35,10 @@ public class BookProvider {
     static final String COLUMN_ORDER_TOP = "order_top"; //置顶
     static final String COLUMN_CUR_SOURCE = "cur_source";
     static final String COLUMN_CUR_SOURCE_ID = "cur_source_id";
+    static final String COLUMN_IS_SHOW_RED = "is_show_red";
+    // baidu
+    static final String COLUMN_IS_BAIDU = "is_baidu";
+    static final String COLUMN_READ_URL = "read_url";
 
     public static class LocalBook implements MultiItemEntity, Parcelable {
         public String _id;
@@ -42,11 +47,15 @@ public class BookProvider {
         public long readTime;
         public long addTime;
         public boolean hasTop;
+        public boolean isShowRed = true;
         public String title;
         public String lastChapter;
         public String cover;
         public String curSourceHost;
         private boolean isBookshelf;
+        // baidu
+        public boolean isBaiduBook;
+        public String readUrl;
 
         public boolean isChecked;
         public boolean isEdit;
@@ -62,6 +71,18 @@ public class BookProvider {
             lastChapter = detail.lastChapter;
             cover = detail.cover();
             curSourceHost = detail.site;
+        }
+
+        public LocalBook(BaiduEntities.BaiduBook baiduBook) {
+            isBaiduBook = true;
+            _id = baiduBook.id;
+            title = baiduBook.bookName;
+            curSourceHost = baiduBook.sourceHost;
+            sourceId = baiduBook.sourceName;
+            cover = baiduBook.image;
+            lastChapter = baiduBook.latestChapterName;
+            updated = baiduBook.updated;
+            readUrl = baiduBook.readUrl;
         }
 
         public LocalBook() {
@@ -149,6 +170,7 @@ public class BookProvider {
             values.put(COLUMN_LAST_CHAPTER, lastChapter);
             values.put(COLUMN_CUR_SOURCE_ID, sourceId);
             values.put(COLUMN_ORDER_TOP, hasTop ? 1 : 0);
+            values.put(COLUMN_IS_SHOW_RED, isShowRed ? 1 : 0);
             return values;
         }
 
@@ -163,6 +185,7 @@ public class BookProvider {
             curSourceHost = in.readString();
             isBookshelf = in.readInt() == 1;
             hasTop = in.readInt() == 1;
+            isShowRed = in.readInt() == 1;
             sourceId = in.readString();
         }
 
@@ -200,6 +223,7 @@ public class BookProvider {
             dest.writeString(curSourceHost);
             dest.writeInt(isBookshelf ? 1 : 0);
             dest.writeInt(hasTop ? 1 : 0);
+            dest.writeInt(isShowRed ? 1 : 0);
             dest.writeString(sourceId);
         }
 
@@ -215,6 +239,7 @@ public class BookProvider {
                     ", cover='" + cover + '\'' +
                     ", curSourceHost='" + curSourceHost + '\'' +
                     ", isBookshelf=" + isBookshelf +
+                    ", isShowRed=" + isShowRed +
                     ", hasTop=" + hasTop +
                     '}';
         }
@@ -253,6 +278,7 @@ public class BookProvider {
             book.addTime = cursor.getLong(cursor.getColumnIndex(COLUMN_ADD_TIME));
             book.sourceId = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE_ID));
             book.hasTop = cursor.getInt(cursor.getColumnIndex(COLUMN_ORDER_TOP)) == 1;
+            book.isShowRed = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_SHOW_RED)) == 1;
             book.isBookshelf = true;
             list.add(book);
         }
@@ -261,11 +287,11 @@ public class BookProvider {
 
     public static void updateReadTime(LocalBook book) {
         try {
-            long time = System.currentTimeMillis();
             ContentValues values = new ContentValues();
             String where = COLUMN_ID + "=?";
             String[] args = new String[] { book._id };
-            values.put(COLUMN_LAST_READ_TIME, time);
+            values.put(COLUMN_LAST_READ_TIME, System.currentTimeMillis());
+            values.put(COLUMN_IS_SHOW_RED, 0);
             MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
         } catch (Exception e) {
             e.printStackTrace();
@@ -325,7 +351,7 @@ public class BookProvider {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
                 }
-                values.put(COLUMN_ADD_TIME, time);
+                values.put(COLUMN_ADD_TIME, System.currentTimeMillis());
                 MyApp.getContext().getContentResolver().insert(BookProviderImpl.BOOKSHELF_CONTENT_URI, values);
                 MyApp.runUI(new Runnable() {
                     @Override

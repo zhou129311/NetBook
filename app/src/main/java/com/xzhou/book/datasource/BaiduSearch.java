@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.xzhou.book.models.BaiduEntities;
+import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
@@ -83,8 +84,6 @@ public class BaiduSearch {
             }
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             //解析Url获取Document对象
-//            String url = "http://www.baidu.com/link?url=QFDcvZ5H1HuhHjrCGhVr9VEkxEjE8-h1rHyAfi-AFt9NptKsRDfWL-I5IejevLXP";
-//            String url = "https://m.boluoxs.com/book/271.html";
             Document document = Jsoup.connect(url).timeout(10000).get();
             //获取网页源码文本内容
 //            logd(TAG, "document:" + document.toString());
@@ -96,11 +95,11 @@ public class BaiduSearch {
 //                logi(TAG, "divs=" + e.toString());
 //            }
             Elements result = document.getElementsByClass("result c-container ");
-            logd(TAG, "title=" + document.title() + ",result size=" + result.size());
+            logd("title=" + document.title() + ",result size=" + result.size());
             bookList = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
                 Element e = result.get(i);
-                logi(TAG, "result id=" + e.id());
+                logi("result id=" + e.id());
 //                logd(TAG, "result e=" + e.html());
                 Elements f13 = e.getElementsByClass("f13");
 //                logd(TAG, "result f13=" + f13);
@@ -108,13 +107,13 @@ public class BaiduSearch {
                     Element child = f13.get(j);
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     Title t = new Gson().fromJson(title, Title.class);
-                    logd(TAG, "title=" + t.toString());
-                    if (t.title.contains("百度云网盘")) {
+                    logd("title=" + t.toString());
+                    if (t.title.contains("网盘")) {
                         continue;
                     }
                     BaiduEntities.BaiduBook book = parseResult(t);
                     if (book != null && book.hasValid()) {
-                        if (book.readUrl.contains("xsm.chaoshen.cc")) {
+                        if (urlInvalid(book.readUrl)) {
                             continue;
                         }
                         Log.i(TAG, "book = " + book);
@@ -132,7 +131,7 @@ public class BaiduSearch {
         BaiduEntities.BaiduBook book = new BaiduEntities.BaiduBook();
         try {
             trustEveryone();
-            Document document = Jsoup.connect(title.url).get();
+            Document document = Jsoup.connect(title.url).timeout(10000).get();
 //            logd(TAG, "document:" + document.toString());
             Element head = document.head();
 //            logi(TAG, "head:" + head.toString());
@@ -143,37 +142,30 @@ public class BaiduSearch {
 //                String content = meta.attr("content");
 //                logi(TAG, "type = " + type + ",content=" + content);
                 Attributes attributes = meta.attributes();
-                logi(TAG, "meta = " + attributes.toString() + ",size = " + attributes.size());
+//                logi(TAG, "meta = " + attributes.toString() + ",size = " + attributes.size());
                 String property = attributes.get("property");
                 if (property == null) {
                     continue;
                 }
+                logi("property = " + attributes.toString());
                 if (property.equals("og:novel:author")) {
                     book.author = attributes.get("content");
                 } else if (property.equals("author")) {
-                    book.bookName = attributes.get("content");
+                    book.author = attributes.get("content");
                 } else if (property.equals("og:novel:book_name")) {
                     book.bookName = attributes.get("content");
                 } else if (property.equals("og:novel:read_url")) {
-                    book.readUrl = attributes.get("content");
-                    book.sourceHost = AppUtils.getHostFromUrl(book.readUrl);
+                    String read_url = attributes.get("content");
+                    if (read_url != null && read_url.toLowerCase().startsWith("http")) {
+                        book.readUrl = read_url;
+                        book.sourceHost = AppUtils.getHostFromUrl(read_url);
+                    }
                 } else if (property.equals("og:novel:latest_chapter_name")) {
                     book.latestChapterName = attributes.get("content");
                 } else if (property.equals("og:novel:latest_chapter_url")) {
                     book.latestChapterUrl = attributes.get("content");
                 } else if (property.equals("og:image")) {
                     book.image = attributes.get("content");
-                } else if ("mobile-agent".equals(attributes.get("name")) || "mobile-agent".equals(attributes.get("http-equiv"))) {
-                    String content = attributes.get("content");
-                    if (content != null && content.contains("url=")) {
-                        book.mobReadUrl = content.substring(content.indexOf("url=")).replace("url=", "");
-                        logi(TAG, "mobReadUrl=" + book.mobReadUrl);
-                        if (!TextUtils.isEmpty(book.mobReadUrl) && !book.hasValid()) {
-                            book.bookName = title.title;
-                            book.readUrl = book.mobReadUrl;
-                            book.sourceHost = AppUtils.getHostFromUrl(book.readUrl);
-                        }
-                    }
                 }
             }
             Element body = document.body();
@@ -207,27 +199,81 @@ public class BaiduSearch {
                     book.sourceName = title.title.substring(index + 1);
                 }
             }
+            Integer type = BaiduEntities.BOOK_HOSTS.get(book.sourceHost);
+            if (book.hasValid() && type != null && type == BaiduEntities.PARSE_TXBC) {
+                book.chaptersList = parseChapterListTxbc(book.readUrl, document);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return book;
     }
 
-    private static void logd(String tag, String str) {
-        int max_str_length = 2001;
-        while (str.length() > max_str_length) {
-            Log.d(tag, str.substring(0, max_str_length));
-            str = str.substring(max_str_length);
+    public static List<Entities.Chapters> parseChapterListTxbc(String readUrl, Document document) {
+        List<Entities.Chapters> list = new ArrayList<>();
+        try {
+            logi("parseChapterListTxbc::readUrl=" + readUrl);
+            trustEveryone();
+            if (document == null) {
+                document = Jsoup.connect(readUrl).timeout(5000).get();
+            }
+            Element body = document.body();
+            Element eList = body.getElementById("list");
+            Elements dl = eList.getElementsByTag("dl");
+            Elements cd = dl.first().children();
+            int i = readUrl.lastIndexOf("/");
+            String ru;
+            if (i + 1 == readUrl.length()) {
+                ru = readUrl.substring(0, i);
+            } else {
+                ru = readUrl;
+            }
+            String preUrl = ru.substring(0, ru.lastIndexOf("/"));
+            int dtSize = 0;
+            for (Element c : cd) {
+                if ("dt".equals(c.tagName())) {
+                    dtSize++;
+                }
+                if (dtSize > 1 && "dd".equals(c.tagName())) {
+                    Elements u = c.getElementsByTag("a");
+                    String title = u.text();
+                    String link = u.attr("href");
+                    if (!link.contains("/")) {
+                        link = readUrl + link;
+                    } else {
+                        link = preUrl + link;
+                    }
+//                    logi("title = " + title + ",link=" + link);
+                    if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
+                        list.add(new Entities.Chapters(title, link));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Log.d(tag, str);
+        return list.size() == 0 ? null : list;
     }
 
-    private static void logi(String tag, String str) {
+    private static boolean urlInvalid(String url) {
+        return url.contains("xsm.chaoshen.cc") || url.contains("qidian");
+    }
+
+    private static void logd(String str) {
         int max_str_length = 2001;
         while (str.length() > max_str_length) {
-            Log.i(tag, str.substring(0, max_str_length));
+            Log.d(BaiduSearch.TAG, str.substring(0, max_str_length));
             str = str.substring(max_str_length);
         }
-        Log.i(tag, str);
+        Log.d(BaiduSearch.TAG, str);
+    }
+
+    private static void logi(String str) {
+        int max_str_length = 2001;
+        while (str.length() > max_str_length) {
+            Log.i(BaiduSearch.TAG, str.substring(0, max_str_length));
+            str = str.substring(max_str_length);
+        }
+        Log.i(BaiduSearch.TAG, str);
     }
 }

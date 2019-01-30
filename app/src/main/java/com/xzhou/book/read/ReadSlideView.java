@@ -1,6 +1,5 @@
 package com.xzhou.book.read;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
@@ -62,11 +62,12 @@ public class ReadSlideView extends LinearLayout {
         mAdapter.setNewData(list);
     }
 
-    @OnClick({ /*R.id.more_source_tv,*/ R.id.discussion_item_tv, R.id.recommend_item_tv })
+    @OnClick({ R.id.more_source_tv, R.id.discussion_item_tv, R.id.recommend_item_tv })
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        /*case R.id.more_source_tv:
-            break;*/
+        case R.id.more_source_tv:
+            ReadSourceActivity.startActivity(getContext(), mBook);
+            break;
         case R.id.discussion_item_tv:
             AppUtils.startDiscussionByBook(getContext(), mBook.title, mBook._id, 0);
             break;

@@ -25,24 +25,28 @@
 
     <TextView
         android:id="@+id/book_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/book_item_margin_h"
         android:textColor="@color/common_h1"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/book_h2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toTopOf="@id/book_image"
         tools:text="武侠世界自由行"/>
 
     <TextView
         android:id="@+id/book_h2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/book_item_margin_h"
         android:textColor="@color/common_h3"
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@id/book_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toBottomOf="@id/book_title"
         tools:text="549人在追 | 73.4% 读者留存 | 我是作者"/>

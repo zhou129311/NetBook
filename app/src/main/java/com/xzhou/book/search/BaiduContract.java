@@ -9,6 +9,8 @@ public interface BaiduContract {
     interface Presenter extends BaseContract.Presenter {
 
         void search(String key);
+
+        void getChapterList(String readUrl);
     }
 
     interface View extends BaseContract.View<Presenter> {

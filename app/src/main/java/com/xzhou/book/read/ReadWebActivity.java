@@ -1,41 +1,59 @@
 package com.xzhou.book.read;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xzhou.book.R;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.WebFragment;
+import com.xzhou.book.db.BookProvider;
 
 public class ReadWebActivity extends BaseActivity {
     private static final String TAG = "ReadWebActivity";
 
     private WebFragment mWebFragment;
+    private BookProvider.LocalBook mBaiduBook;
 
-    public static void startActivity(Context context, String url) {
+    public static void startActivity(Context context, BookProvider.LocalBook book) {
         Intent intent = new Intent(context, ReadWebActivity.class);
-        intent.putExtra("url", url);
+        intent.putExtra("baidu_book", book);
         context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mBaiduBook = getIntent().getParcelableExtra("baidu_book");
+        if (mBaiduBook == null || !mBaiduBook.isBaiduBook) {
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_web_view);
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.web_content, getFragment(), "web");
-        ft.commitAllowingStateLoss();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment fragment = fm.findFragmentByTag("web");
+        if (fragment == null) {
+            ft.add(R.id.web_content, createFragment(), "web");
+            ft.commitAllowingStateLoss();
+        } else {
+            ft.show(fragment);
+        }
     }
 
-    private Fragment getFragment() {
+    private Fragment createFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("url", getIntent().getStringExtra("url"));
+        bundle.putString("url", mBaiduBook.readUrl);
         mWebFragment.setArguments(bundle);
         return mWebFragment;
     }
@@ -45,7 +63,29 @@ public class ReadWebActivity extends BaseActivity {
     }
 
     @Override
-    protected boolean isNavBackFinish() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_read_web, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_add_bookshelf:
+            return true;
+        case R.id.menu_local_read:
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected boolean onNavBackClick() {
+        if (mBaiduBook.isBookshelf()) {
+            finish();
+            return true;
+        }
+        showJoinDialog();
         return true;
     }
 
@@ -54,6 +94,32 @@ public class ReadWebActivity extends BaseActivity {
         if (mWebFragment.onBackPressed()) {
             return;
         }
-        super.onBackPressed();
+        if (!mBaiduBook.isBookshelf()) {
+            showJoinDialog();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void showJoinDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.book_read_add_book_title)
+                .setMessage(R.string.book_read_add_book_msg)
+                .setNegativeButton(R.string.book_read_not_add, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        finish();
+                    }
+                })
+                .setPositiveButton(R.string.book_read_join, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+//                        BookProvider.insertOrUpdate(mBaiduBook, false);
+                        finish();
+                    }
+                });
+        builder.show();
     }
 }

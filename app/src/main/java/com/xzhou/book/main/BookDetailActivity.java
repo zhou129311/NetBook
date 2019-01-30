@@ -26,7 +26,6 @@ import com.xzhou.book.common.MyGridLayoutManager;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.community.PostsDetailActivity;
-import com.xzhou.book.db.BookManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.read.ReadActivity;

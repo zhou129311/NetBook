@@ -307,17 +307,19 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
         @Override
         protected void convert(CommonViewHolder helper, final BookProvider.LocalBook item) {
-            String sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated);
+            String sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated) + " : " + item.lastChapter;
+            if (item.isBaiduBook) {
+                sub = item.sourceId + " | " + item.curSourceHost;
+            }
             boolean showDownloadState = !TextUtils.isEmpty(item.downloadStatus);
             if (showDownloadState) {
                 helper.setText(R.id.download_status, item.downloadStatus);
             }
-            Log.d(TAG, "item.updated = " + item.updated + ",item.readTime = " + item.readTime);
             helper.setRoundImageUrl(R.id.book_image, item.cover, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.title)
                     .setGone(R.id.download_status, showDownloadState)
-                    .setText(R.id.book_subhead, sub + " : " + item.lastChapter)
-                    .setGone(R.id.book_updated_iv, item.updated > item.readTime && !item.isEdit)
+                    .setText(R.id.book_subhead, sub)
+                    .setGone(R.id.book_updated_iv, item.isShowRed && !item.isEdit)
                     .setVisible(R.id.book_checkbox, item.isEdit)
                     .setGone(R.id.book_top, item.hasTop);
             final CheckBox cb = helper.getView(R.id.book_checkbox);

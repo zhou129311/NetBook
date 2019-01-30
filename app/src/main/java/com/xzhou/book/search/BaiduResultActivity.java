@@ -17,9 +17,9 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
+import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.BaiduEntities;
 import com.xzhou.book.read.ReadWebActivity;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
@@ -51,6 +51,13 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
 
         LayoutInflater inflater = LayoutInflater.from(this);
         mEmptyView = inflater.inflate(R.layout.common_empty_view, null);
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.search(mKey);
+                mAdapter.setEmptyView(mLoadingView);
+            }
+        });
         ProgressBar loading = (ProgressBar) inflater.inflate(R.layout.common_load_view, null);
         loading.setVisibility(View.VISIBLE);
         mLoadingView = new RelativeLayout(this);
@@ -106,7 +113,6 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
 
         @Override
         protected void convert(CommonViewHolder holder, final BaiduEntities.BaiduBook item) {
-            final String mobReadUrl = item.mobReadUrl;
             String sub = (TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " | " + item.sourceHost);
             if (!TextUtils.isEmpty(item.author)) {
                 sub = item.author + " | " + sub;
@@ -117,11 +123,9 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!TextUtils.isEmpty(mobReadUrl)) {
-                        ReadWebActivity.startActivity(mActivity, mobReadUrl);
-                    } else {
-                        ReadWebActivity.startActivity(mActivity, item.readUrl);
-                    }
+                    ReadWebActivity.startActivity(mActivity, new BookProvider.LocalBook(item));
+
+                    mPresenter.getChapterList(item.readUrl);
                 }
             });
         }

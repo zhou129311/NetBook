@@ -28,9 +28,6 @@ import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import butterknife.BindView;
 
 public class WebFragment extends BaseFragment {
@@ -78,6 +75,10 @@ public class WebFragment extends BaseFragment {
             final String url = bundle.getString("url");
             Log.d(TAG, "loadUrl:" + url);
             mHost = AppUtils.getHostFromUrl(url);
+            int index = mHost.indexOf(".");
+            if (index > 0) {
+                mHost = mHost.substring(index);
+            }
             Log.i(TAG, "host = " + mHost);
             loadUrl(url);
 //            new Thread(new Runnable() {

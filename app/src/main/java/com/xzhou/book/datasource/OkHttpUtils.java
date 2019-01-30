@@ -38,6 +38,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class OkHttpUtils {
     private static OkHttpClient sGetClient;
@@ -162,15 +163,21 @@ public class OkHttpUtils {
                 .cacheControl(cacheControl)
                 .get()
                 .build();
+        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            String body = response.body().string();
+            body = response.body();
+            String bodys = body.string();
             if (!url.contains("chapter2.zhuishushenqi.com")) {
-                loge("get url = " + url + "\nresponse =" + body);
+                loge("get url = " + url + "\nresponse =" + bodys);
             }
-            return new Gson().fromJson(body, typeOfT);
+            return new Gson().fromJson(bodys, typeOfT);
         } catch (Exception e) {
             Log.e("get", e);
+        } finally {
+            if (body != null) {
+                body.close();
+            }
         }
         return null;
     }
@@ -181,15 +188,20 @@ public class OkHttpUtils {
                 .url(url)
                 .post(RequestBody.create(MediaType.parse("application/json"), content))
                 .build();
-
+        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            String body = response.body().string();
-            loge("post url = " + url + ", content = " + content + "\nresponse =" + body);
-            Entities.HttpResult result = new Gson().fromJson(body, typeOfT);
+            body = response.body();
+            String bodys = body.string();
+            loge("post url = " + url + ", content = " + content + "\nresponse =" + bodys);
+            Entities.HttpResult result = new Gson().fromJson(bodys, typeOfT);
             return result;
         } catch (Exception e) {
             Log.e("post", e);
+        } finally {
+            if (body != null) {
+                body.close();
+            }
         }
         return null;
     }
