@@ -1,6 +1,7 @@
 package com.xzhou.book.read;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -165,6 +166,7 @@ public class ReadPage extends RelativeLayout {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     public void setPageContent(PageContent page) {
         mPageContent = page;
         if (mPageContent == null) {
@@ -175,7 +177,9 @@ public class ReadPage extends RelativeLayout {
             saveReadProgress();
         }
         setLoadState(page.isLoading);
-        mChapterTitle.setText(page.chapterTitle);
+        if (page.chapter >= 0) {
+            mChapterTitle.setText(page.chapter + ". " + page.chapterTitle);
+        }
         mPageNumber.setText(page.getCurPagePos());
         //mChapterContent.setText(page.getPageContent());
         mChapterContent.setLines(page.isLoading ? null : page.getLines());

@@ -158,7 +158,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         });
         DownloadManager.get().addCallback(mBook._id, ReadActivity.this);
         mEndSlideView.setBook(mBook, this);
-        mPresenter.loadAllSource();
+        if (!mBook.isBaiduBook) {
+            mPresenter.loadAllSource();
+        }
     }
 
     @Override
@@ -255,6 +257,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             BookProvider.insertOrUpdate(mBook, true);
+                            AppSettings.saveChapterList(mBook._id, mChaptersList);
                             finish();
                         }
                     });
@@ -287,7 +290,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_read, menu);
+        getMenuInflater().inflate(mBook.isBaiduBook ? R.menu.menu_read_baidu : R.menu.menu_read, menu);
         return true;
     }
 
@@ -300,10 +303,13 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.menu_change_source:
             ReadSourceActivity.startActivity(this, mBook);
             return true;
-        case R.id.menu_change_mode:
-            return true;
+        /*case R.id.menu_change_mode:
+            return true;*/
         case R.id.menu_book_detail:
             BookDetailActivity.startActivity(mActivity, mBook._id);
+            return true;
+        case R.id.menu_read_web:
+            ReadWebActivity.startActivity(mActivity, mBook);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -628,7 +634,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                         BookProvider.insertOrUpdate(mBook, true);
                     }
                     mReadSettingLayout.setVisibility(View.GONE);
-                    DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList);
+                    DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList
+                            , mBook.isBaiduBook ? mBook.curSourceHost : null);
                     boolean rel = DownloadManager.get().startDownload(mBook._id, download);
                     if (!rel) {
                         ToastUtils.showShortToast("正在缓存中...");

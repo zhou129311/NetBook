@@ -1,6 +1,7 @@
 package com.xzhou.book.search;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,12 +15,13 @@ import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.ItemDialog;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.db.BookProvider;
-import com.xzhou.book.models.BaiduEntities;
-import com.xzhou.book.read.ReadWebActivity;
+import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
@@ -29,6 +31,14 @@ import butterknife.BindView;
 import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
 public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> implements BaiduContract.View {
+
+    private String[] mDialogItemsJoin = new String[] {
+
+            "加入书架", "本地阅读"
+    };
+    private String[] mDialogItemsRemove = new String[] {
+            "移出书架", "本地阅读"
+    };
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -94,7 +104,7 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
-    public void onSearchResult(List<BaiduEntities.BaiduBook> list) {
+    public void onSearchResult(List<BaiduModel.BaiduBook> list) {
         if (list == null || list.size() < 1) {
             mAdapter.setEmptyView(mEmptyView);
         }
@@ -105,14 +115,14 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     public void setPresenter(BaiduContract.Presenter presenter) {
     }
 
-    private class Adapter extends BaseQuickAdapter<BaiduEntities.BaiduBook, CommonViewHolder> {
+    private class Adapter extends BaseQuickAdapter<BaiduModel.BaiduBook, CommonViewHolder> {
 
         public Adapter() {
             super(R.layout.item_view_search_result);
         }
 
         @Override
-        protected void convert(CommonViewHolder holder, final BaiduEntities.BaiduBook item) {
+        protected void convert(CommonViewHolder holder, final BaiduModel.BaiduBook item) {
             String sub = (TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " | " + item.sourceHost);
             if (!TextUtils.isEmpty(item.author)) {
                 sub = item.author + " | " + sub;
@@ -123,9 +133,38 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ReadWebActivity.startActivity(mActivity, new BookProvider.LocalBook(item));
-
-                    mPresenter.getChapterList(item.readUrl);
+                    BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
+//                    if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
+//                        ReadActivity.startActivity(mActivity, localBook);
+//                    } else {
+//                        ReadWebActivity.startActivity(mActivity, localBook);
+//                    }
+                    mPresenter.getChapterList(item.readUrl, item.sourceHost);
+                }
+            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (BookProvider.hasCacheData(item.id)) {
+                        ToastUtils.showShortToast("已经加入书架了");
+                        return true;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle("是否将本书加入书架？")
+                            .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    BookProvider.insertOrUpdate(new BookProvider.LocalBook(item), false);
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                    return true;
                 }
             });
         }

@@ -14,10 +14,10 @@
         android:title="@string/book_read_change_source"
         app:showAsAction="ifRoom"/>
 
-    <item
+    <!--<item
         android:id="@+id/menu_change_mode"
         android:title="@string/read_change_mode"
-        app:showAsAction="never"/>
+        app:showAsAction="never"/>-->
 
     <item
         android:id="@+id/menu_book_detail"

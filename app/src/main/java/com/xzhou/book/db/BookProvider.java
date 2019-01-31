@@ -11,7 +11,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
-import com.xzhou.book.models.BaiduEntities;
+import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -73,7 +73,7 @@ public class BookProvider {
             curSourceHost = detail.site;
         }
 
-        public LocalBook(BaiduEntities.BaiduBook baiduBook) {
+        public LocalBook(BaiduModel.BaiduBook baiduBook) {
             isBaiduBook = true;
             _id = baiduBook.id;
             title = baiduBook.bookName;
@@ -171,6 +171,8 @@ public class BookProvider {
             values.put(COLUMN_CUR_SOURCE_ID, sourceId);
             values.put(COLUMN_ORDER_TOP, hasTop ? 1 : 0);
             values.put(COLUMN_IS_SHOW_RED, isShowRed ? 1 : 0);
+            values.put(COLUMN_IS_BAIDU, isBaiduBook ? 1 : 0);
+            values.put(COLUMN_READ_URL, readUrl);
             return values;
         }
 
@@ -187,6 +189,8 @@ public class BookProvider {
             hasTop = in.readInt() == 1;
             isShowRed = in.readInt() == 1;
             sourceId = in.readString();
+            isBaiduBook = in.readInt() == 1;
+            readUrl = in.readString();
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -225,6 +229,8 @@ public class BookProvider {
             dest.writeInt(hasTop ? 1 : 0);
             dest.writeInt(isShowRed ? 1 : 0);
             dest.writeString(sourceId);
+            dest.writeInt(isBaiduBook ? 1 : 0);
+            dest.writeString(readUrl);
         }
 
         @Override
@@ -279,6 +285,8 @@ public class BookProvider {
             book.sourceId = cursor.getString(cursor.getColumnIndex(COLUMN_CUR_SOURCE_ID));
             book.hasTop = cursor.getInt(cursor.getColumnIndex(COLUMN_ORDER_TOP)) == 1;
             book.isShowRed = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_SHOW_RED)) == 1;
+            book.isBaiduBook = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_BAIDU)) == 1;
+            book.readUrl = cursor.getString(cursor.getColumnIndex(COLUMN_READ_URL));
             book.isBookshelf = true;
             list.add(book);
         }
@@ -345,11 +353,13 @@ public class BookProvider {
             if (hasCacheData(book._id)) {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
+                    values.put(COLUMN_IS_SHOW_RED, 0);
                 }
                 MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
             } else {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
+                    values.put(COLUMN_IS_SHOW_RED, 0);
                 }
                 values.put(COLUMN_ADD_TIME, System.currentTimeMillis());
                 MyApp.getContext().getContentResolver().insert(BookProviderImpl.BOOKSHELF_CONTENT_URI, values);
@@ -388,6 +398,11 @@ public class BookProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void delete(LocalBook book, boolean deleteCache) {
+        delete(book._id, book.title, deleteCache);
+        book.isBookshelf = false;
     }
 
     public static void delete(String bookId, final String title, boolean deleteCache) {

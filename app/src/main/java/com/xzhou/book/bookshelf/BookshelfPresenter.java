@@ -1,5 +1,7 @@
 package com.xzhou.book.bookshelf;
 
+import android.text.TextUtils;
+
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
@@ -8,6 +10,8 @@ import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.db.BookManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.HtmlParse;
+import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
@@ -67,12 +71,20 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0, size = books.size(); i < size; i++) {
                     BookProvider.LocalBook book = books.get(i);
+                    if (book.isBaiduBook) {
+                        List<Entities.Chapters> oldList = AppSettings.getChapterList(book._id);
+                        continue;
+                    }
                     if (i != 0) {
                         sb.append(",");
                     }
                     sb.append(book._id);
                 }
-                List<Entities.Updated> list = ZhuiShuSQApi.getBookshelfUpdated(sb.toString());
+                String ids = sb.toString();
+                List<Entities.Updated> list = null;
+                if (!TextUtils.isEmpty(ids)) {
+                    list = ZhuiShuSQApi.getBookshelfUpdated(ids);
+                }
                 boolean hasUpdated = false;
                 String error = null;
                 List<BookProvider.LocalBook> updateList = new ArrayList<>();
@@ -128,24 +140,28 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
-                BookProvider.LocalBook book = BookManager.get().findById(localBook._id);
-                String id = null;
-                if (book != null) {
-                    id = book.sourceId;
-                }
                 List<Entities.Chapters> chaptersList = AppSettings.getChapterList(localBook._id);
                 if (chaptersList == null) {
-                    Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, id);
-                    if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
-                        chaptersList = aToc.chapters;
+                    if (localBook.isBaiduBook) {
+                        HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(localBook.curSourceHost);
+                        if (htmlParse != null) {
+                            chaptersList = htmlParse.parseChapters(localBook.readUrl);
+                        }
+                    } else {
+                        Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
+                        if (aToc != null && aToc.chapters != null && aToc.chapters.size() > 0) {
+                            chaptersList = aToc.chapters;
+                        }
+                    }
+                    if (chaptersList != null) {
                         AppSettings.saveChapterList(localBook._id, chaptersList);
                     }
                 }
                 if (chaptersList != null && chaptersList.size() > 0) {
-                    DownloadManager.Download download = DownloadManager.createAllDownload(chaptersList);
+                    DownloadManager.Download download = DownloadManager.createAllDownload(chaptersList, localBook.isBaiduBook ? localBook.curSourceHost : null);
                     DownloadManager.get().startDownload(localBook._id, download);
                     if (localBook.checkAddDownloadCallback()) {
-                        updateDownloadStatus(book);
+                        updateDownloadStatus(localBook);
                         localBook.setUpdateDownloadStateListener(new BookProvider.LocalBook.UpdateDownloadStateListener() {
                             @Override
                             public void onUpdate() {

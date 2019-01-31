@@ -2,6 +2,7 @@ package com.xzhou.book.common;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,18 +19,30 @@ public class CommonViewHolder extends BaseViewHolder {
 
     public CommonViewHolder setImageUrl(@IdRes int viewId, String url, @DrawableRes int defaultId) {
         ImageView view = getView(viewId);
+        if (TextUtils.isEmpty(url)) {
+            view.setImageResource(defaultId);
+            return this;
+        }
         ImageLoader.showImageUrl(view.getContext(), view, url, defaultId);
         return this;
     }
 
     public CommonViewHolder setRoundImageUrl(@IdRes int viewId, String url, @DrawableRes int defaultId) {
         ImageView view = getView(viewId);
+        if (TextUtils.isEmpty(url)) {
+            view.setImageResource(defaultId);
+            return this;
+        }
         ImageLoader.showRoundImageUrl(view.getContext(), view, url, defaultId);
         return this;
     }
 
     public CommonViewHolder setCircleImageUrl(@IdRes int viewId, String url, @DrawableRes int defaultId) {
         ImageView view = getView(viewId);
+        if (TextUtils.isEmpty(url)) {
+            view.setImageResource(defaultId);
+            return this;
+        }
         ImageLoader.showCircleImageUrl(view.getContext(), view, url, defaultId);
         return this;
     }

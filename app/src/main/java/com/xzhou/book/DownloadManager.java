@@ -1,7 +1,11 @@
 package com.xzhou.book;
 
+import android.text.TextUtils;
+
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.HtmlParse;
+import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -35,6 +39,7 @@ public class DownloadManager {
 
     public static class Download {
         public List<Entities.Chapters> list;
+        public String host;
         public int start;
         public int end;
         private boolean isPause;
@@ -45,13 +50,18 @@ public class DownloadManager {
     }
 
     public static Download createAllDownload(List<Entities.Chapters> list) {
-        return createDownload(CHAPTER_ALL, 0, list);
+        return createDownload(CHAPTER_ALL, 0, list, null);
     }
 
-    public static Download createDownload(int which, int curChapter, List<Entities.Chapters> list) {
+    public static Download createAllDownload(List<Entities.Chapters> list, String host) {
+        return createDownload(CHAPTER_ALL, 0, list, host);
+    }
+
+    public static Download createDownload(int which, int curChapter, List<Entities.Chapters> list, String host) {
         Download download = new Download();
         download.list = list;
         download.start = curChapter;
+        download.host = host;
         switch (which) {
         case CHAPTER_LATER_50:
             download.end = download.start + 51;
@@ -99,6 +109,10 @@ public class DownloadManager {
     private DownloadManager() {
     }
 
+    public boolean startDownload(final String bookId, final Download download) {
+        return startDownload(bookId, download, true);
+    }
+
     public boolean startDownload(final String bookId, final Download download, final boolean hasNotify) {
         if (hasDownloading(bookId)) {
             return false;
@@ -114,13 +128,22 @@ public class DownloadManager {
                     int error = ERROR_NONE;
                     int fail = 0;
                     int exist = 0;
+                    HtmlParse parse = null;
+                    if (!TextUtils.isEmpty(download.host)) {
+                        parse = HtmlParseFactory.getHtmlParse(download.host);
+                    }
                     for (int i = download.start; i < download.end; i++) {
                         if (download.isPause) {
                             break;
                         }
                         Entities.Chapters chapter = download.list.get(i);
                         if (!chapter.hasLocal && !FileUtils.hasCacheChapter(bookId, i)) {
-                            Entities.ChapterRead data = ZhuiShuSQApi.getChapterRead(chapter.link);
+                            Entities.ChapterRead data;
+                            if (parse != null) {
+                                data = parse.parseChapterRead(chapter.link);
+                            } else {
+                                data = ZhuiShuSQApi.getChapterRead(chapter.link);
+                            }
                             if (data != null && data.chapter != null && data.chapter.body != null) {
                                 File file = FileUtils.getChapterFile(bookId, i);
                                 String body = AppUtils.formatContent(data.chapter.body);
@@ -152,10 +175,6 @@ public class DownloadManager {
             }
         });
         return true;
-    }
-
-    public boolean startDownload(final String bookId, final Download download) {
-        return startDownload(bookId, download, true);
     }
 
     public void pauseDownload(String bookId) {

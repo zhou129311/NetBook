@@ -4,8 +4,7 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.xzhou.book.models.BaiduEntities;
-import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
@@ -73,8 +72,8 @@ public class BaiduSearch {
         }
     }
 
-    public static List<BaiduEntities.BaiduBook> parseSearchKey(String key) {
-        List<BaiduEntities.BaiduBook> bookList = null;
+    public static List<BaiduModel.BaiduBook> parseSearchKey(String key) {
+        List<BaiduModel.BaiduBook> bookList = null;
         try {
             trustEveryone();
             try {
@@ -83,26 +82,14 @@ public class BaiduSearch {
                 e.printStackTrace();
             }
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
-            //解析Url获取Document对象
             Document document = Jsoup.connect(url).timeout(10000).get();
-            //获取网页源码文本内容
-//            logd(TAG, "document:" + document.toString());
-//            获取指定class的内容指定tag的元素
-//            Elements elements = document.getAllElements();
-//            logd(TAG, "elements:" + elements.toString());
-//            Elements divs = document.getElementsByTag("div");
-//            for (Element e : divs) {
-//                logi(TAG, "divs=" + e.toString());
-//            }
             Elements result = document.getElementsByClass("result c-container ");
             logd("title=" + document.title() + ",result size=" + result.size());
             bookList = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
                 Element e = result.get(i);
                 logi("result id=" + e.id());
-//                logd(TAG, "result e=" + e.html());
                 Elements f13 = e.getElementsByClass("f13");
-//                logd(TAG, "result f13=" + f13);
                 for (int j = 0; j < f13.size(); j++) {
                     Element child = f13.get(j);
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
@@ -111,7 +98,7 @@ public class BaiduSearch {
                     if (t.title.contains("网盘")) {
                         continue;
                     }
-                    BaiduEntities.BaiduBook book = parseResult(t);
+                    BaiduModel.BaiduBook book = parseResult(t);
                     if (book != null && book.hasValid()) {
                         if (urlInvalid(book.readUrl)) {
                             continue;
@@ -127,8 +114,8 @@ public class BaiduSearch {
         return bookList;
     }
 
-    private static BaiduEntities.BaiduBook parseResult(Title title) {
-        BaiduEntities.BaiduBook book = new BaiduEntities.BaiduBook();
+    private static BaiduModel.BaiduBook parseResult(Title title) {
+        BaiduModel.BaiduBook book = new BaiduModel.BaiduBook();
         try {
             trustEveryone();
             Document document = Jsoup.connect(title.url).timeout(10000).get();
@@ -165,7 +152,10 @@ public class BaiduSearch {
                 } else if (property.equals("og:novel:latest_chapter_url")) {
                     book.latestChapterUrl = attributes.get("content");
                 } else if (property.equals("og:image")) {
-                    book.image = attributes.get("content");
+                    String imageUrl = attributes.get("content");
+                    if (imageUrl != null && imageUrl.startsWith("http")) {
+                        book.image = imageUrl;
+                    }
                 }
             }
             Element body = document.body();
@@ -199,60 +189,10 @@ public class BaiduSearch {
                     book.sourceName = title.title.substring(index + 1);
                 }
             }
-            Integer type = BaiduEntities.BOOK_HOSTS.get(book.sourceHost);
-            if (book.hasValid() && type != null && type == BaiduEntities.PARSE_TXBC) {
-                book.chaptersList = parseChapterListTxbc(book.readUrl, document);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return book;
-    }
-
-    public static List<Entities.Chapters> parseChapterListTxbc(String readUrl, Document document) {
-        List<Entities.Chapters> list = new ArrayList<>();
-        try {
-            logi("parseChapterListTxbc::readUrl=" + readUrl);
-            trustEveryone();
-            if (document == null) {
-                document = Jsoup.connect(readUrl).timeout(5000).get();
-            }
-            Element body = document.body();
-            Element eList = body.getElementById("list");
-            Elements dl = eList.getElementsByTag("dl");
-            Elements cd = dl.first().children();
-            int i = readUrl.lastIndexOf("/");
-            String ru;
-            if (i + 1 == readUrl.length()) {
-                ru = readUrl.substring(0, i);
-            } else {
-                ru = readUrl;
-            }
-            String preUrl = ru.substring(0, ru.lastIndexOf("/"));
-            int dtSize = 0;
-            for (Element c : cd) {
-                if ("dt".equals(c.tagName())) {
-                    dtSize++;
-                }
-                if (dtSize > 1 && "dd".equals(c.tagName())) {
-                    Elements u = c.getElementsByTag("a");
-                    String title = u.text();
-                    String link = u.attr("href");
-                    if (!link.contains("/")) {
-                        link = readUrl + link;
-                    } else {
-                        link = preUrl + link;
-                    }
-//                    logi("title = " + title + ",link=" + link);
-                    if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
-                        list.add(new Entities.Chapters(title, link));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list.size() == 0 ? null : list;
     }
 
     private static boolean urlInvalid(String url) {

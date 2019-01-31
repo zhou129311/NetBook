@@ -19,6 +19,7 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
+import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
 
@@ -64,6 +65,10 @@ public class ReadSlideView extends LinearLayout {
 
     @OnClick({ R.id.more_source_tv, R.id.discussion_item_tv, R.id.recommend_item_tv })
     public void onViewClicked(View view) {
+        if (mBook.isBaiduBook) {
+            ToastUtils.showShortToast("百度书籍无法进行该操作");
+            return;
+        }
         switch (view.getId()) {
         case R.id.more_source_tv:
             ReadSourceActivity.startActivity(getContext(), mBook);

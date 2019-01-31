@@ -26,9 +26,13 @@ import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.main.MainActivity;
+import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.HtmlParse;
+import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.read.ReadActivity;
+import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -307,9 +311,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
         @Override
         protected void convert(CommonViewHolder helper, final BookProvider.LocalBook item) {
-            String sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated) + " : " + item.lastChapter;
+            String sub;
             if (item.isBaiduBook) {
-                sub = item.sourceId + " | " + item.curSourceHost;
+                sub = "最新章节：" + item.lastChapter + "\n" + item.sourceId + " | " + item.curSourceHost;
+            } else {
+                sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated) + " : " + item.lastChapter;
             }
             boolean showDownloadState = !TextUtils.isEmpty(item.downloadStatus);
             if (showDownloadState) {
@@ -338,7 +344,26 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         cb.setChecked(!cb.isChecked());
                         return;
                     }
-                    ReadActivity.startActivity(getRecyclerView().getContext(), item);
+                    if (item.isBaiduBook) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HtmlParse parse = HtmlParseFactory.getHtmlParse(item.curSourceHost);
+                                if (parse != null) {
+                                    List<Entities.Chapters> list = parse.parseChapters(item.readUrl);
+                                    if (list != null && list.size() > 0) {
+                                        parse.parseChapterRead(list.get(0).link);
+                                    }
+                                }
+                            }
+                        }).start();
+                        return;
+                    }
+                    if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
+                        ReadWebActivity.startActivity(getContext(), item);
+                    } else {
+                        ReadActivity.startActivity(getRecyclerView().getContext(), item);
+                    }
                 }
             });
             helper.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -358,9 +383,17 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                                 BookProvider.updateHasTop(item);
                                 break;
                             case 1:
+                                if (item.isBaiduBook) {
+                                    ReadWebActivity.startActivity(getContext(), item);
+                                    return;
+                                }
                                 BookDetailActivity.startActivity(mContext, item._id);
                                 break;
                             case 2:
+                                if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
+                                    ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
+                                    return;
+                                }
                                 mPresenter.download(item);
                                 break;
                             case 3:

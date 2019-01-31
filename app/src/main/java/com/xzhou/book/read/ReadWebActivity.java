@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.WebFragment;
 import com.xzhou.book.db.BookProvider;
 
@@ -22,6 +23,7 @@ public class ReadWebActivity extends BaseActivity {
 
     private WebFragment mWebFragment;
     private BookProvider.LocalBook mBaiduBook;
+    private MenuItem mAddMenuItem;
 
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         Intent intent = new Intent(context, ReadWebActivity.class);
@@ -65,6 +67,12 @@ public class ReadWebActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_read_web, menu);
+        mAddMenuItem = menu.findItem(R.id.menu_add_bookshelf);
+        if (mBaiduBook.isBookshelf()) {
+            mAddMenuItem.setTitle(R.string.book_read_remove);
+        } else {
+            mAddMenuItem.setTitle(R.string.book_read_join);
+        }
         return true;
     }
 
@@ -72,11 +80,32 @@ public class ReadWebActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_add_bookshelf:
-            return true;
-        case R.id.menu_local_read:
+            if (mBaiduBook.isBookshelf()) {
+                showDeleteDialog(mBaiduBook);
+            } else {
+                BookProvider.insertOrUpdate(mBaiduBook, false);
+                mAddMenuItem.setTitle(R.string.book_read_remove);
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteDialog(final BookProvider.LocalBook book) {
+        CheckDialog.Builder builder = new CheckDialog.Builder(mActivity);
+        builder.setNegativeButton(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setPositiveButton(new CheckDialog.OnPositiveClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, boolean isChecked) {
+                dialog.dismiss();
+                BookProvider.delete(book, isChecked);
+                mAddMenuItem.setTitle(R.string.book_read_join);
+            }
+        }).show();
     }
 
     @Override

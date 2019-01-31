@@ -11,6 +11,8 @@ import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.HtmlParse;
+import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -62,9 +64,18 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     }
                     mChaptersList = AppSettings.getChapterList(mBook._id);
                     if (mChaptersList == null) {
-                        Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
-                        if (aToc != null && aToc.chapters != null) {
-                            mChaptersList = aToc.chapters;
+                        if (mBook.isBaiduBook) {
+                            HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
+                            if (htmlParse != null) {
+                                mChaptersList = htmlParse.parseChapters(mBook.readUrl);
+                            }
+                        } else {
+                            Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
+                            if (aToc != null && aToc.chapters != null) {
+                                mChaptersList = aToc.chapters;
+                            }
+                        }
+                        if (mChaptersList != null && mBook.isBookshelf()) {
                             for (int i = 0, size = mChaptersList.size(); i < size; i++) {
                                 mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
                             }
@@ -89,13 +100,18 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     if (mCurChapter == 0) {
                         if (hasEndChapter(mCurChapter)) {
                             mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, true);
+                        } else if (hasEndChapter(1)) {
+                            mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, false);
+                            mOldPageContents[1] = createNonePageContent(mChaptersList.get(1).title, 1, true);
                         } else {
                             mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, false);
-                            mOldPageContents[1] = createNonePageContent(mChaptersList.get(1).title, 1, hasEndChapter(1));
+                            mOldPageContents[1] = createNonePageContent(mChaptersList.get(1).title, 1, false);
+                            mOldPageContents[2] = createNonePageContent(mChaptersList.get(2).title, 2, hasEndChapter(2));
                         }
-                    } else if (mCurChapter + 1 >= mChaptersList.size()) {
+                    } else if (hasEndChapter(mCurChapter)) {
                         mOldPageContents[0] = createNonePageContent(mChaptersList.get(mCurChapter - 1).title, mCurChapter - 1, false);
                         mOldPageContents[1] = createNonePageContent(chapters.title, mCurChapter, true);
+                        mOldPageContents[1].isShow = true;
                     } else {
                         mOldPageContents[0] = createNonePageContent(mChaptersList.get(mCurChapter - 1).title, mCurChapter - 1, false);
                         mOldPageContents[0].isStart = mCurChapter - 1 == 0;
@@ -137,28 +153,44 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         if (curBuffer == null) {
             curBuffer = new ChapterBuffer(mBook._id, mCurChapter);
         }
-
-        int cacheMode = AppSettings.getReadCacheMode();
-        DownloadManager.Download download = null;
-        switch (cacheMode) {
-        case AppSettings.PRE_VALUE_READ_CACHE_5:
-            download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList);
-            break;
-        case AppSettings.PRE_VALUE_READ_CACHE_10:
-            download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList);
-            break;
-        }
-        if (download != null) {
-            DownloadManager.get().startDownload(mBook._id, download, false);
+        //加入书架才可以边看边存
+        boolean saveCurChapter = false;
+        if (mBook.isBookshelf()) {
+            int cacheMode = AppSettings.getReadCacheMode();
+            DownloadManager.Download download = null;
+            switch (cacheMode) {
+            case AppSettings.PRE_VALUE_READ_CACHE_1:
+                saveCurChapter = true;
+                break;
+            case AppSettings.PRE_VALUE_READ_CACHE_5:
+                saveCurChapter = true;
+                download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList);
+                break;
+            case AppSettings.PRE_VALUE_READ_CACHE_10:
+                saveCurChapter = true;
+                download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList);
+                break;
+            }
+            if (download != null) {
+                DownloadManager.get().startDownload(mBook._id, download, false);
+            }
         }
 
         if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
             chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();
         } else {
-            Entities.ChapterRead chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
+            Entities.ChapterRead chapterRead = null;
+            if (mBook.isBaiduBook) {
+                HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
+                if (htmlParse != null) {
+                    chapterRead = htmlParse.parseChapterRead(chapters.link);
+                }
+            } else {
+                chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
+            }
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
-                success = curBuffer.openNetBookChapter(chapterRead.chapter, cacheMode != AppSettings.PRE_VALUE_READ_CACHE_NONE);
+                success = curBuffer.openNetBookChapter(chapterRead.chapter, saveCurChapter);
             } else {
                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
             }
@@ -322,11 +354,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadPreviousPage::item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadPreviousPage::pageContent = null");
+            showError(item, Error.NO_CONTENT);
         } else if (pageContent.isStart && pageContent.mPageLines != null && pageContent.mPageLines.page == 0) {
             Log.i(TAG, "loadPreviousPage::pageContent.isStart = true");
+            showError(item, Error.NO_CONTENT);
         } else {
             if (pageContent.chapter < 0) {
                 Log.e(TAG, "loadPreviousPage::pageContent.chapter < 0:" + pageContent);
+                showError(item, Error.NO_CONTENT);
                 return;
             }
             mCurChapter = pageContent.chapter;
@@ -356,11 +391,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadNextPage:item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadNextPage::pageContent = null");
+            showError(item, Error.NO_CONTENT);
         } else if (pageContent.isEnd && pageContent.mPageLines != null && pageContent.mPageLines.page == pageContent.pageSize) {
             Log.i(TAG, "loadNextPage::pageContent.isEnd = true");
+            showError(item, Error.NO_CONTENT);
         } else {
             if (pageContent.chapter < 0) {
                 Log.e(TAG, "loadNextPage::pageContent.chapter < 0 ," + pageContent);
+                showError(item, Error.NO_CONTENT);
                 return;
             }
             mCurChapter = pageContent.chapter;

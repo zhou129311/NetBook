@@ -84,6 +84,7 @@
     <string name="book_read_add_book_title" translatable="false">添书</string>
     <string name="book_read_add_book_msg" translatable="false">是否将本书加入书架？</string>
     <string name="book_read_join" translatable="false">加入书架</string>
+    <string name="book_read_remove" translatable="false">移出书架</string>
     <string name="book_read_not_add" translatable="false">不了</string>
     <string name="book_read_local" translatable="false">本地阅读</string>
 
@@ -199,5 +200,6 @@
     <string name="baidu_source" translatable="false">百度搜索其他来源</string>
     <string name="baidu_source_hint" translatable="false">百度</string>
     <string name="zhuishu_source_hint" translatable="false">追书的书源</string>
+    <string name="read_web" translatable="false">原网页阅读</string>
 
 </resources>
