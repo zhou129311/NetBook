@@ -27,6 +27,10 @@ public class HtmlParseFactory {
             return new HtmlParse2();
         case BaiduModel.ParseType.PARSE_TYPE_3:
             return new HtmlParse3();
+        case BaiduModel.ParseType.PARSE_TYPE_4:
+            return new HtmlParse4();
+        case BaiduModel.ParseType.PARSE_TYPE_5:
+            return new HtmlParse5();
         }
         return null;
     }

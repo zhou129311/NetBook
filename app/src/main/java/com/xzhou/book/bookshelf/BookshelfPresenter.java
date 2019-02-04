@@ -14,7 +14,6 @@ import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
@@ -67,12 +66,27 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
+                boolean hasUpdated = false;
+                String error = null;
+                List<BookProvider.LocalBook> updateList = new ArrayList<>();
                 List<BookProvider.LocalBook> books = BookManager.get().getLocalBooks();
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0, size = books.size(); i < size; i++) {
                     BookProvider.LocalBook book = books.get(i);
                     if (book.isBaiduBook) {
-                        List<Entities.Chapters> oldList = AppSettings.getChapterList(book._id);
+                        HtmlParse parse = HtmlParseFactory.getHtmlParse(book.curSourceHost);
+                        if (parse != null) {
+                            List<Entities.Chapters> oldList = AppSettings.getChapterList(book._id);
+                            List<Entities.Chapters> newList = parse.parseChapters(book.readUrl);
+                            if (newList != null && (oldList == null || newList.size() > oldList.size())) {
+                                hasUpdated = true;
+                                AppSettings.saveChapterList(book._id, newList);
+                                book.isShowRed = true;
+                                book.updated = System.currentTimeMillis();
+                                book.lastChapter = newList.get(newList.size() - 1).title;
+                                updateList.add(book);
+                            }
+                        }
                         continue;
                     }
                     if (i != 0) {
@@ -81,48 +95,45 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                     sb.append(book._id);
                 }
                 String ids = sb.toString();
-                List<Entities.Updated> list = null;
                 if (!TextUtils.isEmpty(ids)) {
-                    list = ZhuiShuSQApi.getBookshelfUpdated(ids);
-                }
-                boolean hasUpdated = false;
-                String error = null;
-                List<BookProvider.LocalBook> updateList = new ArrayList<>();
-                if (list != null) {
-                    for (Entities.Updated updated : list) {
-                        long updatedTime = AppUtils.getTimeFormDateString(updated.updated);
-                        final BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
-                        if (localBook != null && localBook.updated < updatedTime) {
-                            Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
-                            if (aToc != null && aToc.chapters != null) {
-                                List<Entities.Chapters> oldChapters = AppSettings.getChapterList(localBook._id);
-                                List<Entities.Chapters> newChapters = null;
-                                int oldSize = oldChapters != null ? oldChapters.size() : 0;
-                                int newSize = aToc.chapters.size();
-                                if (oldSize < newSize) {
-                                    if (oldChapters != null) {
-                                        newChapters = new ArrayList<>(oldChapters);
-                                    } else {
-                                        newChapters = new ArrayList<>();
+                    List<Entities.Updated> list = ZhuiShuSQApi.getBookshelfUpdated(ids);
+                    if (list != null) {
+                        for (Entities.Updated updated : list) {
+                            long updatedTime = AppUtils.getTimeFormDateString(updated.updated);
+                            final BookProvider.LocalBook localBook = BookManager.get().findById(updated._id);
+                            if (localBook != null && localBook.updated < updatedTime) {
+                                Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(localBook._id, localBook.sourceId);
+                                if (aToc != null && aToc.chapters != null) {
+                                    List<Entities.Chapters> oldChapters = AppSettings.getChapterList(localBook._id);
+                                    List<Entities.Chapters> newChapters = null;
+                                    int oldSize = oldChapters != null ? oldChapters.size() : 0;
+                                    int newSize = aToc.chapters.size();
+                                    if (oldSize < newSize) {
+                                        if (oldChapters != null) {
+                                            newChapters = new ArrayList<>(oldChapters);
+                                        } else {
+                                            newChapters = new ArrayList<>();
+                                        }
+                                        newChapters.addAll(aToc.chapters.subList(oldSize, newSize));
                                     }
-                                    newChapters.addAll(aToc.chapters.subList(oldSize, newSize));
+                                    if (newChapters != null) {
+                                        AppSettings.saveChapterList(localBook._id, newChapters);
+                                    }
+                                    hasUpdated = true;
+                                    localBook.isShowRed = true;
+                                    localBook.updated = updatedTime;
+                                    localBook.lastChapter = updated.lastChapter;
+                                    updateList.add(localBook);
+                                } else {
+                                    error = AppUtils.getString(AppUtils.isNetworkAvailable() ? R.string.network_failed : R.string.network_unconnected);
                                 }
-                                if (newChapters != null) {
-                                    AppSettings.saveChapterList(localBook._id, newChapters);
-                                }
-
                             }
-
-                            hasUpdated = true;
-                            localBook.isShowRed = true;
-                            localBook.updated = updatedTime;
-                            localBook.lastChapter = updated.lastChapter;
-                            updateList.add(localBook);
                         }
+                    } else {
+                        error = AppUtils.getString(AppUtils.isNetworkAvailable() ? R.string.network_failed : R.string.network_unconnected);
                     }
-                } else {
-                    error = AppUtils.getString(AppUtils.isNetworkAvailable() ? R.string.network_failed : R.string.network_unconnected);
                 }
+
                 if (hasUpdated) {
                     BookProvider.updateLocalBooks(updateList);
                 }

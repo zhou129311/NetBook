@@ -16,7 +16,6 @@ import com.xzhou.book.R;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.JustifyTextView;
 
 import butterknife.BindView;
@@ -178,7 +177,7 @@ public class ReadPage extends RelativeLayout {
         }
         setLoadState(page.isLoading);
         if (page.chapter >= 0) {
-            mChapterTitle.setText(page.chapter + ". " + page.chapterTitle);
+            mChapterTitle.setText((page.chapter + 1) + ". " + page.chapterTitle);
         }
         mPageNumber.setText(page.getCurPagePos());
         //mChapterContent.setText(page.getPageContent());

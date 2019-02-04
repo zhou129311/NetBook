@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
+    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -70,6 +70,19 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 mChaptersList = htmlParse.parseChapters(mBook.readUrl);
                             }
                         } else {
+                            List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
+                            if (list != null) {
+                                for (Entities.BookSource source : list) {
+                                    if (source != null && source.host != null && source.host.equals("book.my716.com")) {
+                                        mBook.curSourceHost = source.host;
+                                        mBook.sourceId = source._id;
+                                        if (mBook.isBookshelf()) {
+                                            BookProvider.insertOrUpdate(mBook, true);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
                             Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
                             if (aToc != null && aToc.chapters != null) {
                                 mChaptersList = aToc.chapters;

@@ -344,21 +344,21 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         cb.setChecked(!cb.isChecked());
                         return;
                     }
-                    if (item.isBaiduBook) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                HtmlParse parse = HtmlParseFactory.getHtmlParse(item.curSourceHost);
-                                if (parse != null) {
-                                    List<Entities.Chapters> list = parse.parseChapters(item.readUrl);
-                                    if (list != null && list.size() > 0) {
-                                        parse.parseChapterRead(list.get(0).link);
-                                    }
-                                }
-                            }
-                        }).start();
-                        return;
-                    }
+//                    if (item.isBaiduBook) {
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                HtmlParse parse = HtmlParseFactory.getHtmlParse(item.curSourceHost);
+//                                if (parse != null) {
+//                                    List<Entities.Chapters> list = parse.parseChapters(item.readUrl);
+//                                    if (list != null && list.size() > 0) {
+//                                        parse.parseChapterRead(list.get(0).link);
+//                                    }
+//                                }
+//                            }
+//                        }).start();
+//                        return;
+//                    }
                     if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
                         ReadWebActivity.startActivity(getContext(), item);
                     } else {

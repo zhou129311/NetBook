@@ -18,10 +18,11 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
-import com.xzhou.book.common.ItemDialog;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.read.ReadActivity;
+import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
@@ -32,11 +33,11 @@ import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
 public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> implements BaiduContract.View {
 
-    private String[] mDialogItemsJoin = new String[] {
+    private String[] mDialogItemsJoin = new String[]{
 
             "加入书架", "本地阅读"
     };
-    private String[] mDialogItemsRemove = new String[] {
+    private String[] mDialogItemsRemove = new String[]{
             "移出书架", "本地阅读"
     };
 
@@ -134,12 +135,12 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
                 @Override
                 public void onClick(View v) {
                     BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
-//                    if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
-//                        ReadActivity.startActivity(mActivity, localBook);
-//                    } else {
-//                        ReadWebActivity.startActivity(mActivity, localBook);
-//                    }
-                    mPresenter.getChapterList(item.readUrl, item.sourceHost);
+                    if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
+                        ReadActivity.startActivity(mActivity, localBook);
+                    } else {
+                        ReadWebActivity.startActivity(mActivity, localBook);
+                    }
+//                    mPresenter.getChapterList(item.readUrl, item.sourceHost);
                 }
             });
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {

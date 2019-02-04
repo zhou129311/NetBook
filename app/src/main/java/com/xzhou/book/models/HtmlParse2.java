@@ -2,6 +2,8 @@ package com.xzhou.book.models;
 
 import android.text.TextUtils;
 
+import com.xzhou.book.utils.AppUtils;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -17,25 +19,23 @@ public class HtmlParse2 extends HtmlParse {
     @Override
     public List<Entities.Chapters> parseChapters(String readUrl, Document document) {
         List<Entities.Chapters> list = new ArrayList<>();
-        logi("parseChapters::readUrl=" + readUrl);
+
+        String host = AppUtils.getHostFromUrl(readUrl);
+        String preUrl = readUrl.substring(0, readUrl.lastIndexOf(host) + host.length());
+        logi("parseChapters::readUrl=" + readUrl + " ,preUrl = " + preUrl);
+
         Element body = document.body();
-//            logi("parseChapterListLw::body=" + body);
-        Element eList = body.getElementById("list-chapterAll");
-        Elements chapterList = eList.children();
-        int i = readUrl.lastIndexOf("/");
-        String ru;
-        if (i + 1 == readUrl.length()) {
-            ru = readUrl.substring(0, i);
-        } else {
-            ru = readUrl;
+        Elements eList = body.select("div#list-chapterAll");
+        if (eList.isEmpty()) {
+            eList = body.select("dl.chapterlist").select(".cate");
         }
-        String preUrl = ru.substring(0, ru.lastIndexOf("/"));
+        Elements chapterList = eList.last().children();
         int dtSize = 0;
         for (Element c : chapterList) {
             if ("dt".equals(c.tagName())) {
                 dtSize++;
             }
-            if (dtSize >= 1 && "dd".equals(c.tagName())) {
+            if (dtSize == 1 && "dd".equals(c.tagName())) {
                 Elements dd_a = c.getElementsByTag("a");
                 String title = dd_a.text();
                 String link = dd_a.attr("href");
@@ -56,17 +56,25 @@ public class HtmlParse2 extends HtmlParse {
     @Override
     public Entities.ChapterRead parseChapterRead(String chapterUrl, Document document) {
         Entities.ChapterRead read = new Entities.ChapterRead();
+        read.chapter = new Entities.Chapter();
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("div.readcontent");
+        if (content.isEmpty()) {
+            content = body.select("div#BookText");
+        }
         content.select("div.kongwen").remove();
         content.select("div.readmiddle").remove();
         content.select("p").remove();
 //        logi("content = " + content.text());
 //        logi("content = " + content);
-        read.chapter = new Entities.Chapter();
         String text = content.toString().replace("<div class=\"readcontent\">", "");
         text = text.replace("</div>", "");
+        if (chapterUrl.contains("milepub")) {
+            text = text.replace("<div id=\"BookText\">", "");
+            text = text.replace("&lt;div id=\"pagecontent\"&gt;", "");
+            text = text.replace("&lt;script language=\"javascript\"&gt;outputcontent('/75','75976','27614716','0');&lt;/script&gt;", "");
+        }
         logi("start ,text=" + text);
         text = text.replace("\n", "");
         text = text.replace("<br>", "\n");

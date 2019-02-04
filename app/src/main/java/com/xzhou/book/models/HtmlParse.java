@@ -2,8 +2,6 @@ package com.xzhou.book.models;
 
 import android.annotation.SuppressLint;
 
-import com.xzhou.book.utils.Log;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -56,7 +54,7 @@ public abstract class HtmlParse {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -68,7 +66,7 @@ public abstract class HtmlParse {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
@@ -76,20 +74,20 @@ public abstract class HtmlParse {
     }
 
     protected void logd(String str) {
-        int max_str_length = 2001;
-        while (str.length() > max_str_length) {
-            Log.d(TAG, str.substring(0, max_str_length));
-            str = str.substring(max_str_length);
-        }
-        Log.d(TAG, str);
+//        int max_str_length = 2001;
+//        while (str.length() > max_str_length) {
+//            Log.d(TAG, str.substring(0, max_str_length));
+//            str = str.substring(max_str_length);
+//        }
+//        Log.d(TAG, str);
     }
 
     protected void logi(String str) {
-        int max_str_length = 2001;
-        while (str.length() > max_str_length) {
-            Log.i(TAG, str.substring(0, max_str_length));
-            str = str.substring(max_str_length);
-        }
-        Log.i(TAG, str);
+//        int max_str_length = 2001;
+//        while (str.length() > max_str_length) {
+//            Log.i(TAG, str.substring(0, max_str_length));
+//            str = str.substring(max_str_length);
+//        }
+//        Log.i(TAG, str);
     }
 }
