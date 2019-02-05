@@ -14,7 +14,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -53,7 +52,7 @@ public class BaiduSearch {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -65,7 +64,7 @@ public class BaiduSearch {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
@@ -76,11 +75,7 @@ public class BaiduSearch {
         List<BaiduModel.BaiduBook> bookList = null;
         try {
             trustEveryone();
-            try {
-                key = URLEncoder.encode(key, "gb2312");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            key = URLEncoder.encode(key, "gb2312");
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             Document document = Jsoup.connect(url).timeout(10000).get();
             Elements result = document.getElementsByClass("result c-container ");

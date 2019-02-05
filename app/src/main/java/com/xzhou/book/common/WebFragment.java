@@ -133,6 +133,9 @@ public class WebFragment extends BaseFragment {
 //            String js = getClearAdDivJs(MyApp.getContext());
 //            Log.d(TAG, "getClearAdDivJs:" + js);
 //            mWebView.loadUrl(js);
+            if (!isAdded() || isDetached()) {
+                return;
+            }
             mProgress.setProgress(progress);
             if (progress == 100) {
                 mProgress.setVisibility(View.GONE);

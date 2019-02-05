@@ -26,11 +26,14 @@ public class BaiduModel {
             put("www.biquge.info", ParseType.PARSE_TYPE_1);
             put("www.booktxt.net", ParseType.PARSE_TYPE_1);
             put("www.x4399.com", ParseType.PARSE_TYPE_1);
+            put("www.qu.la", ParseType.PARSE_TYPE_1);
 
             put("www.lwtxt.cc", ParseType.PARSE_TYPE_2);
             put("www.oldtimes.cc", ParseType.PARSE_TYPE_2);
             put("www.milepub.com", ParseType.PARSE_TYPE_2);
 
+            put("www.kenshu.cc", ParseType.PARSE_TYPE_4);
+            put("www.kuaiyankanshu.net", ParseType.PARSE_TYPE_4);
             put("www.boluoxs.com", ParseType.PARSE_TYPE_4);
 
             put("www.fpzw.com", ParseType.PARSE_TYPE_5);

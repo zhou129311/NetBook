@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.CheckDialog;
@@ -186,7 +187,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         }
     }
 
-    @OnClick({ R.id.select_all_tv, R.id.delete_tv })
+    @OnClick({R.id.select_all_tv, R.id.delete_tv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.select_all_tv:
@@ -297,11 +298,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     private class Adapter extends BaseQuickAdapter<BookProvider.LocalBook, CommonViewHolder> {
 
-        private final String[] DIALOG_ITEM_UPTOP = new String[] {
+        private final String[] DIALOG_ITEM_UPTOP = new String[]{
                 "置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 
-        private final String[] DIALOG_ITEM_TOP = new String[] {
+        private final String[] DIALOG_ITEM_TOP = new String[]{
                 "取消置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 
@@ -344,21 +345,21 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         cb.setChecked(!cb.isChecked());
                         return;
                     }
-//                    if (item.isBaiduBook) {
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                HtmlParse parse = HtmlParseFactory.getHtmlParse(item.curSourceHost);
-//                                if (parse != null) {
-//                                    List<Entities.Chapters> list = parse.parseChapters(item.readUrl);
-//                                    if (list != null && list.size() > 0) {
-//                                        parse.parseChapterRead(list.get(0).link);
-//                                    }
-//                                }
-//                            }
-//                        }).start();
-//                        return;
-//                    }
+                    if (item.isBaiduBook && MyApp.PARSE_DEBUG) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HtmlParse parse = HtmlParseFactory.getHtmlParse(item.curSourceHost);
+                                if (parse != null) {
+                                    List<Entities.Chapters> list = parse.parseChapters(item.readUrl);
+                                    if (list != null && list.size() > 0) {
+                                        parse.parseChapterRead(list.get(0).link);
+                                    }
+                                }
+                            }
+                        }).start();
+                        return;
+                    }
                     if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
                         ReadWebActivity.startActivity(getContext(), item);
                     } else {

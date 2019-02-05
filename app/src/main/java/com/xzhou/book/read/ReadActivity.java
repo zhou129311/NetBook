@@ -198,7 +198,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             previousPage();
             return true;
         }
-        Log.i(TAG, "onKeyUp keyCode= "+ keyCode);
+        Log.i(TAG, "onKeyUp keyCode= " + keyCode);
         return super.onKeyUp(keyCode, event);
     }
 
@@ -473,6 +473,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             } else if (mCurPosition < mPrePosition) {
                 mPresenter.loadPreviousPage(mCurPosition, pageContent);
             }
+            mReadViewPager.setCanTouch(false);
         }
     }
 

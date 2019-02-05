@@ -2,6 +2,9 @@ package com.xzhou.book.models;
 
 import android.text.TextUtils;
 
+import com.xzhou.book.utils.AppUtils;
+
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -15,26 +18,32 @@ public class HtmlParse3 extends HtmlParse {
         TAG = "HtmlParse3";
     }
 
+//    public List<Entities.Chapters> parseChapters(String readUrl) {
+//        try {
+//            trustEveryone();
+//            readUrl += "all.html";
+//            Document document = Jsoup.connect(readUrl).timeout(10000).get();
+//            return parseChapters(readUrl, document);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
     @Override
     public List<Entities.Chapters> parseChapters(String readUrl, Document document) {
         List<Entities.Chapters> list = new ArrayList<>();
-        logi("parseChapters::readUrl=" + readUrl);
+        String host = AppUtils.getHostFromUrl(readUrl);
+        String preUrl = readUrl.substring(0, readUrl.lastIndexOf(host) + host.length());
+        logi("parseChapters::readUrl=" + readUrl + " ,preUrl = " + preUrl);
         Element body = document.body();
-        Element eList = body.getElementById("list");
-        Elements dl = eList.getElementsByTag("dl");
-        Elements cd = dl.first().children();
-        int i = readUrl.lastIndexOf("/");
-        String ru;
-        if (i + 1 == readUrl.length()) {
-            ru = readUrl.substring(0, i);
-        } else {
-            ru = readUrl;
-        }
-        cd.select("dt").remove();
-        String preUrl = ru.substring(0, ru.lastIndexOf("/"));
-        preUrl = preUrl.replace("/book", "");
+        Elements eList = body.select("div#chapterlist");
+        Elements cd = eList.first().children();
         for (Element c : cd) {
-            if ("dd".equals(c.tagName())) {
+            if ("p".equals(c.tagName())) {
+                if("#bottom".equals(c.attr("href"))){
+                    continue;
+                }
                 Elements u = c.getElementsByTag("a");
                 String title = u.text();
                 String link = u.attr("href");
@@ -43,7 +52,7 @@ public class HtmlParse3 extends HtmlParse {
                 } else {
                     link = preUrl + link;
                 }
-//                logi("title = " + title + ", link=" + link);
+                logi("title = " + title + ", link=" + link);
                 if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
                     list.add(new Entities.Chapters(title, link));
                 }

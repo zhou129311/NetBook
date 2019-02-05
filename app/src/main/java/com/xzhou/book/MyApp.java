@@ -14,6 +14,7 @@ import com.xzhou.book.utils.AppSettings;
 public class MyApp extends Application {
     private static MyApp mInstance;
     private static Handler mHandler;
+    public static final boolean PARSE_DEBUG = false;
 
     @Override
     public void onCreate() {

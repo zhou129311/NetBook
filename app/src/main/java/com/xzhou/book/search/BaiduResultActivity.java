@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
@@ -130,17 +131,21 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
             }
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
-                    .setText(R.id.book_h2, sub);
+                    .setText(R.id.book_h2, sub)
+                    .setGone(R.id.local_read_tv, BaiduModel.hasSupportLocalRead(item.sourceHost));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (MyApp.PARSE_DEBUG) {
+                        mPresenter.getChapterList(item.readUrl, item.sourceHost);
+                        return;
+                    }
                     BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
                     if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
                         ReadActivity.startActivity(mActivity, localBook);
                     } else {
                         ReadWebActivity.startActivity(mActivity, localBook);
                     }
-//                    mPresenter.getChapterList(item.readUrl, item.sourceHost);
                 }
             });
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {

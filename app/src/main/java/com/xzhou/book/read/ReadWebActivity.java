@@ -145,7 +145,7 @@ public class ReadWebActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-//                        BookProvider.insertOrUpdate(mBaiduBook, false);
+                        BookProvider.insertOrUpdate(mBaiduBook, false);
                         finish();
                     }
                 });

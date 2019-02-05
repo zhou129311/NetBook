@@ -87,6 +87,7 @@
     <string name="book_read_remove" translatable="false">移出书架</string>
     <string name="book_read_not_add" translatable="false">不了</string>
     <string name="book_read_local" translatable="false">本地阅读</string>
+    <string name="support_local_read" translatable="false">已解析</string>
 
     <string name="book_read_end_hint" translatable="false">千万要记得对那些「肯掏钱买书的人」说声谢谢，因为没有他们，也就没有新书可以看了。</string>
     <string name="book_read_end_hint_author" translatable="false">——东野圭吾</string>

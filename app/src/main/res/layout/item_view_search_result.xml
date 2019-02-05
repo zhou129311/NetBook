@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/touch_bg"
-    android:paddingBottom="@dimen/book_item_margin_v"
-    android:paddingEnd="@dimen/book_item_margin_h"
     android:paddingStart="@dimen/book_item_margin_h"
-    android:paddingTop="@dimen/book_item_margin_v">
+    android:paddingTop="@dimen/book_item_margin_v"
+    android:paddingEnd="@dimen/book_item_margin_h"
+    android:paddingBottom="@dimen/book_item_margin_v">
 
     <ImageView
         android:id="@+id/book_image"
@@ -31,7 +31,7 @@
         android:textColor="@color/common_h1"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/book_h2"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/local_read_tv"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toTopOf="@id/book_image"
@@ -50,5 +50,25 @@
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toBottomOf="@id/book_title"
         tools:text="549人在追 | 73.4% 读者留存 | 我是作者"/>
+
+    <TextView
+        android:id="@+id/local_read_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/bg_hot_posts"
+        android:paddingStart="5dp"
+        android:paddingTop="1dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="1dp"
+        android:text="@string/support_local_read"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SmallSp"
+        tools:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>
