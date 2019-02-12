@@ -27,6 +27,7 @@ public class BaiduModel {
             put("www.booktxt.net", ParseType.PARSE_TYPE_1);
             put("www.x4399.com", ParseType.PARSE_TYPE_1);
             put("www.qu.la", ParseType.PARSE_TYPE_1);
+            put("www.uxiaoshuo.com", ParseType.PARSE_TYPE_1);
 
             put("www.lwtxt.cc", ParseType.PARSE_TYPE_2);
             put("www.oldtimes.cc", ParseType.PARSE_TYPE_2);

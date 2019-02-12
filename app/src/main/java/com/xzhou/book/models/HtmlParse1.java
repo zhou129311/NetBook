@@ -37,7 +37,7 @@ public class HtmlParse1 extends HtmlParse {
         int target = 0;
         if (host.contains("tianxiabachang") || host.contains("booktxt")
                 || host.contains("yangguiweihuo") || host.contains("biqugexsw")
-                || host.contains("qu.la")) {
+                || host.contains("qu.la") || host.contains("uxiaoshuo")) {
             target = 2;
         } else if (host.contains("x4399")) {
             target = 1;
@@ -77,22 +77,30 @@ public class HtmlParse1 extends HtmlParse {
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("div#content");
-        if (content != null) {
-            read.chapter = new Entities.Chapter();
-            String text = content.toString().replace("<div id=\"content\">", "");
-            text = text.replace("<div id=\"content\" class=\"showtxt\">", "");
-            text = text.replace("</div>", "");
-            text = text.replace("<fon color=\"red\">", "");
-            text = text.replace("<b>www.x4399.com</b>", "");
-            text = text.replace("<font color=\"red\"><b>wap.x4399.com</b></font>", "");
-            text = text.replace("</fon>", "");
-            logi("start ,text=" + text);
-            text = text.replace("\n", "");
-            text = text.replace("<br>", "\n");
-            text = text.replace("&nbsp;", "");
-            read.chapter.body = text;
-            logi("end ,text=" + text);
+        if (content.isEmpty()) {
+            content = body.select("div.zhangjieTXT");
         }
+        content.select("script").remove();
+        content.select("div.bottem").remove();
+        content.select("p").remove();
+        content.select("b").remove();
+        content.select("fon").remove();
+        content.select("font").remove();
+
+        read.chapter = new Entities.Chapter();
+        String text = content.toString().replace("<div id=\"content\">", "");
+        text = text.replace("<div id=\"content\" class=\"showtxt\">", "");
+        text = text.replace("</div>", "");
+        text = text.replace("<div class=\"zhangjieTXT\" id=\"TXT\">", "");
+        text = text.replace("<!--go-->", "");
+        logi("start ,text=" + text);
+        text = text.replace("\n", "");
+        text = text.replace("<br>", "\n");
+        text = text.replace("&nbsp;", "");
+        text = text.replace("　", "");
+        text = text.replace(" ", "");
+        read.chapter.body = text;
+        logi("end ,text=" + text);
         return read;
     }
 }

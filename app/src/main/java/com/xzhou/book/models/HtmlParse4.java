@@ -107,12 +107,14 @@ public class HtmlParse4 extends HtmlParse {
         String text = content.toString().replace("<div id=\"book_text\">", "");
         text = text.replace("<div class=\"content\" id=\"chaptercontent\">", "");
         text = text.replace("<div id=\"ali\">", "");
+        text = text.replace("<divclass=\"article-con\">", "");
         text = text.replace("</div>", "");
         logi("start ,text=" + text);
         text = text.replace("\n", "");
         text = text.replace("<br>", "\n");
         text = text.replace("&nbsp;", "");
-        text = text.replace(" ", "");1
+        text = text.replace(" ", "");
+        text = text.replace("　", "");
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;
