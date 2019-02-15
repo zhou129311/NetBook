@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
+    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -43,7 +43,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private Paint mPaint;
     private int mTextViewWidth;
     private int mCurChapter;
-    private PageContent[] mOldPageContents;
 
     ReadPresenter(ReadContract.View view, BookProvider.LocalBook book) {
         super(view);
@@ -55,7 +54,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         if (mChaptersList == null) {
             final int[] progress = AppSettings.getReadProgress(mBook._id);
             mCurChapter = progress[0];
-            final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1);
+            final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1, null);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -98,7 +97,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     initChaptersList();
                     if (mChaptersList == null || mChaptersList.size() <= 0) {
                         int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
-                        showError(0, error);
+                        showError(0, error, null);
                         return;
                     }
 
@@ -108,28 +107,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     } else if (mCurChapter >= mChaptersList.size()) {
                         mCurChapter = mChaptersList.size() - 1;
                         progress[1] = -1;
-                    }
-                    Entities.Chapters chapters = mChaptersList.get(mCurChapter);
-                    if (mCurChapter == 0) {
-                        if (hasEndChapter(mCurChapter)) {
-                            mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, true);
-                        } else if (hasEndChapter(1)) {
-                            mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, false);
-                            mOldPageContents[1] = createNonePageContent(mChaptersList.get(1).title, 1, true);
-                        } else {
-                            mOldPageContents[0] = createNonePageContent(chapters.title, mCurChapter, false);
-                            mOldPageContents[1] = createNonePageContent(mChaptersList.get(1).title, 1, false);
-                            mOldPageContents[2] = createNonePageContent(mChaptersList.get(2).title, 2, hasEndChapter(2));
-                        }
-                    } else if (hasEndChapter(mCurChapter)) {
-                        mOldPageContents[0] = createNonePageContent(mChaptersList.get(mCurChapter - 1).title, mCurChapter - 1, false);
-                        mOldPageContents[1] = createNonePageContent(chapters.title, mCurChapter, true);
-                        mOldPageContents[1].isShow = true;
-                    } else {
-                        mOldPageContents[0] = createNonePageContent(mChaptersList.get(mCurChapter - 1).title, mCurChapter - 1, false);
-                        mOldPageContents[0].isStart = mCurChapter - 1 == 0;
-                        mOldPageContents[1] = createNonePageContent(chapters.title, mCurChapter, false);
-                        mOldPageContents[2] = createNonePageContent(mChaptersList.get(mCurChapter + 1).title, mCurChapter + 1, hasEndChapter(mCurChapter + 1));
                     }
                     loadReadProgress(mCurChapter, progress[1], newItem, false);
                 }
@@ -225,7 +202,11 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 return;
             }
         }
-        showError(item, error);
+        PageContent pageContent = createNonePageContent(chapters.title, mCurChapter, hasEndChapter(mCurChapter));
+        if (mCurChapter == 0) {
+            pageContent.isStart = true;
+        }
+        showError(item, error, pageContent);
     }
 
     @Override
@@ -349,7 +330,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     public void reloadCurPage(final int item, final PageContent pageContent) {
         Log.i(TAG, "reloadCurPage::" + pageContent);
         if (!start()) {
-            final int newItem = showLoading(item);
+            final int newItem = showLoading(item, pageContent);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -367,14 +348,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadPreviousPage::item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadPreviousPage::pageContent = null");
-            showError(item, Error.NO_CONTENT);
+            showError(item, Error.NO_CONTENT, pageContent);
         } else if (pageContent.isStart && pageContent.mPageLines != null && pageContent.mPageLines.page == 0) {
             Log.i(TAG, "loadPreviousPage::pageContent.isStart = true");
-            showError(item, Error.NO_CONTENT);
+            showError(item, Error.NO_CONTENT, pageContent);
         } else {
             if (pageContent.chapter < 0) {
                 Log.e(TAG, "loadPreviousPage::pageContent.chapter < 0:" + pageContent);
-                showError(item, Error.NO_CONTENT);
+                showError(item, Error.NO_CONTENT, pageContent);
                 return;
             }
             mCurChapter = pageContent.chapter;
@@ -388,7 +369,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 }
                 return;
             }
-            final int newItem = showLoading(item);
+            final int newItem = showLoading(item, pageContent);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -404,14 +385,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "loadNextPage:item = " + item);
         if (pageContent == null) {
             Log.e(TAG, "loadNextPage::pageContent = null");
-            showError(item, Error.NO_CONTENT);
+            showError(item, Error.NO_CONTENT, pageContent);
         } else if (pageContent.isEnd && pageContent.mPageLines != null && pageContent.mPageLines.page == pageContent.pageSize) {
             Log.i(TAG, "loadNextPage::pageContent.isEnd = true");
-            showError(item, Error.NO_CONTENT);
+            showError(item, Error.NO_CONTENT, pageContent);
         } else {
             if (pageContent.chapter < 0) {
                 Log.e(TAG, "loadNextPage::pageContent.chapter < 0 ," + pageContent);
-                showError(item, Error.NO_CONTENT);
+                showError(item, Error.NO_CONTENT, pageContent);
                 return;
             }
             mCurChapter = pageContent.chapter;
@@ -425,7 +406,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 }
                 return;
             }
-            final int newItem = showLoading(item);
+            final int newItem = showLoading(item, pageContent);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -580,95 +561,79 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         return pageContent;
     }
 
-    private int showLoading(int page) {
-        PageContent[] pageContents = mOldPageContents != null ? mOldPageContents : new PageContent[3];
-        for (int i = 0; i < pageContents.length; i++) {
-            if (i == page) {
-                if (pageContents[i] == null) {
-                    pageContents[i] = createErrorPageContent(Error.NONE);
-                }
-                pageContents[i].error = Error.NONE;
-                pageContents[i].isLoading = true;
-                pageContents[i].isShow = true;
-            } else {
-                if (pageContents[i] == null) {
-                    pageContents[i] = createErrorPageContent(Error.NONE);
-                } else {
-                    pageContents[i].isLoading = false;
-                    pageContents[i].isShow = false;
-                }
-            }
+    private int showLoading(int page, PageContent showPageContent) {
+        if (showPageContent == null) {
+            showPageContent = createErrorPageContent(Error.NONE);
         }
-        PageContent[] newPages = getLoadingOrErrorNewPages(page, pageContents);
+        showPageContent.error = Error.NONE;
+        showPageContent.isLoading = true;
+        showPageContent.isShow = true;
+        PageContent[] pageContents = getLoadingOrErrorNewPages(page, showPageContent);
         int newShowPage = page;
-        if (newPages != null) {
-            pageContents = newPages;
-            for (int i = 0; i < pageContents.length; i++) {
-                if (pageContents[i].isShow) {
-                    newShowPage = i;
-                    break;
-                }
+        for (int i = 0; i < pageContents.length; i++) {
+            if (pageContents[i] != null && pageContents[i].isShow) {
+                newShowPage = i;
+                break;
             }
         }
         updatePages(pageContents);
         return newShowPage;
     }
 
-    private void showError(int page, @Error int error) {
-        PageContent[] pageContents = mOldPageContents != null ? mOldPageContents : new PageContent[3];
-        for (int i = 0; i < pageContents.length; i++) {
-            if (i == page) {
-                if (pageContents[i] == null) {
-                    pageContents[i] = createErrorPageContent(error);
-                    pageContents[i].isShow = true;
-                } else {
-                    pageContents[i].error = error;
-                    pageContents[i].isShow = true;
-                }
-            } else {
-                if (pageContents[i] == null) {
-                    pageContents[i] = createErrorPageContent(Error.NONE);
-                } else {
-                    pageContents[i].isShow = false;
-                }
-            }
-            pageContents[i].isLoading = false;
+    private void showError(int page, @Error int error, PageContent showPageContent) {
+        if (showPageContent == null) {
+            showPageContent = createErrorPageContent(error);
         }
-        PageContent[] newPages = getLoadingOrErrorNewPages(page, pageContents);
-        if (newPages != null) {
-            pageContents = newPages;
-        }
+        showPageContent.isLoading = false;
+        showPageContent.isShow = true;
+        PageContent[] pageContents = getLoadingOrErrorNewPages(page, showPageContent);
         updatePages(pageContents);
     }
 
-    private PageContent[] getLoadingOrErrorNewPages(int page, PageContent[] pageContents) {
-        PageContent[] newPages = null;
+    private PageContent[] getLoadingOrErrorNewPages(int page, PageContent showPageContent) {
+        PageContent[] newPages = new PageContent[3];
         if (mChaptersList != null && mChaptersList.size() > 0) {
-            if (page == 0 && mCurChapter > 0) {
-                newPages = new PageContent[3];
-                int preChapter = mCurChapter - 1;
-                ChapterBuffer preBuffer = mCacheChapterBuffers.get(getKey(preChapter));
-                if (preBuffer != null) {
-                    newPages[0] = createNewPageContent(preBuffer.getEndPage(), mChaptersList.get(preChapter).title, preChapter, preBuffer.getPageCount());
-                } else {
-                    newPages[0] = createNonePageContent(mChaptersList.get(preChapter).title, preChapter, false);
+            if (mCurChapter == 0) {
+                newPages[0] = showPageContent;
+                newPages[0].isEnd = hasEndChapter(0);
+                newPages[0].isStart = true;
+                if (!newPages[0].isEnd) {
+                    newPages[1] = getPageContent(1, true);
+                    if (!newPages[1].isEnd) {
+                        newPages[2] = getPageContent(2, true);
+                    }
                 }
-                newPages[1] = pageContents[0];
-                newPages[2] = pageContents[1];
-            } else if (page == 2 && !hasEndChapter(mCurChapter)) {
-                newPages = new PageContent[3];
-                int nextChapter = mCurChapter + 1;
-                ChapterBuffer nextBuffer = mCacheChapterBuffers.get(getKey(nextChapter));
-                if (nextBuffer != null) {
-                    newPages[2] = createNewPageContent(nextBuffer.getPageForPos(0), mChaptersList.get(nextChapter).title, nextChapter, nextBuffer.getPageCount());
+            } else if (!hasEndChapter(mCurChapter)) {
+                newPages[0] = getPageContent(mCurChapter - 1, false);
+                newPages[1] = showPageContent;
+                newPages[2] = getPageContent(mCurChapter + 1, true);
+            } else {
+                if (mCurChapter > 1) {
+                    newPages[0] = getPageContent(mCurChapter - 2, false);
+                    newPages[1] = getPageContent(mCurChapter - 1, false);
                 } else {
-                    newPages[2] = createNonePageContent(mChaptersList.get(nextChapter).title, nextChapter, false);
+                    newPages[1] = getPageContent(mCurChapter - 1, false);
                 }
-                newPages[1] = pageContents[2];
-                newPages[0] = pageContents[1];
+                newPages[2] = showPageContent;
+                newPages[2].isEnd = true;
             }
+        } else {
+            newPages[page] = showPageContent;
         }
         return newPages;
+    }
+
+    private PageContent getPageContent(int chapter, boolean isNext) {
+        PageContent pageContent;
+        Entities.Chapters chapters = mChaptersList.get(chapter);
+        ChapterBuffer chapterBuffer = mCacheChapterBuffers.get(getKey(chapter));
+        if (chapterBuffer != null) {
+            pageContent = createNewPageContent(isNext ? chapterBuffer.getPageForPos(0) : chapterBuffer.getEndPage(),
+                    chapters.title, chapter, chapterBuffer.getPageCount());
+        } else {
+            pageContent = createNonePageContent(chapters.title, chapter, hasEndChapter(chapter));
+        }
+        return pageContent;
     }
 
     private boolean hasEndChapter(int chapter) {
@@ -698,7 +663,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     private void updatePages(final PageContent[] pageContents) {
-        mOldPageContents = pageContents;
 //        int i = 0;
 //        for (PageContent pageContent : pageContents) {
 //            Log.i(TAG, "updatePages " + i + "::" + pageContent);

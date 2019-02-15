@@ -60,10 +60,13 @@ public class HtmlParse4 extends HtmlParse {
         Elements li = null;
         if (eList.isEmpty()) {
             eList = body.select("ul.dirlist").select(".three").select(".clearfix");
-            if (!eList.isEmpty()) {
-                li = eList.last().select("li");
-            } else {
+            if (eList.isEmpty()) {
                 eList = body.select("ul.clearfix").select(".chapter-list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.book_con_list");
+            }
+            if (!eList.isEmpty()) {
                 li = eList.last().select("li");
             }
         } else {
@@ -103,18 +106,16 @@ public class HtmlParse4 extends HtmlParse {
         if (content.isEmpty()) {
             content = body.select("div.article-con");
         }
+        if (content.isEmpty()) {
+            content = body.select("div.book_content");
+        }
+        content.select("div.con_l").remove();
+        content.select("div#stsm").remove();
         read.chapter = new Entities.Chapter();
-        String text = content.toString().replace("<div id=\"book_text\">", "");
-        text = text.replace("<div class=\"content\" id=\"chaptercontent\">", "");
-        text = text.replace("<div id=\"ali\">", "");
-        text = text.replace("<divclass=\"article-con\">", "");
+        String text = subFirstDiv(content);
         text = text.replace("</div>", "");
         logi("start ,text=" + text);
-        text = text.replace("\n", "");
-        text = text.replace("<br>", "\n");
-        text = text.replace("&nbsp;", "");
-        text = text.replace(" ", "");
-        text = text.replace("　", "");
+        text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

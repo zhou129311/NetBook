@@ -87,19 +87,6 @@ public class AppUtils {
         return MyApp.getContext().getResources().getString(resId, args);
     }
 
-    public static int getThemeColor(@Constant.ReadTheme int theme) {
-        int color = getColor(R.color.read_theme_white);
-        switch (theme) {
-        case Constant.ReadTheme.BROWN:
-            color = getColor(R.color.read_theme_brown);
-            break;
-        case Constant.ReadTheme.GREEN:
-            color = getColor(R.color.read_theme_green);
-            break;
-        }
-        return color;
-    }
-
     public static int getColor(int resId) {
         return MyApp.getContext().getResources().getColor(resId);
     }

@@ -105,8 +105,8 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
     }
 
     public void search(String key) {
+        mKey = key;
         if (!isAdded()) {
-            mKey = key;
             return;
         }
         if (!TextUtils.isEmpty(key) && !key.equals(mKey)) {

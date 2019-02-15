@@ -14,6 +14,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -63,6 +64,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     SwipeLayout mSwipeLayout;
     @BindView(R.id.read_view_pager)
     ReadViewPager mReadViewPager;
+
+    @BindView(R.id.day_night_view)
+    TextView mDayNightView;
 
     @BindView(R.id.read_abl_top_menu)
     AppBarLayout mReadTopBar;
@@ -140,7 +144,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         hideReadToolBar();
         initBrightness();
         initReadPageView();
-        updateThemeView(AppSettings.getReadTheme());
+        updateThemeView(AppSettings.getReadTheme(), AppSettings.isNight());
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = registerReceiver(mBatteryReceiver, filter);
         updateBattery(intent);
@@ -507,15 +511,18 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void setReadTheme(@Constant.ReadTheme int theme) {
-        updateThemeView(theme);
+        AppSettings.setNight(false);
+        updateThemeView(theme, false);
         AppSettings.saveReadTheme(theme);
     }
 
-    private void updateThemeView(@Constant.ReadTheme int theme) {
+    private void updateThemeView(@Constant.ReadTheme int theme, boolean isNight) {
+        mDayNightView.setActivated(isNight);
+        mDayNightView.setText(isNight ? R.string.book_read_mode_day_manual_setting : R.string.book_read_mode_night_manual_setting);
         mThemeWhiteView.setActivated(theme == Constant.ReadTheme.WHITE);
         mThemeBrownView.setActivated(theme == Constant.ReadTheme.BROWN);
         mThemeGreenView.setActivated(theme == Constant.ReadTheme.GREEN);
-        updatePageTheme(theme);
+        updatePageTheme(theme, isNight);
     }
 
     private void initBrightness() {
@@ -550,7 +557,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -561,9 +568,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -616,6 +623,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
             break;
         case R.id.day_night_view:
+            boolean isNight = !AppSettings.isNight();
+            AppSettings.setNight(isNight);
+            updateThemeView(AppSettings.getReadTheme(), isNight);
+            AppCompatDelegate.setDefaultNightMode(isNight ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             break;
         case R.id.orientation_view:
             break;
@@ -704,9 +715,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         relayoutPageContent();
     }
 
-    private void updatePageTheme(int theme) {
+    private void updatePageTheme(int theme, boolean isNight) {
         for (ReadPageManager page : mPageManagers) {
-            page.getReadPage().setReadTheme(theme, false);
+            page.getReadPage().setReadTheme(theme, isNight);
         }
     }
 

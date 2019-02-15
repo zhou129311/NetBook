@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.xzhou.book.utils.AppUtils;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -73,14 +72,11 @@ public class HtmlParse3 extends HtmlParse {
 //        logi("content = " + content.text());
 //        logi("content = " + content);
         read.chapter = new Entities.Chapter();
-        String text = content.toString().replace("<div id=\"content\">", "");
+        String text = subFirstDiv(content);
         text = text.replace("</div>", "");
-        text = text.replace("<fon color=\"red\">", "");
         text = text.replace("</fon>", "");
         logi("start ,text=" + text);
-        text = text.replace("\n", "");
-        text = text.replace("<br>", "\n");
-        text = text.replace("&nbsp;", "");
+        text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

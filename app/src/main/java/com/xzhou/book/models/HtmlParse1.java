@@ -88,17 +88,11 @@ public class HtmlParse1 extends HtmlParse {
         content.select("font").remove();
 
         read.chapter = new Entities.Chapter();
-        String text = content.toString().replace("<div id=\"content\">", "");
-        text = text.replace("<div id=\"content\" class=\"showtxt\">", "");
+        String text = subFirstDiv(content);
         text = text.replace("</div>", "");
-        text = text.replace("<div class=\"zhangjieTXT\" id=\"TXT\">", "");
         text = text.replace("<!--go-->", "");
         logi("start ,text=" + text);
-        text = text.replace("\n", "");
-        text = text.replace("<br>", "\n");
-        text = text.replace("&nbsp;", "");
-        text = text.replace("　", "");
-        text = text.replace(" ", "");
+        text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

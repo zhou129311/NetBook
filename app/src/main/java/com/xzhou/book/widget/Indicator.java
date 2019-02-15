@@ -44,10 +44,10 @@ public class Indicator extends LinearLayout {
 
     public ViewPager mViewPager;
 
-    private float mTextSize = 15;
-    private int mTextColorNormal = D_TEXT_COLOR_NORMAL;
-    private int mTextColorHighlight = D_TEXT_COLOR_HIGHLIGHT;
-    private int mIndicatorColor = D_INDICATOR_COLOR;
+    private float mTextSize;
+    private int mTextColorNormal;
+    private int mTextColorHighlight;
+    private int mIndicatorColor;
 
     private Paint mPaint;
     private Rect mRectF;
@@ -56,7 +56,7 @@ public class Indicator extends LinearLayout {
     private int mIndicatorWidth;
 
     private float mTranslationX;
-    private int mIndicatorStyle = STYLE_LINE;
+    private int mIndicatorStyle;
     private Path mPath;
     private int mPosition = 0;
 

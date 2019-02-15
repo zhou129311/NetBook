@@ -6,6 +6,7 @@ import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -47,6 +48,35 @@ public abstract class HtmlParse {
 
     public abstract Entities.ChapterRead parseChapterRead(String chapterUrl, Document document);
 
+    protected String subFirstDiv(Elements content) {
+        String text = content.toString();
+        int divIndexStart = text.indexOf("<div");
+        int divIndexEnd = text.indexOf(">");
+        if (divIndexEnd > divIndexStart && divIndexStart >= 0) {
+            text = text.substring(divIndexEnd + 1);
+        }
+        int fonIndexStart = text.indexOf("<fon");
+        int fonIndexEnd = text.indexOf(">");
+        if (fonIndexEnd > fonIndexStart && fonIndexStart >= 0) {
+            text = text.substring(fonIndexEnd + 1);
+        }
+        int pIndexStart = text.indexOf("<p");
+        int pIndexEnd = text.indexOf(">");
+        if (pIndexEnd > pIndexStart && pIndexStart >= 0) {
+            text = text.substring(pIndexEnd + 1);
+        }
+        return text;
+    }
+
+    protected String replaceCommon(String text) {
+        text = text.replace("\n", "");
+        text = text.replace("<br>", "\n");
+        text = text.replace("&nbsp;", "");
+        text = text.replace(" ", "");
+        text = text.replace("　", "");
+        return text;
+    }
+
     protected void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
@@ -57,7 +87,7 @@ public abstract class HtmlParse {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            context.init(null, new X509TrustManager[] { new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -69,7 +99,7 @@ public abstract class HtmlParse {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            }}, new SecureRandom());
+            } }, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();

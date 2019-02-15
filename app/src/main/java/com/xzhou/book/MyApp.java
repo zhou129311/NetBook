@@ -24,7 +24,6 @@ public class MyApp extends Application {
         initNightMode();
         BookManager.get().init();
         AppSettings.init();
-        Glide.init(this, new GlideBuilder().setLogLevel(Log.ERROR));
     }
 
     @Override

@@ -66,9 +66,7 @@ public class HtmlParse2 extends HtmlParse {
         content.select("div.kongwen").remove();
         content.select("div.readmiddle").remove();
         content.select("p").remove();
-//        logi("content = " + content.text());
-//        logi("content = " + content);
-        String text = content.toString().replace("<div class=\"readcontent\">", "");
+        String text = subFirstDiv(content);
         text = text.replace("</div>", "");
         if (chapterUrl.contains("milepub")) {
             text = text.replace("<div id=\"BookText\">", "");
@@ -76,9 +74,7 @@ public class HtmlParse2 extends HtmlParse {
             text = text.replace("&lt;script language=\"javascript\"&gt;outputcontent('/75','75976','27614716','0');&lt;/script&gt;", "");
         }
         logi("start ,text=" + text);
-        text = text.replace("\n", "");
-        text = text.replace("<br>", "\n");
-        text = text.replace("&nbsp;", "");
+        text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

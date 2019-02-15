@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,6 +23,8 @@ import com.xzhou.book.find.FindContract;
 import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
 import com.xzhou.book.search.SearchActivity;
+import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.widget.Indicator;
 import com.xzhou.book.utils.ToastUtils;
@@ -76,6 +79,14 @@ public class MainActivity extends BaseActivity {
         case R.id.action_scan_local_book:
             break;
         case R.id.action_night_mode:
+            if (AppSettings.isNight()) {
+                AppSettings.setNight(false);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                AppSettings.setNight(true);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+            recreate();
             break;
         case R.id.action_settings:
             SettingsActivity.startActivity(this);

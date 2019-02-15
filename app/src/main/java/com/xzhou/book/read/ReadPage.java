@@ -16,6 +16,7 @@ import com.xzhou.book.R;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.widget.JustifyTextView;
 
 import butterknife.BindView;
@@ -79,7 +80,6 @@ public class ReadPage extends RelativeLayout {
         View view = View.inflate(context, R.layout.read_pager, this);
         ButterKnife.bind(this, view);
 
-        mChapterContent.setTextColor(context.getResources().getColor(R.color.common_h1));
         int fontSize = AppSettings.getFontSizeSp();
         mChapterContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mChapterContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -94,7 +94,7 @@ public class ReadPage extends RelativeLayout {
         });
 
         mTheme = AppSettings.getReadTheme();
-        setReadTheme(mTheme, true);
+        setReadTheme(mTheme, AppSettings.isNight());
         initLoadingView(context);
         mRetryBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -125,11 +125,21 @@ public class ReadPage extends RelativeLayout {
         mBatteryView.setText(String.valueOf(battery));
     }
 
-    public void setReadTheme(int theme, boolean isForce) {
-        if (mTheme != theme || isForce) {
-//            Log.i(TAG, "setReadTheme:" + mTheme);
-            mTheme = theme;
-            int batteryRes = R.mipmap.reader_battery_bg_normal;
+    public void setReadTheme(int theme, boolean isNight) {
+        int contentColor;
+        int titleColor;
+        int backgroundColor;
+        int batteryRes;
+        if (AppSettings.isNight()) {
+            backgroundColor = AppUtils.getColor(R.color.read_theme_night);
+            batteryRes = R.mipmap.reader_battery_bg_night;
+            contentColor = AppUtils.getColor(R.color.chapter_content_night);
+            titleColor = AppUtils.getColor(R.color.chapter_title_night);
+        } else {
+            backgroundColor = ThemeUtils.getThemeColor(theme);
+            contentColor = AppUtils.getColor(R.color.chapter_content_day);
+            titleColor = AppUtils.getColor(R.color.chapter_title_day);
+            batteryRes = R.mipmap.reader_battery_bg_normal;
             switch (mTheme) {
             case Constant.ReadTheme.BROWN:
                 batteryRes = R.mipmap.reader_battery_bg_brown;
@@ -138,9 +148,12 @@ public class ReadPage extends RelativeLayout {
                 batteryRes = R.mipmap.reader_battery_bg_green;
                 break;
             }
-            mBatteryView.setBackgroundResource(batteryRes);
-            setBackgroundColor(AppUtils.getThemeColor(theme));
         }
+        mTheme = theme;
+        mBatteryView.setBackgroundResource(batteryRes);
+        setBackgroundColor(backgroundColor);
+        mChapterTitle.setTextColor(titleColor);
+        mChapterContent.setTextColor(contentColor);
     }
 
     public int getTheme() {
@@ -245,7 +258,7 @@ public class ReadPage extends RelativeLayout {
                 }
                 addView(mLoadingView, lp);
                 if (mLoadAnimator == null) {
-                    mLoadAnimator = ValueAnimator.ofInt(0, 90);
+                    mLoadAnimator = ValueAnimator.ofInt(0, 70);
                     mLoadAnimator.setRepeatCount(0);
                     mLoadAnimator.setDuration(5000);
                 }

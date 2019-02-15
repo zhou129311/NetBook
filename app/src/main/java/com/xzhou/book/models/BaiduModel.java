@@ -36,6 +36,7 @@ public class BaiduModel {
             put("www.kenshu.cc", ParseType.PARSE_TYPE_4);
             put("www.kuaiyankanshu.net", ParseType.PARSE_TYPE_4);
             put("www.boluoxs.com", ParseType.PARSE_TYPE_4);
+            put("www.qiushuzw.com", ParseType.PARSE_TYPE_4);
 
             put("www.fpzw.com", ParseType.PARSE_TYPE_5);
 //            put("www.ggdown.org", PARSE_GGD);

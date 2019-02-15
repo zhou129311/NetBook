@@ -73,12 +73,10 @@ public class HtmlParse5 extends HtmlParse {
 //        logi("content = " + content.text());
         logi("content = " + content);
         read.chapter = new Entities.Chapter();
-        String text = content.toString().replace("<p class=\"Text\">", "");
+        String text = subFirstDiv(content);
         text = text.replace("</div>", "");
         logi("start ,text=" + text);
-        text = text.replace("\n", "");
-        text = text.replace("<br>", "\n");
-        text = text.replace("&nbsp;", "");
+        text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

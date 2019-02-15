@@ -67,7 +67,7 @@
     <color name="chapter_content_night">#444444</color>
     <!--章节标题日间颜色-->
     <color name="chapter_title_day">#837B63</color>
-    <!--章节内容夜间颜色-->
+    <!--章节内容日间颜色-->
     <color name="chapter_content_day">#3B3220</color>
     <!--阅读页顶部字体颜色-->
     <color name="book_read_top_text">#D1D1D1</color>
