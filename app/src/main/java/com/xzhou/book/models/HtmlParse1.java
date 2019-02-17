@@ -3,14 +3,12 @@ package com.xzhou.book.models;
 import android.text.TextUtils;
 
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class HtmlParse1 extends HtmlParse {
@@ -30,23 +28,13 @@ public class HtmlParse1 extends HtmlParse {
         Elements eList = body.select("div#list");
         if (eList.isEmpty()) {
             eList = body.select("div.listmain");
-//            logi("eList = " + eList);
         }
-        Elements dl = eList.select("dl").first().children();
-        int dtSize = 0;
-        int target = 0;
-        if (host.contains("tianxiabachang") || host.contains("booktxt")
-                || host.contains("yangguiweihuo") || host.contains("biqugexsw")
-                || host.contains("qu.la") || host.contains("uxiaoshuo")) {
-            target = 2;
-        } else if (host.contains("x4399")) {
-            target = 1;
+        if (eList.isEmpty()) {
+            eList = body.select("div.novel_list");
         }
+        Elements dl = eList.last().select("dl").first().children();
         for (Element c : dl) {
-            if ("dt".equals(c.tagName())) {
-                dtSize++;
-            }
-            if ((dtSize == 0 || dtSize >= target) && "dd".equals(c.tagName())) {
+            if ("dd".equals(c.tagName())) {
                 Elements u = c.getElementsByTag("a");
                 String title = u.text();
                 String link = u.attr("href");
@@ -61,14 +49,8 @@ public class HtmlParse1 extends HtmlParse {
                 }
             }
         }
-        if (list.size() > 0) {
-            try {
-                Collections.sort(list, sComparator);
-            } catch (Exception e) {
-                Log.e(TAG, e);
-            }
-        }
-        return list.size() == 0 ? null : list;
+        list = sortAndRemoveDuplicate(list);
+        return list;
     }
 
     @Override
@@ -78,20 +60,15 @@ public class HtmlParse1 extends HtmlParse {
         Element body = document.body();
         Elements content = body.select("div#content");
         if (content.isEmpty()) {
+            content = body.select("div.content");
+        }
+        if (content.isEmpty()) {
             content = body.select("div.zhangjieTXT");
         }
-        content.select("script").remove();
-        content.select("div.bottem").remove();
-        content.select("p").remove();
-        content.select("b").remove();
-        content.select("fon").remove();
-        content.select("font").remove();
 
         read.chapter = new Entities.Chapter();
-        String text = subFirstDiv(content);
-        text = text.replace("</div>", "");
+        String text = formatContent(content);
         text = text.replace("<!--go-->", "");
-        logi("start ,text=" + text);
         text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);

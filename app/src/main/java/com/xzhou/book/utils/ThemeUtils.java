@@ -17,4 +17,17 @@ public class ThemeUtils {
         return color;
     }
 
+    public static int getThemeDrawableRes(@Constant.ReadTheme int theme) {
+        int res = R.drawable.sel_theme_white;
+        switch (theme) {
+        case Constant.ReadTheme.BROWN:
+            res = R.drawable.sel_theme_brown;
+            break;
+        case Constant.ReadTheme.GREEN:
+            res = R.drawable.sel_theme_green;
+            break;
+        }
+        return res;
+    }
+
 }

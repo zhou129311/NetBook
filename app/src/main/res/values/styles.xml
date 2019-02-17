@@ -170,7 +170,7 @@
     <style name="DialogTitleText">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/common_h1</item>
     </style>
 
 </resources>

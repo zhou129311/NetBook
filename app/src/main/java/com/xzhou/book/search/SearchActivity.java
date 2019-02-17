@@ -25,6 +25,7 @@ import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.datasource.BaiduSearch;
+import com.xzhou.book.utils.Log;
 
 import java.util.List;
 
@@ -125,6 +126,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void search(String key) {
+        Log.i("search:" + key);
         mKey = key;
         showFragment(TAB_RESULT);
         mSearchEt.setText(key);

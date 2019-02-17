@@ -10,8 +10,11 @@ import org.jsoup.select.Elements;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -21,6 +24,24 @@ import javax.net.ssl.X509TrustManager;
 
 public abstract class HtmlParse {
     protected String TAG = "HtmlParse";
+
+    private static final List<String> E_TAGS = new ArrayList<String>() {
+        {
+            add("div.kongwen");
+            add("div.readmiddle");
+            add("div.bottem");
+            add("div.con_l");
+            add("div#stsm");
+            add("div#ali");
+            add("a");
+            add("b");
+            add("p");
+            //add("fon");
+            add("font");
+            add("strong");
+            add("script");
+        }
+    };
 
     public List<Entities.Chapters> parseChapters(String readUrl) {
         try {
@@ -48,8 +69,24 @@ public abstract class HtmlParse {
 
     public abstract Entities.ChapterRead parseChapterRead(String chapterUrl, Document document);
 
-    protected String subFirstDiv(Elements content) {
+    protected List<Entities.Chapters> sortAndRemoveDuplicate(List<Entities.Chapters> list) {
+        if (list.size() > 0) {
+            try {
+                Set<Entities.Chapters> s = new TreeSet<>(sComparator);
+                s.addAll(list);
+                return new ArrayList<>(s);
+            } catch (Exception e) {
+                Log.e(TAG, e);
+            }
+        }
+        return null;
+    }
+
+    protected String formatContent(Elements content) {
+        removeContentTag(content);
+
         String text = content.toString();
+        Log.i(TAG, "formatContent:text = " + text);
         int divIndexStart = text.indexOf("<div");
         int divIndexEnd = text.indexOf(">");
         if (divIndexEnd > divIndexStart && divIndexStart >= 0) {
@@ -65,7 +102,21 @@ public abstract class HtmlParse {
         if (pIndexEnd > pIndexStart && pIndexStart >= 0) {
             text = text.substring(pIndexEnd + 1);
         }
+        text = text.replace("</div>", "");
+        text = text.replace("</fon>", "");
+        text = text.replace("&amp;", "&");
+        text = text.replace("amp;", "&");
+        text = text.replace("&lt;", "<");
+        text = text.replace("&gt;", ">");
+        text = text.replace("lt;", "<");
+        text = text.replace("gt;", ">");
         return text;
+    }
+
+    private void removeContentTag(Elements content) {
+        for (String tag : E_TAGS) {
+            content.select(tag).remove();
+        }
     }
 
     protected String replaceCommon(String text) {
@@ -74,6 +125,9 @@ public abstract class HtmlParse {
         text = text.replace("&nbsp;", "");
         text = text.replace(" ", "");
         text = text.replace("　", "");
+        if (text.startsWith("\n")) {
+            text = text.substring(1);
+        }
         return text;
     }
 
@@ -109,25 +163,19 @@ public abstract class HtmlParse {
     public static Comparator<Entities.Chapters> sComparator = new Comparator<Entities.Chapters>() {
         @Override
         public int compare(Entities.Chapters o1, Entities.Chapters o2) {
-            int link1 = getLinkIndex(o1.link);
-            int link2 = getLinkIndex(o2.link);
-            if (link1 > link2) {
-                return 1;
-            } else if (link1 == link2) {
-                return 0;
-            } else {
-                return -1;
-            }
+            String link1 = getLinkIndex(o1.link);
+            String link2 = getLinkIndex(o2.link);
+            return link1.compareTo(link2);
         }
     };
 
-    public static int getLinkIndex(String link) {
+    public static String getLinkIndex(String link) {
         String last1 = link.substring(link.lastIndexOf("/") + 1);
         int i = last1.lastIndexOf(".");
         if (i > 0) {
-            return Integer.parseInt(last1.substring(0, i));
+            return last1.substring(0, i);
         }
-        return 0;
+        return link;
     }
 
     protected void logd(String str) {

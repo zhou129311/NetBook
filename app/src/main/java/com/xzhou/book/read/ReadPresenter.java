@@ -196,8 +196,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     curPageLine = curBuffer.getEndPage();
                 } else {
                     curPageLine = curBuffer.getPageForReadPos(readPos);
-                    Log.d(TAG, "chapter load success = " + curPageLine);
                 }
+                Log.d(TAG, "chapter load success,curPageLine=" + curPageLine);
                 preparePageContents(curBuffer, mCurChapter, curPageLine, curChapterPageCount);
                 return;
             }

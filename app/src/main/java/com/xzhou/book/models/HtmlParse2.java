@@ -30,12 +30,8 @@ public class HtmlParse2 extends HtmlParse {
             eList = body.select("dl.chapterlist").select(".cate");
         }
         Elements chapterList = eList.last().children();
-        int dtSize = 0;
         for (Element c : chapterList) {
-            if ("dt".equals(c.tagName())) {
-                dtSize++;
-            }
-            if (dtSize == 1 && "dd".equals(c.tagName())) {
+            if ("dd".equals(c.tagName())) {
                 Elements dd_a = c.getElementsByTag("a");
                 String title = dd_a.text();
                 String link = dd_a.attr("href");
@@ -50,7 +46,8 @@ public class HtmlParse2 extends HtmlParse {
                 }
             }
         }
-        return list.size() == 0 ? null : list;
+        list = sortAndRemoveDuplicate(list);
+        return list;
     }
 
     @Override
@@ -63,17 +60,12 @@ public class HtmlParse2 extends HtmlParse {
         if (content.isEmpty()) {
             content = body.select("div#BookText");
         }
-        content.select("div.kongwen").remove();
-        content.select("div.readmiddle").remove();
-        content.select("p").remove();
-        String text = subFirstDiv(content);
-        text = text.replace("</div>", "");
+        String text = formatContent(content);
         if (chapterUrl.contains("milepub")) {
             text = text.replace("<div id=\"BookText\">", "");
             text = text.replace("&lt;div id=\"pagecontent\"&gt;", "");
             text = text.replace("&lt;script language=\"javascript\"&gt;outputcontent('/75','75976','27614716','0');&lt;/script&gt;", "");
         }
-        logi("start ,text=" + text);
         text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);

@@ -109,7 +109,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         if (!isAdded()) {
             return;
         }
-        if (!TextUtils.isEmpty(key) && !key.equals(mKey)) {
+        if (!TextUtils.isEmpty(key)) {
             mPresenter.search(key);
         } else {
             Log.e(TAG, "oldKey = " + mKey + ",newKey = " + key);

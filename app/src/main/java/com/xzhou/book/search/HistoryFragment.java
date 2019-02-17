@@ -72,10 +72,10 @@ public class HistoryFragment extends BaseFragment {
     public void addNewHistory(String history) {
         if (!mList.contains(history)) {
             if (mAdapter != null) {
-                mAdapter.addData(history);
+                mAdapter.addData(0, history);
                 mClearHistoryTv.setEnabled(!mList.isEmpty());
             } else {
-                mList.add(history);
+                mList.add(0, history);
             }
             AppSettings.saveHistory(mList);
         }

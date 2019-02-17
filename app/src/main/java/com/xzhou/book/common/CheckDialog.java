@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import com.xzhou.book.R;
 
-public class CheckDialog extends Dialog {
+public class CheckDialog extends AppCompatDialog {
 
     private CheckDialog(@NonNull Context context) {
         super(context, R.style.DialogTheme);

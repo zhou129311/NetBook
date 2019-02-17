@@ -66,6 +66,15 @@ public class HtmlParse4 extends HtmlParse {
             if (eList.isEmpty()) {
                 eList = body.select("div.book_con_list");
             }
+            if (eList.isEmpty()) {
+                eList = body.select("ul#chapters-list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.mulu");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.pc_list");
+            }
             if (!eList.isEmpty()) {
                 li = eList.last().select("li");
             }
@@ -78,6 +87,9 @@ public class HtmlParse4 extends HtmlParse {
         for (Element c : li) {
             if ("li".equals(c.tagName())) {
                 Elements u = c.getElementsByTag("a");
+                if (u.isEmpty()) {
+                    continue;
+                }
                 String title = u.text();
                 String link = u.attr("href");
                 if (!link.contains("/")) {
@@ -91,7 +103,8 @@ public class HtmlParse4 extends HtmlParse {
                 }
             }
         }
-        return list.size() == 0 ? null : list;
+        list = sortAndRemoveDuplicate(list);
+        return list;
     }
 
     @Override
@@ -109,12 +122,17 @@ public class HtmlParse4 extends HtmlParse {
         if (content.isEmpty()) {
             content = body.select("div.book_content");
         }
-        content.select("div.con_l").remove();
-        content.select("div#stsm").remove();
+        if (content.isEmpty()) {
+            content = body.select("div#txtContent");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.yd_text2");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#content1");
+        }
         read.chapter = new Entities.Chapter();
-        String text = subFirstDiv(content);
-        text = text.replace("</div>", "");
-        logi("start ,text=" + text);
+        String text = formatContent(content);
         text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);

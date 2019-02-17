@@ -93,8 +93,8 @@ public class ReadPage extends RelativeLayout {
             }
         });
 
-        mTheme = AppSettings.getReadTheme();
-        setReadTheme(mTheme, AppSettings.isNight());
+        mTheme = AppSettings.READ_THEME;
+        setReadTheme(AppSettings.READ_THEME, AppSettings.isNight());
         initLoadingView(context);
         mRetryBtn.setOnClickListener(new OnClickListener() {
             @Override

@@ -57,6 +57,7 @@
             android:theme="@style/NavigationBarTheme"/>
         <activity
             android:name=".read.ReadActivity"
+            android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/ReadTheme">
             <intent-filter>

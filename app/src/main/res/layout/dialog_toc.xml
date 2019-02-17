@@ -16,7 +16,7 @@
         android:gravity="center"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
-        android:textColor="@color/light_black"
+        android:textColor="@color/common_h1"
         android:textSize="16sp"
         tools:text="人皇纪"/>
 

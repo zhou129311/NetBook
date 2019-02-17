@@ -1,9 +1,9 @@
 package com.xzhou.book.read;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +16,13 @@ import android.widget.TextView;
 import com.xzhou.book.R;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.utils.AppUtils;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BookTocDialog extends Dialog {
+public class BookTocDialog extends AppCompatDialog {
 
     @BindView(R.id.toc_title)
     TextView mTocTitle;

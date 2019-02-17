@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -30,12 +33,15 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonDialog;
+import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.ItemDialog;
+import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
@@ -43,9 +49,11 @@ import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
+import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.SwipeLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -67,6 +75,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @BindView(R.id.day_night_view)
     TextView mDayNightView;
+    @BindView(R.id.orientation_view)
+    TextView mOrientationView;
 
     @BindView(R.id.read_abl_top_menu)
     AppBarLayout mReadTopBar;
@@ -77,28 +87,19 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @BindView(R.id.read_setting_layout)
     ConstraintLayout mReadSettingLayout;
-    //    @BindView(R.id.brightness_min)
-//    ImageView mBrightnessMin;
     @BindView(R.id.brightness_seek_bar)
     SeekBar mBrightnessSeekBar;
-    //    @BindView(R.id.brightness_max)
-//    ImageView mBrightnessMax;
     @BindView(R.id.brightness_checkbox)
     CheckBox mBrightnessCheckbox;
-    //    @BindView(R.id.auto_reader_view)
-//    TextView mAutoReaderView;
-//    @BindView(R.id.text_size_dec)
-//    ImageView mTextSizeDec;
-//    @BindView(R.id.text_size_inc)
-//    ImageView mTextSizeInc;
-//    @BindView(R.id.more_setting_view)
-//    TextView mMoreSettingView;
-    @BindView(R.id.theme_white_view)
+
+    @BindView(R.id.theme_recycler_view)
+    RecyclerView mThemeRecyclerView;
+    /*@BindView(R.id.theme_white_view)
     ImageView mThemeWhiteView;
     @BindView(R.id.theme_brown_view)
     ImageView mThemeBrownView;
     @BindView(R.id.theme_green_view)
-    ImageView mThemeGreenView;
+    ImageView mThemeGreenView;*/
 
     // tool bar show hide anim
     private Animation mTopInAnim;
@@ -135,6 +136,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
 
         setContentView(R.layout.activity_read);
+
         mReadTopBar.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
         mEndSlideView.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
         if (!AppSettings.HAS_FULL_SCREEN_MODE) {
@@ -143,8 +145,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         initMenuAnim();
         hideReadToolBar();
         initBrightness();
+        initThemeView(AppSettings.READ_THEME);
         initReadPageView();
-        updateThemeView(AppSettings.getReadTheme(), AppSettings.isNight());
+        updateThemeView(AppSettings.READ_THEME, AppSettings.isNight());
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent intent = registerReceiver(mBatteryReceiver, filter);
         updateBattery(intent);
@@ -165,6 +168,29 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         if (!mBook.isBaiduBook) {
             mPresenter.loadAllSource();
         }
+    }
+
+    private void initThemeView(@Constant.ReadTheme int theme) {
+        final List<Integer> list = new ArrayList<>();
+        list.add(Constant.ReadTheme.WHITE);
+        list.add(Constant.ReadTheme.BROWN);
+        list.add(Constant.ReadTheme.GREEN);
+        final ThemeAdapter themeAdapter = new ThemeAdapter(list);
+        themeAdapter.bindToRecyclerView(mThemeRecyclerView);
+        mThemeRecyclerView.setHasFixedSize(true);
+        MyLinearLayoutManager lm = new MyLinearLayoutManager(this);
+        lm.setOrientation(RecyclerView.HORIZONTAL);
+        mThemeRecyclerView.setLayoutManager(lm);
+        mThemeRecyclerView.addItemDecoration(new ThemeItemDecoration(AppUtils.dip2px(30)));
+        themeAdapter.setTheme(theme);
+        themeAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                int theme = list.get(position);
+                themeAdapter.setTheme(theme);
+                setReadTheme(theme);
+            }
+        });
     }
 
     @Override
@@ -519,9 +545,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private void updateThemeView(@Constant.ReadTheme int theme, boolean isNight) {
         mDayNightView.setActivated(isNight);
         mDayNightView.setText(isNight ? R.string.book_read_mode_day_manual_setting : R.string.book_read_mode_night_manual_setting);
-        mThemeWhiteView.setActivated(theme == Constant.ReadTheme.WHITE);
-        mThemeBrownView.setActivated(theme == Constant.ReadTheme.BROWN);
-        mThemeGreenView.setActivated(theme == Constant.ReadTheme.GREEN);
         updatePageTheme(theme, isNight);
     }
 
@@ -569,8 +592,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
-            R.id.more_setting_view, R.id.theme_white_view, R.id.theme_brown_view, R.id.theme_green_view, R.id.day_night_view,
-            R.id.orientation_view, R.id.setting_view, R.id.download_view, R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
+            R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
+            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -607,28 +630,20 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.more_setting_view:
             ReadSettingActivity.startActivity(mActivity);
             break;
-        case R.id.theme_white_view:
-            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.WHITE) {
-                setReadTheme(Constant.ReadTheme.WHITE);
-            }
-            break;
-        case R.id.theme_brown_view:
-            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.BROWN) {
-                setReadTheme(Constant.ReadTheme.BROWN);
-            }
-            break;
-        case R.id.theme_green_view:
-            if (mPageManagers[0].getReadPage().getTheme() != Constant.ReadTheme.GREEN) {
-                setReadTheme(Constant.ReadTheme.GREEN);
-            }
-            break;
         case R.id.day_night_view:
             boolean isNight = !AppSettings.isNight();
             AppSettings.setNight(isNight);
-            updateThemeView(AppSettings.getReadTheme(), isNight);
+            updateThemeView(AppSettings.READ_THEME, isNight);
             AppCompatDelegate.setDefaultNightMode(isNight ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             break;
         case R.id.orientation_view:
+            if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                mOrientationView.setText(R.string.book_read_landscape);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                mOrientationView.setText(R.string.book_read_portrait);
+            }
             break;
         case R.id.setting_view:
             if (mReadSettingLayout.getVisibility() == View.VISIBLE) {
@@ -808,6 +823,44 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
             container.addView(view);
             return view;
+        }
+    }
+
+    private class ThemeAdapter extends BaseQuickAdapter<Integer, CommonViewHolder> {
+        private @Constant.ReadTheme
+        int mCurTheme;
+
+        ThemeAdapter(List<Integer> list) {
+            super(R.layout.item_theme_view, list);
+        }
+
+        void setTheme(@Constant.ReadTheme int theme) {
+            mCurTheme = theme;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        protected void convert(CommonViewHolder holder, Integer item) {
+            ImageView imageView = holder.getView(R.id.theme_image_view);
+            imageView.setImageResource(ThemeUtils.getThemeDrawableRes(item));
+            imageView.setActivated(item == mCurTheme);
+        }
+    }
+
+    public class ThemeItemDecoration extends RecyclerView.ItemDecoration {
+        private int mSpace;
+
+        ThemeItemDecoration(int space) {
+            mSpace = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            int position = parent.getChildAdapterPosition(view); // item position
+            if (position > 0) {
+                outRect.set(mSpace, 0, 0, 0);
+            }
         }
     }
 }

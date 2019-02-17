@@ -36,12 +36,15 @@ public class AppSettings {
     public static boolean HAS_VOLUME_TURN_PAGE = true;
     public static boolean HAS_FULL_SCREEN_MODE = true;
     public static boolean HAS_CLICK_NEXT_PAGE = true;
+    public static @ReadTheme
+    int READ_THEME = ReadTheme.WHITE;
 
     public static void init() {
         HAS_SAVING_TRAFFIC = isSavingTraffic();
         HAS_VOLUME_TURN_PAGE = isVolumeTurnPage();
         HAS_CLICK_NEXT_PAGE = isClickNextPage();
         HAS_FULL_SCREEN_MODE = isFullScreenMode();
+        READ_THEME = getReadTheme();
     }
 
     public static boolean isFullScreenMode() {
@@ -149,6 +152,7 @@ public class AppSettings {
     }
 
     public static void saveReadTheme(@ReadTheme int theme) {
+        READ_THEME = theme;
         SPUtils.get().putInt(PRE_KEY_THEME, theme);
     }
 

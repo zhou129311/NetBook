@@ -36,7 +36,7 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/touch_bg"
         android:text="@string/cancel"
-        android:textColor="@color/black"
+        android:textColor="@color/common_h1"
         app:layout_constraintEnd_toStartOf="@id/ok_tv"
         app:layout_constraintTop_toBottomOf="@id/checkbox"/>
 

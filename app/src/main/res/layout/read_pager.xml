@@ -89,7 +89,7 @@
             android:id="@+id/error_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/read_error_no_network"
             android:textColor="@color/common_h2"

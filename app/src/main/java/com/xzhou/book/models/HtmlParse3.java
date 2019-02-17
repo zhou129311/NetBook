@@ -57,7 +57,8 @@ public class HtmlParse3 extends HtmlParse {
                 }
             }
         }
-        return list.size() == 0 ? null : list;
+        list = sortAndRemoveDuplicate(list);
+        return list;
     }
 
     @Override
@@ -66,16 +67,9 @@ public class HtmlParse3 extends HtmlParse {
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("div#content");
-//        content.select("div.kongwen").remove();
-        content.select("font").remove();
-        content.select("b").remove();
-//        logi("content = " + content.text());
-//        logi("content = " + content);
         read.chapter = new Entities.Chapter();
-        String text = subFirstDiv(content);
-        text = text.replace("</div>", "");
+        String text = formatContent(content);
         text = text.replace("</fon>", "");
-        logi("start ,text=" + text);
         text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);

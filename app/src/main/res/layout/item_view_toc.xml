@@ -13,7 +13,7 @@
           android:paddingTop="12dp"
           android:paddingEnd="2dp"
           android:paddingBottom="12dp"
-          android:textColor="@color/light_black"
+          android:textColor="@color/common_h1"
           android:textSize="15sp"
           android:text="1.第一章 八十大寿"
           tools:ignore="HardcodedText"/>

@@ -451,7 +451,6 @@ public class BookProvider {
             sortOrder += COLUMN_ADD_TIME + " DESC";
             break;
         }
-        Log.d(TAG, "sortOrder = " + sortOrder);
         return sortOrder;
     }
 }

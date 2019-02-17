@@ -13,6 +13,6 @@
     android:paddingEnd="0dp"
     android:paddingStart="8dp"
     android:singleLine="true"
-    android:textColor="@color/black"
+    android:textColor="@color/common_h1"
     android:textSize="16sp"
     tools:ignore="UnusedAttribute"/>

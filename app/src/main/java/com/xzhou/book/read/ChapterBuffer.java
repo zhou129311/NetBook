@@ -1,6 +1,7 @@
 package com.xzhou.book.read;
 
 import android.graphics.Paint;
+import android.text.TextUtils;
 
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
@@ -125,6 +126,10 @@ public class ChapterBuffer {
             while (paragraphStr.length() > 0) {
                 int paintSize = paint.breakText(paragraphStr, true, width, null);
                 String line = paragraphStr.substring(0, paintSize);
+                if (AppUtils.isEmpty(line.trim())) {
+                    paragraphStr = paragraphStr.substring(paintSize);
+                    continue;
+                }
                 pageContent.lines.add(line);
                 paragraphStr = paragraphStr.substring(paintSize);
                 if (pageContent.lines.size() >= maxLineCount) {

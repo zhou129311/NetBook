@@ -31,5 +31,5 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/touch_bg"
         android:text="@string/cancel"
-        android:textColor="@color/black"/>
+        android:textColor="@color/common_h1"/>
 </RelativeLayout>

@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
@@ -313,6 +314,19 @@ public class Entities {
         public Chapters(String title, String link) {
             this.title = title;
             this.link = link;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Chapters) {
+                return TextUtils.equals(((Chapters) obj).link, link);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return link.hashCode();
         }
     }
 

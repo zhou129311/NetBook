@@ -52,7 +52,7 @@ public class BaiduSearch {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            context.init(null, new X509TrustManager[] { new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -64,7 +64,7 @@ public class BaiduSearch {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            }}, new SecureRandom());
+            } }, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
@@ -180,8 +180,18 @@ public class BaiduSearch {
                 if (index < 0) {
                     index = title.title.lastIndexOf(" ");
                 }
+                if (index < 0) {
+                    index = title.title.lastIndexOf(",");
+                }
                 if (index > 0) {
                     book.sourceName = title.title.substring(index + 1);
+                }
+            }
+            if (TextUtils.isEmpty(book.sourceName)) {
+                int i1 = book.sourceHost.indexOf(".");
+                int i2 = book.sourceHost.lastIndexOf(".");
+                if (i2 > i1 && i1 > 0) {
+                    book.sourceName = book.sourceHost.substring(i1 + 1, i2);
                 }
             }
         } catch (Exception e) {

@@ -24,8 +24,8 @@
         android:textColor="@color/book_read_top_text"
         android:textSize="13sp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/read_setting_bottom_ll_layout"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="正在缓存:超神机械师(51/791)"/>
 
     <android.support.constraint.ConstraintLayout
@@ -33,11 +33,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/reader_menu_bg_color"
-        app:layout_constraintBottom_toTopOf="@id/read_setting_bottom_ll_layout"
         android:elevation="2dp"
         android:paddingBottom="15dp"
-        android:paddingTop="25dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/read_setting_bottom_ll_layout"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/brightness_min"
@@ -45,7 +45,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="35dp"
             android:src="@mipmap/brightness_min"
+            app:layout_constraintBottom_toTopOf="@id/text_size_dec"
+            app:layout_constraintEnd_toStartOf="@id/brightness_seek_bar"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"/>
 
         <SeekBar
@@ -69,7 +72,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="35dp"
             android:src="@mipmap/brightness_max"
+            app:layout_constraintBottom_toTopOf="@id/text_size_dec"
             app:layout_constraintEnd_toStartOf="@id/brightness_checkbox"
+            app:layout_constraintStart_toEndOf="@id/brightness_seek_bar"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"/>
 
         <CheckBox
@@ -85,6 +91,7 @@
             android:textSize="11dp"
             app:layout_constraintBottom_toBottomOf="@id/brightness_max"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/brightness_max"
             app:layout_constraintTop_toTopOf="@id/brightness_max"
             tools:ignore="SpUsage"/>
 
@@ -93,26 +100,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="35dp"
-            android:layout_marginTop="45dp"
             android:drawablePadding="12dp"
             android:drawableStart="@mipmap/ic_reader_auto"
             android:text="@string/read_settings_auto_read"
             android:textColor="@color/gray"
             android:textSize="11dp"
+            app:layout_constraintBottom_toBottomOf="@id/text_size_dec"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/brightness_checkbox"
+            app:layout_constraintTop_toTopOf="@id/text_size_dec"
             tools:ignore="SpUsage"/>
 
         <ImageView
             android:id="@+id/text_size_dec"
             android:layout_width="50dp"
             android:layout_height="40dp"
+            android:layout_marginTop="30dp"
             android:scaleType="center"
             android:src="@drawable/sel_text_size_dec"
-            app:layout_constraintBottom_toBottomOf="@id/auto_reader_view"
+            app:layout_constraintBottom_toTopOf="@id/theme_recycler_view"
             app:layout_constraintEnd_toStartOf="@id/text_size_inc"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/auto_reader_view"
+            app:layout_constraintTop_toBottomOf="@id/brightness_checkbox"
             tools:ignore="ContentDescription"/>
 
         <ImageView
@@ -121,10 +129,10 @@
             android:layout_height="40dp"
             android:scaleType="center"
             android:src="@drawable/sel_text_size_inc"
-            app:layout_constraintBottom_toBottomOf="@id/auto_reader_view"
+            app:layout_constraintBottom_toBottomOf="@id/text_size_dec"
             app:layout_constraintEnd_toStartOf="@id/auto_reader_view"
             app:layout_constraintStart_toEndOf="@id/text_size_dec"
-            app:layout_constraintTop_toTopOf="@id/auto_reader_view"
+            app:layout_constraintTop_toTopOf="@id/text_size_dec"
             tools:ignore="ContentDescription"/>
 
         <TextView
@@ -132,17 +140,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="35dp"
-            android:layout_marginTop="50dp"
             android:drawablePadding="12dp"
             android:drawableStart="@mipmap/ic_reader_setting"
             android:text="@string/read_settings_more"
             android:textColor="@color/gray"
             android:textSize="11dp"
+            app:layout_constraintBottom_toBottomOf="@id/theme_recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/auto_reader_view"
+            app:layout_constraintTop_toTopOf="@id/theme_recycler_view"
             tools:ignore="SpUsage"/>
 
-        <ImageView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/theme_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/more_setting_view"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_size_dec"/>
+
+        <!--<ImageView
             android:id="@+id/theme_white_view"
             android:layout_width="45dp"
             android:layout_height="45dp"
@@ -173,7 +194,7 @@
             app:layout_constraintEnd_toStartOf="@id/more_setting_view"
             app:layout_constraintStart_toEndOf="@id/theme_brown_view"
             app:layout_constraintTop_toTopOf="@id/more_setting_view"
-            tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription"/>-->
     </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
