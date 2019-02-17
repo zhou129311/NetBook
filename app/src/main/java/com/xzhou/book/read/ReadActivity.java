@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.os.Bundle;
@@ -168,6 +169,17 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         if (!mBook.isBaiduBook) {
             mPresenter.loadAllSource();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            mOrientationView.setText(R.string.book_read_portrait);
+        } else {
+            mOrientationView.setText(R.string.book_read_landscape);
+        }
+        relayoutPageContent();
     }
 
     private void initThemeView(@Constant.ReadTheme int theme) {
@@ -580,7 +592,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({ R.id.brightness_checkbox })
+    @OnCheckedChanged({R.id.brightness_checkbox})
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -591,9 +603,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
-            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
+            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -639,10 +651,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         case R.id.orientation_view:
             if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                mOrientationView.setText(R.string.book_read_landscape);
             } else {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                mOrientationView.setText(R.string.book_read_portrait);
             }
             break;
         case R.id.setting_view:
