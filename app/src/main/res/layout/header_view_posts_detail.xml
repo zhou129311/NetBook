@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:paddingStart="@dimen/book_item_margin_h"
-              android:paddingTop="@dimen/book_item_margin_v"
-              android:paddingEnd="@dimen/book_item_margin_h"
-              android:paddingBottom="@dimen/book_item_margin_v">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/book_item_margin_v"
+    android:paddingEnd="@dimen/book_item_margin_h"
+    android:paddingStart="@dimen/book_item_margin_h"
+    android:paddingTop="@dimen/book_item_margin_v">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/posts_detail_avatar_view"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/avatar_default"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"/>
 
-        <ImageView
-            android:id="@+id/posts_detail_avatar_view"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_default"
-            tools:ignore="ContentDescription"/>
+    <ImageView
+        android:id="@+id/author_type_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="35dp"
+        android:src="@mipmap/user_avatar_verify_official"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/posts_detail_avatar_view"
+        app:layout_constraintTop_toTopOf="@id/posts_detail_avatar_view"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible"/>
 
-        <ImageView
-            android:id="@+id/author_type_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="35dp"
-            android:layout_marginTop="35dp"
-            android:src="@mipmap/user_avatar_verify_official"
-            android:visibility="gone"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"/>
+    <TextView
+        android:id="@+id/posts_detail_author_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_author_text"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/orange"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@id/posts_detail_create_time"
+        app:layout_constraintStart_toEndOf="@id/posts_detail_avatar_view"
+        app:layout_constraintTop_toTopOf="@id/posts_detail_avatar_view"
+        tools:text="追书家的眼镜娘 lv.10"/>
 
-        <TextView
-            android:id="@+id/posts_detail_author_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/book_item_margin_h"
-            android:layout_marginTop="2dp"
-            android:layout_toEndOf="@id/posts_detail_avatar_view"
-            android:background="@drawable/bg_author_text"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/orange"
-            android:textSize="15sp"
-            tools:text="追书家的眼镜娘 lv.10"/>
-
-        <TextView
-            android:id="@+id/posts_detail_create_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/posts_detail_author_view"
-            android:layout_marginStart="@dimen/book_item_margin_h"
-            android:layout_toEndOf="@id/posts_detail_avatar_view"
-            android:textColor="@color/common_h3"
-            android:textSize="13sp"
-            tools:text="前天"/>
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/posts_detail_create_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/posts_detail_avatar_view"
+        app:layout_constraintStart_toStartOf="@id/posts_detail_author_view"
+        app:layout_constraintTop_toBottomOf="@id/posts_detail_author_view"
+        tools:text="前天"/>
 
     <TextView
         android:id="@+id/posts_detail_title_view"
@@ -66,6 +67,7 @@
         android:layout_marginTop="25dp"
         android:textColor="@color/common_h1"
         android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/posts_detail_avatar_view"
         tools:text="盘点||追书2018年度盘点"/>
 
     <TextView
@@ -76,6 +78,7 @@
         android:lineSpacingMultiplier="1.3"
         android:textColor="@color/common_h2"
         android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/posts_detail_title_view"
         tools:text="统统都是大神的书，简直赚到了，看书不用愁没钱了！"/>
 
     <android.support.constraint.ConstraintLayout
@@ -86,6 +89,7 @@
         android:background="@drawable/bg_review_detail_rating"
         android:padding="15dp"
         android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/posts_detail_desc"
         tools:visibility="visible">
 
         <ImageView
@@ -94,14 +98,16 @@
             android:layout_height="58dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_cover_default"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"/>
 
         <TextView
             android:id="@+id/book_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:layout_marginBottom="3dp"
+            android:layout_marginStart="20dp"
             android:ellipsize="end"
             android:maxEms="15"
             android:maxLines="1"
@@ -140,30 +146,31 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/posts_agreed_view"
+        style="@style/CommonRoundBtn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="5dp"
         android:layout_marginTop="25dp"
-        android:layout_marginBottom="5dp">
+        android:drawableStart="@drawable/sel_posts_agreed"
+        android:text="@string/posts_agreed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/review_detail_rating_layout"
+        tools:ignore="RelativeOverlap"/>
 
-        <TextView
-            android:id="@+id/posts_agreed_view"
-            style="@style/RoundBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:drawableStart="@drawable/sel_posts_agreed"
-            android:text="@string/posts_agreed"
-            tools:ignore="RelativeOverlap"/>
-
-        <ImageView
-            android:id="@+id/posts_more_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:scaleType="center"
-            android:src="@mipmap/post_detail_more"
-            tools:ignore="ContentDescription"/>
-    </RelativeLayout>
-</LinearLayout>
+    <ImageView
+        android:id="@+id/posts_more_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:scaleType="center"
+        android:src="@mipmap/post_detail_more"
+        app:layout_constraintBottom_toBottomOf="@id/posts_agreed_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/posts_agreed_view"
+        tools:ignore="ContentDescription"/>
+</android.support.constraint.ConstraintLayout>

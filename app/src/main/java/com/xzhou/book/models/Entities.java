@@ -759,6 +759,24 @@ public class Entities {
             private String type; //type=official 官方  type=normal 普通  type=commentator 评论员 doyen 首席
             private int lv;
             private String gender;
+
+            @Override
+            public String toString() {
+                return "Author{" +
+                        "nickname='" + nickname + '\'' +
+                        ", type='" + type + '\'' +
+                        '}';
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "Posts{" +
+                    "title='" + title + '\'' +
+                    ", type='" + type + '\'' +
+                    ", state='" + state + '\'' +
+                    ", author=" + author +
+                    '}';
         }
     }
 
@@ -802,6 +820,10 @@ public class Entities {
 
             public boolean isOfficial() {
                 return author != null && "official".equals(author.type);
+            }
+
+            public boolean isDoyen() {
+                return author != null && "doyen".equals(author.type);
             }
 
             public int lv() {
@@ -1063,6 +1085,24 @@ public class Entities {
             public Object rank;
             public String created;
             public String id;
+
+            @Override
+            public String toString() {
+                return "ReviewAuthor{" +
+                        "nickname='" + nickname + '\'' +
+                        ", type='" + type + '\'' +
+                        '}';
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "ReviewDetailHeader{" +
+                    "type='" + type + '\'' +
+                    ", book=" + book +
+                    ", author=" + author +
+                    ", state='" + state + '\'' +
+                    '}';
         }
     }
 

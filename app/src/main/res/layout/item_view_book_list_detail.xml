@@ -1,101 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@drawable/touch_bg"
-              android:elevation="1px"
-              android:orientation="vertical"
-              android:paddingBottom="@dimen/book_item_margin_v"
-              android:paddingEnd="@dimen/book_item_margin_h"
-              android:paddingStart="@dimen/book_item_margin_h"
-              android:paddingTop="@dimen/book_item_margin_v">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/touch_bg"
+    android:elevation="1px"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/book_item_margin_v"
+    android:paddingEnd="@dimen/book_item_margin_h"
+    android:paddingStart="@dimen/book_item_margin_h"
+    android:paddingTop="@dimen/book_item_margin_v">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/book_image"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:layout_centerVertical="true"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_cover_default"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"/>
 
-        <ImageView
-            android:id="@+id/book_image"
-            android:layout_width="60dp"
-            android:layout_height="80dp"
-            android:layout_centerVertical="true"
-            android:scaleType="fitXY"
-            android:src="@mipmap/ic_cover_default"
-            tools:ignore="ContentDescription"/>
+    <TextView
+        android:id="@+id/book_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/book_author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/book_image"
+        app:layout_constraintTop_toTopOf="@id/book_image"
+        tools:text="武侠世界自由行"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/book_item_margin_h"
-            android:layout_toEndOf="@id/book_image"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/book_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/book_word_count"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/book_title"
+        app:layout_constraintTop_toBottomOf="@id/book_title"
+        tools:text="清酒"/>
 
-            <TextView
-                android:id="@+id/book_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textColor="@color/common_h1"
-                android:textSize="16sp"
-                tools:text="武侠世界自由行"/>
-
-            <TextView
-                android:id="@+id/book_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textColor="@color/common_h3"
-                android:textSize="13sp"
-                tools:text="清酒"/>
-
-            <TextView
-                android:id="@+id/book_word_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textColor="@color/common_h3"
-                android:textSize="13sp"
-                tools:text="2003 人在追 | 138 万字"/>
-        </LinearLayout>
-
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/book_word_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/common_h3"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/book_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/book_title"
+        app:layout_constraintTop_toBottomOf="@id/book_author"
+        tools:text="2003 人在追 | 138 万字"/>
 
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_marginTop="@dimen/book_item_margin_h"
-        android:background="@color/common_divider_narrow"/>
+        android:background="@color/common_divider_narrow"
+        app:layout_constraintTop_toBottomOf="@id/book_image"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/book_list_desc_tip"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/book_item_margin_h"
-        android:orientation="horizontal">
+        android:scaleType="fitXY"
+        android:src="@mipmap/ugcbook_detail_quote"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line"
+        tools:ignore="ContentDescription"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@mipmap/ugcbook_detail_quote"
-            tools:ignore="ContentDescription"/>
-
-        <TextView
-            android:id="@+id/book_list_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:lineSpacingMultiplier="1.4"
-            android:textColor="@color/common_h2"
-            android:textSize="15sp"
-            tools:text="0000000000"/>
-
-    </LinearLayout>
-</LinearLayout>
+    <TextView
+        android:id="@+id/book_list_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:lineSpacingMultiplier="1.4"
+        android:textColor="@color/common_h2"
+        android:textSize="15sp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/book_list_desc_tip"
+        app:layout_constraintTop_toTopOf="@id/book_list_desc_tip"
+        tools:text="0000000000"/>
+</android.support.constraint.ConstraintLayout>

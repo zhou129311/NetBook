@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -276,7 +277,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailAuthorView.setText(AppUtils.getString(R.string.book_detail_review_author, detail.review.nickname(), detail.review.lv()));
             mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(detail.review.created));
             mPostDetailTitleView.setText(detail.review.title);
-            mPostDetailContent.setText(detail.review.content);
+            formatPostDetailContent(detail.review.content);
             mPostAgreedView.setVisibility(View.GONE);
             int resId = 0;
             if (detail.review.isOfficial()) {
@@ -297,8 +298,18 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailAuthorView.setText(AppUtils.getString(R.string.book_detail_review_author, detail.post.nickname(), detail.post.lv()));
             mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(detail.post.created));
             mPostDetailTitleView.setText(detail.post.title);
-            mPostDetailContent.setText(detail.post.content);
+            formatPostDetailContent(detail.post.content);
             mPostAgreedView.setVisibility(View.VISIBLE);
+            int resId = 0;
+            if (detail.post.isOfficial()) {
+                resId = R.mipmap.user_avatar_verify_official;
+            } else if (detail.post.isDoyen()) {
+                resId = R.mipmap.user_avatar_verify_doyen;
+            }
+            if (resId != 0) {
+                mAuthorTypeView.setVisibility(View.VISIBLE);
+                mAuthorTypeView.setImageResource(resId);
+            }
         }
 
         private void initHelpData(Entities.BookHelp bookHelp) {
@@ -308,8 +319,24 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailAuthorView.setText(AppUtils.getString(R.string.book_detail_review_author, bookHelp.help.nickname(), bookHelp.help.lv()));
             mPostDetailCreateTime.setText(AppUtils.getDescriptionTimeFromDateString(bookHelp.help.created));
             mPostDetailTitleView.setText(bookHelp.help.title);
-            mPostDetailContent.setText(bookHelp.help.content);
+            formatPostDetailContent(bookHelp.help.content);
             mPostAgreedView.setVisibility(View.VISIBLE);
+            int resId = 0;
+            if (bookHelp.help.isOfficial()) {
+                resId = R.mipmap.user_avatar_verify_official;
+            } else if (bookHelp.help.isDoyen()) {
+                resId = R.mipmap.user_avatar_verify_doyen;
+            }
+            if (resId != 0) {
+                mAuthorTypeView.setVisibility(View.VISIBLE);
+                mAuthorTypeView.setImageResource(resId);
+            }
+        }
+
+        private void formatPostDetailContent(String content) {
+            mPostDetailContent.setText(content);
+            //TextView设置超链接可点击
+            mPostDetailContent.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }
 

@@ -103,7 +103,7 @@
     <string name="book_list_detail" translatable="false">书单详情</string>
     <string name="book_list_share" translatable="false">分享书单</string>
     <string name="book_list_detail_by" translatable="false">创建自</string>
-    <string name="book_list_word_count" translatable="false"><Data><![CDATA[<font color="#da1b2a" translatable="false"><b>%1$d<br/></b></font>人在追&#160;&#160;|&#160;&#160;<font color="#da1b2a" translatable="false"><b>%2$d<br/></b></font>万字]]></Data></string>
+    <string name="book_list_word_count" translatable="false"><Data><![CDATA[<font color="#b93221" translatable="false"><b>%1$d<br/></b></font>人在追&#160;&#160;|&#160;&#160;<font color="#b93221" translatable="false"><b>%2$d<br/></b></font>万字]]></Data></string>
 
     <string name="comment_floor" translatable="false">%1$d楼</string>
     <string name="comment_like_count" translatable="false">%1$d次同感</string>

@@ -1,92 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/touch_bg">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/touch_bg">
 
     <ImageView
         android:id="@+id/book_image"
         android:layout_width="45dp"
         android:layout_height="58dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/book_item_margin_v"
-        android:layout_marginEnd="@dimen/book_item_margin_h"
         android:layout_marginStart="@dimen/book_item_margin_h"
         android:layout_marginTop="@dimen/book_item_margin_v"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_cover_default"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/book_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"/>
 
     <ImageView
         android:id="@+id/book_top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:scaleType="center"
         android:src="@mipmap/label_book_top"
         android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/book_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/book_subhead"
+        app:layout_constraintEnd_toStartOf="@id/book_checkbox"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/book_image"
+        app:layout_constraintTop_toTopOf="@id/book_image"
+        app:layout_goneMarginEnd="10dp"
+        tools:text="武侠世界自由行"/>
+
+    <TextView
+        android:id="@+id/book_subhead"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/book_image"
-        android:layout_toStartOf="@id/book_checkbox"
-        android:orientation="vertical">
+        android:layout_marginTop="8dp"
+        android:textColor="@color/common_h2"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@id/download_status"
+        app:layout_constraintEnd_toEndOf="@id/book_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/book_title"
+        app:layout_constraintTop_toBottomOf="@id/book_title"
+        tools:text="13小时前:灌口二郎神显圣 第1037章..."/>
 
-        <TextView
-            android:id="@+id/book_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/common_h1"
-            android:textSize="16sp"
-            tools:text="武侠世界自由行"/>
-
-        <TextView
-            android:id="@+id/book_subhead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/common_h2"
-            android:textSize="13sp"
-            tools:text="13小时前:灌口二郎神显圣 第1037章..."/>
-
-        <TextView
-            android:id="@+id/download_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/colorPrimary"
-            android:textSize="13sp"
-            android:visibility="gone"
-            tools:text="正在缓存:%1$s(%2$d/%3$d)&#8230;"
-            tools:visibility="visible"/>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/download_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/colorPrimary"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/book_image"
+        app:layout_constraintEnd_toEndOf="@id/book_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/book_title"
+        app:layout_constraintTop_toBottomOf="@id/book_subhead"
+        tools:text="正在缓存:%1$s(%2$d/%3$d)&#8230;"
+        tools:visibility="visible"/>
 
     <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/book_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/book_item_margin_h"
         android:buttonTint="@color/colorPrimary"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/book_updated_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/book_item_margin_h"
         android:src="@mipmap/reader_topic_dot"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         tools:visibility="visible"/>
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

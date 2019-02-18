@@ -261,13 +261,22 @@ public class ReadPage extends RelativeLayout {
                     mLoadAnimator = ValueAnimator.ofInt(0, 70);
                     mLoadAnimator.setRepeatCount(0);
                     mLoadAnimator.setDuration(5000);
+                } else {
+                    mLoadAnimator.removeAllUpdateListeners();
+                    mLoadAnimator.cancel();
                 }
-                mLoadAnimator.removeAllUpdateListeners();
                 mLoadAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         int value = (int) animation.getAnimatedValue();
                         mLoadingView.setProgress(value);
+                        if (value == 70) {
+                            mLoadAnimator.cancel();
+                            mLoadAnimator = ValueAnimator.ofInt(71, 75);
+                            mLoadAnimator.setRepeatCount(0);
+                            mLoadAnimator.setDuration(5000);
+                            mLoadAnimator.start();
+                        }
                     }
                 });
                 mLoadAnimator.start();

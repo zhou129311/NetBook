@@ -1,10 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@color/common_bg"
-              android:elevation="1dp"
-              android:orientation="vertical">
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/common_bg"
+    android:elevation="1dp"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/book_list_detail_title"
@@ -15,6 +17,7 @@
         android:layout_marginTop="20dp"
         android:textColor="@color/common_h1"
         android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="精致的肥宅快乐书"/>
 
     <TextView
@@ -29,6 +32,7 @@
         android:maxLines="5"
         android:textColor="@color/common_h2"
         android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/book_list_detail_title"
         tools:text="统统都是大神的书，简直赚到了，看书不用愁没钱了！"/>
 
     <ImageView
@@ -39,58 +43,64 @@
         android:layout_marginEnd="@dimen/book_item_margin_h"
         android:layout_marginTop="-5dp"
         android:src="@mipmap/ugcbook_detail_more"
+        app:layout_constraintEnd_toEndOf="@id/book_list_detail_desc"
+        app:layout_constraintTop_toBottomOf="@id/book_list_detail_desc"
         tools:ignore="ContentDescription"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/book_list_detail_image"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginBottom="@dimen/book_item_margin_h"
-        android:layout_marginEnd="@dimen/book_item_margin_h"
         android:layout_marginStart="@dimen/book_item_margin_h"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="35dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/avatar_default"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/book_list_detail_desc"
+        tools:ignore="ContentDescription"/>
 
-        <ImageView
-            android:id="@+id/book_list_detail_image"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/avatar_default"
-            tools:ignore="ContentDescription"/>
+    <TextView
+        android:id="@+id/book_detail_create_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/book_item_margin_h"
+        android:layout_toEndOf="@id/book_list_detail_image"
+        android:text="@string/book_list_detail_by"
+        android:textColor="@color/common_h2"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/book_list_detail_image"
+        app:layout_constraintStart_toEndOf="@id/book_list_detail_image"
+        app:layout_constraintTop_toTopOf="@id/book_list_detail_image"/>
 
-        <TextView
-            android:id="@+id/book_detail_create_by"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/book_item_margin_h"
-            android:layout_toEndOf="@id/book_list_detail_image"
-            android:text="@string/book_list_detail_by"
-            android:textColor="@color/common_h2"
-            android:textSize="13sp"/>
+    <TextView
+        android:id="@+id/book_detail_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_author_text"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/orange"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@id/book_list_detail_image"
+        app:layout_constraintStart_toEndOf="@id/book_detail_create_by"
+        app:layout_constraintTop_toTopOf="@id/book_list_detail_image"
+        tools:text="清酒"/>
 
-        <TextView
-            android:id="@+id/book_detail_author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@id/book_detail_create_by"
-            android:layout_toStartOf="@id/book_list_detail_share_btn"
-            android:background="@drawable/bg_author_text"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/orange"
-            android:textSize="13sp"
-            tools:text="清酒"/>
-
-        <TextView
-            android:id="@+id/book_list_detail_share_btn"
-            style="@style/RoundBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:drawableStart="@mipmap/ugcbook_detail_share"
-            android:text="@string/share"/>
-    </RelativeLayout>
-</LinearLayout>
+    <TextView
+        android:id="@+id/book_list_detail_share_btn"
+        style="@style/CommonRoundBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/book_item_margin_h"
+        android:drawableStart="@mipmap/ugcbook_detail_share"
+        android:text="@string/share"
+        app:layout_constraintBottom_toBottomOf="@id/book_list_detail_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/book_list_detail_image"/>
+</android.support.constraint.ConstraintLayout>
