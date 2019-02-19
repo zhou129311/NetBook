@@ -78,7 +78,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new LineItemDecoration());
+        mRecyclerView.addItemDecoration(new LineItemDecoration(70, 0));
 
         mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeLayout.setOnRefreshListener(mRefreshListener);
@@ -187,7 +187,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         }
     }
 
-    @OnClick({R.id.select_all_tv, R.id.delete_tv})
+    @OnClick({ R.id.select_all_tv, R.id.delete_tv })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.select_all_tv:
@@ -298,11 +298,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     private class Adapter extends BaseQuickAdapter<BookProvider.LocalBook, CommonViewHolder> {
 
-        private final String[] DIALOG_ITEM_UPTOP = new String[]{
+        private final String[] DIALOG_ITEM_UPTOP = new String[] {
                 "置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 
-        private final String[] DIALOG_ITEM_TOP = new String[]{
+        private final String[] DIALOG_ITEM_TOP = new String[] {
                 "取消置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 

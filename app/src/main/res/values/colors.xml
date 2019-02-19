@@ -40,6 +40,7 @@
     <color name="common_h3">#B2B2B2</color>
     <color name="common_divider_narrow">#E3E3E3</color>
     <color name="common_divider_wide">@color/light_white</color>
+    <color name="common_divider_v">#505050</color>
 
     <color name="reader_menu_bg_color">#191919</color>
     <color name="read_theme_white">#efefef</color>
@@ -56,7 +57,7 @@
     <color name="slide_text_color">#8c8c8c</color>
     <color name="slide_text_color_dark">#636363</color>
 
-    <color name="book_detail_author_bg">#a2de6014</color>
+    <color name="text_high_light_color">#a2de6014</color>
 
     <color name="seek_bar_background">#595959</color>
     <color name="seek_bar_progress">#cccccc</color>

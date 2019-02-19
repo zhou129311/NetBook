@@ -69,6 +69,6 @@ public class CommunityFragment extends BaseFragment<CommunityContract.Presenter>
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 70));
     }
 }

@@ -214,7 +214,7 @@ public class SearchActivity extends BaseActivity {
             mAdapter = new AutoCompleteAdapter(list);
             mAdapter.bindToRecyclerView(mRecyclerView);
             mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.addItemDecoration(new LineItemDecoration(true, 0, 0));
+            mRecyclerView.addItemDecoration(new LineItemDecoration(true));
             mRecyclerView.setLayoutManager(new MyLinearLayoutManager(this));
         } else {
             mAdapter.setNewData(list);

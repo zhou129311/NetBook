@@ -80,7 +80,7 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new LineItemDecoration(false, 70, 0));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(70, 0));
         mAdapter.setLoadMoreView(new CommonLoadMoreView());
         mAdapter.setEnableLoadMore(true);
         mAdapter.disableLoadMoreIfNotFullPage();

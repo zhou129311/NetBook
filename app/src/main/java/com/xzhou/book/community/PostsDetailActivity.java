@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -31,10 +31,21 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.ImageLoader;
+import com.xzhou.book.utils.Log;
+import com.xzhou.book.utils.RichTextUtils;
+import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.CommonLoadMoreView;
+import com.xzhou.book.widget.LinkTouchMovementMethod;
 import com.xzhou.book.widget.RatingBar;
+import com.xzhou.book.widget.SwipeItemLayout;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +55,7 @@ import butterknife.OnClick;
  * 帖子详情，包括 书评、讨论、综合讨论、女生话题等等
  */
 public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presenter> implements PostsDetailContract.View {
+    private static final String TAG = "PostsDetailActivity";
     public static final int TYPE_DISCUSS = 1; //综合讨论区帖子详情
     public static final int TYPE_HELP = 2; //书荒互助区详情
     public static final int TYPE_REVIEW = 3; //书评详情
@@ -83,7 +95,8 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new LineItemDecoration(false, 0, 0));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(false, false));
+        mRecyclerView.addOnItemTouchListener(new SwipeItemLayout.OnSwipeItemTouchListener(this));
 
         mAdapter.setEnableLoadMore(true);
         mAdapter.disableLoadMoreIfNotFullPage();
@@ -156,6 +169,21 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     }
 
     @Override
+    public void onBackPressed() {
+        if (mRecyclerView.getChildCount() <= 1) {
+            super.onBackPressed();
+            return;
+        }
+        LinearLayoutManager lm = (LinearLayoutManager) mRecyclerView.getLayoutManager();
+        int firstItem = lm.findFirstVisibleItemPosition();
+        if (firstItem == 0) {
+            super.onBackPressed();
+        } else {
+            mRecyclerView.smoothScrollToPosition(0);
+        }
+    }
+
+    @Override
     public void onLoading(boolean isLoading) {
         mLoadView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
     }
@@ -168,7 +196,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             return;
         }
         View view = LayoutInflater.from(this).inflate(R.layout.header_view_posts_detail, null);
-        HeaderViewHolder header = new HeaderViewHolder(view);
+        HeaderViewHolder header = new HeaderViewHolder(view, mType);
         mAdapter.addHeaderView(view);
         if (detail instanceof Entities.ReviewDetail) {
             Entities.ReviewDetail reviewDetail = (Entities.ReviewDetail) detail;
@@ -246,9 +274,11 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         ImageView mPostMoreView;
         @BindView(R.id.author_type_view)
         ImageView mAuthorTypeView;
+        private int mType;
 
-        HeaderViewHolder(View view) {
+        HeaderViewHolder(View view, int type) {
             ButterKnife.bind(this, view);
+            mType = type;
         }
 
         @OnClick({ R.id.posts_agreed_view, R.id.posts_more_view })
@@ -279,16 +309,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailTitleView.setText(detail.review.title);
             formatPostDetailContent(detail.review.content);
             mPostAgreedView.setVisibility(View.GONE);
-            int resId = 0;
-            if (detail.review.isOfficial()) {
-                resId = R.mipmap.user_avatar_verify_official;
-            } else if (detail.review.isDoyen()) {
-                resId = R.mipmap.user_avatar_verify_doyen;
-            }
-            if (resId != 0) {
-                mAuthorTypeView.setVisibility(View.VISIBLE);
-                mAuthorTypeView.setImageResource(resId);
-            }
+            setAuthorTypeVisible(detail.review.isOfficial(), detail.review.isDoyen());
         }
 
         private void initDiscussionData(Entities.DiscussionDetail detail) {
@@ -300,16 +321,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailTitleView.setText(detail.post.title);
             formatPostDetailContent(detail.post.content);
             mPostAgreedView.setVisibility(View.VISIBLE);
-            int resId = 0;
-            if (detail.post.isOfficial()) {
-                resId = R.mipmap.user_avatar_verify_official;
-            } else if (detail.post.isDoyen()) {
-                resId = R.mipmap.user_avatar_verify_doyen;
-            }
-            if (resId != 0) {
-                mAuthorTypeView.setVisibility(View.VISIBLE);
-                mAuthorTypeView.setImageResource(resId);
-            }
+            setAuthorTypeVisible(detail.post.isOfficial(), detail.post.isDoyen());
         }
 
         private void initHelpData(Entities.BookHelp bookHelp) {
@@ -321,10 +333,14 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             mPostDetailTitleView.setText(bookHelp.help.title);
             formatPostDetailContent(bookHelp.help.content);
             mPostAgreedView.setVisibility(View.VISIBLE);
+            setAuthorTypeVisible(bookHelp.help.isOfficial(), bookHelp.help.isDoyen());
+        }
+
+        private void setAuthorTypeVisible(boolean isOfficial, boolean isDoyen) {
             int resId = 0;
-            if (bookHelp.help.isOfficial()) {
+            if (isOfficial) {
                 resId = R.mipmap.user_avatar_verify_official;
-            } else if (bookHelp.help.isDoyen()) {
+            } else if (isDoyen) {
                 resId = R.mipmap.user_avatar_verify_doyen;
             }
             if (resId != 0) {
@@ -334,9 +350,57 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         }
 
         private void formatPostDetailContent(String content) {
-            mPostDetailContent.setText(content);
+            CharSequence colorString = getColorStringForContent(content);
+            mPostDetailContent.setText(colorString);
+            mPostDetailContent.setHighlightColor(AppUtils.getColor(R.color.text_high_light_color));
             //TextView设置超链接可点击
-            mPostDetailContent.setMovementMethod(LinkMovementMethod.getInstance());
+            mPostDetailContent.setMovementMethod(new LinkTouchMovementMethod());
+        }
+
+        private CharSequence getColorStringForContent(String content) {
+            List<String> groups = new ArrayList<>();
+            List<String> replaceGroups = new ArrayList<>();
+            Map<String, View.OnClickListener> listenerMap = new HashMap<>();
+            String regex1 = "\\[\\[(.*?)\\]\\]";
+            Pattern p = Pattern.compile(regex1);
+            Matcher m = p.matcher(content);
+            while (m.find()) {
+                String group = m.group();
+//                Log.i(TAG, "group=" + group);
+                String replaceGroup = group.substring(group.indexOf(" ") + 1, group.indexOf("]]"));
+                String idType = group.substring(group.indexOf("[[") + 2, group.indexOf(":"));
+                String id = group.substring(group.indexOf(":") + 1, group.indexOf(" "));
+//                Log.i(TAG, "idType = " + idType + ",id = " + id);
+                groups.add(group);
+                replaceGroups.add(replaceGroup);
+                Entities.RichPost richPost = new Entities.RichPost();
+                richPost.idType = idType;
+                richPost.id = id;
+                richPost.postType = mType;
+                listenerMap.put(replaceGroup, new OnPostClickListener(mPostDetailContent.getContext(), richPost));
+            }
+            for (int j = 0, k = groups.size(); j < k; j++) {
+                content = content.replace(groups.get(j), replaceGroups.get(j));
+            }
+            return RichTextUtils.getColorString(content, replaceGroups, AppUtils.getColor(R.color.orange), listenerMap);
+        }
+    }
+
+    private static class OnPostClickListener implements View.OnClickListener {
+        Entities.RichPost richPost;
+        private WeakReference<Context> mContext;
+
+        OnPostClickListener(Context context, Entities.RichPost richPost) {
+            this.richPost = richPost;
+            mContext = new WeakReference<>(context);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Context context = mContext.get();
+            if (context != null) {
+                richPost.startTargetActivity(context);
+            }
         }
     }
 
@@ -351,7 +415,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         }
 
         @Override
-        protected void convert(CommonViewHolder holder, MultiItemEntity item) {
+        protected void convert(final CommonViewHolder holder, MultiItemEntity item) {
             switch (holder.getItemViewType()) {
             case Constant.ITEM_TYPE_TEXT:
                 Entities.PostSection section = (Entities.PostSection) item;
@@ -365,7 +429,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                         .addOnClickListener(R.id.no_ll_view);
                 break;
             case Constant.ITEM_TYPE_COMMENT:
-                Entities.Comment comment = (Entities.Comment) item;
+                final Entities.Comment comment = (Entities.Comment) item;
                 holder.setCircleImageUrl(R.id.comment_image, comment.avatar(), R.mipmap.avatar_default)
                         .setText(R.id.comment_floor, AppUtils.getString(R.string.comment_floor, comment.floor))
                         .setText(R.id.comment_title, AppUtils.getString(R.string.book_detail_review_author, comment.nickname(), comment.lv()))
@@ -389,6 +453,39 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                     likeView.setVisibility(View.GONE);
                     timeView.setVisibility(View.VISIBLE);
                 }
+                holder.setOnClickListener(R.id.reply_view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                holder.setOnClickListener(R.id.agree_view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (v.isActivated()) {
+                            ToastUtils.showShortToast("已同意");
+                            return;
+                        }
+                        v.setActivated(true);
+                    }
+                });
+                holder.setOnClickListener(R.id.more_view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showMoreDialog(comment);
+                    }
+                });
+                holder.setOnClickListener(R.id.comment_rl_view, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SwipeItemLayout sil = (SwipeItemLayout) holder.itemView;
+                        if (sil.isOpen()) {
+                            sil.close();
+                        } else {
+                            sil.open();
+                        }
+                    }
+                });
                 break;
             case Constant.ITEM_TYPE_VOTE:
                 Entities.DiscussionDetail.PostDetail.Vote vote = (Entities.DiscussionDetail.PostDetail.Vote) item;
@@ -398,5 +495,8 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             }
         }
 
+        private void showMoreDialog(final Entities.Comment comment) {
+
+        }
     }
 }

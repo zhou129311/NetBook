@@ -89,7 +89,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         }
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 70));
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
 
         mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);

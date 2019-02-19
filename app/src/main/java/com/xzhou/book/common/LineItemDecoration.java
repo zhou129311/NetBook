@@ -4,36 +4,49 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 
 public class LineItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable mDivider;
     private boolean isShowBottom;
+    private boolean isShowFirst;
     private int mSpanCount;
     private int mMarginLeft;
 
     public LineItemDecoration() {
-        this(false, 70, 0);
+        this(false, true, 0, 0);
     }
 
     public LineItemDecoration(int spanCount) {
-        this(true, 0, spanCount);
+        this(true, true, 0, spanCount);
+    }
+
+    public LineItemDecoration(int marginLeft, int spanCount) {
+        this(false, true, marginLeft, spanCount);
     }
 
     public LineItemDecoration(boolean isShowBottom) {
-        this(isShowBottom, 70, 0);
+        this(isShowBottom, true, 0, 0);
     }
 
-    public LineItemDecoration(boolean isShowBottom, int marginLeft, int spanCount) {
-        mDivider = new ColorDrawable(ContextCompat.getColor(MyApp.getContext(), R.color.common_divider_narrow));
+    public LineItemDecoration(boolean isShowBottom, boolean isShowFirst) {
+        this(isShowBottom, isShowFirst, 0, 0);
+    }
+
+    public LineItemDecoration(boolean isShowBottom, int marginLeft) {
+        this(isShowBottom, true, marginLeft, 0);
+    }
+
+    public LineItemDecoration(boolean isShowBottom, boolean isShowFirst, int marginLeft, int spanCount) {
+        mDivider = new ColorDrawable(AppSettings.isNight() ? 0xff232323 : 0xffE3E3E3);
         this.isShowBottom = isShowBottom;
+        this.isShowFirst = isShowFirst;
         mSpanCount = spanCount;
         mMarginLeft = marginLeft;
     }
@@ -75,7 +88,10 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
                 int itemViewType = parent.getAdapter().getItemViewType(position);
                 View nextChild = parent.getChildAt(i + 1);
                 boolean nextIsLoadView = isNoMoreView(nextChild);
-                if (!isShowDivider(child, parent) || nextIsLoadView || itemViewType == Constant.ITEM_TYPE_TEXT) {
+                if (!isShowDivider(child, parent) || nextIsLoadView || isNoDividerViewType(itemViewType)) {
+                    continue;
+                }
+                if (position == 0 && !isShowFirst) {
                     continue;
                 }
 
@@ -136,5 +152,11 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
         }
         View v = view.findViewById(R.id.load_more_loading);
         return v != null;
+    }
+
+    private boolean isNoDividerViewType(int itemViewType) {
+        return itemViewType == Constant.ITEM_TYPE_TEXT
+                || itemViewType == Constant.ITEM_TYPE_VOTE
+                || itemViewType == Constant.ITEM_TYPE_HELPFUL;
     }
 }

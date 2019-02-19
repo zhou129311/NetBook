@@ -12,6 +12,7 @@
     <color name="common_h3">#505050</color>
     <color name="common_divider_narrow">#232323</color>
     <color name="common_divider_wide">#333333</color>
+    <color name="common_divider_v">#929191</color>
 
     <color name="edit_bg">#333333</color>
     <color name="rating_bg">#5C5B5B</color>

@@ -70,6 +70,6 @@ public class FindFragment extends BaseFragment<FindContract.Presenter> implement
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 70));
     }
 }

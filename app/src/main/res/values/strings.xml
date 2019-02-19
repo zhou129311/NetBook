@@ -110,6 +110,7 @@
     <string name="comment_best_comment" translatable="false">仰望神评论</string>
     <string name="comment_comment_count" translatable="false">共%1$d条评论</string>
     <string name="comment_reply_to" translatable="false">回复&#160;&#160;%1$s(%2$d楼)</string>
+    <string name="comment_reply" translatable="false">回复</string>
     <string name="comment_add" translatable="false">添加评论</string>
     <string name="posts_agreed" translatable="false">同感</string>
     <string name="discussion_hot" translatable="false">热门</string>

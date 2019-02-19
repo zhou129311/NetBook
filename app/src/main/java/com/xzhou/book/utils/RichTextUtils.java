@@ -1,5 +1,6 @@
 package com.xzhou.book.utils;
 
+import android.support.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -8,6 +9,9 @@ import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+
+import com.xzhou.book.R;
+import com.xzhou.book.widget.LinkTouchMovementMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +41,7 @@ public class RichTextUtils {
      * @param listener   点击关键字的监听回调，可空
      * @return
      */
-    public static CharSequence getColorString(String originText, String keyword,final int color,
+    public static CharSequence getColorString(String originText, String keyword, final int color,
                                               final View.OnClickListener listener) {
         SpannableString s = new SpannableString(originText);
         Pattern p = Pattern.compile(keyword);
@@ -51,12 +55,12 @@ public class RichTextUtils {
             if (listener != null) {
                 s.setSpan(new ClickableSpan() {
                     @Override
-                    public void onClick(View widget) {
+                    public void onClick(@NonNull View widget) {
                         listener.onClick(widget);
                     }
 
                     @Override
-                    public void updateDrawState(TextPaint ds) {
+                    public void updateDrawState(@NonNull TextPaint ds) {
                         ds.setColor(color);
                         ds.setUnderlineText(false);
                     }
@@ -70,6 +74,34 @@ public class RichTextUtils {
     public static CharSequence getColorString(String originText, List<String> keywords,
                                               Map<String, Integer> colorMap) {
         return getColorString(originText, keywords, colorMap, null);
+    }
+
+    public static CharSequence getColorString(String originText, List<String> keywords, final int colorInt, Map<String, View.OnClickListener> listenerMap) {
+        SpannableString s = new SpannableString(originText);
+
+        for (int i = 0; i < keywords.size(); i++) {
+            final String keyword = keywords.get(i);
+            Pattern p = Pattern.compile(keyword);
+            Matcher m = p.matcher(s);
+
+            while (m.find()) {
+                int start = m.start();
+                int end = m.end();
+
+                s.setSpan(new ForegroundColorSpan(colorInt), start, end,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                if (listenerMap != null) {
+                    final View.OnClickListener listener = listenerMap.get(keyword);
+                    if (listener != null) {
+                        s.setSpan(new LinkTouchMovementMethod.TouchableSpan(colorInt, AppUtils.getColor(R.color.text_high_light_color),
+                                listener), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
+            }
+        }
+
+        return s;
     }
 
     public static CharSequence getColorString(String originText, List<String> keywords,
@@ -93,12 +125,12 @@ public class RichTextUtils {
                     if (listener != null) {
                         s.setSpan(new ClickableSpan() {
                             @Override
-                            public void onClick(View widget) {
+                            public void onClick(@NonNull View widget) {
                                 listener.onClick(widget);
                             }
 
                             @Override
-                            public void updateDrawState(TextPaint ds) {
+                            public void updateDrawState(@NonNull TextPaint ds) {
                                 ds.setColor(colorMap.get(keyword));
                                 ds.setUnderlineText(false);
                             }
@@ -142,7 +174,7 @@ public class RichTextUtils {
      * @param listener 点击事件
      * @return 本对象
      */
-    public RichTextUtils append(String str,final int color,final View.OnClickListener listener) {
+    public RichTextUtils append(String str, final int color, final View.OnClickListener listener) {
         if (TextUtils.isEmpty(builder)) {
             builder = new SpannableStringBuilder();
         }
@@ -163,12 +195,12 @@ public class RichTextUtils {
         if (listener != null) {
             span.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(View widget) {
+                public void onClick(@NonNull View widget) {
                     listener.onClick(widget);
                 }
 
                 @Override
-                public void updateDrawState(TextPaint ds) {
+                public void updateDrawState(@NonNull TextPaint ds) {
                     ds.setColor(color);
                     ds.setUnderlineText(false);
                 }

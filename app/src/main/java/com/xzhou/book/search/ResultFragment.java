@@ -61,7 +61,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         mAdapter.setHeaderAndEmpty(true);
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 0, 0));
+        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(view.getContext()));
         mAdapter.setEnableLoadMore(true);
         mAdapter.disableLoadMoreIfNotFullPage();

@@ -81,7 +81,7 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
         mAdapter = new Adapter();
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(false, 0, 0));
+        mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter.setEmptyView(mLoadingView);
 

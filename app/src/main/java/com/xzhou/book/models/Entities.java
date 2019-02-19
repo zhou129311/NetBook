@@ -1,5 +1,6 @@
 package com.xzhou.book.models;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
@@ -11,9 +12,12 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.R;
+import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Log;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -1245,5 +1249,21 @@ public class Entities {
         public String updated;
         public String chaptersCount;
         public String lastChapter;
+    }
+
+    public static class RichPost {
+        public int postType;
+        public String idType;
+        public String id;
+
+        public void startTargetActivity(Context context) {
+            if (idType.equals("post")) {
+                PostsDetailActivity.startActivity(context, id, postType);
+            } else if (idType.equals("book")) {
+                BookDetailActivity.startActivity(context, id);
+            } else {
+                Log.e("startTargetActivity error: idType = " + idType);
+            }
+        }
     }
 }

@@ -152,25 +152,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="25dp"
         android:drawableStart="@drawable/sel_posts_agreed"
         android:text="@string/posts_agreed"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/posts_more_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/review_detail_rating_layout"
+        app:layout_constraintTop_toTopOf="@id/posts_more_view"
         tools:ignore="RelativeOverlap"/>
 
     <ImageView
         android:id="@+id/posts_more_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="25dp"
         android:scaleType="center"
         android:src="@mipmap/post_detail_more"
-        app:layout_constraintBottom_toBottomOf="@id/posts_agreed_view"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/posts_agreed_view"
+        app:layout_constraintTop_toBottomOf="@id/review_detail_rating_layout"
         tools:ignore="ContentDescription"/>
 </android.support.constraint.ConstraintLayout>
