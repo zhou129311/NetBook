@@ -81,17 +81,6 @@ public class WebFragment extends BaseFragment {
             }
             Log.i(TAG, "host = " + mHost);
             loadUrl(url);
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        Document document = Jsoup.connect(url).timeout(10000).get();
-//                        System.out.print(document.toString());
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }).start();
         }
     }
 
@@ -130,9 +119,6 @@ public class WebFragment extends BaseFragment {
 
         @Override
         public void onProgressChanged(WebView view, int progress) {
-//            String js = getClearAdDivJs(MyApp.getContext());
-//            Log.d(TAG, "getClearAdDivJs:" + js);
-//            mWebView.loadUrl(js);
             if (!isAdded() || isDetached()) {
                 return;
             }
@@ -160,7 +146,7 @@ public class WebFragment extends BaseFragment {
         @Nullable
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-            if (!request.getUrl().toString().contains(mHost)) {
+            if (!request.getUrl().toString().contains(mHost)) { //过滤广告链接
                 return new WebResourceResponse(null, null, null);
             }
             return super.shouldInterceptRequest(view, request);
@@ -199,18 +185,5 @@ public class WebFragment extends BaseFragment {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         }
-    }
-
-    public static String getClearAdDivJs(Context context) {
-        StringBuilder js = new StringBuilder("javaScript:");
-//        Resources res = context.getResources();
-//        String[] adDivs = res.getStringArray(R.array.adBlockDiv);
-//        for (int i = 0; i < adDivs.length; i++) {
-//            js.append("var adDiv").append(i).append("= document.getElementById('").append(adDivs[i])
-//                    .append("');if(adDiv").append(i).append(" != null)adDiv").append(i)
-//                    .append(".parentNode.removeChild(adDiv").append(i).append(");");
-//        }
-        js.append("function setTop(){document.querySelector(\"script[src]\").style.display=\"none\";}setTop();");
-        return js.toString();
     }
 }

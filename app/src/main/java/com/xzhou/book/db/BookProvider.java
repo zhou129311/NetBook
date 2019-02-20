@@ -36,6 +36,7 @@ public class BookProvider {
     static final String COLUMN_CUR_SOURCE = "cur_source";
     static final String COLUMN_CUR_SOURCE_ID = "cur_source_id";
     static final String COLUMN_IS_SHOW_RED = "is_show_red";
+    static final String COLUMN_IS_PICTURE = "is_picture";
     // baidu
     static final String COLUMN_IS_BAIDU = "is_baidu";
     static final String COLUMN_READ_URL = "read_url";
@@ -47,6 +48,7 @@ public class BookProvider {
         public long readTime;
         public long addTime;
         public boolean hasTop;
+        public boolean isPicture;
         public boolean isShowRed = true;
         public String title;
         public String lastChapter;
@@ -71,6 +73,7 @@ public class BookProvider {
             lastChapter = detail.lastChapter;
             cover = detail.cover();
             curSourceHost = detail.site;
+            isPicture = detail.isPicture();
         }
 
         public LocalBook(BaiduModel.BaiduBook baiduBook) {
@@ -173,6 +176,7 @@ public class BookProvider {
             values.put(COLUMN_IS_SHOW_RED, isShowRed ? 1 : 0);
             values.put(COLUMN_IS_BAIDU, isBaiduBook ? 1 : 0);
             values.put(COLUMN_READ_URL, readUrl);
+            values.put(COLUMN_IS_PICTURE, isPicture ? 1 : 0);
             return values;
         }
 
@@ -191,6 +195,7 @@ public class BookProvider {
             sourceId = in.readString();
             isBaiduBook = in.readInt() == 1;
             readUrl = in.readString();
+            isPicture = in.readInt() == 1;
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -231,6 +236,7 @@ public class BookProvider {
             dest.writeString(sourceId);
             dest.writeInt(isBaiduBook ? 1 : 0);
             dest.writeString(readUrl);
+            dest.writeInt(isPicture ? 1 : 0);
         }
 
         @Override
@@ -247,6 +253,7 @@ public class BookProvider {
                     ", isBookshelf=" + isBookshelf +
                     ", isShowRed=" + isShowRed +
                     ", hasTop=" + hasTop +
+                    ", isPicture=" + isPicture +
                     '}';
         }
     }
@@ -287,6 +294,7 @@ public class BookProvider {
             book.isShowRed = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_SHOW_RED)) == 1;
             book.isBaiduBook = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_BAIDU)) == 1;
             book.readUrl = cursor.getString(cursor.getColumnIndex(COLUMN_READ_URL));
+            book.isPicture = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_PICTURE)) == 1;
             book.isBookshelf = true;
             list.add(book);
         }

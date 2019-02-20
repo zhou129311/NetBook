@@ -20,6 +20,7 @@ import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -341,8 +342,33 @@ public class Entities {
     }
 
     public static class Chapter {
+        //文字
         public String title;
         public String body;
+        //漫画
+        public String id; //595481552e554d6604a61976
+        public boolean isVip; // false
+        public int currency; // 29
+        public String images; // "http://cartoon.zhuishushenqi.com/api/v1/bookcenter/scenethumbnail/1/181576/U_a817e0cf-3e14-48f2-90e9-f2ecbf4de0a4.JPG"
+        public String imageScale; // "1.41,1.41,1.41"
+        public String created;
+        public String updated;
+
+        public List<String> getImages() {
+            if (TextUtils.isEmpty(images)) {
+                return null;
+            }
+            String[] list = images.split(",");
+            return Arrays.asList(list);
+        }
+
+        public List<String> getImageScales() {
+            if (TextUtils.isEmpty(imageScale)) {
+                return null;
+            }
+            String[] list = imageScale.split(",");
+            return Arrays.asList(list);
+        }
     }
 
     public static class HotWord {
@@ -490,6 +516,7 @@ public class Entities {
         public String cat;
         public String majorCate;
         public String minorCate;
+        public String contentType; // picture 漫画
         public int reviewCount;
         public int totalFollower;
         public boolean cpOnly;
@@ -502,6 +529,10 @@ public class Entities {
 
         public String cover() {
             return ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
+
+        public boolean isPicture() {
+            return "picture".equals(contentType);
         }
     }
 

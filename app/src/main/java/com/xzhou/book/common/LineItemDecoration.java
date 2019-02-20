@@ -155,8 +155,7 @@ public class LineItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     private boolean isNoDividerViewType(int itemViewType) {
-        return itemViewType == Constant.ITEM_TYPE_TEXT
-                || itemViewType == Constant.ITEM_TYPE_VOTE
+        return (itemViewType == Constant.ITEM_TYPE_TEXT && mSpanCount == 0)
                 || itemViewType == Constant.ITEM_TYPE_HELPFUL;
     }
 }

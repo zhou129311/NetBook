@@ -49,4 +49,5 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation project(':library')
+    implementation files('libs/open_sdk_r5756_lite.jar')
 }

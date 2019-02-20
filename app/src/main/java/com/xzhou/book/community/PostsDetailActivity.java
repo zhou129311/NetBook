@@ -1,6 +1,7 @@
 package com.xzhou.book.community;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.ItemDialog;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.main.BookDetailActivity;
@@ -361,8 +363,8 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             List<String> groups = new ArrayList<>();
             List<String> replaceGroups = new ArrayList<>();
             Map<String, View.OnClickListener> listenerMap = new HashMap<>();
-            String regex1 = "\\[\\[(.*?)\\]\\]";
-            Pattern p = Pattern.compile(regex1);
+            String regex = "\\[\\[(.*?)\\]\\]";
+            Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(content);
             while (m.find()) {
                 String group = m.group();
@@ -472,7 +474,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                 holder.setOnClickListener(R.id.more_view, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showMoreDialog(comment);
+                        showMoreDialog(comment, v.getContext());
                     }
                 });
                 holder.setOnClickListener(R.id.comment_rl_view, new View.OnClickListener() {
@@ -495,8 +497,56 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             }
         }
 
-        private void showMoreDialog(final Entities.Comment comment) {
+        private void showMoreDialog(final Entities.Comment comment, final Context context) {
+            final String[] items;
+            if (TextUtils.isEmpty(comment.replayTo())) {
+                items = new String[] { "举报" };
+            } else {
+                items = new String[] { "查看回复的楼层", "举报" };
+            }
+            ItemDialog.Builder builder = new ItemDialog.Builder(context);
+            builder.setTitle(R.string.more)
+                    .setItems(items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            switch (which) {
+                            case 0:
+                                if (items.length == 1) {
+                                    showReportDialog(context);
+                                } else {
 
+                                }
+                                break;
+                            case 1:
+                                showReportDialog(context);
+                                break;
+                            }
+                        }
+                    }).show();
+        }
+
+        private void showReportDialog(Context context) {
+            String[] items = context.getResources().getStringArray(R.array.report_type);
+            ItemDialog.Builder builder = new ItemDialog.Builder(context);
+            builder.setTitle("举报")
+                    .setItems(items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            switch (which) {
+                            case 0:
+                                break;
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                break;
+                            }
+                            ToastUtils.showShortToast(R.string.report_result_toast);
+                        }
+                    }).show();
         }
     }
 }

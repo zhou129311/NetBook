@@ -184,6 +184,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         if (mPresenter.start()) {
             mPlaceView.setVisibility(View.VISIBLE);
             mLoadView.setVisibility(View.VISIBLE);
+            mLoadErrorView.setVisibility(View.GONE);
         }
     }
 

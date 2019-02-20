@@ -9,6 +9,7 @@ import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.common.BasePresenter;
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
                             mList = new ArrayList<>();
                             parseRankingList(rankingList.male, AppUtils.getString(R.string.male));
                             parseRankingList(rankingList.female, AppUtils.getString(R.string.female));
-//                            parseRankingList(rankingList.picture, AppUtils.getString(R.string.picture));
-//                            parseRankingList(rankingList.epub, AppUtils.getString(R.string.epub));
+                            parseRankingList(rankingList.picture, AppUtils.getString(R.string.picture));
+                            parseRankingList(rankingList.epub, AppUtils.getString(R.string.epub));
                         }
                     } else if (mSource == SOURCE_CATEGORY) {
                         Entities.CategoryList categoryList = ZhuiShuSQApi.getCategoryList();
@@ -48,14 +49,14 @@ public class ExpandListPresenter extends BasePresenter<ExpandListContract.View> 
                             if (categoryListLv2 != null) {
                                 parseCategoryListLv2(categoryList.male, categoryListLv2.male);
                                 parseCategoryListLv2(categoryList.female, categoryListLv2.female);
-//                                parseCategoryListLv2(categoryList.picture, categoryListLv2.picture);
-//                                parseCategoryListLv2(categoryList.press, categoryListLv2.press);
+                                parseCategoryListLv2(categoryList.picture, categoryListLv2.picture);
+                                parseCategoryListLv2(categoryList.press, categoryListLv2.press);
                             }
                             mList = new ArrayList<>();
-                            parseCategoryList(categoryList.male, AppUtils.getString(R.string.male), "male");
-                            parseCategoryList(categoryList.female, AppUtils.getString(R.string.female), "female");
-//                            parseCategoryList(categoryList.picture, AppUtils.getString(R.string.picture), "");
-//                            parseCategoryList(categoryList.press, AppUtils.getString(R.string.epub), "");
+                            parseCategoryList(categoryList.male, AppUtils.getString(R.string.male), Constant.Gender.MALE);
+                            parseCategoryList(categoryList.female, AppUtils.getString(R.string.female), Constant.Gender.FEMALE);
+                            parseCategoryList(categoryList.picture, AppUtils.getString(R.string.picture), Constant.Gender.PICTURE);
+                            parseCategoryList(categoryList.press, AppUtils.getString(R.string.epub), Constant.Gender.PRESS);
                         }
                     }
                     initData();

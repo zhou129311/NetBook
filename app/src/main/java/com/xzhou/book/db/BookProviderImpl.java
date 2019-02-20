@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BookProviderImpl extends ContentProvider {
     private static final String AUTHORITY = "com.xzhou.book.provider";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
     private static final String DB_NAME = "book.db";
     private static final String TABLE_BOOK = "bookshelf";
     //    private static final int MARCH_BOOK = 1;
@@ -136,6 +136,10 @@ public class BookProviderImpl extends ContentProvider {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            if (oldVersion == 1) {
+                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_PICTURE + " INTEGER ";
+                db.execSQL(sql);
+            }
 //            if (oldVersion <= 3) {
 //                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER ";
 //                db.execSQL(sql);
@@ -168,6 +172,7 @@ public class BookProviderImpl extends ContentProvider {
                     + BookProvider.COLUMN_CUR_SOURCE + " TEXT, "
                     + BookProvider.COLUMN_CUR_SOURCE_ID + " TEXT, "
                     + BookProvider.COLUMN_IS_BAIDU + " INTEGER, "
+                    + BookProvider.COLUMN_IS_PICTURE + " INTEGER, "
                     + BookProvider.COLUMN_READ_URL + " TEXT);");
         }
     }

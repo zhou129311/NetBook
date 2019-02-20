@@ -80,6 +80,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                         }
                                         break;
                                     }
+                                    if (source != null && mBook.isPicture) { //漫画需要换到sourceId才可以获取章节目录
+                                        mBook.curSourceHost = source.host;
+                                        mBook.sourceId = source._id;
+                                    }
                                 }
                             }
                             Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);

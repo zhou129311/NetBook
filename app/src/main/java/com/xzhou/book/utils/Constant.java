@@ -83,8 +83,9 @@ public class Constant {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Gender {
         String MALE = "male";
-
         String FEMALE = "female";
+        String PICTURE = "picture";
+        String PRESS = "press";
     }
 
     @StringDef({

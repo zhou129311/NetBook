@@ -173,7 +173,7 @@ public class OkHttpUtils {
             }
             return new Gson().fromJson(bodys, typeOfT);
         } catch (Exception e) {
-            Log.e("get", e);
+            Log.e("get url = " + url + "\nerror:", e);
         } finally {
             if (body != null) {
                 body.close();

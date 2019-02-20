@@ -223,6 +223,16 @@ public class ZhuiShuSQApi {
     }
 
     /**
+     * 获取漫画章节内容
+     * @param url getBookMixAToc中获取的link
+     * @return ChapterRead
+     */
+    public static Entities.ChapterRead getPictureChapterRead(String url) {
+        HttpRequest request = new HttpRequest("http://chapter2.zhuishushenqi.com/picture", url);
+        return (Entities.ChapterRead) OkHttpUtils.getObject(request, Entities.ChapterRead.TYPE, null);
+    }
+
+    /**
      * 获取正版源(若有) 与 盗版源
      *
      * @param book bookid
@@ -591,6 +601,9 @@ public class ZhuiShuSQApi {
     /**
      * 第三方登陆
      *
+     * @param platform_uid   openId
+     * @param platform_token token
+     * @param platform_code QQ
      * @return Login
      */
     public static HttpResult login(String platform_uid, String platform_token, String platform_code) {

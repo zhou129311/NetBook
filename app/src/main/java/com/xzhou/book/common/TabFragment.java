@@ -130,15 +130,21 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
 
     @Override
     public void onRefreshStateChange(boolean isRefreshing) {
+        if (isRefreshing) {
+            mEmptyView.setVisibility(View.INVISIBLE);
+            mLoadErrorView.setVisibility(View.INVISIBLE);
+        }
         mSwipeLayout.setRefreshing(isRefreshing);
     }
 
     @Override
     public void onDataChange(List<MultiItemEntity> list) {
         if (list == null) {
+            mLoadErrorView.setVisibility(View.VISIBLE);
             mAdapter.setEmptyView(mLoadErrorView);
             mAdapter.setNewData(null);
         } else if (list.size() <= 0) {
+            mEmptyView.setVisibility(View.VISIBLE);
             mAdapter.setEmptyView(mEmptyView);
             mAdapter.setNewData(null);
         } else {
