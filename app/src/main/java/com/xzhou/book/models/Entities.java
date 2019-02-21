@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
 import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
@@ -20,7 +19,6 @@ import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -154,11 +152,12 @@ public class Entities {
     }
 
     public static class TabData implements Parcelable {
-        public String title;
+        public String title; //标题
         public @Constant.TabSource
-        int source;
-        public String[] params;
-        public String[] filtrate;
+        int source; //来源
+        public String[] params; //参数
+        public String[] filtrate; //筛选
+        public int curFiltrate = -1; //当前筛选
 
         public TabData() {
         }
@@ -176,6 +175,7 @@ public class Entities {
                 filtrate = new String[length];
                 in.readStringArray(filtrate);
             }
+            curFiltrate = in.readInt();
         }
 
         public static final Creator<TabData> CREATOR = new Creator<TabData>() {
@@ -211,6 +211,7 @@ public class Entities {
                 dest.writeInt(filtrate.length);
                 dest.writeStringArray(filtrate);
             }
+            dest.writeInt(curFiltrate);
         }
 
         @Override
@@ -220,6 +221,7 @@ public class Entities {
                     ", source=" + source +
                     ", params='" + Arrays.toString(params) + '\'' +
                     ", filtrate='" + Arrays.toString(filtrate) + '\'' +
+                    ", curFiltrate='" + curFiltrate + '\'' +
                     '}';
         }
     }
@@ -255,6 +257,10 @@ public class Entities {
 
         public String cover() {
             return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
+        }
+
+        public boolean isPicture() {
+            return "picture".equals(contentType);
         }
     }
 
@@ -378,6 +384,66 @@ public class Entities {
         public List<String> hotWords;
     }
 
+    public static class AutoSuggest {
+        public static final Type TYPE = new TypeToken<AutoSuggest>() {
+        }.getType();
+
+        public List<Suggest> keywords;
+    }
+
+    /**
+     * "text": "妖神记",
+     * "tag": "bookname", tag bookauthor
+     * "id": "55aed62b1aa7a382698aeae4",
+     * "author": "发飙的蜗牛",
+     * "contentType": "txt" "picture"
+     */
+    public static class Suggest {
+        public String text;
+        public String tag;
+        public String id;
+        public String author;
+        public String contentType;
+        public String gender;
+        public String major;
+        public String minor;
+        public List<String> minors;
+
+        public boolean isPicture() {
+            return "picture".equals(contentType);
+        }
+
+        public boolean isTag() {
+            return "tag".equals(tag);
+        }
+
+        public boolean isAuthor() {
+            return "bookauthor".equals(tag);
+        }
+
+        public boolean isBook() {
+            return "bookname".equals(tag);
+        }
+
+        public boolean isCat() {
+            return "cat".equals(tag);
+        }
+
+        public int getImgRes() {
+            int res;
+            if (isTag()) {
+                res = R.mipmap.ic_search_result_tag;
+            } else if (isCat()) {
+                res = R.mipmap.ic_search_result_cat;
+            } else if (isAuthor()) {
+                res = R.mipmap.ic_search_result_aut;
+            } else {
+                res = R.mipmap.ic_search_result_book;
+            }
+            return res;
+        }
+    }
+
     public static class AutoComplete {
         public static final Type TYPE = new TypeToken<AutoComplete>() {
         }.getType();
@@ -461,15 +527,6 @@ public class Entities {
 
         public int yes() {
             return helpful == null ? 0 : helpful.yes;
-        }
-
-        private static class Author {
-            private String _id;
-            private String avatar;
-            private String nickname;
-            private String type;
-            private int lv;
-            private String gender;
         }
     }
 
@@ -573,6 +630,31 @@ public class Entities {
         }
     }
 
+    public static class SearchBookList {
+        public static final Type TYPE = new TypeToken<SearchBookList>() {
+        }.getType();
+
+        public String ok;
+        public int total;
+        public List<UgcBookList> ugcbooklists;
+
+        public static class UgcBookList {
+            public String _id;
+            public Author author;
+            public String desc;
+            public String title;
+            public int bookCount;
+            public int collectorCount;
+            public String cover;
+            public List<String> covers;
+            public String gender;
+            public boolean isDistillate; //精品书单
+            public String created;
+            public String updated;
+            public Highlight highlight;
+        }
+    }
+
     public static class BookLists {
         public static final Type TYPE = new TypeToken<BookLists>() {
         }.getType();
@@ -644,14 +726,6 @@ public class Entities {
             public String nickname() {
                 return author == null ? "" : author.nickname;
             }
-        }
-
-        private static class Author {
-            private String _id;
-            private String avatar;
-            private String nickname;
-            private String type;
-            private int lv;
         }
 
         public static class BooksBean {
@@ -731,9 +805,10 @@ public class Entities {
     public static class Posts implements MultiItemEntity {
         public String _id;
         public String title;
-        public String type; //type=vote 投票
+        public String type; //type=vote 投票  review 书评
+        public String book; //bookId
         public int likeCount; //赞同数
-        public String block; // ramble original
+        public String block; // ramble original review
         public String state; //state=hot focus 热门  distillate 精品 normal 普通
         public String updated;
         public String created;
@@ -763,6 +838,10 @@ public class Entities {
             return "vote".equals(type);
         }
 
+        public boolean isReview() {
+            return "review".equals(type) && !TextUtils.isEmpty(book);
+        }
+
         public boolean isHot() {
             return "hot".equals(state) || "focus".equals(state);
         }
@@ -785,23 +864,6 @@ public class Entities {
 
         public String gender() {
             return author == null ? "" : author.gender;
-        }
-
-        static class Author {
-            private String _id;
-            private String avatar;
-            private String nickname;
-            private String type; //type=official 官方  type=normal 普通  type=commentator 评论员 doyen 首席
-            private int lv;
-            private String gender;
-
-            @Override
-            public String toString() {
-                return "Author{" +
-                        "nickname='" + nickname + '\'' +
-                        ", type='" + type + '\'' +
-                        '}';
-            }
         }
 
         @Override
@@ -934,15 +996,6 @@ public class Entities {
         @Override
         public int getItemType() {
             return Constant.ITEM_TYPE_COMMENT;
-        }
-
-        static class Author {
-            private String _id;
-            private String avatar;
-            private String nickname;
-            private String type;
-            private int lv;
-            private String gender;
         }
 
         static class ReplyTo {
@@ -1188,15 +1241,6 @@ public class Entities {
             public int getItemType() {
                 return Constant.ITEM_TYPE_POSTS_HELP;
             }
-
-            static class Author {
-                private String _id;
-                private String avatar;
-                private String nickname;
-                private String type;
-                private int lv;
-                private String gender;
-            }
         }
     }
 
@@ -1280,6 +1324,89 @@ public class Entities {
         public String updated;
         public String chaptersCount;
         public String lastChapter;
+    }
+
+    public static class HelpSearchResult {
+        public static final Type TYPE = new TypeToken<HelpSearchResult>() {
+        }.getType();
+        public String next;//MTA=
+        public List<Question> questions;
+    }
+
+    public static class Question {
+        public String id; // 5a700da3c0f1873406c20041
+        public String title; //找书找书找书?
+        public String desc; //只记得刚开始穿越到战狼2里面，好想还有就是杀了谁可以获得那个人的一项能力
+        public List<String> tags;//59c0c48d027094c1468c4cb7
+        public List<Tag> tagList;
+        public Author author;
+        public String created;
+        public int answerCount; //21
+        public int followCount; //3
+        public boolean isFollow; //false
+        public Answer bestAnswer;
+        public String shareLink;
+        public String shareIcon;
+        public int readCount; //1129
+        public Highlight highlight;
+
+        public static class Tag {
+            public String id; // 59c0c48d027094c1468c4cb7
+            public String name; //男频
+            public int order; //0
+        }
+    }
+
+    public static class Highlight {
+        public List<String> title;
+    }
+
+    public static class Author {
+        public String _id;
+        public String avatar;
+        public String nickname;
+        public String monthly;
+        private String type;//type=official 官方  type=normal 普通  type=commentator 评论员 doyen 首席
+        public int lv;
+        public String gender;
+    }
+
+    /**
+     * {
+     * "id": "5a701c2cc0f1873406c2008c",
+     * "question": "5a700da3c0f1873406c20041",
+     * "title": "",
+     * "content": "{{type:book,id:56ce9cdb363f92a007273896,title:战狼2：国家利刃,author:飞永,cover:/agent/http%3A%2F%2Fimg.1391.com%2Fapi%2Fv1%2Fbookcenter%2Fcover%2F1%2F858780%2F_858780_124995.jpg%2F,latelyFollower:544,wordCount:1046075,retentionRatio:33.3}}\n推荐给你看看这个，一直放在书架里还没看到的。你说的那个好像没有看到过哦，抱歉",
+     * "author": {
+     * "_id": "55824cce2460cf522ee58069",
+     * "avatar": "/avatar/40/a1/40a1088b44838f26c0403982f999e3d0",
+     * "nickname": "暖心",
+     * "monthly": false,
+     * "lv": 10,
+     * "gender": "female"
+     * },
+     * "created": "2018-01-30T07:18:04.958Z",
+     * "commentCount": 5,
+     * "upvoteCount": 20,
+     * "isUpvote": false,
+     * "bestComments": [],
+     * "shareLink": "",
+     * "shareIcon": ""
+     * }
+     */
+    public static class Answer {
+        public String id;
+        public String question;
+        public String title;
+        public String content;
+        public Author author;
+        public String created;
+        public int commentCount;
+        public int upvoteCount;
+        public boolean isUpvote;
+        public Object bestComments;
+        public String shareLink;
+        public String shareIcon;
     }
 
     public static class RichPost {

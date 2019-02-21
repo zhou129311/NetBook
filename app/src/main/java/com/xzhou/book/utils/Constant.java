@@ -65,6 +65,7 @@ public class Constant {
             TabSource.SOURCE_TAG,
             TabSource.SOURCE_RECOMMEND,
             TabSource.SOURCE_COMMUNITY,
+            TabSource.SOURCE_SEARCH,
     })
     public @interface TabSource {
         int SOURCE_RANK_SUB = 0;
@@ -74,6 +75,7 @@ public class Constant {
         int SOURCE_TAG = 4;
         int SOURCE_RECOMMEND = 5;
         int SOURCE_COMMUNITY = 6;
+        int SOURCE_SEARCH = 7;
     }
 
     @StringDef({

@@ -8,6 +8,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.view.View;
 
 import com.xzhou.book.R;
@@ -81,16 +82,14 @@ public class RichTextUtils {
 
         for (int i = 0; i < keywords.size(); i++) {
             final String keyword = keywords.get(i);
-            Pattern p = Pattern.compile(keyword);
+            final String regex = AppUtils.escapeExprSpecialWord(keyword);
+            Pattern p = Pattern.compile(regex);
             Matcher m = p.matcher(s);
-
             while (m.find()) {
                 int start = m.start();
                 int end = m.end();
-
                 s.setSpan(new ForegroundColorSpan(colorInt), start, end,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
                 if (listenerMap != null) {
                     final View.OnClickListener listener = listenerMap.get(keyword);
                     if (listener != null) {
@@ -100,7 +99,6 @@ public class RichTextUtils {
                 }
             }
         }
-
         return s;
     }
 

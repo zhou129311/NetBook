@@ -10,11 +10,11 @@
         android:icon="@mipmap/ic_action_search"
         app:showAsAction="ifRoom"/>
 
-    <item
+    <!--<item
         android:id="@+id/action_scan_local_book"
         android:title="@string/menu_main_scan_local_book"
         android:icon="@mipmap/home_menu_scan"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_night_mode"

@@ -24,10 +24,8 @@ import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppSettings;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.widget.Indicator;
-import com.xzhou.book.utils.ToastUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +74,8 @@ public class MainActivity extends BaseActivity {
         case R.id.action_search:
             SearchActivity.startActivity(this);
             break;
-        case R.id.action_scan_local_book:
-            break;
+        /*case R.id.action_scan_local_book:
+            break;*/
         case R.id.action_night_mode:
             if (AppSettings.isNight()) {
                 AppSettings.setNight(false);

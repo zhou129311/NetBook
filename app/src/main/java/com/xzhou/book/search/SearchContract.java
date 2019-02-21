@@ -21,7 +21,7 @@ public interface SearchContract {
 
         void onLoadMore(List<Entities.SearchBook> list);
 
-        void onAutoComplete(List<String> list);
+        void onAutoComplete(List<Entities.Suggest> list);
 
         void onLoadState(boolean loading);
     }

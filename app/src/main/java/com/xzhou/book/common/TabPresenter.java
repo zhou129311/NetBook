@@ -29,6 +29,9 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         super(view);
         mTabData = data;
         mTabId = tabId;
+        if (mTabData.curFiltrate > -1) {
+            mFiltrate = mTabData.filtrate[mTabData.curFiltrate];
+        }
     }
 
     @Override
@@ -106,6 +109,9 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                             list.addAll(recommend.books);
                         }
                     }
+                    break;
+                case TabSource.SOURCE_SEARCH:
+                    // 书籍 漫画 书单 社区
                     break;
                 }
                 if (list != null && list.size() > 0) {

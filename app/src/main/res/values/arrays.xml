@@ -13,6 +13,13 @@
         <item>完结</item>
     </string-array>
 
+    <string-array name="search_result_tabs">
+        <item>书籍</item>
+        <item>漫画</item>
+        <item>书单</item>
+        <item>社区</item>
+    </string-array>
+
     <string-array name="sub_rank_tabs">
         <item>周榜</item>
         <item>月榜</item>

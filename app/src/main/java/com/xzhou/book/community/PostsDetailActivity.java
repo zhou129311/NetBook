@@ -30,6 +30,7 @@ import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.ImageLoader;
@@ -361,13 +362,24 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
 
         private CharSequence getColorStringForContent(String content) {
             List<String> groups = new ArrayList<>();
+            List<String> groups1 = new ArrayList<>();
             List<String> replaceGroups = new ArrayList<>();
             Map<String, View.OnClickListener> listenerMap = new HashMap<>();
-            String regex = "\\[\\[(.*?)\\]\\]";
-            Pattern p = Pattern.compile(regex);
-            Matcher m = p.matcher(content);
-            while (m.find()) {
-                String group = m.group();
+            String regex1 = "《(.*?)》";
+            Pattern p1 = Pattern.compile(regex1);
+            Matcher m1 = p1.matcher(content);
+            while (m1.find()) {
+                String group = m1.group();
+                Log.i(TAG, "m1.group=" + group);
+                groups1.add(group);
+                String key = group.substring(1, group.length() - 1);
+                listenerMap.put(group, new OnSearchBookClickListener(mPostDetailContent.getContext(), key));
+            }
+            String regex2 = "\\[\\[(.*?)\\]\\]";
+            Pattern p2 = Pattern.compile(regex2);
+            Matcher m2 = p2.matcher(content);
+            while (m2.find()) {
+                String group = m2.group();
 //                Log.i(TAG, "group=" + group);
                 String replaceGroup = group.substring(group.indexOf(" ") + 1, group.indexOf("]]"));
                 String idType = group.substring(group.indexOf("[[") + 2, group.indexOf(":"));
@@ -384,7 +396,30 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             for (int j = 0, k = groups.size(); j < k; j++) {
                 content = content.replace(groups.get(j), replaceGroups.get(j));
             }
+            String regex3 = "\\{\\{(.*?)\\}\\}";
+            Pattern p3 = Pattern.compile(regex2);
+            Matcher m3 = p2.matcher(content);
+
+            replaceGroups.addAll(0, groups1);
             return RichTextUtils.getColorString(content, replaceGroups, AppUtils.getColor(R.color.orange), listenerMap);
+        }
+    }
+
+    private static class OnSearchBookClickListener implements View.OnClickListener {
+        private String key;
+        private WeakReference<Context> mContext;
+
+        OnSearchBookClickListener(Context context, String key) {
+            this.key = key;
+            mContext = new WeakReference<>(context);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Context context = mContext.get();
+            if (context != null) {
+                SearchActivity.startActivity(context, key);
+            }
         }
     }
 
@@ -446,13 +481,13 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                 }
                 TextView likeView = holder.getView(R.id.comment_like_count);
                 TextView timeView = holder.getView(R.id.comment_time);
+                likeView.setText(AppUtils.getString(R.string.comment_like_count, comment.likeCount));
+                timeView.setText(AppUtils.getDescriptionTimeFromDateString(comment.created));
                 if (comment.isBest) {
-                    likeView.setText(AppUtils.getString(R.string.comment_like_count, comment.likeCount));
                     likeView.setVisibility(View.VISIBLE);
-                    timeView.setVisibility(View.GONE);
+                    timeView.setVisibility(View.INVISIBLE);
                 } else {
-                    timeView.setText(AppUtils.getDescriptionTimeFromDateString(comment.created));
-                    likeView.setVisibility(View.GONE);
+                    likeView.setVisibility(View.INVISIBLE);
                     timeView.setVisibility(View.VISIBLE);
                 }
                 holder.setOnClickListener(R.id.reply_view, new View.OnClickListener() {

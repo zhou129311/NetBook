@@ -3,14 +3,11 @@ package com.xzhou.book.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -387,5 +384,17 @@ public class AppUtils {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static String escapeExprSpecialWord(String keyword) {
+        if (!TextUtils.isEmpty(keyword)) {
+            String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
+            for (String key : fbsArr) {
+                if (keyword.contains(key)) {
+                    keyword = keyword.replace(key, "\\" + key);
+                }
+            }
+        }
+        return keyword;
     }
 }

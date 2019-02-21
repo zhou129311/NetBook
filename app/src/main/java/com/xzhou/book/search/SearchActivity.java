@@ -24,9 +24,14 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
+import com.xzhou.book.common.TabActivity;
 import com.xzhou.book.datasource.BaiduSearch;
+import com.xzhou.book.main.BookDetailActivity;
+import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -73,6 +78,7 @@ public class SearchActivity extends BaseActivity {
             showFragment(TAB_HISTORY);
         } else {
             showFragment(TAB_RESULT);
+            mSearchEt.setText(mKey);
         }
         mSearchEt.requestFocus();
         mSearchEt.addTextChangedListener(new TextWatcher() {
@@ -113,7 +119,7 @@ public class SearchActivity extends BaseActivity {
         });
         getResultFragment().setOnAutoCompleteListener(new ResultFragment.OnAutoCompleteListener() {
             @Override
-            public void onUpdate(List<String> list) {
+            public void onUpdate(List<Entities.Suggest> list) {
                 updateAutoCompletes(list);
             }
         });
@@ -200,8 +206,8 @@ public class SearchActivity extends BaseActivity {
         return "s_fragment_" + tab;
     }
 
-    private void updateAutoCompletes(List<String> list) {
-        if (list == null || list.size() <= 0 || mCurFragment instanceof ResultFragment) {
+    private void updateAutoCompletes(List<Entities.Suggest> list) {
+        if (list == null || list.size() <= 0) {
             mRecyclerView.setVisibility(View.GONE);
             if (mAdapter != null) {
                 mAdapter.setNewData(null);
@@ -239,19 +245,70 @@ public class SearchActivity extends BaseActivity {
         }
     }
 
-    private class AutoCompleteAdapter extends BaseQuickAdapter<String, CommonViewHolder> {
+    private class AutoCompleteAdapter extends BaseQuickAdapter<Entities.Suggest, CommonViewHolder> {
 
-        AutoCompleteAdapter(@Nullable List<String> data) {
-            super(R.layout.item_search_auto_complete, data);
+        AutoCompleteAdapter(@Nullable List<Entities.Suggest> data) {
+//            super(R.layout.item_search_auto_complete, data);
+            super(R.layout.item_search_auto_suggest, data);
         }
 
         @Override
-        protected void convert(CommonViewHolder holder, final String item) {
-            holder.setText(R.id.auto_complete_tv, item);
+        protected void convert(CommonViewHolder holder, final Entities.Suggest item) {
+            holder.setImageResource(R.id.auto_suggest_img, item.getImgRes())
+                    .setText(R.id.auto_suggest_text, item.text);
+            TextView tag1 = holder.getView(R.id.auto_suggest_tag1);
+            TextView tag2 = holder.getView(R.id.auto_suggest_tag2);
+            if (item.isCat()) {
+                tag1.setVisibility(View.VISIBLE);
+                tag2.setVisibility(View.VISIBLE);
+                tag1.setText(R.string.category);
+                if ("male".equals(item.gender)) {
+                    tag2.setText(R.string.male);
+                } else {
+                    tag2.setText(R.string.female);
+                }
+            } else if (item.isPicture()) {
+                tag1.setVisibility(View.VISIBLE);
+                tag1.setText(R.string.picture);
+            } else if (item.isTag()) {
+                tag1.setVisibility(View.VISIBLE);
+                tag1.setText(R.string.tag);
+            } else if (item.isAuthor()) {
+                tag1.setVisibility(View.VISIBLE);
+                tag1.setText(R.string.author);
+            }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    search(item);
+                    Entities.TabData data = null;
+                    if (item.isTag()) {
+                        data = new Entities.TabData();
+                        data.title = item.text;
+                        data.source = Constant.TabSource.SOURCE_TAG;
+                        data.params = new String[] { item.text };
+                    } else if (item.isAuthor()) {
+                        data = new Entities.TabData();
+                        data.title = item.text;
+                        data.source = Constant.TabSource.SOURCE_AUTHOR;
+                        data.params = new String[] { data.title };
+                    } else if (item.isCat()) {
+                        data = new Entities.TabData();
+                        data.title = item.text;
+                        data.source = Constant.TabSource.SOURCE_CATEGORY_SUB;
+                        data.params = new String[] { item.major, item.gender };
+                        if (item.minors != null && item.minors.size() > 0) {
+                            List<String> filtrates = new ArrayList<>();
+                            filtrates.add(item.major);
+                            filtrates.addAll(item.minors);
+                            data.filtrate = filtrates.toArray(new String[0]);
+                            data.curFiltrate = filtrates.indexOf(item.text);
+                        }
+                    } else if (!TextUtils.isEmpty(item.id)) {
+                        BookDetailActivity.startActivity(mActivity, item.id);
+                    }
+                    if (data != null) {
+                        TabActivity.startActivity(mActivity, data);
+                    }
                 }
             });
         }

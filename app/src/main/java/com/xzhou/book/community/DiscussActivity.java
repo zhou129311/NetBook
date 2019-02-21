@@ -232,7 +232,13 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        PostsDetailActivity.startActivity(mContext, posts._id, PostsDetailActivity.TYPE_DISCUSS);
+                        int type;
+                        if (posts.isReview()) {
+                            type = PostsDetailActivity.TYPE_REVIEW;
+                        } else {
+                            type = PostsDetailActivity.TYPE_DISCUSS;
+                        }
+                        PostsDetailActivity.startActivity(mContext, posts._id, type);
                     }
                 });
                 break;

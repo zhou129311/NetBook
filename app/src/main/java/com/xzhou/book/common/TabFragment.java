@@ -185,6 +185,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         case TabSource.SOURCE_RANK_SUB:
         case TabSource.SOURCE_TOPIC_LIST:
         case TabSource.SOURCE_COMMUNITY:
+        case TabSource.SOURCE_SEARCH:
             enable = true;
             break;
         }
@@ -198,6 +199,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         case TabSource.SOURCE_TOPIC_LIST:
         case TabSource.SOURCE_TAG:
         case TabSource.SOURCE_COMMUNITY:
+        case TabSource.SOURCE_SEARCH:
             enable = true;
             break;
         }

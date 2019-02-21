@@ -164,6 +164,8 @@
     <string name="empty_data" translatable="false">暂时没有数据哦</string>
 
     <string name="category" translatable="false">分类</string>
+    <string name="tag" translatable="false">标签</string>
+    <string name="author" translatable="false">作者</string>
     <string name="male" translatable="false">男生</string>
     <string name="female" translatable="false">女生</string>
     <string name="picture" translatable="false">漫画</string>

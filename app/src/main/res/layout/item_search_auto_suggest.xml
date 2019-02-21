@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/touch_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="15dp">
+
+    <ImageView
+        android:id="@+id/auto_suggest_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        tools:ignore="ContentDescription"/>
+
+    <TextView
+        android:id="@+id/auto_suggest_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/common_h1"
+        android:textSize="16sp"
+        tools:text="我吃西红柿"/>
+
+    <TextView
+        android:id="@+id/auto_suggest_tag1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/bg_suggest_tag"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingBottom="2dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="2dp"
+        android:textColor="@color/common_h3"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:ignore="SmallSp"
+        tools:text="分类"/>
+
+    <TextView
+        android:id="@+id/auto_suggest_tag2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/bg_suggest_tag"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:paddingBottom="2dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="2dp"
+        android:textColor="@color/common_h3"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:ignore="SmallSp"
+        tools:text="男频"/>
+</LinearLayout>

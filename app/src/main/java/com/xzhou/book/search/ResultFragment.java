@@ -3,11 +3,11 @@ package com.xzhou.book.search;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -22,7 +22,9 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.CommonLoadMoreView;
+import com.xzhou.book.widget.Indicator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,10 +33,12 @@ import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
 public class ResultFragment extends BaseFragment<SearchContract.Presenter> implements SearchContract.View {
     private static final String TAG = "ResultFragment";
+    @BindView(R.id.search_indicator)
+    Indicator mIndicator;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @BindView(R.id.common_load_view)
-    ProgressBar mLoadView;
+    @BindView(R.id.swipe_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String mKey;
     private OnAutoCompleteListener mAutoCompleteListener;
@@ -42,7 +46,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
     private TextView mEmptyView;
 
     public interface OnAutoCompleteListener {
-        void onUpdate(List<String> list);
+        void onUpdate(List<Entities.Suggest> list);
     }
 
     public void setOnAutoCompleteListener(OnAutoCompleteListener listener) {
@@ -57,6 +61,9 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mIndicator.setTabItemTitles(Arrays.asList(getResources().getStringArray(R.array.search_result_tabs)));
+
         mAdapter = new Adapter();
         mAdapter.setHeaderAndEmpty(true);
         mAdapter.bindToRecyclerView(mRecyclerView);
@@ -155,7 +162,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
     }
 
     @Override
-    public void onAutoComplete(List<String> list) {
+    public void onAutoComplete(List<Entities.Suggest> list) {
         if (mAutoCompleteListener != null) {
             mAutoCompleteListener.onUpdate(list);
         }
@@ -163,7 +170,7 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
 
     @Override
     public void onLoadState(boolean loading) {
-        mLoadView.setVisibility(loading ? View.VISIBLE : View.GONE);
+        mSwipeRefreshLayout.setRefreshing(loading);
         mRecyclerView.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
     }
 

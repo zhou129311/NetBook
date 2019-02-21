@@ -16,6 +16,7 @@ public class ZhuiShuSQApi {
     public static final String TAG = "ZhuiShuSQApi";
     public static final String IMG_BASE_URL = "http://statics.zhuishushenqi.com";
     public static final String API_BASE_URL = "http://api.zhuishushenqi.com";
+    public static final String API_BASE_URL_B = "http://b.zhuishushenqi.com";
     public static final String IGNORE_HOST = "vip.zhuishushenqi.com";
 
     public static final String DURATION = "duration";
@@ -91,6 +92,18 @@ public class ZhuiShuSQApi {
     }
 
     /**
+     * 自动联想
+     *
+     * @return AutoComplete
+     */
+    public static Entities.AutoSuggest getAutoSuggest(String query) {
+        HttpRequest request = new HttpRequest("/book/auto-suggest");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("query", query);
+        return (Entities.AutoSuggest) OkHttpUtils.getObject(request, Entities.AutoSuggest.TYPE, params);
+    }
+
+    /**
      * 书籍查询
      *
      * @return SearchResult
@@ -102,6 +115,49 @@ public class ZhuiShuSQApi {
         params.put("start", String.valueOf(start));
         params.put("limit", String.valueOf(limit));
         return (Entities.SearchResult) OkHttpUtils.getObject(request, Entities.SearchResult.TYPE, params);
+    }
+
+    /**
+     * 漫画查询 model.start=0&model.limit=10&model.query=妖神记&model.contentType2=2
+     *
+     * @return SearchResult
+     */
+    public static Entities.SearchResult getPicSearchResult(String query, int start, int limit) {
+        HttpRequest request = new HttpRequest(API_BASE_URL_B, "books/fuzzy-search");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("model.query", query);
+        params.put("model.start", String.valueOf(start));
+        params.put("model.limit", String.valueOf(limit));
+        params.put("model.contentType2", "2");
+        return (Entities.SearchResult) OkHttpUtils.getObject(request, Entities.SearchResult.TYPE, params);
+    }
+
+    /**
+     * 书单查询 start=0&limit=10&query=妖神记
+     *
+     * @return SearchResult
+     */
+    public static Entities.SearchBookList getBookListSearchResult(String query, int start, int limit) {
+        HttpRequest request = new HttpRequest("/book-list/ugcbooklist-search");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("query", query);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
+        return (Entities.SearchBookList) OkHttpUtils.getObject(request, Entities.SearchBookList.TYPE, params);
+    }
+
+    /**
+     * 社区帖子查询 start=0&limit=10&query=妖神记
+     *
+     * @return SearchResult
+     */
+    public static Entities.DiscussionList getPostSearchResult(String query, int start, int limit) {
+        HttpRequest request = new HttpRequest("/post/post-search");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("query", query);
+        params.put("start", String.valueOf(start));
+        params.put("limit", String.valueOf(limit));
+        return (Entities.DiscussionList) OkHttpUtils.getObject(request, Entities.DiscussionList.TYPE, params);
     }
 
     /**
@@ -224,6 +280,7 @@ public class ZhuiShuSQApi {
 
     /**
      * 获取漫画章节内容
+     *
      * @param url getBookMixAToc中获取的link
      * @return ChapterRead
      */
@@ -508,6 +565,15 @@ public class ZhuiShuSQApi {
         return (Entities.BookHelpList) OkHttpUtils.getObject(request, Entities.BookHelpList.TYPE, params);
     }
 
+    public static Entities.BookHelpList searchBookHelpList(String key, String token, int limit) {
+        HttpRequest request = new HttpRequest("/bookAid/questions");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("term", key);
+        params.put("token", token);
+        params.put("limit", String.valueOf(limit));
+        return (Entities.BookHelpList) OkHttpUtils.getObject(request, Entities.BookHelpList.TYPE, params);
+    }
+
     /**
      * 获取书荒区帖子详情
      *
@@ -603,7 +669,7 @@ public class ZhuiShuSQApi {
      *
      * @param platform_uid   openId
      * @param platform_token token
-     * @param platform_code QQ
+     * @param platform_code  QQ
      * @return Login
      */
     public static HttpResult login(String platform_uid, String platform_token, String platform_code) {

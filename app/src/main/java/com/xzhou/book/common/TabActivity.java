@@ -225,6 +225,9 @@ public class TabActivity extends BaseActivity {
                 adapter.setChecked(1);
             } else {
                 adapter.setMarginLeft(10);
+                if (mTabData.curFiltrate > -1) {
+                    adapter.setChecked(mTabData.curFiltrate);
+                }
             }
             mFiltrateAdapterList.put(curTabId, adapter);
         }

@@ -43,8 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@id/comment_floor"
-            android:ellipsize="end"
-            android:singleLine="true"
+            android:layout_toStartOf="@id/comment_like_count"
             android:textColor="@color/light_coffee"
             android:textSize="13sp"
             tools:text="我就是静静 lv.9"/>
@@ -58,7 +57,6 @@
             android:drawableStart="@mipmap/topic_comment_heart"
             android:textColor="@color/common_h3"
             android:textSize="13sp"
-            tools:ignore="RelativeOverlap"
             tools:text="3次同感"/>
 
         <TextView

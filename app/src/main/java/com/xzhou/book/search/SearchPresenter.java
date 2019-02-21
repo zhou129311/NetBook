@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.BaiduSearch;
 import com.xzhou.book.datasource.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 
@@ -27,6 +26,7 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
             return;
         }
         mKey = key;
+        mView.onAutoComplete(null);
         mView.onLoadState(true);
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
@@ -46,14 +46,39 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
-                List<String> list = null;
-                Entities.AutoComplete autoComplete = ZhuiShuSQApi.getAutoComplete(key);
-                if (autoComplete != null && autoComplete.keywords != null) {
-                    list = autoComplete.keywords;
+                List<Entities.Suggest> list = null;
+                Entities.AutoSuggest autoSuggest = ZhuiShuSQApi.getAutoSuggest(key);
+//                Entities.AutoComplete autoComplete = ZhuiShuSQApi.getAutoComplete(key);
+                if (autoSuggest != null && autoSuggest.keywords != null) {
+                    list = autoSuggest.keywords;
+                    for (Entities.Suggest suggest : list) {
+                        if (suggest.isCat()) {
+                            Entities.CategoryListLv2 categoryListLv2 = ZhuiShuSQApi.getCategoryListLv2();
+                            if (categoryListLv2 == null) {
+                                list.remove(suggest);
+                                break;
+                            }
+                            if ("male".equals(suggest.gender)) {
+                                suggest.minors = getMinors(suggest.major, categoryListLv2.male);
+                            } else {
+                                suggest.minors = getMinors(suggest.major, categoryListLv2.female);
+                            }
+                            break;
+                        }
+                    }
                 }
                 updateAutoComplete(list);
             }
         });
+    }
+
+    private List<String> getMinors(String major, List<Entities.CategoryListLv2.Category> categories) {
+        for (Entities.CategoryListLv2.Category category : categories) {
+            if (TextUtils.equals(major, category.major)) {
+                return category.mins;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -104,7 +129,7 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
         });
     }
 
-    private void updateAutoComplete(final List<String> list) {
+    private void updateAutoComplete(final List<Entities.Suggest> list) {
         MyApp.runUI(new Runnable() {
             @Override
             public void run() {
