@@ -11,21 +11,25 @@ import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.RatingBar;
 
 import java.util.List;
 
 public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
-
+    private String TAG;
     private int mTabId;
 
     TabAdapter(int tabId) {
         super(null);
         mTabId = tabId;
+        TAG = "TabAdapter" + "_" + mTabId;
         addItemType(Constant.ITEM_TYPE_NET_BOOK, R.layout.item_view_net_book);
+        addItemType(Constant.ITEM_TYPE_BOOK_BY_SEARCH, R.layout.item_view_net_book);
         addItemType(Constant.ITEM_TYPE_BOOK_BY_AUTHOR, R.layout.item_view_search_result);
         addItemType(Constant.ITEM_TYPE_BOOK_BY_TAG, R.layout.item_view_tag_book);
         addItemType(Constant.ITEM_TYPE_NET_BOOK_LIST, R.layout.item_view_net_book);
+        addItemType(Constant.ITEM_TYPE_UGC_BOOK_LIST, R.layout.item_view_net_book);
         addItemType(Constant.ITEM_TYPE_REVIEWS, R.layout.item_view_review);
         addItemType(Constant.ITEM_TYPE_DISCUSSION, R.layout.item_view_posts_discussion);
     }
@@ -33,6 +37,24 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
     @Override
     protected void convert(CommonViewHolder holder, MultiItemEntity item) {
         switch (holder.getItemViewType()) {
+        case Constant.ITEM_TYPE_BOOK_BY_SEARCH: {
+            final Entities.SearchBook netBook = (Entities.SearchBook) item;
+            if (AppUtils.isEmpty(netBook.cat)) {
+                netBook.cat = "";
+            }
+            holder.setRoundImageUrl(R.id.book_image, netBook.cover(), R.mipmap.ic_cover_default)
+                    .setText(R.id.book_title, netBook.title)
+                    .setText(R.id.book_author, AppUtils.getString(R.string.net_book_author, netBook.author, netBook.cat))
+                    .setText(R.id.book_describe, netBook.shortIntro)
+                    .setText(R.id.book_save_count, AppUtils.getString(R.string.net_book_save_count,
+                            netBook.latelyFollower, String.valueOf(netBook.retentionRatio)));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BookDetailActivity.startActivity(getRecyclerView().getContext(), netBook._id);
+                }
+            });
+        }
         case Constant.ITEM_TYPE_NET_BOOK: {
             final Entities.NetBook netBook = (Entities.NetBook) item;
             if (AppUtils.isEmpty(netBook.cat)) {
@@ -99,6 +121,22 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             });
             break;
         }
+        case Constant.ITEM_TYPE_UGC_BOOK_LIST: {
+            final Entities.SearchBookList.UgcBookList ugcBookList = (Entities.SearchBookList.UgcBookList) item;
+            holder.setRoundImageUrl(R.id.book_image, ugcBookList.cover(), R.mipmap.ic_cover_default)
+                    .setText(R.id.book_title, ugcBookList.title)
+                    .setText(R.id.book_author, ugcBookList.author.nickname)
+                    .setTextColor(R.id.book_author, AppUtils.getColor(R.color.common_h2))
+                    .setText(R.id.book_describe, ugcBookList.desc)
+                    .setText(R.id.book_save_count, AppUtils.getString(R.string.book_list_count, ugcBookList.bookCount, ugcBookList.collectorCount));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BookListDetailActivity.startActivity(getRecyclerView().getContext(), ugcBookList._id);
+                }
+            });
+            break;
+        }
         case Constant.ITEM_TYPE_REVIEWS: {
             final Entities.Reviews reviews = (Entities.Reviews) item;
             holder.setCircleImageUrl(R.id.review_img, reviews.avatar(), R.mipmap.avatar_default)
@@ -146,7 +184,13 @@ public class TabAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, Commo
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PostsDetailActivity.startActivity(mContext, posts._id, PostsDetailActivity.TYPE_DISCUSS);
+                    int type;
+                    if (posts.isReview()) {
+                        type = PostsDetailActivity.TYPE_REVIEW;
+                    } else {
+                        type = PostsDetailActivity.TYPE_DISCUSS;
+                    }
+                    PostsDetailActivity.startActivity(mContext, posts._id, type);
                 }
             });
         }

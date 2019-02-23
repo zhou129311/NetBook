@@ -37,7 +37,7 @@ public class AppSettings {
     public static boolean HAS_FULL_SCREEN_MODE = true;
     public static boolean HAS_CLICK_NEXT_PAGE = true;
     public static @ReadTheme
-    int READ_THEME = ReadTheme.WHITE;
+    int READ_THEME = ReadTheme.DEFAULT;
 
     public static void init() {
         HAS_SAVING_TRAFFIC = isSavingTraffic();
@@ -158,7 +158,7 @@ public class AppSettings {
 
     public static @ReadTheme
     int getReadTheme() {
-        return SPUtils.get().getInt(PRE_KEY_THEME, ReadTheme.WHITE);
+        return SPUtils.get().getInt(PRE_KEY_THEME, ReadTheme.DEFAULT);
     }
 
     public static boolean isNight() {

@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.xzhou.book.db.BookManager;
 import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.ThemeUtils;
 
 public class MyApp extends Application {
     private static MyApp mInstance;
@@ -24,6 +25,7 @@ public class MyApp extends Application {
         initNightMode();
         BookManager.get().init();
         AppSettings.init();
+        ThemeUtils.init();
     }
 
     @Override

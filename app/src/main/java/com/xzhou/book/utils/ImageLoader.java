@@ -7,9 +7,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.net.Uri;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -49,11 +47,11 @@ public class ImageLoader {
         return new RequestOptions().centerInside().placeholder(placeholder).transform(sRoundTransform);
     }
 
-    public static void showImageFile(Context context, ImageView imageView, @NonNull File file, @DrawableRes int placeholder) {
+    public static void showImageFile(Context context, ImageView imageView, File file, @DrawableRes int placeholder) {
         showImageFile(context, imageView, file, placeholder, 0);
     }
 
-    public static void showImageFile(Context context, ImageView imageView, @NonNull File file, @DrawableRes int placeholder, @DrawableRes int error) {
+    public static void showImageFile(Context context, ImageView imageView, File file, @DrawableRes int placeholder, @DrawableRes int error) {
         if (!file.exists()) {
             return;
         }
@@ -64,7 +62,7 @@ public class ImageLoader {
         }
     }
 
-    public static void showImageGif(Context context, ImageView imageView, @NonNull File file, RequestListener<GifDrawable> listener) {
+    public static void showImageGif(Context context, ImageView imageView, File file, RequestListener<GifDrawable> listener) {
         if (!file.exists()) {
             return;
         }
@@ -74,32 +72,32 @@ public class ImageLoader {
                 .into(imageView);
     }
 
-    public static void showImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
-        if (AppSettings.HAS_SAVING_TRAFFIC) {
+    public static void showImageUrl(Context context, ImageView imageView, String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC || uri == null) {
             uri = idToUri(placeholder);
         }
         Glide.with(context).load(uri).apply(getOptions(placeholder)).into(imageView);
     }
 
-    public static void showImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder, @DrawableRes int error) {
+    public static void showImageUrl(Context context, ImageView imageView, String uri, @DrawableRes int placeholder, @DrawableRes int error) {
         Glide.with(context).load(uri).apply(getOptions(placeholder, error)).into(imageView);
     }
 
-    public static void showCircleImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
-        if (AppSettings.HAS_SAVING_TRAFFIC) {
+    public static void showCircleImageUrl(Context context, ImageView imageView, String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC || uri == null) {
             uri = idToUri(placeholder);
         }
         Glide.with(context).load(uri).apply(getCircleOptions(placeholder)).into(imageView);
     }
 
-    public static void showRoundImageUrl(Context context, ImageView imageView, @NonNull String uri, @DrawableRes int placeholder) {
-        if (AppSettings.HAS_SAVING_TRAFFIC) {
+    public static void showRoundImageUrl(Context context, ImageView imageView, String uri, @DrawableRes int placeholder) {
+        if (AppSettings.HAS_SAVING_TRAFFIC || uri == null) {
             uri = idToUri(placeholder);
         }
         Glide.with(context).load(uri).apply(getRoundOptions(placeholder)).into(imageView);
     }
 
-    public static void showImageBitmap(Context context, ImageView imageView, @NonNull Bitmap bitmap, @DrawableRes int error) {
+    public static void showImageBitmap(Context context, ImageView imageView, Bitmap bitmap, @DrawableRes int error) {
         Glide.with(context).load(bitmap).apply(getOptions(error, error)).into(imageView);
     }
 
@@ -118,7 +116,7 @@ public class ImageLoader {
     private static class GlideCircleTransform extends BitmapTransformation {
         private final String TAG = getClass().getName();
 
-        protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
             int size = Math.min(toTransform.getWidth(), toTransform.getHeight());
             int x = (toTransform.getWidth() - size) / 2;
             int y = (toTransform.getHeight() - size) / 2;
@@ -144,7 +142,7 @@ public class ImageLoader {
         }
 
         @Override
-        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        public void updateDiskCacheKey(MessageDigest messageDigest) {
             messageDigest.update(TAG.getBytes(CHARSET));
         }
     }
@@ -162,7 +160,7 @@ public class ImageLoader {
             mRadius = Resources.getSystem().getDisplayMetrics().density * dp;
         }
 
-        protected Bitmap transform(@NonNull BitmapPool pool, @NonNull Bitmap toTransform, int outWidth, int outHeight) {
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
             Bitmap result = pool.get(toTransform.getWidth(), toTransform.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(result);
             Paint paint = new Paint();
@@ -184,7 +182,7 @@ public class ImageLoader {
         }
 
         @Override
-        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+        public void updateDiskCacheKey(MessageDigest messageDigest) {
             messageDigest.update(TAG.getBytes(CHARSET));
         }
     }

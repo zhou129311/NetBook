@@ -72,7 +72,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
                             if (list != null) {
                                 for (Entities.BookSource source : list) {
-                                    if (source != null && source.host != null && source.host.equals("book.my716.com")) {
+                                    if (source != null && source.host != null && source.host.contains("my716")) {
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
                                         if (mBook.isBookshelf()) {

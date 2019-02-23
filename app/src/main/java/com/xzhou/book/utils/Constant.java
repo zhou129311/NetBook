@@ -40,6 +40,7 @@ public class Constant {
     public static final int ITEM_TYPE_VOTE = 15;
     public static final int ITEM_TYPE_POSTS_REVIEW = 16;
     public static final int ITEM_TYPE_POSTS_HELP = 17;
+    public static final int ITEM_TYPE_UGC_BOOK_LIST = 18;
 
     public static final int[] tagColors = new int[] {
             Color.parseColor("#90C5F0"),
@@ -51,11 +52,21 @@ public class Constant {
             Color.parseColor("#F6BC7E")
     };
 
-    @IntDef({ ReadTheme.WHITE, ReadTheme.BROWN, ReadTheme.GREEN, })
+    @IntDef({ ReadTheme.DEFAULT, ReadTheme.BROWN, ReadTheme.GREEN, ReadTheme.DZ,
+            ReadTheme.HBB, ReadTheme.MW, ReadTheme.SM, ReadTheme.SS,
+            ReadTheme.TH, ReadTheme.YM, ReadTheme.YPZ, })
     public @interface ReadTheme {
-        int WHITE = 0;
+        int DEFAULT = 0;
         int BROWN = 1;
         int GREEN = 2;
+        int DZ = 3;
+        int HBB = 4;
+        int MW = 5;
+        int SM = 6;
+        int SS = 7;
+        int TH = 8;
+        int YM = 9;
+        int YPZ = 10;
     }
 
     @IntDef({ TabSource.SOURCE_RANK_SUB,

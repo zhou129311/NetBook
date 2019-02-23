@@ -14,6 +14,7 @@ import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,7 +26,6 @@ import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.common.TabActivity;
-import com.xzhou.book.datasource.BaiduSearch;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.Constant;
@@ -37,7 +37,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class SearchActivity extends BaseActivity {
+public class SearchActivity extends BaseActivity<SearchContract.Presenter> implements SearchContract.View {
 
     public static final String EXTRA_SEARCH_KEY = "search_key";
 
@@ -56,7 +56,7 @@ public class SearchActivity extends BaseActivity {
     private Fragment mCurFragment;
     private SparseArray<Fragment> mFragments;
     private AutoCompleteAdapter mAdapter;
-    private SearchContract.Presenter mPresenter;
+    private boolean mIsEnableAutoSuggest = true;
 
     public static void startActivity(Context context) {
         startActivity(context, null);
@@ -117,12 +117,6 @@ public class SearchActivity extends BaseActivity {
                 return false;
             }
         });
-        getResultFragment().setOnAutoCompleteListener(new ResultFragment.OnAutoCompleteListener() {
-            @Override
-            public void onUpdate(List<Entities.Suggest> list) {
-                updateAutoCompletes(list);
-            }
-        });
         getHistoryFragment().setOnHistoryListener(new HistoryFragment.OnHistoryListener() {
             @Override
             public void onClick(String history) {
@@ -131,15 +125,37 @@ public class SearchActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected SearchContract.Presenter createPresenter() {
+        return new SearchPresenter(this);
+    }
+
+    public int getCurTabId() {
+        return getResultFragment().getCurTabId();
+    }
+
     private void search(String key) {
         Log.i("search:" + key);
+        mSearchEt.removeCallbacks(mEnableRun);
+        mIsEnableAutoSuggest = false;
         mKey = key;
         showFragment(TAB_RESULT);
         mSearchEt.setText(key);
         mSearchEt.setSelection(key.length());
         getResultFragment().search(key);
         getHistoryFragment().addNewHistory(key);
+        mSearchEt.postDelayed(mEnableRun, 2000);
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm == null) return;
+        imm.hideSoftInputFromWindow(mSearchEt.getWindowToken(), 0);
     }
+
+    private Runnable mEnableRun = new Runnable() {
+        @Override
+        public void run() {
+            mIsEnableAutoSuggest = true;
+        }
+    };
 
     private void showFragment(int tab) {
         if (mCurFragment != null && TextUtils.equals(getTagName(tab), mCurFragment.getTag())) {
@@ -191,7 +207,6 @@ public class SearchActivity extends BaseActivity {
             fragment.setArguments(bundle);
             mFragments.put(TAB_RESULT, fragment);
         }
-        mPresenter = new SearchPresenter((SearchContract.View) fragment);
     }
 
     private HistoryFragment getHistoryFragment() {
@@ -206,8 +221,27 @@ public class SearchActivity extends BaseActivity {
         return "s_fragment_" + tab;
     }
 
-    private void updateAutoCompletes(List<Entities.Suggest> list) {
-        if (list == null || list.size() <= 0) {
+    @OnClick({ R.id.back_iv, R.id.search_iv, R.id.clear_et_iv })
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+        case R.id.back_iv:
+            onBackPressed();
+            break;
+        case R.id.search_iv:
+            mKey = mSearchEt.getText().toString();
+            if (!TextUtils.isEmpty(mKey)) {
+                search(mKey);
+            }
+            break;
+        case R.id.clear_et_iv:
+            mSearchEt.setText("");
+            break;
+        }
+    }
+
+    @Override
+    public void onAutoComplete(List<Entities.Suggest> list) {
+        if (list == null || list.size() <= 0 || !mIsEnableAutoSuggest) {
             mRecyclerView.setVisibility(View.GONE);
             if (mAdapter != null) {
                 mAdapter.setNewData(null);
@@ -227,22 +261,8 @@ public class SearchActivity extends BaseActivity {
         }
     }
 
-    @OnClick({ R.id.back_iv, R.id.search_iv, R.id.clear_et_iv })
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-        case R.id.back_iv:
-            onBackPressed();
-            break;
-        case R.id.search_iv:
-            mKey = mSearchEt.getText().toString();
-            if (!TextUtils.isEmpty(mKey)) {
-                search(mKey);
-            }
-            break;
-        case R.id.clear_et_iv:
-            mSearchEt.setText("");
-            break;
-        }
+    @Override
+    public void setPresenter(SearchContract.Presenter presenter) {
     }
 
     private class AutoCompleteAdapter extends BaseQuickAdapter<Entities.Suggest, CommonViewHolder> {
@@ -276,6 +296,9 @@ public class SearchActivity extends BaseActivity {
             } else if (item.isAuthor()) {
                 tag1.setVisibility(View.VISIBLE);
                 tag1.setText(R.string.author);
+            } else {
+                tag1.setVisibility(View.GONE);
+                tag2.setVisibility(View.GONE);
             }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

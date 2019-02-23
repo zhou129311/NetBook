@@ -23,7 +23,6 @@ public class ReadViewPager extends ViewPager {
     private float mDownY;
     private int mScaledTouchSlop;
     private RectF mCenterRect = new RectF();
-    private int mCenterX;
     private boolean isMove = false;
     private ReadPageManager[] mPageManagers;
 
@@ -80,7 +79,6 @@ public class ReadViewPager extends ViewPager {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mCenterX = getMeasuredWidth() / 2;
         float left = getMeasuredWidth() / 3;
         float right = left * 2;
         float top = getMeasuredHeight() / 4;
@@ -125,7 +123,7 @@ public class ReadViewPager extends ViewPager {
             if (!isMove) {
                 if (mCenterRect.contains(upX, upY)) {
                     return performClick();
-                } else if (upX <= mCenterX) {
+                } else if (upX < mCenterRect.right && upY < mCenterRect.bottom) {
                     if (mClickChangePageListener != null) {
                         if (AppSettings.HAS_CLICK_NEXT_PAGE) {
                             mClickChangePageListener.onNext();

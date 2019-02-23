@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView android:id="@+id/theme_image_view"
-           xmlns:android="http://schemas.android.com/apk/res/android"
-           xmlns:tools="http://schemas.android.com/tools"
-           android:layout_width="45dp"
-           android:layout_height="45dp"
-           android:src="@drawable/sel_theme_white"
-           tools:ignore="ContentDescription"/>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="45dp"
+             android:layout_height="45dp">
+
+    <ImageView
+        android:id="@+id/theme_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="ContentDescription"/>
+
+    <ImageView
+        android:id="@+id/theme_image_sel_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/sel_theme_read"
+        tools:ignore="ContentDescription"/>
+</FrameLayout>

@@ -638,7 +638,7 @@ public class Entities {
         public int total;
         public List<UgcBookList> ugcbooklists;
 
-        public static class UgcBookList {
+        public static class UgcBookList implements MultiItemEntity {
             public String _id;
             public Author author;
             public String desc;
@@ -652,6 +652,15 @@ public class Entities {
             public String created;
             public String updated;
             public Highlight highlight;
+
+            @Override
+            public int getItemType() {
+                return Constant.ITEM_TYPE_UGC_BOOK_LIST;
+            }
+
+            public String cover() {
+                return cover == null ? null : ZhuiShuSQApi.IMG_BASE_URL + cover;
+            }
         }
     }
 
@@ -673,6 +682,12 @@ public class Entities {
         public int collectorCount;
         private String cover;
         public int bookCount;
+
+        public List<String> covers;
+        public boolean isDistillate; //精品书单
+        public String created;
+        public String updated;
+        public Highlight highlight;
 
         public String id() {
             return AppUtils.isEmpty(_id) ? id : _id;
@@ -806,7 +821,6 @@ public class Entities {
         public String _id;
         public String title;
         public String type; //type=vote 投票  review 书评
-        public String book; //bookId
         public int likeCount; //赞同数
         public String block; // ramble original review
         public String state; //state=hot focus 热门  distillate 精品 normal 普通
@@ -839,7 +853,7 @@ public class Entities {
         }
 
         public boolean isReview() {
-            return "review".equals(type) && !TextUtils.isEmpty(book);
+            return "review".equals(type);
         }
 
         public boolean isHot() {
@@ -902,6 +916,7 @@ public class Entities {
             public String shareLink;
             public String id;
             public List<Vote> votes;
+            public PostBook book;
 
             public String nickname() {
                 return author == null ? "" : author.nickname;
@@ -941,6 +956,17 @@ public class Entities {
                 private Object rank;
                 private String created;
                 private String id;
+            }
+
+            static class PostBook {
+                private String _id;
+                private String title;
+                private String cover;
+                private int postCount;
+                private int latelyFollower;
+                private int followerCount;
+                private String id;
+                private Object retentionRatio;
             }
 
             public static class Vote implements MultiItemEntity {
@@ -1084,12 +1110,12 @@ public class Entities {
             return helpful == null ? 0 : helpful.yes;
         }
 
-        static class Book {
-            private String _id;
-            private String cover;
-            private String title;
-            private String site;
-            private String type;
+        public static class Book {
+            public String _id;
+            public String cover;
+            public String title;
+            public String site;
+            public String type;
         }
     }
 
@@ -1410,13 +1436,12 @@ public class Entities {
     }
 
     public static class RichPost {
-        public int postType;
         public String idType;
         public String id;
 
         public void startTargetActivity(Context context) {
             if (idType.equals("post")) {
-                PostsDetailActivity.startActivity(context, id, postType);
+                PostsDetailActivity.startActivity(context, id, PostsDetailActivity.TYPE_DISCUSS);
             } else if (idType.equals("book")) {
                 BookDetailActivity.startActivity(context, id);
             } else {

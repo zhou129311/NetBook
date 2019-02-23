@@ -37,6 +37,7 @@
         android:paddingBottom="15dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/read_setting_bottom_ll_layout"
+        tools:layout_editor_absoluteX="49dp"
         tools:visibility="visible">
 
         <ImageView
@@ -57,7 +58,7 @@
             android:layout_height="wrap_content"
             android:max="100"
             android:maxHeight="2dp"
-            android:progress="10"
+            android:progress="50"
             android:progressDrawable="@drawable/bg_seek_bar"
             android:splitTrack="false"
             android:thumb="@mipmap/seek_bar_thumb"
@@ -162,39 +163,6 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_size_dec"/>
-
-        <!--<ImageView
-            android:id="@+id/theme_white_view"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/sel_theme_white"
-            app:layout_constraintBottom_toBottomOf="@id/more_setting_view"
-            app:layout_constraintEnd_toStartOf="@id/theme_brown_view"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/more_setting_view"
-            tools:ignore="ContentDescription"/>
-
-        <ImageView
-            android:id="@+id/theme_brown_view"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/sel_theme_brown"
-            app:layout_constraintBottom_toBottomOf="@id/more_setting_view"
-            app:layout_constraintEnd_toStartOf="@id/theme_green_view"
-            app:layout_constraintStart_toEndOf="@id/theme_white_view"
-            app:layout_constraintTop_toTopOf="@id/more_setting_view"
-            tools:ignore="ContentDescription"/>
-
-        <ImageView
-            android:id="@+id/theme_green_view"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/sel_theme_green"
-            app:layout_constraintBottom_toBottomOf="@id/more_setting_view"
-            app:layout_constraintEnd_toStartOf="@id/more_setting_view"
-            app:layout_constraintStart_toEndOf="@id/theme_brown_view"
-            app:layout_constraintTop_toTopOf="@id/more_setting_view"
-            tools:ignore="ContentDescription"/>-->
     </android.support.constraint.ConstraintLayout>
 
     <LinearLayout

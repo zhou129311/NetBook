@@ -30,7 +30,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -95,12 +94,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @BindView(R.id.theme_recycler_view)
     RecyclerView mThemeRecyclerView;
-    /*@BindView(R.id.theme_white_view)
-    ImageView mThemeWhiteView;
-    @BindView(R.id.theme_brown_view)
-    ImageView mThemeBrownView;
-    @BindView(R.id.theme_green_view)
-    ImageView mThemeGreenView;*/
 
     // tool bar show hide anim
     private Animation mTopInAnim;
@@ -119,6 +112,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         if (book.isPicture) {
             ToastUtils.showShortToast("暂时不支持漫画阅读");
+            ReadCartoonActivity.startActivity(context, book);
             return;
         }
         Intent intent = new Intent(context, ReadActivity.class);
@@ -187,10 +181,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void initThemeView(@Constant.ReadTheme int theme) {
-        final List<Integer> list = new ArrayList<>();
-        list.add(Constant.ReadTheme.WHITE);
-        list.add(Constant.ReadTheme.BROWN);
-        list.add(Constant.ReadTheme.GREEN);
+        final List<ThemeUtils.ReadTheme> list = new ArrayList<>();
+        for (int i = 0, size = ThemeUtils.THEME_MAP.size(); i < size; i++) {
+            list.add(ThemeUtils.THEME_MAP.valueAt(i));
+        }
         final ThemeAdapter themeAdapter = new ThemeAdapter(list);
         themeAdapter.bindToRecyclerView(mThemeRecyclerView);
         mThemeRecyclerView.setHasFixedSize(true);
@@ -202,11 +196,14 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         themeAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                int theme = list.get(position);
+                int theme = list.get(position).theme;
                 themeAdapter.setTheme(theme);
                 setReadTheme(theme);
             }
         });
+        mThemeRecyclerView.scrollToPosition(ThemeUtils.THEME_MAP.indexOfKey(theme));
+        mReadBottomBar.setVisibility(View.INVISIBLE);
+        mReadSettingLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -840,11 +837,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    private class ThemeAdapter extends BaseQuickAdapter<Integer, CommonViewHolder> {
+    private class ThemeAdapter extends BaseQuickAdapter<ThemeUtils.ReadTheme, CommonViewHolder> {
         private @Constant.ReadTheme
         int mCurTheme;
 
-        ThemeAdapter(List<Integer> list) {
+        ThemeAdapter(List<ThemeUtils.ReadTheme> list) {
             super(R.layout.item_theme_view, list);
         }
 
@@ -854,10 +851,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
 
         @Override
-        protected void convert(CommonViewHolder holder, Integer item) {
-            ImageView imageView = holder.getView(R.id.theme_image_view);
-            imageView.setImageResource(ThemeUtils.getThemeDrawableRes(item));
-            imageView.setActivated(item == mCurTheme);
+        protected void convert(CommonViewHolder holder, ThemeUtils.ReadTheme item) {
+            holder.setCircleImageUrl(R.id.theme_image_view, null, item.smBgResId);
+            holder.getView(R.id.theme_image_sel_view).setActivated(item.theme == mCurTheme);
         }
     }
 

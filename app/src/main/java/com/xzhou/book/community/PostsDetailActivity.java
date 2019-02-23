@@ -199,7 +199,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             return;
         }
         View view = LayoutInflater.from(this).inflate(R.layout.header_view_posts_detail, null);
-        HeaderViewHolder header = new HeaderViewHolder(view, mType);
+        HeaderViewHolder header = new HeaderViewHolder(view);
         mAdapter.addHeaderView(view);
         if (detail instanceof Entities.ReviewDetail) {
             Entities.ReviewDetail reviewDetail = (Entities.ReviewDetail) detail;
@@ -277,11 +277,9 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
         ImageView mPostMoreView;
         @BindView(R.id.author_type_view)
         ImageView mAuthorTypeView;
-        private int mType;
 
-        HeaderViewHolder(View view, int type) {
+        HeaderViewHolder(View view) {
             ButterKnife.bind(this, view);
-            mType = type;
         }
 
         @OnClick({ R.id.posts_agreed_view, R.id.posts_more_view })
@@ -390,7 +388,6 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
                 Entities.RichPost richPost = new Entities.RichPost();
                 richPost.idType = idType;
                 richPost.id = id;
-                richPost.postType = mType;
                 listenerMap.put(replaceGroup, new OnPostClickListener(mPostDetailContent.getContext(), richPost));
             }
             for (int j = 0, k = groups.size(); j < k; j++) {

@@ -10,11 +10,13 @@ import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant.CateType;
 import com.xzhou.book.utils.Constant.TabSource;
+import com.xzhou.book.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TabPresenter extends BasePresenter<TabContract.View> implements TabContract.Presenter {
+    private String TAG = "TabPresenter";
     private static final int PAGE_SIZE = 20;
 
     private final Entities.TabData mTabData;
@@ -25,10 +27,11 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
     private String mFiltrate = "";
     private final String[] CATE_TYPE = new String[] { CateType.NEW, CateType.HOT, CateType.REPUTATION, CateType.OVER };
 
-    TabPresenter(TabContract.View view, Entities.TabData data, int tabId) {
+    public TabPresenter(TabContract.View view, Entities.TabData data, int tabId) {
         super(view);
         mTabData = data;
         mTabId = tabId;
+        TAG += "_" + tabId;
         if (mTabData.curFiltrate > -1) {
             mFiltrate = mTabData.filtrate[mTabData.curFiltrate];
         }
@@ -42,6 +45,11 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void setNeedRefresh(boolean isNeedRefresh) {
+        this.hasStart = isNeedRefresh;
     }
 
     @Override
@@ -112,6 +120,7 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                     break;
                 case TabSource.SOURCE_SEARCH:
                     // 书籍 漫画 书单 社区
+                    list = getSearchResult();
                     break;
                 }
                 if (list != null && list.size() > 0) {
@@ -152,6 +161,9 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                         } else {
                             list = getBookReviewList();
                         }
+                        break;
+                    case TabSource.SOURCE_SEARCH:
+                        list = getSearchResult();
                         break;
                     }
                 }
@@ -256,6 +268,56 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
             if (review.reviews != null && review.reviews.size() > 0) {
                 list.addAll(review.reviews);
             }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getSearchResult() {
+        List<MultiItemEntity> list = null;
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
+        String key = mTabData.params[0];
+        Log.i(TAG, "getSearchResult::key = " + key);
+        if (TextUtils.isEmpty(key)) {
+            return null;
+        }
+        switch (mTabId) {
+        case 0://书籍
+            Entities.SearchResult result = ZhuiShuSQApi.getSearchResult(key, start, limit);
+            if (result != null) {
+                list = new ArrayList<>();
+                if (result.books != null && result.books.size() > 0) {
+                    list.addAll(result.books);
+                }
+            }
+            break;
+        case 1://漫画
+            Entities.SearchResult resultPicture = ZhuiShuSQApi.getPicSearchResult(key, start, limit);
+            if (resultPicture != null) {
+                list = new ArrayList<>();
+                if (resultPicture.books != null && resultPicture.books.size() > 0) {
+                    list.addAll(resultPicture.books);
+                }
+            }
+            break;
+        case 2://书单
+            Entities.SearchBookList searchBookList = ZhuiShuSQApi.getBookListSearchResult(key, start, limit);
+            if (searchBookList != null) {
+                list = new ArrayList<>();
+                if (searchBookList.ugcbooklists != null && searchBookList.ugcbooklists.size() > 0) {
+                    list.addAll(searchBookList.ugcbooklists);
+                }
+            }
+            break;
+        case 3://社区
+            Entities.DiscussionList discussionList = ZhuiShuSQApi.getPostSearchResult(key, start, limit);
+            if (discussionList != null) {
+                list = new ArrayList<>();
+                if (discussionList.posts != null && discussionList.posts.size() > 0) {
+                    list.addAll(discussionList.posts);
+                }
+            }
+            break;
         }
         return list;
     }

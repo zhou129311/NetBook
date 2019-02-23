@@ -1,18 +1,25 @@
 package com.xzhou.book.common;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.search.BaiduResultActivity;
+import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.Constant.TabSource;
+import com.xzhou.book.utils.Log;
+import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.CommonLoadMoreView;
 
 import java.util.List;
@@ -89,7 +96,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
         }
 
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true, 70));
+        mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(getActivity()));
 
         mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -106,9 +113,11 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     public void onStart() {
         super.onStart();
         int tabId = 0;
-        TabActivity activity = (TabActivity) getActivity();
-        if (activity != null) {
-            tabId = activity.getCurTabId();
+        Activity activity = getActivity();
+        if (activity instanceof TabActivity) {
+            tabId = ((TabActivity) activity).getCurTabId();
+        } else if (activity instanceof SearchActivity) {
+            tabId = ((SearchActivity) activity).getCurTabId();
         }
         if (mTabId == tabId) {
             mPresenter.start();
@@ -130,6 +139,10 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
 
     @Override
     public void onRefreshStateChange(boolean isRefreshing) {
+        Activity activity = getActivity();
+        if (activity instanceof SearchActivity) {
+            ((SearchActivity) activity).onAutoComplete(null);
+        }
         if (isRefreshing) {
             mEmptyView.setVisibility(View.INVISIBLE);
             mLoadErrorView.setVisibility(View.INVISIBLE);
@@ -148,7 +161,26 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
             mAdapter.setEmptyView(mEmptyView);
             mAdapter.setNewData(null);
         } else {
-            mAdapter.replaceData(list);
+            mAdapter.setNewData(list);
+            checkAddHeaderView();
+        }
+    }
+
+    private void checkAddHeaderView() {
+        if (mTabData != null && mTabData.source == TabSource.SOURCE_SEARCH
+                && mTabId == 0 && mAdapter.getHeaderLayoutCount() == 0) {
+            TextView headerView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.header_view_search_result, null);
+            headerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!TextUtils.isEmpty(mTabData.params[0])) {
+                        BaiduResultActivity.startActivity(getContext(), mTabData.params[0]);
+                    } else {
+                        ToastUtils.showShortToast("请输入关键字进行搜索");
+                    }
+                }
+            });
+            mAdapter.addHeaderView(headerView);
         }
     }
 

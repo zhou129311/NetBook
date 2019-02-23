@@ -73,7 +73,8 @@
         <activity
             android:name=".search.SearchActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NavigationBarTheme"/>
+            android:theme="@style/NavigationBarTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".read.ReadSourceActivity"
             android:screenOrientation="portrait"
@@ -97,9 +98,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/NavigationBarTheme"/>
         <activity
-            android:name=".read.CartoonReadActivity"
+            android:name=".read.ReadCartoonActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ReadTheme"/>
+            android:theme="@style/ReadCartoon"/>
 
         <!--<activity
             android:name="com.tencent.tauth.AuthActivity"

@@ -29,37 +29,23 @@
 
     <TextView
         android:id="@+id/auto_suggest_tag1"
+        style="@style/SearchSuggestTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:background="@drawable/bg_suggest_tag"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:paddingBottom="2dp"
-        android:paddingEnd="5dp"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:textColor="@color/common_h3"
-        android:textSize="10sp"
         android:visibility="gone"
         tools:ignore="SmallSp"
-        tools:text="分类"/>
+        tools:text="分类"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/auto_suggest_tag2"
+        style="@style/SearchSuggestTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:background="@drawable/bg_suggest_tag"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:paddingBottom="2dp"
-        android:paddingEnd="5dp"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:textColor="@color/common_h3"
-        android:textSize="10sp"
         android:visibility="gone"
         tools:ignore="SmallSp"
-        tools:text="男频"/>
+        tools:text="男频"
+        tools:visibility="visible"/>
 </LinearLayout>

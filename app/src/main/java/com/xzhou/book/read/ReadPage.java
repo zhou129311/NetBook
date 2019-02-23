@@ -130,15 +130,24 @@ public class ReadPage extends RelativeLayout {
         int titleColor;
         int backgroundColor;
         int batteryRes;
-        if (AppSettings.isNight()) {
+        int bgRes = -1;
+        if (isNight) {
             backgroundColor = AppUtils.getColor(R.color.read_theme_night);
             batteryRes = R.mipmap.reader_battery_bg_night;
             contentColor = AppUtils.getColor(R.color.chapter_content_night);
             titleColor = AppUtils.getColor(R.color.chapter_title_night);
         } else {
-            backgroundColor = ThemeUtils.getThemeColor(theme);
-            contentColor = AppUtils.getColor(R.color.chapter_content_day);
-            titleColor = AppUtils.getColor(R.color.chapter_title_day);
+            ThemeUtils.ReadTheme readTheme = ThemeUtils.THEME_MAP.get(theme);
+            if (readTheme != null) {
+                backgroundColor = readTheme.bgColor;
+                bgRes = readTheme.bgResId;
+                contentColor = readTheme.contentTextColor;
+                titleColor = readTheme.titleTextColor;
+            } else {
+                backgroundColor = ThemeUtils.getThemeColor(theme);
+                contentColor = AppUtils.getColor(R.color.chapter_content_day);
+                titleColor = AppUtils.getColor(R.color.chapter_title_day);
+            }
             batteryRes = R.mipmap.reader_battery_bg_normal;
             switch (mTheme) {
             case Constant.ReadTheme.BROWN:
@@ -149,9 +158,13 @@ public class ReadPage extends RelativeLayout {
                 break;
             }
         }
+        if (bgRes > 0) {
+            setBackgroundResource(bgRes);
+        } else {
+            setBackgroundColor(backgroundColor);
+        }
         mTheme = theme;
         mBatteryView.setBackgroundResource(batteryRes);
-        setBackgroundColor(backgroundColor);
         mChapterTitle.setTextColor(titleColor);
         mChapterContent.setTextColor(contentColor);
     }

@@ -22,6 +22,10 @@
         <item name="actionMenuTextColor">@color/book_read_top_text</item>
     </style>
 
+    <style name="ReadCartoon" parent="ReadTheme">
+        <item name="android:windowBackground">@color/gray_dark</item>
+    </style>
+
     <style name="SettingTheme" parent="NavigationBarTheme">
         <item name="android:windowBackground">@color/light_white</item>
     </style>
@@ -171,6 +175,18 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/common_h1</item>
+    </style>
+
+    <style name="SearchSuggestTag">
+        <item name="android:background">@drawable/bg_suggest_tag</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/common_h3</item>
     </style>
 
 </resources>

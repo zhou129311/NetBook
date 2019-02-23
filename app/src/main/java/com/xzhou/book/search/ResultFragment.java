@@ -3,25 +3,21 @@ package com.xzhou.book.search;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.util.SparseArrayCompat;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseFragment;
-import com.xzhou.book.common.CommonViewHolder;
-import com.xzhou.book.common.LineItemDecoration;
-import com.xzhou.book.common.MyLinearLayoutManager;
-import com.xzhou.book.main.BookDetailActivity;
+import com.xzhou.book.common.TabContract;
+import com.xzhou.book.common.TabFragment;
+import com.xzhou.book.common.TabPresenter;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
-import com.xzhou.book.utils.ToastUtils;
-import com.xzhou.book.widget.CommonLoadMoreView;
 import com.xzhou.book.widget.Indicator;
 
 import java.util.Arrays;
@@ -31,27 +27,17 @@ import butterknife.BindView;
 
 import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
-public class ResultFragment extends BaseFragment<SearchContract.Presenter> implements SearchContract.View {
+public class ResultFragment extends BaseFragment {
     private static final String TAG = "ResultFragment";
     @BindView(R.id.search_indicator)
     Indicator mIndicator;
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.swipe_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.search_rel_view_pager)
+    ViewPager mViewPager;
 
     private String mKey;
-    private OnAutoCompleteListener mAutoCompleteListener;
-    private Adapter mAdapter;
-    private TextView mEmptyView;
-
-    public interface OnAutoCompleteListener {
-        void onUpdate(List<Entities.Suggest> list);
-    }
-
-    public void setOnAutoCompleteListener(OnAutoCompleteListener listener) {
-        mAutoCompleteListener = listener;
-    }
+    private Entities.TabData mTabData;
+    private final SparseArrayCompat<TabFragment> mFragments = new SparseArrayCompat<>();
+    private final SparseArrayCompat<TabContract.Presenter> mPresenterList = new SparseArrayCompat<>();
 
     @Override
     public int getLayoutResId() {
@@ -61,54 +47,14 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mIndicator.setTabItemTitles(Arrays.asList(getResources().getStringArray(R.array.search_result_tabs)));
-
-        mAdapter = new Adapter();
-        mAdapter.setHeaderAndEmpty(true);
-        mAdapter.bindToRecyclerView(mRecyclerView);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new LineItemDecoration(true));
-        mRecyclerView.setLayoutManager(new MyLinearLayoutManager(view.getContext()));
-        mAdapter.setEnableLoadMore(true);
-        mAdapter.disableLoadMoreIfNotFullPage();
-        mAdapter.setLoadMoreView(new CommonLoadMoreView());
-        mAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-            @Override
-            public void onLoadMoreRequested() {
-                mPresenter.loadMore();
-            }
-        }, mRecyclerView);
-
-        LayoutInflater inflater = LayoutInflater.from(view.getContext());
-        mEmptyView = (TextView) inflater.inflate(R.layout.common_empty_view, null);
-        mEmptyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPresenter.search(mKey);
-            }
-        });
-        mAdapter.setEmptyView(mEmptyView);
-        TextView headerView = (TextView) inflater.inflate(R.layout.header_view_search_result, null);
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!TextUtils.isEmpty(mKey)) {
-                    BaiduResultActivity.startActivity(getContext(), mKey);
-                } else {
-                    ToastUtils.showShortToast("请输入关键字进行搜索");
-                }
-            }
-        });
-        mAdapter.addHeaderView(headerView);
-
         Bundle bundle = getArguments();
         if (bundle != null && TextUtils.isEmpty(mKey)) {
-            mKey = bundle.getString(EXTRA_SEARCH_KEY);
+            mKey = bundle.getString(EXTRA_SEARCH_KEY, "");
         }
-        if (!TextUtils.isEmpty(mKey)) {
-            mPresenter.search(mKey);
-        }
+        mTabData = new Entities.TabData();
+        mTabData.source = Constant.TabSource.SOURCE_SEARCH;
+        mTabData.params = new String[] { mKey };
+        initChildFragment();
     }
 
     public void search(String key) {
@@ -116,82 +62,69 @@ public class ResultFragment extends BaseFragment<SearchContract.Presenter> imple
         if (!isAdded()) {
             return;
         }
+        mTabData.params[0] = mKey;
         if (!TextUtils.isEmpty(key)) {
-            mPresenter.search(key);
+            mPresenterList.get(mViewPager.getCurrentItem()).refresh();
+            for (int i = 0, size = mPresenterList.size(); i < size; i++) {
+                TabContract.Presenter presenter = mPresenterList.valueAt(i);
+                if (presenter != null) {
+                    presenter.setNeedRefresh(true);
+                }
+            }
         } else {
             Log.e(TAG, "oldKey = " + mKey + ",newKey = " + key);
         }
     }
 
-    @Override
-    public void setPresenter(SearchContract.Presenter presenter) {
-        mPresenter = presenter;
+    public int getCurTabId() {
+        return mViewPager.getCurrentItem();
     }
 
-    @Override
-    public void onSearchResult(List<Entities.SearchBook> list) {
-        if (!isAdded()) {
-            Log.e(TAG, "onSearchResult error ,fragment don't add activity");
-            return;
-        }
-        if (list == null) {
-            if (AppUtils.isNetworkAvailable()) {
-                mEmptyView.setText(R.string.network_error_tips);
-            } else {
-                mEmptyView.setText(R.string.network_unconnected);
-            }
-            mAdapter.setNewData(null);
-        } else if (list.size() <= 0) {
-            mEmptyView.setText(R.string.empty_data);
-            mAdapter.setNewData(null);
-        } else {
-            mAdapter.replaceData(list);
-        }
-    }
+    private void initChildFragment() {
+        List<String> tabNames = Arrays.asList(getResources().getStringArray(R.array.search_result_tabs));
 
-    @Override
-    public void onLoadMore(List<Entities.SearchBook> list) {
-        if (list == null) {
-            mAdapter.loadMoreFail();
-        } else if (list.size() <= 0) {
-            mAdapter.loadMoreEnd();
-        } else {
-            mAdapter.loadMoreComplete();
-            mAdapter.addData(list);
-        }
-    }
-
-    @Override
-    public void onAutoComplete(List<Entities.Suggest> list) {
-        if (mAutoCompleteListener != null) {
-            mAutoCompleteListener.onUpdate(list);
-        }
-    }
-
-    @Override
-    public void onLoadState(boolean loading) {
-        mSwipeRefreshLayout.setRefreshing(loading);
-        mRecyclerView.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
-    }
-
-    private class Adapter extends BaseQuickAdapter<Entities.SearchBook, CommonViewHolder> {
-
-        Adapter() {
-            super(R.layout.item_view_search_result);
-        }
-
-        @Override
-        protected void convert(CommonViewHolder holder, final Entities.SearchBook item) {
-            String subText = AppUtils.getString(R.string.search_result_h2, item.latelyFollower, String.valueOf(item.retentionRatio), item.author);
-            holder.setRoundImageUrl(R.id.book_image, item.cover(), R.mipmap.ic_cover_default)
-                    .setText(R.id.book_title, item.title)
-                    .setText(R.id.book_h2, subText);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BookDetailActivity.startActivity(getContext(), item._id);
+        List<Fragment> fragmentList = getChildFragmentManager().getFragments();
+        if (fragmentList != null) {
+            for (int i = 0, size = fragmentList.size(); i < size; i++) {
+                Fragment fragment = fragmentList.get(i);
+                if (fragment instanceof TabFragment) {
+                    TabFragment f = (TabFragment) fragment;
+                    mFragments.put(f.getTabId(), f);
+                    mPresenterList.put(f.getTabId(), new TabPresenter(f, mTabData, f.getTabId()));
                 }
-            });
+            }
         }
+        for (int i = 0, size = tabNames.size(); i < size; i++) {
+            TabFragment fragment = mFragments.get(i);
+            if (fragment == null) {
+                fragment = TabFragment.newInstance(mTabData, i);
+                mFragments.put(i, fragment);
+                mPresenterList.put(i, new TabPresenter(fragment, mTabData, i));
+            }
+        }
+
+        initViewPage(tabNames);
+    }
+
+    private void initViewPage(List<String> tabNames) {
+        if (tabNames.size() != mFragments.size()) {
+            throw new IllegalStateException("mTabNames.size() must be equals mFragments.size()");
+        }
+
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager()) {
+            @Override
+            public int getCount() {
+                return mFragments.size();
+            }
+
+            @Override
+            public TabFragment getItem(int position) {
+                return mFragments.get(position);
+            }
+        };
+        mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(mFragments.size() - 1);
+        mIndicator.setTabItemTitles(tabNames);
+        mIndicator.setViewPager(mViewPager, 0);
     }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 public interface TabContract {
     interface Presenter extends BaseContract.Presenter {
 
+        void setNeedRefresh(boolean isNeedRefresh);
+
         void setFiltrate(String filtrate);
 
         void refresh();

@@ -89,10 +89,10 @@ public class BaiduSearch {
                     Element child = f13.get(j);
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     Title t = new Gson().fromJson(title, Title.class);
-                    logd("title=" + t.toString());
-                    if (t.title.contains("网盘")) {
+                    if (t == null || t.title.contains("网盘")) {
                         continue;
                     }
+                    logd("title=" + t.toString());
                     BaiduModel.BaiduBook book = parseResult(t);
                     if (book != null && book.hasValid()) {
                         if (urlInvalid(book.readUrl)) {
