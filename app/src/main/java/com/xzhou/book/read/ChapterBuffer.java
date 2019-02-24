@@ -1,7 +1,6 @@
 package com.xzhou.book.read;
 
 import android.graphics.Paint;
-import android.text.TextUtils;
 
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;

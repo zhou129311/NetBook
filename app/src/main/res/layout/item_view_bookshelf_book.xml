@@ -51,15 +51,16 @@
 
     <TextView
         android:id="@+id/book_subhead"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="@color/common_h2"
         android:textSize="13sp"
+        android:layout_marginStart="@dimen/book_item_margin_h"
         app:layout_constraintBottom_toTopOf="@id/download_status"
-        app:layout_constraintEnd_toEndOf="@id/book_title"
+        app:layout_constraintEnd_toStartOf="@id/book_checkbox"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/book_title"
+        app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toBottomOf="@id/book_title"
         tools:text="13小时前:灌口二郎神显圣 第1037章..."/>
 
