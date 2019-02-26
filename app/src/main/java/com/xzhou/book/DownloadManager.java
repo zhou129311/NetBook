@@ -137,7 +137,7 @@ public class DownloadManager {
                             break;
                         }
                         Entities.Chapters chapter = download.list.get(i);
-                        if (!chapter.hasLocal && !FileUtils.hasCacheChapter(bookId, i)) {
+                        if (!FileUtils.hasCacheChapter(bookId, i)) {
                             Entities.ChapterRead data;
                             if (parse != null) {
                                 data = parse.parseChapterRead(chapter.link);

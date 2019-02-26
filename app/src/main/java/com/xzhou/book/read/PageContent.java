@@ -64,6 +64,7 @@ public class PageContent {
                 ", isLoading=" + isLoading +
                 ", pageSize=" + pageSize +
                 ", page=" + (mPageLines != null ? mPageLines.page : "null") +
+                ", error=" + error +
                 '}';
     }
 }

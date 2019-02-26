@@ -39,7 +39,7 @@ public class ChapterBuffer {
                 mBuffer = new byte[(int) mBufferLen];
                 raf = new RandomAccessFile(file, "r");
                 int i = raf.read(mBuffer);
-//                Log.i(TAG, "openCacheBookChapter:mBufferLen = " + i);
+                Log.i(TAG, "openCacheBookChapter:mBufferLen = " + i);
                 if (i == -1 || i == mBufferLen) {
                     success = true;
                 }

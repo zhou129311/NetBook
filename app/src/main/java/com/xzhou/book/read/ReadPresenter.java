@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
+    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -91,12 +91,13 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 mChaptersList = aToc.chapters;
                             }
                         }
-                        if (mChaptersList != null && mBook.isBookshelf()) {
-                            for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                                mChaptersList.get(i).hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                            }
-                            AppSettings.saveChapterList(mBook._id, mChaptersList);
+                    }
+                    if (mChaptersList != null && mBook.isBookshelf()) {
+                        for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                            Entities.Chapters chapters = mChaptersList.get(i);
+                            chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
                         }
+                        AppSettings.saveChapterList(mBook._id, mChaptersList);
                     }
                     initChaptersList();
                     if (mChaptersList == null || mChaptersList.size() <= 0) {
@@ -105,13 +106,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         return;
                     }
 
-                    if (mCurChapter < 0) {
-                        mCurChapter = 0;
-                        progress[1] = 0;
-                    } else if (mCurChapter >= mChaptersList.size()) {
-                        mCurChapter = mChaptersList.size() - 1;
-                        progress[1] = -1;
-                    }
                     loadReadProgress(mCurChapter, progress[1], newItem, false);
                 }
             });
@@ -169,7 +163,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 DownloadManager.get().startDownload(mBook._id, download, false);
             }
         }
-
+        boolean hasCache = FileUtils.hasCacheChapter(mBook._id, mCurChapter);
+        Log.i(TAG, "mCurChapter =" + mCurChapter + ",hasCache = " + hasCache);
         if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
             chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();
@@ -185,7 +180,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             }
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
                 success = curBuffer.openNetBookChapter(chapterRead.chapter, saveCurChapter);
-            } else {
+            }
+            if (!success) {
                 error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
             }
         }
@@ -206,6 +202,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 return;
             }
         }
+        Log.d(TAG, "chapter load error = " + error);
         PageContent pageContent = createNonePageContent(chapters.title, mCurChapter, hasEndChapter(mCurChapter));
         if (mCurChapter == 0) {
             pageContent.isStart = true;
@@ -587,6 +584,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private void showError(int page, @Error int error, PageContent showPageContent) {
         if (showPageContent == null) {
             showPageContent = createErrorPageContent(error);
+        } else {
+            showPageContent.error = error;
         }
         showPageContent.isLoading = false;
         showPageContent.isShow = true;

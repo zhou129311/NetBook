@@ -74,7 +74,6 @@ public class FileUtils {
             fos = new FileOutputStream(filePath, isAppend);
             byte[] bytes = content.getBytes();
             fos.write(bytes);
-            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
