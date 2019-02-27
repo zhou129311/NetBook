@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
+    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
     public @interface Error {
         int NO_NETWORK = 0;
         int CONNECTION_FAIL = 1;
@@ -91,21 +91,29 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 mChaptersList = aToc.chapters;
                             }
                         }
+                        if (mChaptersList != null && mBook.isBookshelf()) {
+                            AppSettings.saveChapterList(mBook._id, mChaptersList);
+                        }
                     }
                     if (mChaptersList != null && mBook.isBookshelf()) {
-                        for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                            Entities.Chapters chapters = mChaptersList.get(i);
-                            chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                        }
-                        AppSettings.saveChapterList(mBook._id, mChaptersList);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                                    Entities.Chapters chapters = mChaptersList.get(i);
+                                    chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                                }
+                                AppSettings.saveChapterList(mBook._id, mChaptersList);
+                            }
+                        }).start();
                     }
+
                     initChaptersList();
                     if (mChaptersList == null || mChaptersList.size() <= 0) {
                         int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
                         showError(0, error, null);
                         return;
                     }
-
                     loadReadProgress(mCurChapter, progress[1], newItem, false);
                 }
             });
@@ -442,6 +450,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     public void destroy() {
         super.destroy();
         mPaint = null;
+        mSinglePool.shutdownNow();
     }
 
     private void preparePageContents(ChapterBuffer curBuffer, int chapter, PageLines curPageLine, int curChapterPageCount) {

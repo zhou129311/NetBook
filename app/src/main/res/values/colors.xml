@@ -48,8 +48,8 @@
     <color name="read_theme_brown">#a29d89</color>
     <color name="read_theme_night">#000000</color>
 
-    <color name="chapter_title_hbb">#505050</color>
-    <color name="chapter_content_hbb">#F1ECEC</color>
+    <color name="chapter_title_hbb">#4E4E4E</color>
+    <color name="chapter_content_hbb">#A5A5A5</color>
 
     <color name="reader_mode_brown_text_color">#ff3b3220</color>
     <color name="reader_mode_green_text_color">#ff15350f</color>

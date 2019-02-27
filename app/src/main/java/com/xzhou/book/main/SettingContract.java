@@ -12,5 +12,6 @@ public interface SettingContract {
 
         void updateCacheSize(String value);
 
+        void onCacheLoading();
     }
 }

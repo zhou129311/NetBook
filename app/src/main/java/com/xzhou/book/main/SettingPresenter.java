@@ -9,22 +9,34 @@ import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SettingPresenter extends BasePresenter<SettingContract.View> implements SettingContract.Presenter {
 
     private long mCacheSize;
     private String mCachePath;
+    private String mFilePath;
+    private ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
 
     SettingPresenter(SettingContract.View view) {
         super(view);
         mCachePath = FileUtils.getCachePath(MyApp.getContext());
+        mFilePath = FileUtils.getFilePath(MyApp.getContext());
+        Log.i("SettingPresenter", "mCachePath = " + mCachePath + ",mFilePath = " + mFilePath);
     }
 
     @Override
     public boolean start() {
-        mCacheSize = FileUtils.getFolderSize(mCachePath);
-        String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
-        updateCacheSize(value);
+        onCacheLoading();
+        mSinglePool.execute(new Runnable() {
+            @Override
+            public void run() {
+                mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
+                String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
+                updateCacheSize(value);
+            }
+        });
         return super.start();
     }
 
@@ -34,15 +46,17 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
             ToastUtils.showShortToast("没有缓存");
             return;
         }
-        new Thread(new Runnable() {
+        onCacheLoading();
+        mSinglePool.execute(new Runnable() {
             @Override
             public void run() {
                 FileUtils.deleteFileOrDirectory(new File(mCachePath));
-                mCacheSize = FileUtils.getFolderSize(mCachePath);
+                FileUtils.deleteFileOrDirectory(new File(mFilePath));
+                mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
                 String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
                 updateCacheSize(value);
             }
-        }).start();
+        });
     }
 
     private void updateCacheSize(final String value) {
@@ -52,6 +66,17 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
                 if (mView != null) {
                     Log.d("updateCacheSize::" + value);
                     mView.updateCacheSize(value);
+                }
+            }
+        });
+    }
+
+    private void onCacheLoading() {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onCacheLoading();
                 }
             }
         });

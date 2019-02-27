@@ -188,6 +188,22 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
         });
     }
 
+    @Override
+    public void login(final String openId, final String token, final String loginType) {
+        ZhuiShuSQApi.getPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                Entities.Login login = ZhuiShuSQApi.login(openId, token, loginType);
+                if (login != null && login.user != null) {
+                    AppSettings.saveLogin(login);
+                } else {
+
+                }
+                updateLogin(login);
+            }
+        });
+    }
+
     private void updateList(final List<BookProvider.LocalBook> list) {
         MyApp.runUI(new Runnable() {
             @Override
@@ -253,6 +269,17 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
             public void run() {
                 if (mView != null) {
                     mView.onUpdateDownloadState(localBook);
+                }
+            }
+        });
+    }
+
+    private void updateLogin(final Entities.Login login) {
+        MyApp.runUI(new Runnable() {
+            @Override
+            public void run() {
+                if (mView != null) {
+                    mView.onLogin(login);
                 }
             }
         });

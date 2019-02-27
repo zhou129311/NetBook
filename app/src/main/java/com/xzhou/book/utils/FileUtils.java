@@ -28,7 +28,7 @@ public class FileUtils {
     }
 
     public static String getBookDir(String bookId) {
-        File file = new File(getCachePath(MyApp.getContext()), bookId);
+        File file = new File(getFilePath(MyApp.getContext()), bookId);
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -44,7 +44,7 @@ public class FileUtils {
 
     public static String getFilePath(Context context) {
         String cacheRootPath;
-        File file = context.getExternalFilesDir(null);
+        File file = context.getExternalFilesDir("book");
         if (file != null && file.exists()) {
             cacheRootPath = file.getPath();
         } else {

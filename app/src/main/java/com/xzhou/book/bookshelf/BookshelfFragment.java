@@ -187,6 +187,18 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         }
     }
 
+    @Override
+    public void onLogin(Entities.Login login) {
+        if (login == null || login.user == null) {
+            ToastUtils.showShortToast("登录失败");
+            return;
+        }
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity) {
+            ((MainActivity) activity).updateLogin(login);
+        }
+    }
+
     @OnClick({ R.id.select_all_tv, R.id.delete_tv })
     public void onViewClicked(View view) {
         switch (view.getId()) {

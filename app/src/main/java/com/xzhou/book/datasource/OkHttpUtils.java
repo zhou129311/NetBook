@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.xzhou.book.MyApp;
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
@@ -182,10 +181,12 @@ public class OkHttpUtils {
         return null;
     }
 
-    public static <T> Entities.HttpResult post(final HttpRequest request, final Type typeOfT, final String content) {
+    public static Object post(final HttpRequest request, final Type typeOfT, final String content) {
         String url = request.getTargetUrl();
         Request req = new Request.Builder()
                 .url(url)
+                .removeHeader("User-Agent")
+                .removeHeader("X-User-Agent")
                 .post(RequestBody.create(MediaType.parse("application/json"), content))
                 .build();
         ResponseBody body = null;
@@ -194,7 +195,10 @@ public class OkHttpUtils {
             body = response.body();
             String bodys = body.string();
             loge("post url = " + url + ", content = " + content + "\nresponse =" + bodys);
-            Entities.HttpResult result = new Gson().fromJson(bodys, typeOfT);
+            Object result = null;
+            if (typeOfT != null) {
+                result = new Gson().fromJson(bodys, typeOfT);
+            }
             return result;
         } catch (Exception e) {
             Log.e("post", e);

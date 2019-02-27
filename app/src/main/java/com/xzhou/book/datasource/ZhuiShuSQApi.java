@@ -7,6 +7,7 @@ import com.xzhou.book.models.Entities.HttpResult;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -672,13 +673,25 @@ public class ZhuiShuSQApi {
      * @param platform_code  QQ
      * @return Login
      */
-    public static HttpResult login(String platform_uid, String platform_token, String platform_code) {
+    public static Entities.Login login(String platform_uid, String platform_token, String platform_code) {
         HttpRequest request = new HttpRequest("/user/login");
         HashMap<String, String> body = new HashMap<>();
         body.put("platform_uid", platform_uid);
         body.put("platform_token", platform_token);
         body.put("platform_code", platform_code);
         String content = new JSONObject(body).toString();
-        return OkHttpUtils.post(request, Entities.Login.TYPE, content);
+        return (Entities.Login) OkHttpUtils.post(request, Entities.Login.TYPE, content);
+    }
+
+    public static void logout(String token) {
+        HttpRequest request = new HttpRequest("/user/logout");
+        HashMap<String, String> body = new HashMap<>();
+        body.put("token", token);
+        String content = new JSONObject(body).toString();
+        OkHttpUtils.post(request, null, content);
+    }
+
+    public static void getUserInfo(String token) {
+
     }
 }

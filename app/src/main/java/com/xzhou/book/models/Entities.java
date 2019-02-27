@@ -1336,6 +1336,10 @@ public class Entities {
             public int lv;
             public String gender;
             public String type;
+
+            public String avatar() {
+                return ZhuiShuSQApi.IMG_BASE_URL + avatar;
+            }
         }
     }
 

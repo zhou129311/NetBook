@@ -39,7 +39,7 @@ public class ImageLoader {
         return new RequestOptions().centerInside().placeholder(placeholder);
     }
 
-    private static RequestOptions getCircleOptions(@DrawableRes int placeholder) {
+    public static RequestOptions getCircleOptions(@DrawableRes int placeholder) {
         return new RequestOptions().centerInside().placeholder(placeholder).transform(sCircleTransform);
     }
 

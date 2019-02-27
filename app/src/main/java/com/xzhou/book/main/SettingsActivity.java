@@ -55,16 +55,21 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        mBookSortView.setValue(mSortItems[AppSettings.getBookshelfOrder()]);
-        mBookReadDlView.setValue(mCacheItems[AppSettings.getReadCacheMode()]);
-        mSavingTrafficCb.setChecked(AppSettings.isSavingTraffic());
-        mPresenter.start();
+        mBookSortView.setValue(mSortItems[AppSettings.BOOK_ORDER]);
+        mBookReadDlView.setValue(mCacheItems[AppSettings.READ_CACHE_MODE]);
+        mSavingTrafficCb.setChecked(AppSettings.HAS_SAVING_TRAFFIC);
     }
 
     @Override
     protected void initToolBar() {
         super.initToolBar();
         mToolbar.setTitle(R.string.settings);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.start();
     }
 
     @Override
@@ -145,6 +150,12 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     public void updateCacheSize(String value) {
         mClearCacheView.setValue(value);
         mClearCacheView.setEnabled(true);
+    }
+
+    @Override
+    public void onCacheLoading() {
+        mClearCacheView.setValue("加载中...");
+        mClearCacheView.setEnabled(false);
     }
 
     @Override

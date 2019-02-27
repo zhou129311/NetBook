@@ -22,6 +22,7 @@ public class AppSettings {
     private static final String PRE_KEY_VOLUME_TURN_PAGE = "pre_key_volume_turn_page";
     private static final String PRE_KEY_FULL_SCREEN = "pre_key_full_screen";
     private static final String PRE_KEY_CLICK_NEXT_PAGE = "pre_key_click_next_page";
+    private static final String PRE_KEY_LOGIN = "pre_key_login";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
@@ -36,6 +37,9 @@ public class AppSettings {
     public static boolean HAS_VOLUME_TURN_PAGE = true;
     public static boolean HAS_FULL_SCREEN_MODE = true;
     public static boolean HAS_CLICK_NEXT_PAGE = true;
+    public static boolean HAS_LOGIN = false;
+    public static int BOOK_ORDER = PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME;
+    public static int READ_CACHE_MODE = PRE_VALUE_READ_CACHE_NONE;
     public static @ReadTheme
     int READ_THEME = ReadTheme.DEFAULT;
 
@@ -45,6 +49,33 @@ public class AppSettings {
         HAS_CLICK_NEXT_PAGE = isClickNextPage();
         HAS_FULL_SCREEN_MODE = isFullScreenMode();
         READ_THEME = getReadTheme();
+        BOOK_ORDER = getBookshelfOrder();
+        READ_CACHE_MODE = getReadCacheMode();
+    }
+
+    public static Entities.Login getLogin() {
+        Entities.Login login = null;
+        String loginStr = SPUtils.get().getString(PRE_KEY_LOGIN);
+        if (loginStr != null) {
+            try {
+                login = new Gson().fromJson(loginStr, Entities.Login.TYPE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return login;
+    }
+
+    public static void saveLogin(Entities.Login login) {
+        String loginStr = "";
+        if (login != null) {
+            try {
+                loginStr = new Gson().toJson(login);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        SPUtils.get().putString(PRE_KEY_LOGIN, loginStr);
     }
 
     public static boolean isFullScreenMode() {
