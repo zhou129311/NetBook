@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -63,6 +64,9 @@ import butterknife.OnClick;
 public class ReadActivity extends BaseActivity<ReadContract.Presenter> implements ReadContract.View, DownloadManager.DownloadCallback {
     private static final String TAG = "ReadActivity";
 
+    private static final long MIN_SPACE = 5 * 60 * 1000;
+    private static final long MAX_READ_TIME = 2 * 60 * 60 * 1000;
+    private static final long SLEEP_TIME = 30 * 60 * 1000;
     public static final String EXTRA_BOOK = "localBook";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
@@ -108,6 +112,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private int mPrePosition;
     private int mCurPosition;
     private int mScrollState = ViewPager.SCROLL_STATE_IDLE;
+    private long mStartReadTime;
+    private long mFirstStartReadTime;
+    private ReadSleepDialog mSleepDialog;
 
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         if (book.isPicture) {
@@ -207,6 +214,46 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+        mStartReadTime = SystemClock.elapsedRealtime();
+        long lastTime = AppSettings.getLastStopReadTime();
+        if (lastTime > 0 && mStartReadTime - lastTime < MIN_SPACE) {
+            //距离上次阅读时间小于5分钟，按照上次阅读时间处理
+            mFirstStartReadTime = lastTime;
+        } else {
+            mFirstStartReadTime = mStartReadTime;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() == 0) {
+            mReadViewPager.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
+            relayoutPageContent();
+        } else if (AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() > 0) {
+            mReadViewPager.setPadding(0, 0, 0, 0);
+            relayoutPageContent();
+        }
+        if (AppSettings.HAS_FULL_SCREEN_MODE && mReadBottomBar.getVisibility() != View.VISIBLE) {
+            hideSystemBar();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+        long stop = SystemClock.elapsedRealtime();
+        long oldReadTime = AppSettings.getTotalReadTime();
+        long newReadTime = stop - mStartReadTime;
+        AppSettings.setTotalReadTime(oldReadTime + newReadTime);
+        AppSettings.setLastStopReadTime(stop);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (outState != null) {
@@ -246,6 +293,12 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        DownloadManager.get().removeCallback(mBook._id, this);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(mBatteryReceiver);
@@ -263,21 +316,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         super.initToolBar();
         mToolbar.setTitle(mBook.title);
         mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() == 0) {
-            mReadViewPager.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
-            relayoutPageContent();
-        } else if (AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() > 0) {
-            mReadViewPager.setPadding(0, 0, 0, 0);
-            relayoutPageContent();
-        }
-        if (AppSettings.HAS_FULL_SCREEN_MODE && mReadBottomBar.getVisibility() != View.VISIBLE) {
-            hideSystemBar();
-        }
     }
 
     @Override
@@ -325,12 +363,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        DownloadManager.get().removeCallback(mBook._id, this);
-    }
-
-    @Override
     protected ReadContract.Presenter createPresenter() {
         return new ReadPresenter(this, mBook);
     }
@@ -374,6 +406,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void onUpdatePages(PageContent[] pageContent) {
         if (pageContent != null && pageContent.length == 3) {
+            checkReadTime();
             mReadViewPager.setCanTouch(false);
             for (int i = 0; i < 3; i++) {
                 mPageManagers[i].getReadPage().setPageContent(pageContent[i]);
@@ -594,7 +627,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -605,9 +638,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
-            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -757,6 +790,30 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 page.getReadPage().setBattery(curBattery);
             }
         }
+    }
+
+    private void checkReadTime() {
+        long startSleepTime = AppSettings.getStartSleepTime();
+        long curTime = SystemClock.elapsedRealtime();
+        long oldSleepTime = curTime - startSleepTime;
+        if (oldSleepTime > 0 && startSleepTime > 0 && oldSleepTime < SLEEP_TIME) {
+            showSleepTimeDialog(SLEEP_TIME - oldSleepTime);
+            return;
+        }
+        if (curTime - mFirstStartReadTime < MAX_READ_TIME) {
+            return;
+        }
+        AppSettings.setStartSleepTime(curTime);
+        showSleepTimeDialog(SLEEP_TIME);
+    }
+
+    private void showSleepTimeDialog(long countDownTime) {
+        if (mSleepDialog != null && mSleepDialog.isShowing()) {
+            return;
+        }
+        mSleepDialog = new ReadSleepDialog(this);
+        mSleepDialog.updateCountTime(countDownTime);
+        mSleepDialog.show();
     }
 
     private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {

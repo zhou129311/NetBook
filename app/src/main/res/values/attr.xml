@@ -59,5 +59,10 @@
     <declare-styleable name="SettingItemView">
         <attr name="titleText" format="string"/>
         <attr name="valueText" format="string"/>
+        <attr name="arrowVisibility">
+            <enum name="visible" value="0"/>
+            <enum name="invisible" value="1"/>
+            <enum name="gone" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>

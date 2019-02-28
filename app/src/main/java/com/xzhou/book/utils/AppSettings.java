@@ -23,6 +23,9 @@ public class AppSettings {
     private static final String PRE_KEY_FULL_SCREEN = "pre_key_full_screen";
     private static final String PRE_KEY_CLICK_NEXT_PAGE = "pre_key_click_next_page";
     private static final String PRE_KEY_LOGIN = "pre_key_login";
+    private static final String PRE_KEY_TOTAL_READ_TIME = "pre_key_total_read_time";
+    private static final String PRE_KEY_LAST_STOP_READ_TIME = "pre_key_last_stop_read_time";
+    private static final String PRE_KEY_START_SLEEP_TIME = "pre_key_start_sleep_time";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
@@ -37,7 +40,6 @@ public class AppSettings {
     public static boolean HAS_VOLUME_TURN_PAGE = true;
     public static boolean HAS_FULL_SCREEN_MODE = true;
     public static boolean HAS_CLICK_NEXT_PAGE = true;
-    public static boolean HAS_LOGIN = false;
     public static int BOOK_ORDER = PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME;
     public static int READ_CACHE_MODE = PRE_VALUE_READ_CACHE_NONE;
     public static @ReadTheme
@@ -51,6 +53,36 @@ public class AppSettings {
         READ_THEME = getReadTheme();
         BOOK_ORDER = getBookshelfOrder();
         READ_CACHE_MODE = getReadCacheMode();
+    }
+
+    public static long getStartSleepTime() {
+        String time = SPUtils.get().getString(PRE_KEY_START_SLEEP_TIME, "0");
+        return Long.parseLong(time);
+    }
+
+    public static void setStartSleepTime(long startSleepTime) {
+        String time = String.valueOf(startSleepTime);
+        SPUtils.get().putString(PRE_KEY_START_SLEEP_TIME, time);
+    }
+
+    public static long getTotalReadTime() {
+        String time = SPUtils.get().getString(PRE_KEY_TOTAL_READ_TIME, "0");
+        return Long.parseLong(time);
+    }
+
+    public static void setTotalReadTime(long totalReadTime) {
+        String time = String.valueOf(totalReadTime);
+        SPUtils.get().putString(PRE_KEY_TOTAL_READ_TIME, time);
+    }
+
+    public static long getLastStopReadTime() {
+        String lastTime = SPUtils.get().getString(PRE_KEY_LAST_STOP_READ_TIME, "0");
+        return Long.parseLong(lastTime);
+    }
+
+    public static void setLastStopReadTime(long lastStopReadTime) {
+        String time = String.valueOf(lastStopReadTime);
+        SPUtils.get().putString(PRE_KEY_LAST_STOP_READ_TIME, time);
     }
 
     public static Entities.Login getLogin() {

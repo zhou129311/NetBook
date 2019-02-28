@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,11 +19,16 @@ public class SettingItemView extends RelativeLayout {
     TextView mSettingTitle;
     @BindView(R.id.setting_value_tv)
     TextView mSettingValueTv;
-//    @BindView(R.id.setting_loading)
-//    ProgressBar mProgressBar;
+    @BindView(R.id.arrow)
+    ImageView mArrowView;
+
+    private static final int ARROW_VISIBLE = 0;
+    private static final int ARROW_INVISIBLE = 1;
+    private static final int ARROW_GONE = 2;
 
     private String mTitle;
     private String mValue;
+    private int mVisibleState;
 
     public SettingItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -33,6 +39,7 @@ public class SettingItemView extends RelativeLayout {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
         mTitle = ta.getString(R.styleable.SettingItemView_titleText);
         mValue = ta.getString(R.styleable.SettingItemView_valueText);
+        mVisibleState = ta.getInt(R.styleable.SettingItemView_arrowVisibility, ARROW_VISIBLE);
         ta.recycle();
         initView(context);
     }
@@ -46,6 +53,17 @@ public class SettingItemView extends RelativeLayout {
         if (mValue != null) {
             mSettingValueTv.setText(mValue);
         }
+        switch (mVisibleState) {
+        case ARROW_VISIBLE:
+            mArrowView.setVisibility(VISIBLE);
+            break;
+        case ARROW_INVISIBLE:
+            mArrowView.setVisibility(INVISIBLE);
+            break;
+        case ARROW_GONE:
+            mArrowView.setVisibility(GONE);
+            break;
+        }
     }
 
     public void setValue(String value) {
@@ -55,10 +73,7 @@ public class SettingItemView extends RelativeLayout {
         }
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-//        mProgressBar.setVisibility(enabled ? GONE : VISIBLE);
-//        mSettingValueTv.setVisibility(enabled ? VISIBLE : GONE);
+    public void setArrowShow(boolean isShow) {
+        mArrowView.setVisibility(isShow ? VISIBLE : INVISIBLE);
     }
 }

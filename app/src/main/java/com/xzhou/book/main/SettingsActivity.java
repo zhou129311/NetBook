@@ -18,6 +18,9 @@ import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.widget.SettingItemView;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
@@ -32,6 +35,8 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     SettingItemView mClearCacheView;
     @BindView(R.id.saving_traffic_cb)
     SwitchCompat mSavingTrafficCb;
+    @BindView(R.id.read_time_view)
+    SettingItemView mReadTimeView;
 
     private String[] mSortItems = new String[] {
             AppUtils.getString(R.string.bookshelf_sort_add),
@@ -46,6 +51,8 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
             AppUtils.getString(R.string.download_read_book_10),
     };
 
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
         context.startActivity(intent);
@@ -58,6 +65,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         mBookSortView.setValue(mSortItems[AppSettings.BOOK_ORDER]);
         mBookReadDlView.setValue(mCacheItems[AppSettings.READ_CACHE_MODE]);
         mSavingTrafficCb.setChecked(AppSettings.HAS_SAVING_TRAFFIC);
+        mReadTimeView.setValue(mDateFormat.format(AppSettings.getTotalReadTime()));
     }
 
     @Override

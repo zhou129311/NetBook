@@ -79,6 +79,19 @@
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
 
+            <com.xzhou.book.widget.SettingItemView
+                android:id="@+id/read_time_view"
+                style="@style/SettingItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:arrowVisibility="gone"
+                app:titleText="@string/read_time"
+                app:valueText="1小时"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/common_divider_narrow"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
