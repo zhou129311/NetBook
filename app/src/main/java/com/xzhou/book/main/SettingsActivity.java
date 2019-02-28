@@ -20,6 +20,7 @@ import com.xzhou.book.widget.SettingItemView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
@@ -51,7 +52,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
             AppUtils.getString(R.string.download_read_book_10),
     };
 
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
@@ -61,6 +62,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
         setContentView(R.layout.activity_settings);
         mBookSortView.setValue(mSortItems[AppSettings.BOOK_ORDER]);
         mBookReadDlView.setValue(mCacheItems[AppSettings.READ_CACHE_MODE]);
