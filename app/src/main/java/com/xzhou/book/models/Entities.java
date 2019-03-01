@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.R;
 import com.xzhou.book.community.PostsDetailActivity;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;

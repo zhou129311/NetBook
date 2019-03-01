@@ -110,6 +110,8 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
             title = getString(R.string.community_comment);
         } else if (mType == TYPE_HELP) {
             title = getString(R.string.community_helper);
+        } else if (mType == TYPE_GIRL) {
+            title = getString(R.string.community_girl);
         }
         mToolbar.setTitle(title);
     }
@@ -191,7 +193,7 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
         }
     };
 
-    private static class Adapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
+    private class Adapter extends BaseMultiItemQuickAdapter<MultiItemEntity, CommonViewHolder> {
 
         Adapter() {
             super(null);
@@ -236,7 +238,7 @@ public class DiscussActivity extends BaseActivity<DiscussContract.Presenter> imp
                         if (posts.isReview()) {
                             type = PostsDetailActivity.TYPE_REVIEW;
                         } else {
-                            type = PostsDetailActivity.TYPE_DISCUSS;
+                            type = mType;
                         }
                         PostsDetailActivity.startActivity(mContext, posts._id, type);
                     }

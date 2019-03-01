@@ -99,25 +99,29 @@ public class ReadViewPager extends ViewPager {
             if (!isMove) {
                 isMove = Math.abs(mDownX - ev.getRawX()) > mScaledTouchSlop || Math.abs(mDownY - ev.getRawY()) > mScaledTouchSlop;
             }
-            if (hasCurEndPager() || !isCanLeftTouch) {
-                if (mDownX - ev.getRawX() > 0) {
-                    //左滑
-                    int deltaX = (int) (mLastX - ev.getRawX());
-                    mSwipeLayout.onMove(deltaX);
-                    mLastX = ev.getRawX();
-                    return false;
-                } else {
-                    if (mSwipeLayout.getCurrentState() != SwipeLayout.STATE_CLOSED) {
-                        //右滑
-                        mSwipeLayout.smoothToCloseMenu();
+            if (mSwipeLayout != null) {
+                if (hasCurEndPager() || !isCanLeftTouch) {
+                    if (mDownX - ev.getRawX() > 0) {
+                        //左滑
+                        int deltaX = (int) (mLastX - ev.getRawX());
+                        mSwipeLayout.onMove(deltaX);
+                        mLastX = ev.getRawX();
                         return false;
+                    } else {
+                        if (mSwipeLayout.getCurrentState() != SwipeLayout.STATE_CLOSED) {
+                            //右滑
+                            mSwipeLayout.smoothToCloseMenu();
+                            return false;
+                        }
                     }
                 }
             }
             break;
         case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_CANCEL:
-            mSwipeLayout.onUpOrCancel();
+            if (mSwipeLayout != null) {
+                mSwipeLayout.onUpOrCancel();
+            }
             float upX = ev.getRawX();
             float upY = ev.getRawY();
             if (!isMove) {

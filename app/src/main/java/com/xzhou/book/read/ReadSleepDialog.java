@@ -62,6 +62,6 @@ public class ReadSleepDialog extends AppCompatDialog {
     @OnClick(R.id.ok_tv)
     public void onViewClicked() {
         dismiss();
-        mActivity.finish();
+        mActivity.onBackPressed();
     }
 }

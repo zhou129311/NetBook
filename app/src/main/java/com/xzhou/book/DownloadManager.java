@@ -2,7 +2,7 @@ package com.xzhou.book;
 
 import android.text.TextUtils;
 
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;

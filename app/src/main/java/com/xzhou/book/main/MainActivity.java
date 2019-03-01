@@ -1,29 +1,15 @@
 package com.xzhou.book.main;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDelegate;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
 import com.xzhou.book.R;
 import com.xzhou.book.bookshelf.BookshelfContract;
 import com.xzhou.book.bookshelf.BookshelfFragment;
@@ -36,17 +22,10 @@ import com.xzhou.book.community.CommunityPresenter;
 import com.xzhou.book.find.FindContract;
 import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
-import com.xzhou.book.models.Entities;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppSettings;
-import com.xzhou.book.utils.ImageLoader;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SnackBarUtils;
-import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.Indicator;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,18 +47,20 @@ public class MainActivity extends BaseActivity {
     private BookshelfContract.Presenter mBookPresenter;
     private CommunityContract.Presenter mCommPresenter;
     private FindContract.Presenter mFindPresenter;
-    private MenuItem mUserItem;
     private long mLastBackPressedTime;
-    private Tencent mTencent;
-    private Entities.Login mLogin;
+    //    private Entities.Login mLogin;
+    private boolean mMainNight;
+//    private MenuAdapter mMenuAdapter;
+//    private ListPopupWindow mListPopupWindow;
+//    private LayoutInflater mLayoutInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_tab);
+//        mLayoutInflater = LayoutInflater.from(this);
         initViewData();
-
-        mTencent = Tencent.createInstance("100497199", this.getApplicationContext());
+        mMainNight = AppSettings.isNight();
     }
 
     @Override
@@ -88,12 +69,67 @@ public class MainActivity extends BaseActivity {
         mToolbar.setTitleTextAppearance(this, R.style.MainTitleTextStyle);
     }
 
+//    private void showPopupMenu() {
+//        if (mListPopupWindow == null) {
+//            mMenuAdapter = new MenuAdapter();
+//            mListPopupWindow = new ListPopupWindow(this);
+//            mListPopupWindow.setWidth(AppUtils.dip2px(160));
+//            mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+//            mListPopupWindow.setAnchorView(mToolbar);
+//            mListPopupWindow.setHorizontalOffset(AppUtils.dip2px(-16));//相对锚点偏移值，正值表示向右偏移
+//            mListPopupWindow.setVerticalOffset(AppUtils.dip2px(-5));//相对锚点偏移值，正值表示向下偏移
+//            mListPopupWindow.setDropDownGravity(Gravity.END);
+//            mListPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_dialog_common));
+//            mListPopupWindow.setModal(true);//模态框，设置为true响应物理键
+//            mListPopupWindow.setAdapter(mMenuAdapter);
+//            mListPopupWindow.setAnimationStyle(R.style.popup_anim_style);
+//            mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    mListPopupWindow.dismiss();
+//                    switch (position) {
+//                    case 0:
+//                        if (mLogin == null) {
+//                            doLogin();
+//                        } else {
+//                            UserActivity.startActivity(mActivity);
+//                        }
+//                        break;
+//                    case 1:
+//                        if (AppSettings.isNight()) {
+//                            AppSettings.setNight(false);
+//                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                            mMainNight = false;
+//                        } else {
+//                            AppSettings.setNight(true);
+//                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//                            mMainNight = true;
+//                        }
+//                        recreate();
+//                        break;
+//                    case 2:
+//                        SettingsActivity.startActivity(mActivity);
+//                        break;
+//                    }
+//                }
+//            });
+//        }
+//        mListPopupWindow.show();
+//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        mUserItem = menu.findItem(R.id.action_login);
-        updateLogin(AppSettings.getLogin());
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        boolean isNight = AppSettings.isNight();
+        if (mMainNight != isNight) {
+            recreate();
+        }
     }
 
     @Override
@@ -102,82 +138,31 @@ public class MainActivity extends BaseActivity {
         case R.id.action_search:
             SearchActivity.startActivity(this);
             break;
-        case R.id.action_login:
-            if (mLogin == null) {
-                doLogin();
-            } else {
-                UserActivity.startActivity(this);
-            }
-            break;
         case R.id.action_night_mode:
             if (AppSettings.isNight()) {
                 AppSettings.setNight(false);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                mMainNight = false;
             } else {
                 AppSettings.setNight(true);
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                mMainNight = true;
             }
             recreate();
             break;
         case R.id.action_settings:
-            SettingsActivity.startActivity(this);
+            SettingsActivity.startActivity(mActivity);
             break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateLogin(Entities.Login login) {
-        mLogin = login;
-        if (mLogin != null) {
-            updateLoginIcon(login.user.avatar());
-            mUserItem.setTitle(login.user.nickname);
-        }
-    }
-
-    private void updateLoginIcon(String url) {
-        if (TextUtils.isEmpty(url)) {
-            mUserItem.setIcon(R.mipmap.home_menu_0);
-        } else {
-            Glide.with(this).load(url).apply(ImageLoader.getCircleOptions(R.mipmap.avatar_default)).into(mSimpleTarget);
-        }
-    }
-
-    private SimpleTarget<Drawable> mSimpleTarget = new SimpleTarget<Drawable>() {
-        @Override
-        public void onResourceReady(@NonNull Drawable resource, Transition<? super Drawable> transition) {
-            resource.setBounds(0, 0, 50, 50);
-            mUserItem.setIcon(resource);
-        }
-    };
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Tencent.onActivityResultData(requestCode, resultCode, data, listener);
-    }
-
-    private void doLogin() {
-        if (!mTencent.isSessionValid()) {
-            mTencent.login(this, "all", listener);
-        }
-    }
-
-    private IUiListener listener = new BaseUiListener() {
-        @Override
-        protected void doComplete(JSONObject values) {
-            Log.i("doComplete:" + values.toString());
-//            updateLoginButton();
-            try {
-                String openId = values.getString("openid");
-                String token = values.getString("access_token");
-                String type = "QQ";
-                mBookPresenter.login(openId, token, type);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                ToastUtils.showShortToast("Login Error:" + e.getMessage());
-            }
-        }
-    };
+//    public void updateLogin(Entities.Login login) {
+//        mLogin = login;
+//        if (mLogin != null && mMenuAdapter != null) {
+//            mMenuAdapter.notifyDataSetChanged();
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -278,4 +263,60 @@ public class MainActivity extends BaseActivity {
         mFragment.put(position, fragment);
         return fragment;
     }
+
+//    private class MenuAdapter extends BaseAdapter {
+//        @Override
+//        public int getCount() {
+//            return 3;
+//        }
+//
+//        @Override
+//        public Object getItem(int position) {
+//            return position;
+//        }
+//
+//        @Override
+//        public long getItemId(int position) {
+//            return position;
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            ViewHolder viewHolder;
+//            if (convertView == null) {
+//                convertView = mLayoutInflater.inflate(R.layout.menu_item_icon, null);
+//                viewHolder = new ViewHolder(convertView);
+//                convertView.setTag(viewHolder);
+//            } else {
+//                viewHolder = (ViewHolder) convertView.getTag();
+//            }
+//            if (position == 0) {
+//                if (mLogin != null) {
+//                    ImageLoader.showCircleImageUrl(mActivity, viewHolder.mImageView, mLogin.user.avatar(), R.mipmap.avatar_default);
+//                    viewHolder.mTextView.setText(mLogin.user.nickname);
+//                } else {
+//                    viewHolder.mImageView.setImageResource(R.mipmap.home_menu_0);
+//                    viewHolder.mTextView.setText(R.string.menu_main_login);
+//                }
+//            } else if (position == 1) {
+//                viewHolder.mImageView.setImageResource(R.mipmap.theme_night);
+//                viewHolder.mTextView.setText(R.string.menu_main_night_mode);
+//            } else {
+//                viewHolder.mImageView.setImageResource(R.mipmap.home_menu_6);
+//                viewHolder.mTextView.setText(R.string.settings);
+//            }
+//
+//            return convertView;
+//        }
+//
+//        class ViewHolder {
+//            private ImageView mImageView;
+//            private TextView mTextView;
+//
+//            ViewHolder(View view) {
+//                mImageView = view.findViewById(R.id.menu_icon);
+//                mTextView = view.findViewById(R.id.menu_text);
+//            }
+//        }
+//    }
 }

@@ -38,6 +38,8 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     SwitchCompat mSavingTrafficCb;
     @BindView(R.id.read_time_view)
     SettingItemView mReadTimeView;
+    @BindView(R.id.sleep_time_view)
+    SettingItemView mSleepTimeView;
 
     private String[] mSortItems = new String[] {
             AppUtils.getString(R.string.bookshelf_sort_add),
@@ -50,6 +52,13 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
             AppUtils.getString(R.string.download_read_book_1),
             AppUtils.getString(R.string.download_read_book_5),
             AppUtils.getString(R.string.download_read_book_10),
+    };
+
+    private String[] mSleepItems = new String[] {
+            "关闭",
+            "15分钟",
+            "30分钟",
+            "45分钟",
     };
 
     private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
@@ -68,6 +77,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         mBookReadDlView.setValue(mCacheItems[AppSettings.READ_CACHE_MODE]);
         mSavingTrafficCb.setChecked(AppSettings.HAS_SAVING_TRAFFIC);
         mReadTimeView.setValue(mDateFormat.format(AppSettings.getTotalReadTime()));
+        mSleepTimeView.setValue(mSleepItems[getSleepCheckItem()]);
     }
 
     @Override
@@ -92,7 +102,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         AppSettings.setSavingTraffic(checked);
     }
 
-    @OnClick({ R.id.book_sort_view, R.id.book_read_dl_view, R.id.clear_cache_view })
+    @OnClick({ R.id.book_sort_view, R.id.book_read_dl_view, R.id.clear_cache_view, R.id.sleep_time_view })
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.book_sort_view: {
@@ -134,7 +144,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
                     }).show();
             break;
         }
-        case R.id.clear_cache_view:
+        case R.id.clear_cache_view: {
             AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
             builder.setTitle(R.string.clear_cache_dialog_title)
                     .setMessage(R.string.clear_cache_dialog_message)
@@ -154,6 +164,49 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
                     }).show();
             break;
         }
+        case R.id.sleep_time_view:
+            ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
+            builder.setTitle(R.string.sleep_time)
+                    .setSingleChoiceItems(mSleepItems, getSleepCheckItem(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            long sleepTime = 45 * 60 * 1000;
+                            switch (which) {
+                            case 0:
+                                sleepTime = 0;
+                                break;
+                            case 1:
+                                sleepTime = 15 * 60 * 1000;
+                                break;
+                            case 2:
+                                sleepTime = 30 * 60 * 1000;
+                                break;
+                            }
+                            AppSettings.setSleepTime(sleepTime);
+                            mSleepTimeView.setValue(mSleepItems[which]);
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+            break;
+        }
+    }
+
+    private int getSleepCheckItem() {
+        int item = 2;
+        if (AppSettings.READ_SLEEP_TIME == 0) {
+            item = 0;
+        } else if (AppSettings.READ_SLEEP_TIME == 15 * 60 * 1000) {
+            item = 1;
+        } else if (AppSettings.READ_SLEEP_TIME == 45 * 60 * 1000) {
+            item = 3;
+        }
+        return item;
     }
 
     @Override

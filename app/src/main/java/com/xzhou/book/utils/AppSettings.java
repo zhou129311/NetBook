@@ -26,6 +26,7 @@ public class AppSettings {
     private static final String PRE_KEY_TOTAL_READ_TIME = "pre_key_total_read_time";
     private static final String PRE_KEY_LAST_STOP_READ_TIME = "pre_key_last_stop_read_time";
     private static final String PRE_KEY_START_SLEEP_TIME = "pre_key_start_sleep_time";
+    private static final String PRE_KEY_READ_SLEEP_TIME = "pre_key_read_sleep_time";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
@@ -44,6 +45,7 @@ public class AppSettings {
     public static int READ_CACHE_MODE = PRE_VALUE_READ_CACHE_NONE;
     public static @ReadTheme
     int READ_THEME = ReadTheme.DEFAULT;
+    public static long READ_SLEEP_TIME = 30 * 60 * 1000;
 
     public static void init() {
         HAS_SAVING_TRAFFIC = isSavingTraffic();
@@ -53,6 +55,18 @@ public class AppSettings {
         READ_THEME = getReadTheme();
         BOOK_ORDER = getBookshelfOrder();
         READ_CACHE_MODE = getReadCacheMode();
+        READ_SLEEP_TIME = getSleepTime();
+    }
+
+    public static long getSleepTime() {
+        String time = SPUtils.get().getString(PRE_KEY_READ_SLEEP_TIME, String.valueOf(30 * 60 * 1000));
+        return Long.parseLong(time);
+    }
+
+    public static void setSleepTime(long sleepTime) {
+        READ_SLEEP_TIME = sleepTime;
+        String time = String.valueOf(sleepTime);
+        SPUtils.get().putString(PRE_KEY_READ_SLEEP_TIME, time);
     }
 
     public static long getStartSleepTime() {

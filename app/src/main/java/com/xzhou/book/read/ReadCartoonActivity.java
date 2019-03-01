@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -15,7 +14,6 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
@@ -25,10 +23,10 @@ import butterknife.OnClick;
 
 import static com.xzhou.book.read.ReadActivity.EXTRA_BOOK;
 
-public class ReadCartoonActivity extends BaseActivity {
+public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter> implements CartoonContract.View {
     public static final String TAG = "ReadCartoonActivity";
     @BindView(R.id.cartoon_view_pager)
-    ViewPager mCartoonViewPager;
+    ReadViewPager mCartoonViewPager;
     @BindView(R.id.cartoon_abl_top_menu)
     AppBarLayout mCartoonAblTopMenu;
     @BindView(R.id.brightness_seek_bar)
@@ -60,6 +58,22 @@ public class ReadCartoonActivity extends BaseActivity {
             return;
         }
         setContentView(R.layout.activity_read_cartoon);
+        initViewPager();
+    }
+
+    private void initViewPager() {
+
+    }
+
+    @Override
+    protected CartoonContract.Presenter createPresenter() {
+        return new CartoonPresenter(this, mBook);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.start();
     }
 
     @Override
@@ -74,25 +88,58 @@ public class ReadCartoonActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.brightness_min:
+
             break;
         case R.id.brightness_max:
+
             break;
         case R.id.previous_chapter_tv:
+
             break;
         case R.id.next_chapter_tv:
+
             break;
         case R.id.previous_page_tv:
+
             break;
         case R.id.next_page_tv:
+
             break;
         case R.id.toc_view:
+
             break;
         case R.id.light_view:
+
             break;
         case R.id.download_view:
+
             break;
         case R.id.more_setting_view:
+            ReadSettingActivity.startActivity(this);
             break;
         }
+    }
+
+    @Override
+    public void initChapterList(List<Entities.Chapters> list) {
+        if (list == null || list.size() <= 0) {
+            ToastUtils.showShortToast("未找到本书内容，请检查网络后重试");
+            return;
+        }
+        mChaptersList = list;
+    }
+
+    @Override
+    public void onUpdatePages(CartoonContent[] pageContent) {
+
+    }
+
+    @Override
+    public void onUpdateSource(List<Entities.BookSource> list) {
+
+    }
+
+    @Override
+    public void setPresenter(CartoonContract.Presenter presenter) {
     }
 }

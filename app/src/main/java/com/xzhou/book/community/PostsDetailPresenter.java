@@ -4,7 +4,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
@@ -48,6 +48,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                     mDataNumber = 0;
                     ArrayList<MultiItemEntity> list = null;
                     switch (mType) {
+                    case PostsDetailActivity.TYPE_GIRL:
                     case PostsDetailActivity.TYPE_DISCUSS:
                         Entities.DiscussionDetail discussionDetail = ZhuiShuSQApi.getBookDiscussionDetail(mPostId);
                         if (discussionDetail != null && discussionDetail.post != null) {
@@ -118,6 +119,7 @@ public class PostsDetailPresenter extends BasePresenter<PostsDetailContract.View
                 } else {
                     switch (mType) {
                     case PostsDetailActivity.TYPE_DISCUSS:
+                    case PostsDetailActivity.TYPE_GIRL:
                         list = addDiscussionCommentList(null, true);
                         break;
                     case PostsDetailActivity.TYPE_HELP:

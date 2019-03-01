@@ -8,7 +8,7 @@ import android.util.LruCache;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
@@ -107,7 +107,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             }
                         }).start();
                     }
-
                     initChaptersList();
                     if (mChaptersList == null || mChaptersList.size() <= 0) {
                         int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;

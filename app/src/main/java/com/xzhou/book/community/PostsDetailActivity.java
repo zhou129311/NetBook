@@ -62,6 +62,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     public static final int TYPE_DISCUSS = 1; //综合讨论区帖子详情
     public static final int TYPE_HELP = 2; //书荒互助区详情
     public static final int TYPE_REVIEW = 3; //书评详情
+    public static final int TYPE_GIRL = 4; //女生区话题详情
 
     public static final String EXTRA_TYPE = "post_type";
     public static final String EXTRA_ID = "post_id";
@@ -160,6 +161,9 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             break;
         case TYPE_REVIEW:
             title = getString(R.string.review_detail_title);
+            break;
+        case TYPE_GIRL:
+            title = getString(R.string.girl_detail_title);
             break;
         }
         mToolbar.setTitle(title);

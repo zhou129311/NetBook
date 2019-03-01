@@ -2,7 +2,7 @@ package com.xzhou.book.search;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.BaiduSearch;
+import com.xzhou.book.net.BaiduSearch;
 import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;

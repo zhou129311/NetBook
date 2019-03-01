@@ -2,7 +2,7 @@ package com.xzhou.book.find;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 
 public class BookListDetailPresenter extends BasePresenter<BookListDetailContract.View> implements BookListDetailContract.Presenter {

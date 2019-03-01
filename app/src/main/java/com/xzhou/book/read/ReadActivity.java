@@ -66,7 +66,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     private static final long MIN_SPACE = 5 * 60 * 1000;
     private static final long MAX_READ_TIME = 2 * 60 * 60 * 1000;
-    private static final long SLEEP_TIME = 30 * 60 * 1000;
     public static final String EXTRA_BOOK = "localBook";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;
@@ -118,7 +117,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         if (book.isPicture) {
-            ToastUtils.showShortToast("暂时不支持漫画阅读");
             ReadCartoonActivity.startActivity(context, book);
             return;
         }
@@ -627,7 +625,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({R.id.brightness_checkbox})
+    @OnCheckedChanged({ R.id.brightness_checkbox })
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -638,9 +636,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
-            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
+            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -793,18 +791,21 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void checkReadTime() {
+        if (AppSettings.READ_SLEEP_TIME <= 0) {
+            return;
+        }
         long startSleepTime = AppSettings.getStartSleepTime();
         long curTime = SystemClock.elapsedRealtime();
         long oldSleepTime = curTime - startSleepTime;
-        if (oldSleepTime > 0 && startSleepTime > 0 && oldSleepTime < SLEEP_TIME) {
-            showSleepTimeDialog(SLEEP_TIME - oldSleepTime);
+        if (oldSleepTime > 0 && startSleepTime > 0 && oldSleepTime < AppSettings.READ_SLEEP_TIME) {
+            showSleepTimeDialog(AppSettings.READ_SLEEP_TIME - oldSleepTime);
             return;
         }
         if (curTime - mFirstStartReadTime < MAX_READ_TIME) {
             return;
         }
         AppSettings.setStartSleepTime(curTime);
-        showSleepTimeDialog(SLEEP_TIME);
+        showSleepTimeDialog(AppSettings.READ_SLEEP_TIME);
     }
 
     public void resetFirstReadTime() {

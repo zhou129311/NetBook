@@ -3,7 +3,7 @@ package com.xzhou.book.community;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
                     list = getBookHelpList();
                     break;
                 case DiscussActivity.TYPE_GIRL:
-
+                    list = getGirlList();
                     break;
                 }
 
@@ -96,7 +96,7 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
                         list = getBookHelpList();
                         break;
                     case DiscussActivity.TYPE_GIRL:
-
+                        list = getGirlList();
                         break;
                     }
                 }
@@ -154,6 +154,22 @@ public class DiscussPresenter extends BasePresenter<DiscussContract.View> implem
             list = new ArrayList<>();
             if (bookHelpList.helps != null && bookHelpList.helps.size() > 0) {
                 list.addAll(bookHelpList.helps);
+            }
+        }
+        return list;
+    }
+
+    private List<MultiItemEntity> getGirlList() {
+        List<MultiItemEntity> list = null;
+        int start = mDataNumber;
+        int limit = start + PAGE_SIZE;
+        boolean distillate = Boolean.valueOf(mParams.get(ZhuiShuSQApi.DISTILLATE));
+        String sort = mParams.get(ZhuiShuSQApi.SORT);
+        Entities.DiscussionList discussionList = ZhuiShuSQApi.getGirlBookDisscussionList(sort, start, limit, distillate);
+        if (discussionList != null) {
+            list = new ArrayList<>();
+            if (discussionList.posts != null && discussionList.posts.size() > 0) {
+                list.addAll(discussionList.posts);
             }
         }
         return list;

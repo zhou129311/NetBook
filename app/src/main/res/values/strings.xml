@@ -138,7 +138,8 @@
     <string name="clear_cache" translatable="false">清除缓存</string>
     <string name="clear_cache_dialog_title" translatable="false">确定清除缓存？</string>
     <string name="clear_cache_dialog_message" translatable="false">清除缓存会将已缓存的书籍全部删除，是否清除？</string>
-    <string name="read_time" translatable="false">阅读时长</string>
+    <string name="read_time" translatable="false">总阅读时长</string>
+    <string name="sleep_time" translatable="false">连续阅读2小时封印时长</string>
     <!--read settings-->
     <string name="read_volume_turn_page" translatable="false">音量键翻页</string>
     <string name="all_click_next_page" translatable="false">全屏点击翻下页</string>
@@ -183,6 +184,7 @@
     <string name="help_detail_title" translatable="false">书荒互助区详情</string>
     <string name="discussion_detail_title" translatable="false">详情</string>
     <string name="review_detail_title" translatable="false">书评详情</string>
+    <string name="girl_detail_title" translatable="false">女生区话题详情</string>
 
     <string name="network_failed" translatable="false">网络不给力</string>
     <string name="network_unconnected" translatable="false">网络未连接</string>

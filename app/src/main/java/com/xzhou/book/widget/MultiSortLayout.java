@@ -16,7 +16,7 @@ import android.widget.PopupWindow;
 import com.xzhou.book.R;
 import com.xzhou.book.common.FiltrateAdapter;
 import com.xzhou.book.community.DiscussActivity;
-import com.xzhou.book.datasource.ZhuiShuSQApi;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.SortType;

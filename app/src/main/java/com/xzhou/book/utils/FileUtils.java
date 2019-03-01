@@ -2,7 +2,6 @@ package com.xzhou.book.utils;
 
 import android.content.Context;
 import android.os.Environment;
-import android.text.format.Formatter;
 
 import com.xzhou.book.MyApp;
 
@@ -23,8 +22,24 @@ public class FileUtils {
         return getBookDir(bookId) + File.separator + chapter + ".txt";
     }
 
+    public static String getCartoonPicPath(String bookId, int chapter, int page) {
+        return getCartoonDir(bookId, chapter) + File.separator + page + "_picture";
+    }
+
+    public static String getCartoonReadPath(String bookId, int chapter) {
+        return getCartoonDir(bookId, chapter) + File.separator + chapter + ".json";
+    }
+
     public static File getChapterFile(String bookId, int chapter) {
         return new File(getChapterPath(bookId, chapter));
+    }
+
+    public static String getCartoonDir(String bookId, int chapter) {
+        File file = new File(getFilePath(MyApp.getContext()) + File.separator + chapter, bookId);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return file.getAbsolutePath();
     }
 
     public static String getBookDir(String bookId) {

@@ -189,4 +189,8 @@
         <item name="android:textColor">@color/common_h3</item>
     </style>
 
+    <style name="popup_anim_style">
+        <item name="android:windowEnterAnimation">@anim/menu_show</item>
+        <item name="android:windowExitAnimation">@anim/menu_hide</item>
+    </style>
 </resources>
