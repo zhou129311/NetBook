@@ -70,10 +70,22 @@ public class HtmlParse4 extends HtmlParse {
                 eList = body.select("ul#chapters-list");
             }
             if (eList.isEmpty()) {
+                eList = body.select("div.chapterlist");
+            }
+            if (eList.isEmpty()) {
                 eList = body.select("div.mulu");
             }
             if (eList.isEmpty()) {
                 eList = body.select("div.pc_list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.book_list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.ml_list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div#readerlist");
             }
             if (!eList.isEmpty()) {
                 li = eList.last().select("li");
@@ -94,7 +106,7 @@ public class HtmlParse4 extends HtmlParse {
                 String link = u.attr("href");
                 if (!link.contains("/")) {
                     link = readUrl + link;
-                } else {
+                } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
                 logi("title = " + title + ", link=" + link);
@@ -130,6 +142,15 @@ public class HtmlParse4 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div#content1");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#content");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.content");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.articlecontent");
         }
         read.chapter = new Entities.Chapter();
         String text = formatContent(content);

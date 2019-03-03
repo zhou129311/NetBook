@@ -96,12 +96,7 @@ public class WebFragment extends BaseFragment {
         if (url == null) {
             return;
         }
-        mWebView.post(new Runnable() {
-            @Override
-            public void run() {
-                mWebView.loadUrl(url);
-            }
-        });
+        mWebView.loadUrl(url);
     }
 
     @Override

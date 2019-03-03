@@ -35,11 +35,20 @@ public class BaiduModel {
             put("www.xinremenxs.com", ParseType.PARSE_TYPE_1);
             put("www.dingdiann.com", ParseType.PARSE_TYPE_1);
             put("www.sbiquge.com", ParseType.PARSE_TYPE_1);
+            put("www.fhxiaoshuo.com", ParseType.PARSE_TYPE_1);
+            put("www.shu008.com", ParseType.PARSE_TYPE_1);
+            put("www.518east.com", ParseType.PARSE_TYPE_1);
+            put("www.cilook.net", ParseType.PARSE_TYPE_1);
+            put("www.biqukan.com", ParseType.PARSE_TYPE_1);
+            put("www.biqudu.com", ParseType.PARSE_TYPE_1);
+            put("www.kbiquge.com", ParseType.PARSE_TYPE_1);
 
             put("www.lwtxt.cc", ParseType.PARSE_TYPE_2);
             put("www.oldtimes.cc", ParseType.PARSE_TYPE_2);
             put("www.milepub.com", ParseType.PARSE_TYPE_2);
             put("www.x82xs.com", ParseType.PARSE_TYPE_2);
+
+            put("www.fengyunok.com", ParseType.PARSE_TYPE_3);
 
             put("www.kenshu.cc", ParseType.PARSE_TYPE_4);
             put("www.kuaiyankanshu.net", ParseType.PARSE_TYPE_4);
@@ -48,8 +57,13 @@ public class BaiduModel {
             put("www.boquge.com", ParseType.PARSE_TYPE_4);
             put("www.x88dushu.com", ParseType.PARSE_TYPE_4);
             put("www.qisuu.la", ParseType.PARSE_TYPE_4);
+            put("www.xshuoshuo.com", ParseType.PARSE_TYPE_4);
+            put("www.t7yyw.com", ParseType.PARSE_TYPE_4);
+            put("www.31wxw8.com", ParseType.PARSE_TYPE_4);
+            put("www.tsxsw.com", ParseType.PARSE_TYPE_4);
 
             put("www.fpzw.com", ParseType.PARSE_TYPE_5);
+
 //            put("www.ggdown.org", PARSE_GGD);
 
 

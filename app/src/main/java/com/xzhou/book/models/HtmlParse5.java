@@ -46,7 +46,7 @@ public class HtmlParse5 extends HtmlParse {
                 String link = u.attr("href");
                 if (!link.contains("/")) {
                     link = readUrl + link;
-                } else {
+                } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
                 logi("title = " + title + ", link=" + link);

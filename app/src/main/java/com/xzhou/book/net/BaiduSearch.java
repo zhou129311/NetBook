@@ -42,7 +42,23 @@ public class BaiduSearch {
         }
     }
 
-    private static void trustEveryone() {
+    public interface ProgressCallback {
+        void onCurParse(int size, String curResult);
+    }
+
+    private ProgressCallback mCallback;
+    private boolean mCancel = false;
+    private int mCurSize;
+
+    public void setCancel(boolean cancel) {
+        mCancel = cancel;
+    }
+
+    public void setProgressCallback(ProgressCallback callback) {
+        mCallback = callback;
+    }
+
+    private void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
                 @SuppressLint("BadHostnameVerifier")
@@ -52,7 +68,7 @@ public class BaiduSearch {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -64,35 +80,86 @@ public class BaiduSearch {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
         }
     }
 
-    public static List<BaiduModel.BaiduBook> parseSearchKey(String key) {
-        List<BaiduModel.BaiduBook> bookList = null;
+    public List<BaiduModel.BaiduBook> parseSearchKey(String key) {
+        mCurSize = 0;
+        mCancel = false;
+        List<BaiduModel.BaiduBook> bookList = new ArrayList<>();
         try {
             trustEveryone();
             key = URLEncoder.encode(key, "gb2312");
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
             Document document = Jsoup.connect(url).timeout(10000).get();
+            Element body = document.body();
+            Elements page = body.select("div#page");
+            Elements a = page.select("a");
+            List<String> pages = new ArrayList<>();
+            if (a != null) {
+                for (Element element : a) {
+                    String link = element.attr("href");
+                    if (link != null && link.startsWith("/s")) {
+                        pages.add("http://www.baidu.com" + link);
+                    }
+                    if (pages.size() > 5) {
+                        break;
+                    }
+                }
+            }
+            List<BaiduModel.BaiduBook> list1 = getBookListForDocument(document);
+            if (list1 != null) {
+                bookList.addAll(list1);
+            }
+            if (bookList.size() <= 4) {
+                for (String pageUrl : pages) {
+                    if (mCancel) {
+                        break;
+                    }
+                    Document pageDocument = Jsoup.connect(pageUrl).timeout(10000).get();
+                    List<BaiduModel.BaiduBook> list2 = getBookListForDocument(pageDocument);
+                    if (list2 != null) {
+                        bookList.addAll(list2);
+                    }
+                    if (bookList.size() > 4) {
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e);
+        }
+        return bookList;
+    }
+
+    private List<BaiduModel.BaiduBook> getBookListForDocument(Document document) {
+        List<BaiduModel.BaiduBook> bookList = null;
+        try {
             Elements result = document.getElementsByClass("result c-container ");
             logd("title=" + document.title() + ",result size=" + result.size());
             bookList = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
+                if (mCancel) {
+                    break;
+                }
                 Element e = result.get(i);
                 logi("result id=" + e.id());
                 Elements f13 = e.getElementsByClass("f13");
                 for (int j = 0; j < f13.size(); j++) {
+                    if (mCancel) {
+                        break;
+                    }
                     Element child = f13.get(j);
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     Title t = new Gson().fromJson(title, Title.class);
                     if (t == null || t.title.contains("网盘")) {
                         continue;
                     }
-                    logd("title=" + t.toString());
                     BaiduModel.BaiduBook book = parseResult(t);
                     if (book != null && book.hasValid()) {
                         if (urlInvalid(book.readUrl)) {
@@ -100,21 +167,25 @@ public class BaiduSearch {
                         }
                         Log.i(TAG, "book = " + book);
                         bookList.add(book);
+                        mCurSize += 1;
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return bookList;
     }
 
-    private static BaiduModel.BaiduBook parseResult(Title title) {
+    private BaiduModel.BaiduBook parseResult(Title title) {
         BaiduModel.BaiduBook book = new BaiduModel.BaiduBook();
         try {
             trustEveryone();
             Document document = Jsoup.connect(title.url).timeout(10000).get();
-//            logd(TAG, "document:" + document.toString());
+            Log.i(TAG, "title= " + title.title + ",baseUri=" + document.baseUri());
+            if (mCallback != null && !mCancel) {
+                mCallback.onCurParse(mCurSize, title.title + "-" + document.baseUri());
+            }
             Element head = document.head();
 //            logi(TAG, "head:" + head.toString());
             Elements metas = head.getElementsByTag("meta");
@@ -151,7 +222,9 @@ public class BaiduSearch {
                     if (imageUrl != null && imageUrl.startsWith("http")) {
                         book.image = imageUrl;
                     }
-                }
+                }/* else if (property.equals("mobile-agent")) {
+//                    book.readUrl = read_url;
+                }*/
             }
             Element body = document.body();
             Elements header_logo = body.getElementsByClass("header_logo");

@@ -10,11 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseActivity;
@@ -24,6 +21,7 @@ import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.List;
@@ -33,22 +31,16 @@ import butterknife.BindView;
 import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
 public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> implements BaiduContract.View {
-
-    private String[] mDialogItemsJoin = new String[]{
-
-            "加入书架", "本地阅读"
-    };
-    private String[] mDialogItemsRemove = new String[]{
-            "移出书架", "本地阅读"
-    };
+    private static final String TAG = "BaiduResultActivity";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     private Adapter mAdapter;
-    private RelativeLayout mLoadingView;
-    private View mEmptyView;
     private String mKey;
+    private View mEmptyView;
+    private View mLoadView;
+    private android.app.AlertDialog mLoadingDialog;
 
     public static void startActivity(Context context, String key) {
         Intent intent = new Intent(context, BaiduResultActivity.class);
@@ -63,34 +55,35 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
 
         LayoutInflater inflater = LayoutInflater.from(this);
         mEmptyView = inflater.inflate(R.layout.common_empty_view, null);
+        mLoadView = inflater.inflate(R.layout.baidu_search_loading_view, null);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mPresenter.search(mKey);
-                mAdapter.setEmptyView(mLoadingView);
             }
         });
-        ProgressBar loading = (ProgressBar) inflater.inflate(R.layout.common_load_view, null);
-        loading.setVisibility(View.VISIBLE);
-        mLoadingView = new RelativeLayout(this);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mLoadingView.addView(loading, lp);
-
         mAdapter = new Adapter();
         mAdapter.bindToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter.setEmptyView(mLoadingView);
+    }
 
-        mPresenter.search(mKey);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mPresenter.start();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        mPresenter.cancel();
     }
 
     @Override
     protected BaiduContract.Presenter createPresenter() {
-        return new BaiduPresenter(this);
+        return new BaiduPresenter(this, mKey);
     }
 
     @Override
@@ -106,11 +99,52 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
+    public void onLoadingState(boolean loading) {
+        Log.i(TAG, "onLoadingState:" + loading);
+        if (loading) {
+            showLoadingDialog();
+        } else {
+            if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+                mLoadingDialog.dismiss();
+                mLoadingDialog = null;
+            }
+        }
+    }
+
+    @Override
+    public void onSearchProgress(int bookSize, String curHost) {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            mLoadingDialog.setMessage("已搜索到" + bookSize + "本相关书籍\n正在解析网站：" + curHost);
+        }
+    }
+
+    @Override
     public void onSearchResult(List<BaiduModel.BaiduBook> list) {
         if (list == null || list.size() < 1) {
             mAdapter.setEmptyView(mEmptyView);
         }
         mAdapter.setNewData(list);
+    }
+
+    private void showLoadingDialog() {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            return;
+        }
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(mActivity);
+        mLoadingDialog = builder.setTitle("全网搜索耗时较长，请耐心等待...")
+                .setMessage("正在全网搜索中")
+                .setPositiveButton("结束搜索", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mPresenter.cancel();
+                        mLoadingDialog.setMessage("正在结束搜索...");
+                        mAdapter.setEmptyView(mLoadView);
+                    }
+                }).create();
+        mLoadingDialog.setCanceledOnTouchOutside(false);
+        mLoadingDialog.setCancelable(false);
+        mLoadingDialog.show();
+        Log.i(TAG, "showLoadingDialog");
     }
 
     @Override
@@ -136,10 +170,6 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (MyApp.PARSE_DEBUG) {
-                        mPresenter.getChapterList(item.readUrl, item.sourceHost);
-                        return;
-                    }
                     BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
                     if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
                         ReadActivity.startActivity(mActivity, localBook);

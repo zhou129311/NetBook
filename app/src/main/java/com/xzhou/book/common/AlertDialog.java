@@ -15,9 +15,25 @@ import android.widget.TextView;
 import com.xzhou.book.R;
 
 public class AlertDialog extends AppCompatDialog {
+    private TextView mMessageTv;
+    private TextView mTitleTv;
 
     private AlertDialog(@NonNull Context context) {
         super(context, R.style.DialogTheme);
+    }
+
+    public void setMessage(String msg) {
+        mMessageTv.setText(msg);
+        if (mMessageTv.getVisibility() != View.VISIBLE) {
+            mMessageTv.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setTitle(String title) {
+        mTitleTv.setText(title);
+        if (mTitleTv.getVisibility() != View.VISIBLE) {
+            mTitleTv.setVisibility(View.VISIBLE);
+        }
     }
 
     public static class Builder {
@@ -63,6 +79,12 @@ public class AlertDialog extends AppCompatDialog {
             return this;
         }
 
+        public Builder setPositiveButton(String text, final DialogInterface.OnClickListener listener) {
+            mPositiveButtonText = text;
+            mPositiveButtonListener = listener;
+            return this;
+        }
+
         public Builder setPositiveButton(final DialogInterface.OnClickListener listener) {
             mPositiveButtonListener = listener;
             return this;
@@ -74,12 +96,18 @@ public class AlertDialog extends AppCompatDialog {
             return this;
         }
 
+        public Builder setNegativeButton(String text, final OnClickListener listener) {
+            mNegativeButtonText = text;
+            mNegativeButtonListener = listener;
+            return this;
+        }
+
         public Builder setNegativeButton(final OnClickListener listener) {
             mNegativeButtonListener = listener;
             return this;
         }
 
-        private AlertDialog create() {
+        public AlertDialog create() {
             final AlertDialog dialog = new AlertDialog(mContext);
             dialog.setCancelable(mCancelable);
             if (mCancelable) {
@@ -87,12 +115,14 @@ public class AlertDialog extends AppCompatDialog {
             }
             View view = mInflater.inflate(R.layout.dialog_alert, null);
             TextView title = view.findViewById(R.id.title_tv);
+            dialog.mTitleTv = title;
             if (mTitle != null) {
                 title.setText(mTitle);
             } else {
                 title.setVisibility(View.GONE);
             }
             final TextView message = view.findViewById(R.id.message_tv);
+            dialog.mMessageTv = message;
             if (mMessage != null) {
                 message.setText(mMessage);
             } else {

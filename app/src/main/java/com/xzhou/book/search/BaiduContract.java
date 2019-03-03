@@ -10,10 +10,16 @@ public interface BaiduContract {
 
         void search(String key);
 
-        void getChapterList(String readUrl,String host);
+        void getChapterList(String readUrl, String host);
+
+        void cancel();
     }
 
     interface View extends BaseContract.View<Presenter> {
+
+        void onLoadingState(boolean loading);
+
+        void onSearchProgress(int bookSize, String curHost);
 
         void onSearchResult(List<BaiduModel.BaiduBook> list);
     }

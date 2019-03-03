@@ -32,6 +32,12 @@ public class HtmlParse1 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("div.novel_list");
         }
+        if (eList.isEmpty()) {
+            eList = body.select("div.ocon");
+        }
+        if (eList.isEmpty()) {
+            eList = body.select("div#cl_content");
+        }
         Elements dl = eList.last().select("dl").first().children();
         for (Element c : dl) {
             if ("dd".equals(c.tagName())) {
@@ -40,7 +46,7 @@ public class HtmlParse1 extends HtmlParse {
                 String link = u.attr("href");
                 if (!link.contains("/")) {
                     link = readUrl + link;
-                } else {
+                } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
                 logi("title = " + title + ",link = " + link);

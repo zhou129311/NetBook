@@ -36,11 +36,11 @@ public class HtmlParse3 extends HtmlParse {
         String preUrl = readUrl.substring(0, readUrl.lastIndexOf(host) + host.length());
         logi("parseChapters::readUrl=" + readUrl + " ,preUrl = " + preUrl);
         Element body = document.body();
-        Elements eList = body.select("div#chapterlist");
+        Elements eList = body.select("div.readerListShow");
         Elements cd = eList.first().children();
         for (Element c : cd) {
             if ("p".equals(c.tagName())) {
-                if("#bottom".equals(c.attr("href"))){
+                if ("#bottom".equals(c.attr("href"))) {
                     continue;
                 }
                 Elements u = c.getElementsByTag("a");
@@ -48,7 +48,7 @@ public class HtmlParse3 extends HtmlParse {
                 String link = u.attr("href");
                 if (!link.contains("/")) {
                     link = readUrl + link;
-                } else {
+                } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
                 logi("title = " + title + ", link=" + link);

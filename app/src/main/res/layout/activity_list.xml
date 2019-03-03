@@ -14,7 +14,11 @@
         android:layout_height="match_parent"
         android:layout_below="@id/common_toolbar"/>
 
-    <include layout="@layout/common_load_error_view"/>
+    <include
+        layout="@layout/common_load_error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/common_toolbar"/>
 
     <include layout="@layout/common_load_view"/>
 

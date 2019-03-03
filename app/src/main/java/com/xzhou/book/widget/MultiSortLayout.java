@@ -75,37 +75,36 @@ public class MultiSortLayout extends LinearLayout {
         switch (type) {
         case DiscussActivity.TYPE_DISCUSS:
         case DiscussActivity.TYPE_HELP:
+        case DiscussActivity.TYPE_GIRL:
             data1.key = ZhuiShuSQApi.DISTILLATE;
-            data1.data = new String[] { AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true) };
-            data1.dataParams = new String[] { Constant.Distillate.ALL, Constant.Distillate.DISTILLATE };
+            data1.data = new String[]{AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true)};
+            data1.dataParams = new String[]{Constant.Distillate.ALL, Constant.Distillate.DISTILLATE};
             data2.key = ZhuiShuSQApi.SORT;
-            data2.data = new String[] { AppUtils.getString(R.string.sort_default),
+            data2.data = new String[]{AppUtils.getString(R.string.sort_default),
                     AppUtils.getString(R.string.sort_created),
                     AppUtils.getString(R.string.sort_comment_count),
             };
-            data2.dataParams = new String[] { SortType.DEFAULT, SortType.CREATED, SortType.COMMENT_COUNT };
+            data2.dataParams = new String[]{SortType.DEFAULT, SortType.CREATED, SortType.COMMENT_COUNT};
             list.add(data1);
             list.add(data2);
             break;
         case DiscussActivity.TYPE_REVIEWS:
             data1.key = ZhuiShuSQApi.DISTILLATE;
-            data1.data = new String[] { AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true) };
-            data1.dataParams = new String[] { Constant.Distillate.ALL, Constant.Distillate.DISTILLATE };
+            data1.data = new String[]{AppUtils.getString(R.string.distillate_false), AppUtils.getString(R.string.distillate_true)};
+            data1.dataParams = new String[]{Constant.Distillate.ALL, Constant.Distillate.DISTILLATE};
             data2.key = ZhuiShuSQApi.TYPE;
             data2.data = Constant.bookTypes.toArray(new String[0]);
             data2.dataParams = Constant.bookTypeParams.toArray(new String[0]);
             data3.key = ZhuiShuSQApi.SORT;
-            data3.data = new String[] { AppUtils.getString(R.string.sort_default),
+            data3.data = new String[]{AppUtils.getString(R.string.sort_default),
                     AppUtils.getString(R.string.sort_created),
                     AppUtils.getString(R.string.sort_helpful),
                     AppUtils.getString(R.string.sort_comment_count),
             };
-            data3.dataParams = new String[] { SortType.DEFAULT, SortType.CREATED, SortType.HELPFUL, SortType.COMMENT_COUNT };
+            data3.dataParams = new String[]{SortType.DEFAULT, SortType.CREATED, SortType.HELPFUL, SortType.COMMENT_COUNT};
             list.add(data1);
             list.add(data2);
             list.add(data3);
-            break;
-        case DiscussActivity.TYPE_GIRL:
             break;
         }
         return list;

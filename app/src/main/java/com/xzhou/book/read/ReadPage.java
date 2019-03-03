@@ -16,6 +16,7 @@ import com.xzhou.book.R;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.widget.JustifyTextView;
 
@@ -137,7 +138,7 @@ public class ReadPage extends RelativeLayout {
             contentColor = AppUtils.getColor(R.color.chapter_content_night);
             titleColor = AppUtils.getColor(R.color.chapter_title_night);
         } else {
-            ThemeUtils.ReadTheme readTheme = ThemeUtils.THEME_MAP.get(theme);
+            ThemeUtils.ReadTheme readTheme = ThemeUtils.THEME_LIST.get(theme);
             if (readTheme != null) {
                 backgroundColor = readTheme.bgColor;
                 bgRes = readTheme.bgResId;

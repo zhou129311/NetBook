@@ -141,7 +141,7 @@ public abstract class HtmlParse {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -153,7 +153,7 @@ public abstract class HtmlParse {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
@@ -165,7 +165,24 @@ public abstract class HtmlParse {
         public int compare(Entities.Chapters o1, Entities.Chapters o2) {
             String link1 = getLinkIndex(o1.link);
             String link2 = getLinkIndex(o2.link);
-            return link1.compareTo(link2);
+            int rel;
+            try {
+                int int1 = Integer.valueOf(link1);
+                int int2 = Integer.valueOf(link2);
+                return int1 - int2;
+            } catch (NumberFormatException ignored) {
+            }
+            if (link1.length() > link2.length()) {
+                rel = 1;
+            } else if (link1.length() < link2.length()) {
+                rel = -1;
+            } else {
+                rel = link1.compareTo(link2);
+            }
+            if (link1.equals("12326239") || link2.equals("12326239")) {
+                Log.i("link1 = " + link1 + ",link2 = " + link2 + ",rel= " + rel);
+            }
+            return rel;
         }
     };
 

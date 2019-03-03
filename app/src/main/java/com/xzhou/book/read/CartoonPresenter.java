@@ -4,9 +4,9 @@ import android.text.TextUtils;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -49,7 +49,9 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
                                     if (source != null) { //漫画需要换到sourceId才可以获取章节目录
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
-                                        BookProvider.insertOrUpdate(mBook, false);
+                                        if (mBook.isBookshelf()) {
+                                            BookProvider.insertOrUpdate(mBook, false);
+                                        }
                                         break;
                                     }
                                 }

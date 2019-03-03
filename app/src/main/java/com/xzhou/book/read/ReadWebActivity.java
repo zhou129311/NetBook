@@ -50,6 +50,9 @@ public class ReadWebActivity extends BaseActivity {
         } else {
             ft.show(fragment);
         }
+        if (mBaiduBook.isBookshelf()) {
+            BookProvider.updateReadTime(mBaiduBook);
+        }
     }
 
     private Fragment createFragment() {

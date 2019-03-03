@@ -54,7 +54,6 @@ import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.SwipeLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -186,11 +185,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void initThemeView(@Constant.ReadTheme int theme) {
-        final List<ThemeUtils.ReadTheme> list = new ArrayList<>();
-        for (int i = 0, size = ThemeUtils.THEME_MAP.size(); i < size; i++) {
-            list.add(ThemeUtils.THEME_MAP.valueAt(i));
-        }
-        final ThemeAdapter themeAdapter = new ThemeAdapter(list);
+        final ThemeAdapter themeAdapter = new ThemeAdapter(ThemeUtils.THEME_LIST);
         themeAdapter.bindToRecyclerView(mThemeRecyclerView);
         mThemeRecyclerView.setHasFixedSize(true);
         MyLinearLayoutManager lm = new MyLinearLayoutManager(this);
@@ -201,12 +196,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         themeAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                int theme = list.get(position).theme;
-                themeAdapter.setTheme(theme);
-                setReadTheme(theme);
+                themeAdapter.setTheme(position);
+                setReadTheme(position);
             }
         });
-        mThemeRecyclerView.scrollToPosition(ThemeUtils.THEME_MAP.indexOfKey(theme));
+        mThemeRecyclerView.scrollToPosition(theme);
         mReadBottomBar.setVisibility(View.INVISIBLE);
         mReadSettingLayout.setVisibility(View.INVISIBLE);
     }
@@ -625,7 +619,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void setPresenter(ReadContract.Presenter presenter) {
     }
 
-    @OnCheckedChanged({ R.id.brightness_checkbox })
+    @OnCheckedChanged({R.id.brightness_checkbox})
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.saveBrightnessSystem(checked);
         mBrightnessSeekBar.setEnabled(!checked);
@@ -636,9 +630,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
+    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
-            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
+            R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
     public void onViewClicked(View view) {
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
@@ -916,7 +910,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
         @Override
         protected void convert(CommonViewHolder holder, ThemeUtils.ReadTheme item) {
-            holder.setCircleImageUrl(R.id.theme_image_view, null, item.smBgResId);
+            holder.setImageResource(R.id.theme_image_view, item.smBgResId);
             holder.getView(R.id.theme_image_sel_view).setActivated(item.theme == mCurTheme);
         }
     }

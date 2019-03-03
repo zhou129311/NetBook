@@ -37,7 +37,7 @@ public class HtmlParse2 extends HtmlParse {
                 String link = dd_a.attr("href");
                 if (!link.contains("/")) {
                     link = readUrl + link;
-                } else {
+                } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
                 logi("title = " + title + ", link=" + link);
