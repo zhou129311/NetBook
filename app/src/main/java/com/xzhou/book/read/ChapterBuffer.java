@@ -13,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChapterBuffer {
+public abstract class ChapterBuffer {
     private static final String TAG = "ChapterBuffer";
     private byte[] mBuffer;
     private long mBufferLen;

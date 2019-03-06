@@ -16,7 +16,6 @@ import com.xzhou.book.R;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.widget.JustifyTextView;
 

@@ -104,7 +104,12 @@
         <activity
             android:name=".main.UserActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ReadCartoon"/>
+            android:theme="@style/NavigationBarTheme"/>
+        <activity
+            android:name=".read.CartoonDownloadActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NavigationBarTheme"/>
+
         <provider
             android:name=".db.BookProviderImpl"
             android:authorities="com.xzhou.book.provider"

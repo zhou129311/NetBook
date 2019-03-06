@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.CheckDialog;
@@ -29,8 +28,6 @@ import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.main.MainActivity;
 import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.models.HtmlParse;
-import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppUtils;

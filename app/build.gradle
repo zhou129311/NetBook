@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-//    signingConfigs {
-//        config {
-//            keyAlias 'zx'
-//            keyPassword '123456'
-//            storeFile file('G:/otherworks/NetBook/release.jks')
-//            storePassword '123456'
-//        }
-//    }
+    signingConfigs {
+        config {
+            keyAlias 'zx'
+            keyPassword '123456'
+            storeFile file('../release.jks')
+            storePassword '123456'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.xzhou.analyhtml"
@@ -19,7 +19,12 @@ android {
     }
     buildTypes {
         release {
-//            signingConfig signingConfigs.config
+            signingConfig signingConfigs.config
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.config
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

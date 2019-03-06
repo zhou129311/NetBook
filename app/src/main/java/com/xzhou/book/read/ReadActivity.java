@@ -64,7 +64,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private static final String TAG = "ReadActivity";
 
     private static final long MIN_SPACE = 5 * 60 * 1000;
-    private static final long MAX_READ_TIME = 2 * 60 * 60 * 1000;
+    private static final long MAX_READ_TIME = 60 * 60 * 1000;
     public static final String EXTRA_BOOK = "localBook";
     //    @BindView(R.id.read_rl_view)
 //    RelativeLayout mMainLayout;

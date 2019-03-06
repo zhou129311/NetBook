@@ -42,7 +42,8 @@ public class DownloadManager {
         public String host;
         public int start;
         public int end;
-        private boolean isPause;
+        public boolean isPause;
+        public boolean isNotify = true;
 
         public boolean isValid() {
             return list != null && list.size() >= end && end > start && start >= 0;
@@ -110,14 +111,10 @@ public class DownloadManager {
     }
 
     public boolean startDownload(final String bookId, final Download download) {
-        return startDownload(bookId, download, true);
-    }
-
-    public boolean startDownload(final String bookId, final Download download, final boolean hasNotify) {
         if (hasDownloading(bookId)) {
             return false;
         }
-        if (hasNotify) {
+        if (download.isNotify) {
             notifyStart(bookId);
         }
         mDownloadMap.put(bookId, download);
@@ -160,7 +157,7 @@ public class DownloadManager {
                             exist++;
                             chapter.hasLocal = true;
                         }
-                        if (hasNotify) {
+                        if (download.isNotify) {
                             if ((i + 1) - exist > 0) {
                                 notifyProgress(bookId, i + 1, download.list.size());
                             }
@@ -168,7 +165,7 @@ public class DownloadManager {
                     }
                     AppSettings.saveChapterList(bookId, download.list);
                     mDownloadMap.remove(bookId);
-                    if (hasNotify) {
+                    if (download.isNotify) {
                         notifyEnd(bookId, fail, error);
                     }
                 }
@@ -204,7 +201,8 @@ public class DownloadManager {
     }
 
     public boolean hasDownloading(String bookId) {
-        return mDownloadMap.containsKey(bookId);
+        Download download = mDownloadMap.get(bookId);
+        return download != null && download.isNotify;
     }
 
     private void notifyStart(String bookId) {

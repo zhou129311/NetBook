@@ -29,10 +29,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
     public @interface Error {
-        int NO_NETWORK = 0;
-        int CONNECTION_FAIL = 1;
-        int NO_CONTENT = 2;
-        int NONE = 4;
+        int NONE = 0;
+        int NO_NETWORK = 1;
+        int CONNECTION_FAIL = 2;
+        int NO_CONTENT = 3;
     }
 
     private ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
@@ -72,17 +72,14 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
                             if (list != null) {
                                 for (Entities.BookSource source : list) {
-                                    if (source != null && source.host != null && source.host.contains("my716")) {
+                                    //漫画需要换到sourceId才可以获取章节目录
+                                    if (source != null && source.host != null && (source.host.contains("my716") || mBook.isPicture)) {
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
                                         if (mBook.isBookshelf()) {
                                             BookProvider.insertOrUpdate(mBook, true);
                                         }
                                         break;
-                                    }
-                                    if (source != null && mBook.isPicture) { //漫画需要换到sourceId才可以获取章节目录
-                                        mBook.curSourceHost = source.host;
-                                        mBook.sourceId = source._id;
                                     }
                                 }
                             }
@@ -146,7 +143,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         boolean success = false;
         ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
         if (curBuffer == null) {
-            curBuffer = new ChapterBuffer(mBook._id, mCurChapter);
+            curBuffer = new ChapterBufferTxt(mBook._id, mCurChapter);
         }
         //加入书架才可以边看边存
         boolean saveCurChapter = false;
@@ -167,7 +164,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 break;
             }
             if (download != null) {
-                DownloadManager.get().startDownload(mBook._id, download, false);
+                download.isNotify = false;
+                DownloadManager.get().startDownload(mBook._id, download);
             }
         }
         boolean hasCache = FileUtils.hasCacheChapter(mBook._id, mCurChapter);
@@ -211,9 +209,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         }
         Log.d(TAG, "chapter load error = " + error);
         PageContent pageContent = createNonePageContent(chapters.title, mCurChapter, hasEndChapter(mCurChapter));
-        if (mCurChapter == 0) {
-            pageContent.isStart = true;
-        }
         showError(item, error, pageContent);
     }
 
@@ -415,6 +410,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 return;
             }
             final int newItem = showLoading(item, pageContent);
+            Log.i(TAG, "loadNextPage:newItem = " + newItem);
             mSinglePool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -610,7 +606,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 newPages[0].isStart = true;
                 if (!newPages[0].isEnd) {
                     newPages[1] = getPageContent(1, true);
-                    if (!newPages[1].isEnd) {
+                    if (!hasEndChapter(1)) {
                         newPages[2] = getPageContent(2, true);
                     }
                 }
@@ -619,14 +615,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 newPages[1] = showPageContent;
                 newPages[2] = getPageContent(mCurChapter + 1, true);
             } else {
-                if (mCurChapter > 1) {
-                    newPages[0] = getPageContent(mCurChapter - 2, false);
-                    newPages[1] = getPageContent(mCurChapter - 1, false);
-                } else {
-                    newPages[1] = getPageContent(mCurChapter - 1, false);
-                }
-                newPages[2] = showPageContent;
-                newPages[2].isEnd = true;
+                newPages[0] = getPageContent(mCurChapter - 1, false);
+                newPages[1] = showPageContent;
+                newPages[1].isEnd = true;
             }
         } else {
             newPages[page] = showPageContent;

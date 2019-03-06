@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/cartoon_bottom_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/cartoon_bottom_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:ellipsize="marquee"
+            android:maxEms="6"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:ignore="RelativeOverlap"
+            tools:text="第1话. xxxxxx"/>
+
+        <TextView
+            android:id="@+id/page_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:ignore="RelativeOverlap"
+            tools:text="1/7"/>
+
+        <TextView
+            android:id="@+id/wifi_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:ignore="RelativeOverlap"
+            tools:text="WiFi"/>
+
+        <TextClock
+            android:id="@+id/page_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:format24Hour="HH:mm"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            tools:text="12:08"/>
+
+        <TextView
+            android:id="@+id/battery_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:background="@mipmap/icon_battary"
+            android:gravity="center"
+            android:paddingBottom="1dp"
+            android:paddingEnd="5dp"
+            android:paddingStart="3dp"
+            android:paddingTop="1dp"
+            android:textColor="@color/black"
+            android:textSize="10dp"
+            tools:ignore="SpUsage"
+            tools:text="98%"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

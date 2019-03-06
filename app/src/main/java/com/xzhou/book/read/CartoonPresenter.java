@@ -117,6 +117,8 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
 
     private void loadReadProgress() {
 
+
+
     }
 
     private void initChaptersList() {
