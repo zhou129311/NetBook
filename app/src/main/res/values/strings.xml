@@ -138,8 +138,6 @@
     <string name="clear_cache" translatable="false">清除缓存</string>
     <string name="clear_cache_dialog_title" translatable="false">确定清除缓存？</string>
     <string name="clear_cache_dialog_message" translatable="false">清除缓存会将已缓存的书籍全部删除，是否清除？</string>
-    <string name="read_time" translatable="false">总阅读时长</string>
-    <string name="sleep_time" translatable="false">连续阅读2小时封印时长</string>
     <!--read settings-->
     <string name="read_volume_turn_page" translatable="false">音量键翻页</string>
     <string name="all_click_next_page" translatable="false">全屏点击翻下页</string>
@@ -217,8 +215,10 @@
     <string name="next_page" translatable="false">下一页</string>
 
     <!--渣渣宝连续看书看的太久了的提示-->
+    <string name="read_time" translatable="false">总阅读时长</string>
+    <string name="sleep_time" translatable="false">连续阅读1小时封印时长</string>
     <string name="zzb_warning_title" translatable="false">来自古天宝的特级警告！！</string>
-    <string name="zzb_warning_msg" translatable="false">渣渣宝，由于你连续阅读书籍时长超过2小时，此界面已被封印！</string>
+    <string name="zzb_warning_msg" translatable="false">渣渣宝，由于你连续阅读书籍时长超过1小时，此界面已被封印！</string>
     <string name="i_know" translatable="false">知道了</string>
 
 </resources>
