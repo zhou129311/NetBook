@@ -51,7 +51,6 @@ public class ThemeUtils {
             this.bgResId = bgResId;
             this.bgColor = bgColor;
             this.smBgResId = smBgResId;
-            Log.i("new ReadTheme:" + toString());
         }
 
         @Override
