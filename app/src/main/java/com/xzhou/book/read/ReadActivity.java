@@ -241,7 +241,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         long stop = SystemClock.elapsedRealtime();
         long oldReadTime = AppSettings.getTotalReadTime();
         long newReadTime = stop - mStartReadTime;
-        AppSettings.setTotalReadTime(oldReadTime + newReadTime);
+        if (newReadTime > 0) {
+            AppSettings.setTotalReadTime(oldReadTime + newReadTime);
+        }
         AppSettings.setLastStopReadTime(stop);
     }
 
@@ -255,30 +257,28 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (!AppSettings.HAS_VOLUME_TURN_PAGE) {
-            return super.onKeyUp(keyCode, event);
-        }
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_UP:
-            return true;
+        if (AppSettings.HAS_VOLUME_TURN_PAGE) {
+            switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (!AppSettings.HAS_VOLUME_TURN_PAGE) {
-            return super.onKeyUp(keyCode, event);
-        }
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-            nextPage();
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_UP:
-            previousPage();
-            return true;
+        if (AppSettings.HAS_VOLUME_TURN_PAGE) {
+            switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                nextPage();
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                previousPage();
+                return true;
+            }
         }
         Log.i(TAG, "onKeyUp keyCode= " + keyCode);
         return super.onKeyUp(keyCode, event);

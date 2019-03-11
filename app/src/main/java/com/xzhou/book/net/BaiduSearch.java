@@ -210,6 +210,9 @@ public class BaiduSearch {
                 } else if (property.equals("og:novel:read_url")) {
                     String read_url = attributes.get("content");
                     if (read_url != null && read_url.toLowerCase().startsWith("http")) {
+                        if (read_url.contains("m.23us.la")) {
+                            read_url = read_url.replace("m.23us.la", "www.23us.la");
+                        }
                         book.readUrl = read_url;
                         book.sourceHost = AppUtils.getHostFromUrl(read_url);
                     }

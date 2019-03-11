@@ -64,6 +64,9 @@ public class HtmlParse4 extends HtmlParse {
                 eList = body.select("ul.clearfix").select(".chapter-list");
             }
             if (eList.isEmpty()) {
+                eList = body.select("ul.dirlist").select(".clearfix");
+            }
+            if (eList.isEmpty()) {
                 eList = body.select("div.book_con_list");
             }
             if (eList.isEmpty()) {
@@ -86,6 +89,9 @@ public class HtmlParse4 extends HtmlParse {
             }
             if (eList.isEmpty()) {
                 eList = body.select("div#readerlist");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.chapterCon");
             }
             if (!eList.isEmpty()) {
                 li = eList.last().select("li");
@@ -151,6 +157,9 @@ public class HtmlParse4 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div.articlecontent");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.articleCon");
         }
         read.chapter = new Entities.Chapter();
         String text = formatContent(content);

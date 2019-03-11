@@ -29,6 +29,9 @@ public class HtmlParse2 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("dl.chapterlist").select(".cate");
         }
+        if (eList.isEmpty()) {
+            eList = body.select("dl.chapterlist");
+        }
         Elements chapterList = eList.last().children();
         for (Element c : chapterList) {
             if ("dd".equals(c.tagName())) {

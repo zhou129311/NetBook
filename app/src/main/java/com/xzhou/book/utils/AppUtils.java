@@ -62,9 +62,9 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = title;
         data.source = Constant.TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[] { AppUtils.getString(R.string.sort_default),
-                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count) };
-        data.params = new String[] { bookId };
+        data.filtrate = new String[]{AppUtils.getString(R.string.sort_default),
+                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count)};
+        data.params = new String[]{bookId};
         TabActivity.startActivity(context, data, tabId);
     }
 
@@ -72,7 +72,7 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = context.getString(R.string.book_detail_recommend_book_list);
         data.source = Constant.TabSource.SOURCE_RECOMMEND;
-        data.params = new String[] { bookId };
+        data.params = new String[]{bookId};
         TabActivity.startActivity(context, data);
     }
 
@@ -131,7 +131,7 @@ public class AppUtils {
     }
 
     public static boolean isEmpty(CharSequence str) {
-        return str == null || str.length() == 0 || str.equals("null") || str.equals("\n") || str.equals("");
+        return str == null || str.length() == 0 || str.equals("null") || str.equals("\n") || str.equals("　") || str.equals(" ");
     }
 
     /**
@@ -141,6 +141,7 @@ public class AppUtils {
      * <li>所有的段落，缩进2格。所有的\n,替换为2格空格。
      */
     public static String formatContent(String str) {
+        str = str.trim();
         str = str.replaceAll("[ ]*", "");//替换来自服务器上的，特殊空格
         str = str.replaceAll("[ ]*", "");//
         str = str.replace("\n\n", "\n");
@@ -388,7 +389,7 @@ public class AppUtils {
 
     public static String escapeExprSpecialWord(String keyword) {
         if (!TextUtils.isEmpty(keyword)) {
-            String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
             for (String key : fbsArr) {
                 if (keyword.contains(key)) {
                     keyword = keyword.replace(key, "\\" + key);

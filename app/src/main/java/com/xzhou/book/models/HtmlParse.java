@@ -87,6 +87,11 @@ public abstract class HtmlParse {
 
         String text = content.toString();
         Log.i(TAG, "formatContent:text = " + text);
+        int cIndexStart = text.indexOf("<!--<div");
+        int cIndexEnd = text.indexOf(">-->");
+        if (cIndexEnd > cIndexStart && cIndexStart >= 0) {
+            text = text.substring(cIndexEnd + 5);
+        }
         int divIndexStart = text.indexOf("<div");
         int divIndexEnd = text.indexOf(">");
         if (divIndexEnd > divIndexStart && divIndexStart >= 0) {

@@ -30,6 +30,9 @@ public class HtmlParse1 extends HtmlParse {
             eList = body.select("div.listmain");
         }
         if (eList.isEmpty()) {
+            eList = body.select("div.list");
+        }
+        if (eList.isEmpty()) {
             eList = body.select("div.novel_list");
         }
         if (eList.isEmpty()) {
