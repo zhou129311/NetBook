@@ -1,6 +1,5 @@
 package com.xzhou.book.utils;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -62,9 +61,9 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = title;
         data.source = Constant.TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[]{AppUtils.getString(R.string.sort_default),
-                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count)};
-        data.params = new String[]{bookId};
+        data.filtrate = new String[] { AppUtils.getString(R.string.sort_default),
+                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count) };
+        data.params = new String[] { bookId };
         TabActivity.startActivity(context, data, tabId);
     }
 
@@ -72,7 +71,7 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = context.getString(R.string.book_detail_recommend_book_list);
         data.source = Constant.TabSource.SOURCE_RECOMMEND;
-        data.params = new String[]{bookId};
+        data.params = new String[] { bookId };
         TabActivity.startActivity(context, data);
     }
 
@@ -282,7 +281,6 @@ public class AppUtils {
         localWindow.setAttributes(lp);
     }
 
-    @TargetApi(19)
     private static void setFlag(Activity activity, int flag) {
         View decorView = activity.getWindow().getDecorView();
         int option = decorView.getSystemUiVisibility() | flag;
@@ -290,14 +288,12 @@ public class AppUtils {
     }
 
     //取消flag
-    @TargetApi(19)
     private static void clearFlag(Activity activity, int flag) {
         View decorView = activity.getWindow().getDecorView();
         int option = decorView.getSystemUiVisibility() & (~flag);
         decorView.setSystemUiVisibility(option);
     }
 
-    @TargetApi(19)
     public static void hideUnStableStatusBar(Activity activity) {
         //设置隐藏StatusBar(点击任意地方会恢复)
         setFlag(activity, UNSTABLE_STATUS);
@@ -389,7 +385,7 @@ public class AppUtils {
 
     public static String escapeExprSpecialWord(String keyword) {
         if (!TextUtils.isEmpty(keyword)) {
-            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
+            String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
             for (String key : fbsArr) {
                 if (keyword.contains(key)) {
                     keyword = keyword.replace(key, "\\" + key);

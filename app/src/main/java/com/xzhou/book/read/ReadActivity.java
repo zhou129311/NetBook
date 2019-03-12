@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -128,6 +130,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            getWindow().setAttributes(lp);
+        }
         mBook = getIntent().getParcelableExtra(EXTRA_BOOK);
         if (mBook == null && savedInstanceState != null) {
             mBook = savedInstanceState.getParcelable(EXTRA_BOOK);
@@ -280,7 +287,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 return true;
             }
         }
-        Log.i(TAG, "onKeyUp keyCode= " + keyCode);
         return super.onKeyUp(keyCode, event);
     }
 
@@ -318,11 +324,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public void onBackPressed() {
         if (mSwipeLayout.isMenuOpen()) {
-            Log.i(TAG, "onBackPressed isMenuOpen");
             mSwipeLayout.smoothToCloseMenu();
             hideReadToolBar();
         } else if (!mBook.isBookshelf()) {
-            Log.i(TAG, "onBackPressed Book is not bookshelf");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.book_read_add_book_title)
                     .setMessage(R.string.book_read_add_book_msg)
@@ -344,7 +348,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                     });
             builder.show();
         } else {
-            Log.i(TAG, "onBackPressed");
             super.onBackPressed();
         }
     }
@@ -368,6 +371,11 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(mBook.isBaiduBook ? R.menu.menu_read_baidu : R.menu.menu_read, menu);
         return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
@@ -484,7 +492,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             @Override
             public void onPageScrollStateChanged(int state) {
                 mScrollState = state;
-                changePage();
+                changePage(true);
             }
         });
         mReadViewPager.setCanTouch(false);
@@ -509,7 +517,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
         mReadViewPager.setCurrentItem(curPos - 1, false);
         mCurPosition = curPos - 1;
-        changePage();
+        changePage(false);
     }
 
     private void nextPage() {
@@ -531,14 +539,17 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
         mReadViewPager.setCurrentItem(curPos + 1, false);
         mCurPosition = curPos + 1;
-        changePage();
+        changePage(false);
     }
 
-    private void changePage() {
+    private void changePage(boolean needCheck) {
         if (mCurPosition == mPrePosition) {
             return;
         }
         if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
+            if (needCheck) {
+                mReadViewPager.setCurrentItem(mCurPosition, false);
+            }
             ReadPage readPage = mPageManagers[mCurPosition].getReadPage();
             PageContent pageContent = readPage.getPageContent();
             readPage.checkLoading();
@@ -667,6 +678,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
             break;
         case R.id.auto_reader_view:
+            ToastUtils.showShortToast("该功能正在开发中...");
             break;
         case R.id.text_size_dec:
             updateFontSize(true);
@@ -931,7 +943,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             super.getItemOffsets(outRect, view, parent, state);
             int position = parent.getChildAdapterPosition(view); // item position
             if (position > 0) {

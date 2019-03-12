@@ -110,7 +110,7 @@ public abstract class BaseItemDraggableAdapter<T, K extends BaseViewHolder> exte
             mOnToggleViewTouchListener = new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN
                             && !mDragOnLongPress) {
                         if (mItemTouchHelper != null && itemDragEnabled) {
                             mItemTouchHelper.startDrag((RecyclerView.ViewHolder) v.getTag(R.id.BaseQuickAdapter_viewholder_support));

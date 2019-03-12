@@ -7,8 +7,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDelegate;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListPopupWindow;
+import android.widget.TextView;
 
 import com.xzhou.book.R;
 import com.xzhou.book.bookshelf.BookshelfContract;
@@ -24,6 +33,7 @@ import com.xzhou.book.find.FindFragment;
 import com.xzhou.book.find.FindPresenter;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppSettings;
+import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.SnackBarUtils;
 import com.xzhou.book.widget.Indicator;
 
@@ -48,17 +58,16 @@ public class MainActivity extends BaseActivity {
     private CommunityContract.Presenter mCommPresenter;
     private FindContract.Presenter mFindPresenter;
     private long mLastBackPressedTime;
-    //    private Entities.Login mLogin;
     private boolean mMainNight;
-//    private MenuAdapter mMenuAdapter;
-//    private ListPopupWindow mListPopupWindow;
-//    private LayoutInflater mLayoutInflater;
+    private MenuAdapter mMenuAdapter;
+    private ListPopupWindow mListPopupWindow;
+    private LayoutInflater mLayoutInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common_tab);
-//        mLayoutInflater = LayoutInflater.from(this);
+        mLayoutInflater = LayoutInflater.from(this);
         initViewData();
         mMainNight = AppSettings.isNight();
     }
@@ -69,53 +78,46 @@ public class MainActivity extends BaseActivity {
         mToolbar.setTitleTextAppearance(this, R.style.MainTitleTextStyle);
     }
 
-//    private void showPopupMenu() {
-//        if (mListPopupWindow == null) {
-//            mMenuAdapter = new MenuAdapter();
-//            mListPopupWindow = new ListPopupWindow(this);
-//            mListPopupWindow.setWidth(AppUtils.dip2px(160));
-//            mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-//            mListPopupWindow.setAnchorView(mToolbar);
-//            mListPopupWindow.setHorizontalOffset(AppUtils.dip2px(-16));//相对锚点偏移值，正值表示向右偏移
-//            mListPopupWindow.setVerticalOffset(AppUtils.dip2px(-5));//相对锚点偏移值，正值表示向下偏移
-//            mListPopupWindow.setDropDownGravity(Gravity.END);
-//            mListPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_dialog_common));
-//            mListPopupWindow.setModal(true);//模态框，设置为true响应物理键
-//            mListPopupWindow.setAdapter(mMenuAdapter);
-//            mListPopupWindow.setAnimationStyle(R.style.popup_anim_style);
-//            mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    mListPopupWindow.dismiss();
-//                    switch (position) {
-//                    case 0:
-//                        if (mLogin == null) {
-//                            doLogin();
-//                        } else {
-//                            UserActivity.startActivity(mActivity);
-//                        }
-//                        break;
-//                    case 1:
-//                        if (AppSettings.isNight()) {
-//                            AppSettings.setNight(false);
-//                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//                            mMainNight = false;
-//                        } else {
-//                            AppSettings.setNight(true);
-//                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//                            mMainNight = true;
-//                        }
-//                        recreate();
-//                        break;
-//                    case 2:
-//                        SettingsActivity.startActivity(mActivity);
-//                        break;
-//                    }
-//                }
-//            });
-//        }
-//        mListPopupWindow.show();
-//    }
+    private void showPopupMenu() {
+        if (mListPopupWindow == null) {
+            mMenuAdapter = new MenuAdapter();
+            mListPopupWindow = new ListPopupWindow(this);
+            mListPopupWindow.setWidth((int) (AppUtils.getScreenWidth() / 2.6f));
+            mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+            mListPopupWindow.setAnchorView(mToolbar);
+            mListPopupWindow.setHorizontalOffset(AppUtils.dip2px(-16));//相对锚点偏移值，正值表示向右偏移
+            mListPopupWindow.setVerticalOffset(AppUtils.dip2px(-5));//相对锚点偏移值，正值表示向下偏移
+            mListPopupWindow.setDropDownGravity(Gravity.END);
+            mListPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_dialog_common));
+            mListPopupWindow.setModal(true);//模态框，设置为true响应物理键
+            mListPopupWindow.setAdapter(mMenuAdapter);
+            mListPopupWindow.setAnimationStyle(R.style.popup_anim_style);
+            mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    mListPopupWindow.dismiss();
+                    switch (position) {
+                    case 0:
+                        if (AppSettings.isNight()) {
+                            AppSettings.setNight(false);
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                            mMainNight = false;
+                        } else {
+                            AppSettings.setNight(true);
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                            mMainNight = true;
+                        }
+                        recreate();
+                        break;
+                    case 1:
+                        SettingsActivity.startActivity(mActivity);
+                        break;
+                    }
+                }
+            });
+        }
+        mListPopupWindow.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -138,31 +140,28 @@ public class MainActivity extends BaseActivity {
         case R.id.action_search:
             SearchActivity.startActivity(this);
             break;
-        case R.id.action_night_mode:
-            if (AppSettings.isNight()) {
-                AppSettings.setNight(false);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                mMainNight = false;
-            } else {
-                AppSettings.setNight(true);
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                mMainNight = true;
-            }
-            recreate();
+        case R.id.action_more:
+            showPopupMenu();
+//            SearchActivity.startActivity(this);
             break;
-        case R.id.action_settings:
-            SettingsActivity.startActivity(mActivity);
-            break;
+//        case R.id.action_night_mode:
+//            if (AppSettings.isNight()) {
+//                AppSettings.setNight(false);
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                mMainNight = false;
+//            } else {
+//                AppSettings.setNight(true);
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//                mMainNight = true;
+//            }
+//            recreate();
+//            break;
+//        case R.id.action_settings:
+//            SettingsActivity.startActivity(mActivity);
+//            break;
         }
         return super.onOptionsItemSelected(item);
     }
-
-//    public void updateLogin(Entities.Login login) {
-//        mLogin = login;
-//        if (mLogin != null && mMenuAdapter != null) {
-//            mMenuAdapter.notifyDataSetChanged();
-//        }
-//    }
 
     @Override
     public void onBackPressed() {
@@ -223,18 +222,16 @@ public class MainActivity extends BaseActivity {
 
     private void restoreFragment() {
         List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-        if (fragmentList != null) {
-            for (Fragment f : fragmentList) {
-                if (f instanceof BookshelfFragment) {
-                    mFragment.put(FRAGMENT_BOOKSHELF, (BookshelfFragment) f);
-                    mBookPresenter = new BookshelfPresenter((BookshelfContract.View) f);
-                } else if (f instanceof CommunityFragment) {
-                    mFragment.put(FRAGMENT_COMMUNITY, (CommunityFragment) f);
-                    mCommPresenter = new CommunityPresenter((CommunityContract.View) f);
-                } else if (f instanceof FindFragment) {
-                    mFragment.put(FRAGMENT_FIND, (FindFragment) f);
-                    mFindPresenter = new FindPresenter((FindContract.View) f);
-                }
+        for (Fragment f : fragmentList) {
+            if (f instanceof BookshelfFragment) {
+                mFragment.put(FRAGMENT_BOOKSHELF, (BookshelfFragment) f);
+                mBookPresenter = new BookshelfPresenter((BookshelfContract.View) f);
+            } else if (f instanceof CommunityFragment) {
+                mFragment.put(FRAGMENT_COMMUNITY, (CommunityFragment) f);
+                mCommPresenter = new CommunityPresenter((CommunityContract.View) f);
+            } else if (f instanceof FindFragment) {
+                mFragment.put(FRAGMENT_FIND, (FindFragment) f);
+                mFindPresenter = new FindPresenter((FindContract.View) f);
             }
         }
     }
@@ -264,59 +261,50 @@ public class MainActivity extends BaseActivity {
         return fragment;
     }
 
-//    private class MenuAdapter extends BaseAdapter {
-//        @Override
-//        public int getCount() {
-//            return 3;
-//        }
-//
-//        @Override
-//        public Object getItem(int position) {
-//            return position;
-//        }
-//
-//        @Override
-//        public long getItemId(int position) {
-//            return position;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            ViewHolder viewHolder;
-//            if (convertView == null) {
-//                convertView = mLayoutInflater.inflate(R.layout.menu_item_icon, null);
-//                viewHolder = new ViewHolder(convertView);
-//                convertView.setTag(viewHolder);
-//            } else {
-//                viewHolder = (ViewHolder) convertView.getTag();
-//            }
-//            if (position == 0) {
-//                if (mLogin != null) {
-//                    ImageLoader.showCircleImageUrl(mActivity, viewHolder.mImageView, mLogin.user.avatar(), R.mipmap.avatar_default);
-//                    viewHolder.mTextView.setText(mLogin.user.nickname);
-//                } else {
-//                    viewHolder.mImageView.setImageResource(R.mipmap.home_menu_0);
-//                    viewHolder.mTextView.setText(R.string.menu_main_login);
-//                }
-//            } else if (position == 1) {
-//                viewHolder.mImageView.setImageResource(R.mipmap.theme_night);
-//                viewHolder.mTextView.setText(R.string.menu_main_night_mode);
-//            } else {
-//                viewHolder.mImageView.setImageResource(R.mipmap.home_menu_6);
-//                viewHolder.mTextView.setText(R.string.settings);
-//            }
-//
-//            return convertView;
-//        }
-//
-//        class ViewHolder {
-//            private ImageView mImageView;
-//            private TextView mTextView;
-//
-//            ViewHolder(View view) {
-//                mImageView = view.findViewById(R.id.menu_icon);
-//                mTextView = view.findViewById(R.id.menu_text);
-//            }
-//        }
-//    }
+    private class MenuAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if (convertView == null) {
+                convertView = mLayoutInflater.inflate(R.layout.menu_item_icon, null);
+                viewHolder = new ViewHolder(convertView);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            if (position == 0) {
+                viewHolder.mImageView.setImageResource(R.mipmap.theme_night);
+                viewHolder.mTextView.setText(R.string.menu_main_night_mode);
+            } else if (position == 1) {
+                viewHolder.mImageView.setImageResource(R.mipmap.home_menu_6);
+                viewHolder.mTextView.setText(R.string.settings);
+            }
+            return convertView;
+        }
+
+        class ViewHolder {
+            private ImageView mImageView;
+            private TextView mTextView;
+
+            ViewHolder(View view) {
+                mImageView = view.findViewById(R.id.menu_icon);
+                mTextView = view.findViewById(R.id.menu_text);
+            }
+        }
+    }
 }
