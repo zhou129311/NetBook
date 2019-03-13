@@ -67,6 +67,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
                             if (htmlParse != null) {
                                 mChaptersList = htmlParse.parseChapters(mBook.readUrl);
+                                if (mChaptersList != null && mChaptersList.size() > 0 && mBook.isBookshelf()) {
+                                    mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
+                                    BookProvider.insertOrUpdate(mBook, false);
+                                }
                             }
                         } else {
                             List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
@@ -77,7 +81,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
                                         if (mBook.isBookshelf()) {
-                                            BookProvider.insertOrUpdate(mBook, true);
+                                            BookProvider.insertOrUpdate(mBook, false);
                                         }
                                         break;
                                     }

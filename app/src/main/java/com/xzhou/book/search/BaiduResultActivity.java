@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,9 +114,12 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
-    public void onSearchProgress(int bookSize, String curHost) {
+    public void onSearchProgress(int bookSize, int parseSize, String curHost) {
         if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.setMessage("已搜索到" + bookSize + "本相关书籍\n正在解析网站：" + curHost);
+            Spanned str = Html.fromHtml("已搜索到<b><font color=#ff0000>" + bookSize + "本</font></b>相关书籍<br />已解析<b><font color=#ff0000>"
+                    + parseSize + "本</font></b>书籍<br />正在解析网站：" + curHost);
+//            mLoadingDialog.setMessage("已搜索到" + bookSize + "本相关书籍\n正在解析网站：" + curHost);
+            mLoadingDialog.setMessage(str);
         }
     }
 

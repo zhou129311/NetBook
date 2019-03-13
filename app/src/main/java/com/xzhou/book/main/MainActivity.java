@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity {
         BookshelfFragment f = (BookshelfFragment) mFragment.get(FRAGMENT_BOOKSHELF);
         if (mViewPager.getCurrentItem() != FRAGMENT_BOOKSHELF) {
             setCurFragment(FRAGMENT_BOOKSHELF);
-        } else if (f.hasEdit()) {
+        } else if (f != null && f.hasEdit()) {
             f.cancelEdit();
         } else {
             if (SystemClock.elapsedRealtime() - mLastBackPressedTime < 1500) {

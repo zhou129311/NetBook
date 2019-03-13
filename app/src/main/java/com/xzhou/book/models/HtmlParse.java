@@ -60,6 +60,7 @@ public abstract class HtmlParse {
         try {
             trustEveryone();
             Document document = Jsoup.connect(chapterUrl).timeout(10000).get();
+            Log.i(TAG, "parseChapterRead:baseUri=" + document.baseUri());
             return parseChapterRead(chapterUrl, document);
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,8 +84,13 @@ public abstract class HtmlParse {
     }
 
     protected String formatContent(Elements content) {
-        removeContentTag(content);
+        return formatContent("", content);
+    }
 
+    protected String formatContent(String chapterUrl, Elements content) {
+        if (!chapterUrl.contains("www.35xs.com")) {
+            removeContentTag(content);
+        }
         String text = content.toString();
         Log.i(TAG, "formatContent:text = " + text);
         int cIndexStart = text.indexOf("<!--<div");
@@ -102,10 +108,12 @@ public abstract class HtmlParse {
         if (fonIndexEnd > fonIndexStart && fonIndexStart >= 0) {
             text = text.substring(fonIndexEnd + 1);
         }
-        int pIndexStart = text.indexOf("<p");
-        int pIndexEnd = text.indexOf(">");
-        if (pIndexEnd > pIndexStart && pIndexStart >= 0) {
-            text = text.substring(pIndexEnd + 1);
+        if (!chapterUrl.contains("www.35xs.com")) {
+            int pIndexStart = text.indexOf("<p");
+            int pIndexEnd = text.indexOf(">");
+            if (pIndexEnd > pIndexStart && pIndexStart >= 0) {
+                text = text.substring(pIndexEnd + 1);
+            }
         }
         text = text.replace("</div>", "");
         text = text.replace("</fon>", "");
@@ -146,7 +154,7 @@ public abstract class HtmlParse {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            context.init(null, new X509TrustManager[] { new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -158,7 +166,7 @@ public abstract class HtmlParse {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            }}, new SecureRandom());
+            } }, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();

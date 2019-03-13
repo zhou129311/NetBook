@@ -38,7 +38,7 @@ public class JustifyTextView extends android.support.v7.widget.AppCompatTextView
 
     public void setLines(List<String> lines) {
         mLines = lines;
-        postInvalidate();
+        invalidate();
     }
 
     @Override

@@ -41,6 +41,9 @@ public class HtmlParse1 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("div#cl_content");
         }
+        if (eList.isEmpty()) {
+            eList = body.select("div#list1");
+        }
         Elements dl = eList.last().select("dl").first().children();
         for (Element c : dl) {
             if ("dd".equals(c.tagName())) {

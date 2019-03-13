@@ -25,8 +25,8 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
         mBaiduSearch = new BaiduSearch();
         mBaiduSearch.setProgressCallback(new BaiduSearch.ProgressCallback() {
             @Override
-            public void onCurParse(int size, String curResult) {
-                updateSearchProgress(size, curResult);
+            public void onCurParse(int size, int parseSize, String curResult) {
+                updateSearchProgress(size, parseSize, curResult);
             }
         });
     }
@@ -81,7 +81,6 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
         mBaiduSearch.setCancel(true);
     }
 
-
     private void updateSearchResult(final List<BaiduModel.BaiduBook> list) {
         MyApp.runUI(new Runnable() {
             @Override
@@ -104,12 +103,12 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
         });
     }
 
-    private void updateSearchProgress(final int bookSize, final String cur) {
+    private void updateSearchProgress(final int bookSize, final int parseSize, final String cur) {
         MyApp.runUI(new Runnable() {
             @Override
             public void run() {
                 if (mView != null) {
-                    mView.onSearchProgress(bookSize, cur);
+                    mView.onSearchProgress(bookSize, parseSize, cur);
                 }
             }
         });

@@ -43,12 +43,13 @@ public class BaiduSearch {
     }
 
     public interface ProgressCallback {
-        void onCurParse(int size, String curResult);
+        void onCurParse(int size, int parseSize, String curResult);
     }
 
     private ProgressCallback mCallback;
     private boolean mCancel = false;
     private int mCurSize;
+    private int mCurParseSize;
 
     public void setCancel(boolean cancel) {
         mCancel = cancel;
@@ -68,7 +69,7 @@ public class BaiduSearch {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager() {
+            context.init(null, new X509TrustManager[] { new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -80,7 +81,7 @@ public class BaiduSearch {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            }}, new SecureRandom());
+            } }, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
@@ -89,6 +90,7 @@ public class BaiduSearch {
 
     public List<BaiduModel.BaiduBook> parseSearchKey(String key) {
         mCurSize = 0;
+        mCurParseSize = 0;
         mCancel = false;
         List<BaiduModel.BaiduBook> bookList = new ArrayList<>();
         try {
@@ -106,7 +108,7 @@ public class BaiduSearch {
                     if (link != null && link.startsWith("/s")) {
                         pages.add("http://www.baidu.com" + link);
                     }
-                    if (pages.size() > 5) {
+                    if (pages.size() > 8) {
                         break;
                     }
                 }
@@ -125,9 +127,9 @@ public class BaiduSearch {
                     if (list2 != null) {
                         bookList.addAll(list2);
                     }
-                    if (bookList.size() > 4) {
-                        break;
-                    }
+//                    if (bookList.size() > 10 && mCurParseSize > 0) {
+//                        break;
+//                    }
                 }
             }
         } catch (Exception e) {
@@ -168,6 +170,10 @@ public class BaiduSearch {
                         Log.i(TAG, "book = " + book);
                         bookList.add(book);
                         mCurSize += 1;
+                        if (BaiduModel.hasSupportLocalRead(book.sourceHost)) {
+                            mCurParseSize += 1;
+                            break;
+                        }
                     }
                 }
             }
@@ -184,7 +190,7 @@ public class BaiduSearch {
             Document document = Jsoup.connect(title.url).timeout(10000).get();
             Log.i(TAG, "title= " + title.title + ",baseUri=" + document.baseUri());
             if (mCallback != null && !mCancel) {
-                mCallback.onCurParse(mCurSize, title.title + "-" + document.baseUri());
+                mCallback.onCurParse(mCurSize, mCurParseSize, title.title + "-" + document.baseUri());
             }
             Element head = document.head();
 //            logi(TAG, "head:" + head.toString());

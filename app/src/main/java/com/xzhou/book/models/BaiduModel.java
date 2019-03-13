@@ -50,6 +50,17 @@ public class BaiduModel {
             put("www.biquge.cc", ParseType.PARSE_TYPE_1);
             put("www.lindiankanshu.com", ParseType.PARSE_TYPE_1);
             put("www.xs.la", ParseType.PARSE_TYPE_1);
+            put("www.xinxs84.com", ParseType.PARSE_TYPE_1);
+            put("www.xs84.me", ParseType.PARSE_TYPE_1);
+            put("baishuzhai.com", ParseType.PARSE_TYPE_1);
+            put("www.dingdian.me", ParseType.PARSE_TYPE_1);
+            put("www.miaoshufang.com", ParseType.PARSE_TYPE_1);
+            put("www.dushu66.com", ParseType.PARSE_TYPE_1);
+            put("www.biqutxt.com", ParseType.PARSE_TYPE_1);
+            put("www.fenghuaju.cc", ParseType.PARSE_TYPE_1);
+            put("www.xuanhuanwu.com", ParseType.PARSE_TYPE_1);
+            put("www.sanjiangge.com", ParseType.PARSE_TYPE_1);
+            put("www.u33.cc", ParseType.PARSE_TYPE_1);
 //            put("www.123du.cc", ParseType.PARSE_TYPE_1);
 
             put("www.23us.la", ParseType.PARSE_TYPE_2);
@@ -57,6 +68,7 @@ public class BaiduModel {
             put("www.oldtimes.cc", ParseType.PARSE_TYPE_2);
             put("www.milepub.com", ParseType.PARSE_TYPE_2);
             put("www.x82xs.com", ParseType.PARSE_TYPE_2);
+            put("www.xhxswz.com", ParseType.PARSE_TYPE_2);
 
             put("www.fengyunok.com", ParseType.PARSE_TYPE_3);
 
@@ -73,9 +85,18 @@ public class BaiduModel {
             put("www.tsxsw.com", ParseType.PARSE_TYPE_4);
             put("www.81xzw.com", ParseType.PARSE_TYPE_4);
             put("www.dushu.kr", ParseType.PARSE_TYPE_4);
+            put("www.35xs.com", ParseType.PARSE_TYPE_4);
+            put("www.lwxslwxs.com", ParseType.PARSE_TYPE_4);
+            put("www.dashubao.la", ParseType.PARSE_TYPE_4);
+            put("www.lewentxt.com", ParseType.PARSE_TYPE_4);
+            put("www.lingyu.org", ParseType.PARSE_TYPE_4);
+//            put("www.biqige.cc", ParseType.PARSE_TYPE_4);
+//            put("www.38lu.com", ParseType.PARSE_TYPE_4);
 //            put("www.zhetian.org", ParseType.PARSE_TYPE_4);
 
             put("www.fpzw.com", ParseType.PARSE_TYPE_5);
+
+            put("www.okdd.net", ParseType.PARSE_TYPE_6);
 
 //            put("www.ggdown.org", PARSE_GGD);
 

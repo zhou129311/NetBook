@@ -19,7 +19,7 @@ public interface BaiduContract {
 
         void onLoadingState(boolean loading);
 
-        void onSearchProgress(int bookSize, String curHost);
+        void onSearchProgress(int bookSize, int parseSize, String curHost);
 
         void onSearchResult(List<BaiduModel.BaiduBook> list);
     }

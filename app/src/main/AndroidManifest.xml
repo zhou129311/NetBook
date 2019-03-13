@@ -61,13 +61,7 @@
             android:name=".read.ReadActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/ReadTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
+            android:theme="@style/ReadTheme"/>
         <activity
             android:name=".main.SettingsActivity"
             android:screenOrientation="portrait"
@@ -88,13 +82,7 @@
         <activity
             android:name=".read.ReadWebActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NavigationBarTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
+            android:theme="@style/NavigationBarTheme"/>
         <activity
             android:name=".read.ReadSettingActivity"
             android:screenOrientation="portrait"

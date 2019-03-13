@@ -67,6 +67,16 @@ public class HtmlParse4 extends HtmlParse {
                 eList = body.select("ul.dirlist").select(".clearfix");
             }
             if (eList.isEmpty()) {
+                eList = body.select("ul.list-group").select(".list-charts");
+                if (!eList.isEmpty()) {
+                    if (eList.size() == 2) {
+                        li = eList.get(0).select("li");
+                    } else if (eList.size() > 2) {
+                        li = eList.get(1).select("li");
+                    }
+                }
+            }
+            if (eList.isEmpty()) {
                 eList = body.select("div.book_con_list");
             }
             if (eList.isEmpty()) {
@@ -93,7 +103,13 @@ public class HtmlParse4 extends HtmlParse {
             if (eList.isEmpty()) {
                 eList = body.select("div.chapterCon");
             }
-            if (!eList.isEmpty()) {
+            if (eList.isEmpty()) {
+                eList = body.select("ul.mulu_list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.list");
+            }
+            if (!eList.isEmpty() && li == null) {
                 li = eList.last().select("li");
             }
         } else {
@@ -130,9 +146,25 @@ public class HtmlParse4 extends HtmlParse {
         Entities.ChapterRead read = new Entities.ChapterRead();
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
+//        Elements transcode = body.select("div.title");
+//        if (!transcode.isEmpty()) {
+//            Elements info = transcode.select("div.info");
+//            if (!info.isEmpty()) {
+//
+//            }
+//        }
         Elements content = body.select("div#book_text");
         if (content.isEmpty()) {
+            content = body.select("div.bookreadercontent");
+        }
+        if (content.isEmpty()) {
             content = body.select("div#chaptercontent");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.panel-body").select(".content-body").select(".content-ext");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#content-txt");
         }
         if (content.isEmpty()) {
             content = body.select("div.article-con");
@@ -161,9 +193,20 @@ public class HtmlParse4 extends HtmlParse {
         if (content.isEmpty()) {
             content = body.select("div.articleCon");
         }
+        if (content.isEmpty()) {
+            content = body.select("div.nr_content");
+        }
         read.chapter = new Entities.Chapter();
-        String text = formatContent(content);
+        String text = formatContent(chapterUrl, content);
         text = replaceCommon(text);
+        if (chapterUrl.contains("www.35xs.com")) {
+            text = text.replace("\n", "");
+            text = text.replace("<p>", "");
+            text = text.replace("</p>", "\n");
+            text = text.replace(" ", "");
+            text = text.replace("　", "");
+            text = text.replace("www.35xs.com", "");
+        }
         read.chapter.body = text;
         logi("end ,text=" + text);
         return read;

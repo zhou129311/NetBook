@@ -285,10 +285,11 @@ public class ReadPage extends RelativeLayout {
                         mLoadingView.setProgress(value);
                         if (value == 70) {
                             mLoadAnimator.cancel();
-                            mLoadAnimator = ValueAnimator.ofInt(71, 75);
-                            mLoadAnimator.setRepeatCount(0);
-                            mLoadAnimator.setDuration(5000);
-                            mLoadAnimator.start();
+                            ValueAnimator animator = ValueAnimator.ofInt(71, 85);
+                            animator.addUpdateListener(this);
+                            animator.setRepeatCount(0);
+                            animator.setDuration(5000);
+                            animator.start();
                         }
                     }
                 });

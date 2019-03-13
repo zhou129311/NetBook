@@ -53,7 +53,7 @@ public class BookTocDialog extends AppCompatDialog {
         View decorView = ((Activity) context).getWindow().getDecorView();
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
         lp.width = (int) (decorView.getWidth() * 0.85);
-        lp.height = (int) (decorView.getHeight() * 0.9);
+        lp.height = (int) (decorView.getHeight() * 0.8);
         mAdapter = new Adapter(context);
         mListView.setAdapter(mAdapter);
         setContentView(mView, lp);

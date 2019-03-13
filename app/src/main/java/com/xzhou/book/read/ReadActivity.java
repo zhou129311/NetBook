@@ -492,7 +492,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             @Override
             public void onPageScrollStateChanged(int state) {
                 mScrollState = state;
-                changePage(true);
+                changePage();
             }
         });
         mReadViewPager.setCanTouch(false);
@@ -517,7 +517,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
         mReadViewPager.setCurrentItem(curPos - 1, false);
         mCurPosition = curPos - 1;
-        changePage(false);
+        changePage();
     }
 
     private void nextPage() {
@@ -539,17 +539,14 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
         mReadViewPager.setCurrentItem(curPos + 1, false);
         mCurPosition = curPos + 1;
-        changePage(false);
+        changePage();
     }
 
-    private void changePage(boolean needCheck) {
+    private void changePage() {
         if (mCurPosition == mPrePosition) {
             return;
         }
         if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
-            if (needCheck) {
-                mReadViewPager.setCurrentItem(mCurPosition, false);
-            }
             ReadPage readPage = mPageManagers[mCurPosition].getReadPage();
             PageContent pageContent = readPage.getPageContent();
             readPage.checkLoading();

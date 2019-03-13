@@ -4,6 +4,7 @@ import android.text.format.Formatter;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
@@ -50,8 +51,18 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
         mSinglePool.execute(new Runnable() {
             @Override
             public void run() {
+                File bookDir = new File(mFilePath);
+                File[] books = bookDir.listFiles();
+                if (books != null) {
+                    for (File file : books) {
+                        if(file != null){
+                            String bookId = file.getName();
+                            AppSettings.deleteChapterList(bookId);
+                        }
+                    }
+                }
                 FileUtils.deleteFileOrDirectory(new File(mCachePath));
-                FileUtils.deleteFileOrDirectory(new File(mFilePath));
+                FileUtils.deleteFileOrDirectory(bookDir);
                 mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
                 String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
                 updateCacheSize(value);
