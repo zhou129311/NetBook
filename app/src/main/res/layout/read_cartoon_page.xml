@@ -6,6 +6,7 @@
 
     <com.xzhou.book.widget.PhotoView
         android:id="@+id/photo_view"
+        android:src="@mipmap/picture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -50,6 +51,7 @@
             android:layout_marginStart="10dp"
             android:textColor="@color/white"
             android:textSize="14sp"
+            android:text="WiFi"
             tools:ignore="RelativeOverlap"
             tools:text="WiFi"/>
 

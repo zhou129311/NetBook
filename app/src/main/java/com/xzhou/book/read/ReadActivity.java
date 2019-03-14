@@ -736,7 +736,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
                 return;
             }
 
-            final CommonDialog fragmentDialog = getDialog();
+            final CommonDialog fragmentDialog = getDialog(mChaptersList);
             fragmentDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
                 @Override
                 public void onClickItem(int chapter, Entities.Chapters chapters) {
@@ -751,10 +751,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    private CommonDialog getDialog() {
+    private CommonDialog getDialog(List<Entities.Chapters> list) {
         CommonDialog fragmentDialog = (CommonDialog) getSupportFragmentManager().findFragmentByTag("TocDialog");
         if (fragmentDialog == null) {
-            final BookTocDialog dialog = BookTocDialog.createDialog(this, mChaptersList, mBook);
+            final BookTocDialog dialog = BookTocDialog.createDialog(this, list, mBook);
             fragmentDialog = CommonDialog.newInstance(new CommonDialog.OnCallDialog() {
                 @Override
                 public Dialog getDialog(Context context) {

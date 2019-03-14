@@ -46,7 +46,7 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
                             List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
                             if (list != null) {
                                 for (Entities.BookSource source : list) {
-                                    if (source != null) { //漫画需要换到sourceId才可以获取章节目录
+                                    if (source != null && source.host != null) { //漫画需要换到sourceId才可以获取章节目录
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
                                         if (mBook.isBookshelf()) {
@@ -116,8 +116,6 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
     }
 
     private void loadReadProgress() {
-
-
 
     }
 
