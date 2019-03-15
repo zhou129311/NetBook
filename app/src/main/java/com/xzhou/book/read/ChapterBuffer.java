@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ChapterBuffer {
-    private static final String TAG = "ChapterBuffer";
+    String TAG = "ChapterBuffer";
     private byte[] mBuffer;
     private long mBufferLen;
     private String mBookId;

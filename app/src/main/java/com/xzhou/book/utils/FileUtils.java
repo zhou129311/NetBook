@@ -35,7 +35,7 @@ public class FileUtils {
     }
 
     public static String getCartoonDir(String bookId, int chapter) {
-        File file = new File(getFilePath(MyApp.getContext()) + File.separator + chapter, bookId);
+        File file = new File(getBookDir(bookId), "chapter_" + chapter);
         if (!file.exists()) {
             file.mkdirs();
         }

@@ -12,6 +12,7 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,7 +76,13 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
                             public void run() {
                                 for (int i = 0, size = mChaptersList.size(); i < size; i++) {
                                     Entities.Chapters chapters = mChaptersList.get(i);
-                                    chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                                    File file = new File(FileUtils.getCartoonDir(mBook._id, i));
+                                    if (file.exists()) {
+                                        File[] pics = file.listFiles();
+                                        chapters.hasLocal = pics != null && pics.length > 0;
+                                    } else {
+                                        chapters.hasLocal = false;
+                                    }
                                 }
                                 AppSettings.saveChapterList(mBook._id, mChaptersList);
                             }
@@ -117,6 +124,25 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
 
     private void loadReadProgress() {
 
+//        ZhuiShuSQApi.getPictureChapterRead();
+
+    }
+
+    private CartoonContent getPageContent(int chapter, boolean isNext) {
+        CartoonContent pageContent = null;
+        Entities.Chapters chapters = mChaptersList.get(chapter);
+//        ChapterBuffer chapterBuffer = mCacheChapterBuffers.get(getKey(chapter));
+//        if (chapterBuffer != null) {
+//            pageContent = createNewPageContent(isNext ? chapterBuffer.getPageForPos(0) : chapterBuffer.getEndPage(),
+//                    chapters.title, chapter, chapterBuffer.getPageCount());
+//        } else {
+//            pageContent = createNonePageContent(chapters.title, chapter, hasEndChapter(chapter));
+//        }
+        return pageContent;
+    }
+
+    private boolean hasEndChapter(int chapter) {
+        return mChaptersList == null || mChaptersList.size() <= chapter + 1;
     }
 
     private void initChaptersList() {

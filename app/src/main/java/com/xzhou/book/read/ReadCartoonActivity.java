@@ -9,12 +9,15 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -123,7 +126,7 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             mPageManagers[i] = new ReadPageManager();
             mPageManagers[i].setReadCartoonPage(page);
         }
-        final ReadCartoonPage page = mPageManagers[0].getReadCartoonPage();
+//        final ReadCartoonPage page = mPageManagers[0].getReadCartoonPage();
 //        page.setTextLayoutListener(new ReadPage.TextLayoutListener() {
 //
 //            @Override
@@ -170,7 +173,7 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             }
         });
         mCartoonViewPager.setCanTouch(false);
-//        mCartoonViewPager.setAdapter(new MyPagerAdapter());
+        mCartoonViewPager.setAdapter(new MyPagerAdapter());
         mCartoonViewPager.setCurrentItem(0, false);
         mPresenter.start();
     }
@@ -393,4 +396,34 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             }
         }
     };
+
+    private class MyPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View) object);
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            View view = mPageManagers[position].getReadCartoonPage();
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null) {
+                parent.removeView(view);
+            }
+            container.addView(view);
+            return view;
+        }
+    }
 }
