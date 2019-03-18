@@ -61,7 +61,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
             "45分钟",
     };
 
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH小时mm分钟ss秒", Locale.getDefault());
 
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);

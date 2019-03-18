@@ -96,7 +96,18 @@ public class AppSettings {
 
     public static void setLastStopReadTime(long lastStopReadTime) {
         String time = String.valueOf(lastStopReadTime);
+        String timestamp = String.valueOf(System.currentTimeMillis());
         SPUtils.get().putString(PRE_KEY_LAST_STOP_READ_TIME, time);
+    }
+
+    public static long getLastStopTimestamp() {
+        String time = SPUtils.get().getString("timestamp", "0");
+        return Long.parseLong(time);
+    }
+
+    public static long getTodayReadTime(){
+        String time = SPUtils.get().getString("today_read_time", "0");
+        return Long.parseLong(time);
     }
 
     public static Entities.Login getLogin() {
