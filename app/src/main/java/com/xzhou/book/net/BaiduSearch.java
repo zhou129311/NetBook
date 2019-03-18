@@ -117,20 +117,18 @@ public class BaiduSearch {
             if (list1 != null) {
                 bookList.addAll(list1);
             }
-            if (bookList.size() <= 4) {
-                for (String pageUrl : pages) {
-                    if (mCancel) {
-                        break;
-                    }
-                    Document pageDocument = Jsoup.connect(pageUrl).timeout(10000).get();
-                    List<BaiduModel.BaiduBook> list2 = getBookListForDocument(pageDocument);
-                    if (list2 != null) {
-                        bookList.addAll(list2);
-                    }
+            for (String pageUrl : pages) {
+                if (mCancel) {
+                    break;
+                }
+                Document pageDocument = Jsoup.connect(pageUrl).timeout(10000).get();
+                List<BaiduModel.BaiduBook> list2 = getBookListForDocument(pageDocument);
+                if (list2 != null) {
+                    bookList.addAll(list2);
+                }
 //                    if (bookList.size() > 10 && mCurParseSize > 0) {
 //                        break;
 //                    }
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -111,6 +111,9 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+        if (!isSystem) {
+            AppUtils.setScreenBrightness(AppSettings.getBrightness(this), this);
+        }
     }
 
     private void initViewPager() {

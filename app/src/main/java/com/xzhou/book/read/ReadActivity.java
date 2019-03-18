@@ -623,6 +623,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+        if (!isSystem) {
+            AppUtils.setScreenBrightness(AppSettings.getBrightness(this), this);
+        }
     }
 
     private void setBrightnessProgress(int value) {

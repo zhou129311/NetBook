@@ -273,8 +273,8 @@ public class AppUtils {
         if (brightness == -1) {
             lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
         } else {
-            if (brightness <= 5) {
-                brightness = 5;
+            if (brightness < 1) {
+                brightness = 1;
             }
             lp.screenBrightness = brightness / 100.0F;
         }
