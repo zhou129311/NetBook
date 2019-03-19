@@ -59,6 +59,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 @Override
                 public void run() {
                     if (mBook.isBookshelf()) {
+                        mBook.readTime = System.currentTimeMillis();
                         BookProvider.updateReadTime(mBook);
                     }
                     mChaptersList = AppSettings.getChapterList(mBook._id);
@@ -69,7 +70,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 mChaptersList = htmlParse.parseChapters(mBook.readUrl);
                                 if (mChaptersList != null && mChaptersList.size() > 0 && mBook.isBookshelf()) {
                                     mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
-                                    BookProvider.insertOrUpdate(mBook, false);
+                                    BookProvider.insertOrUpdate(mBook, true);
                                 }
                             }
                         } else {
@@ -81,7 +82,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                         mBook.curSourceHost = source.host;
                                         mBook.sourceId = source._id;
                                         if (mBook.isBookshelf()) {
-                                            BookProvider.insertOrUpdate(mBook, false);
+                                            BookProvider.insertOrUpdate(mBook, true);
                                         }
                                         break;
                                     }
@@ -103,6 +104,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                                 for (int i = 0, size = mChaptersList.size(); i < size; i++) {
                                     Entities.Chapters chapters = mChaptersList.get(i);
                                     chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                                }
+                                if (mBook.isBaiduBook) {
+                                    mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
+                                    BookProvider.insertOrUpdate(mBook, true);
                                 }
                                 AppSettings.saveChapterList(mBook._id, mChaptersList);
                             }

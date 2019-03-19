@@ -40,6 +40,7 @@ public abstract class HtmlParse {
             add("font");
             add("strong");
             add("script");
+            add("h1");
         }
     };
 
@@ -98,10 +99,17 @@ public abstract class HtmlParse {
         if (cIndexEnd > cIndexStart && cIndexStart >= 0) {
             text = text.substring(cIndexEnd + 5);
         }
-        int divIndexStart = text.indexOf("<div");
-        int divIndexEnd = text.indexOf(">");
-        if (divIndexEnd > divIndexStart && divIndexStart >= 0) {
-            text = text.substring(divIndexEnd + 1);
+
+        text = text.replace("</div>", "");
+        for (int i = 0; i < 5; i++) {
+            int divIndexStart = text.indexOf("<div");
+            if (divIndexStart < 0) {
+                break;
+            }
+            int divIndexEnd = text.indexOf(">");
+            if (divIndexEnd > divIndexStart) {
+                text = text.substring(divIndexEnd + 1);
+            }
         }
         int fonIndexStart = text.indexOf("<fon");
         int fonIndexEnd = text.indexOf(">");

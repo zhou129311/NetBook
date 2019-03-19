@@ -27,6 +27,7 @@ public class AppSettings {
     private static final String PRE_KEY_LAST_STOP_READ_TIME = "pre_key_last_stop_read_time";
     private static final String PRE_KEY_START_SLEEP_TIME = "pre_key_start_sleep_time";
     private static final String PRE_KEY_READ_SLEEP_TIME = "pre_key_read_sleep_time";
+    private static final String PRE_KEY_SCREEN_OFF_MODE = "pre_key_screen_off_mode";
 
     public static final int PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME = 0;
     public static final int PRE_VALUE_BOOKSHELF_ORDER_READ_TIME = 1;
@@ -37,12 +38,18 @@ public class AppSettings {
     public static final int PRE_VALUE_READ_CACHE_5 = 2;
     public static final int PRE_VALUE_READ_CACHE_10 = 3;
 
+    public static final int PRE_VALUE_SCREEN_OFF_NONE = 0;
+    public static final int PRE_VALUE_SCREEN_OFF_5 = 1;
+    public static final int PRE_VALUE_SCREEN_OFF_10 = 2;
+    public static final int PRE_VALUE_SCREEN_OFF_SYSTEM = 3;
+
     public static boolean HAS_SAVING_TRAFFIC = false;
     public static boolean HAS_VOLUME_TURN_PAGE = true;
     public static boolean HAS_FULL_SCREEN_MODE = true;
     public static boolean HAS_CLICK_NEXT_PAGE = true;
     public static int BOOK_ORDER = PRE_VALUE_BOOKSHELF_ORDER_ADD_TIME;
     public static int READ_CACHE_MODE = PRE_VALUE_READ_CACHE_NONE;
+    public static int SCREEN_OFF_MODE = PRE_VALUE_SCREEN_OFF_NONE;
     public static @ReadTheme
     int READ_THEME = ReadTheme.DEFAULT;
     public static long READ_SLEEP_TIME = 30 * 60 * 1000;
@@ -56,6 +63,16 @@ public class AppSettings {
         BOOK_ORDER = getBookshelfOrder();
         READ_CACHE_MODE = getReadCacheMode();
         READ_SLEEP_TIME = getSleepTime();
+        SCREEN_OFF_MODE = getScreenOffMode();
+    }
+
+    public static int getScreenOffMode() {
+        return SPUtils.get().getInt(PRE_KEY_SCREEN_OFF_MODE, PRE_VALUE_SCREEN_OFF_NONE);
+    }
+
+    public static void setScreenOffMode(int mode) {
+        SCREEN_OFF_MODE = mode;
+        SPUtils.get().putInt(PRE_KEY_SCREEN_OFF_MODE, mode);
     }
 
     public static long getSleepTime() {
@@ -105,7 +122,7 @@ public class AppSettings {
         return Long.parseLong(time);
     }
 
-    public static long getTodayReadTime(){
+    public static long getTodayReadTime() {
         String time = SPUtils.get().getString("today_read_time", "0");
         return Long.parseLong(time);
     }

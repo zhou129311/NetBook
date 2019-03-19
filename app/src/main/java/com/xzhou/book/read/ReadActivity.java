@@ -12,6 +12,8 @@ import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,6 +58,7 @@ import com.xzhou.book.utils.ThemeUtils;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.SwipeLayout;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
@@ -115,6 +118,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private long mStartReadTime;
     private long mFirstStartReadTime;
     private ReadSleepDialog mSleepDialog;
+    private MyHandler mHandler;
 
     public static void startActivity(Context context, BookProvider.LocalBook book) {
         if (book.isPicture) {
@@ -126,10 +130,27 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         context.startActivity(intent);
     }
 
+    private static class MyHandler extends Handler {
+        private WeakReference<ReadActivity> mOwner;
+
+        MyHandler(ReadActivity activity) {
+            mOwner = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            ReadActivity activity = mOwner.get();
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                activity.getWindow().addFlags(~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        initScreenOffTime();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams lp = getWindow().getAttributes();
             lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
@@ -212,6 +233,34 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         mReadSettingLayout.setVisibility(View.INVISIBLE);
     }
 
+    private void initScreenOffTime() {
+        if (mHandler == null) {
+            mHandler = new MyHandler(this);
+        }
+        mHandler.removeMessages(1);
+        if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_SYSTEM) {
+            getWindow().addFlags(~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_5) {
+                mHandler.sendEmptyMessageDelayed(1, 5 * 60 * 1000);
+            } else if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_10) {
+                mHandler.sendEmptyMessageDelayed(1, 10 * 60 * 1000);
+            }
+        }
+    }
+
+    private void checkScreenOffTime() {
+        mHandler.removeMessages(1);
+        if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_5) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mHandler.sendEmptyMessageDelayed(1, 5 * 60 * 1000);
+        } else if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_10) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mHandler.sendEmptyMessageDelayed(1, 10 * 60 * 1000);
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -229,6 +278,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     protected void onResume() {
         super.onResume();
+        checkScreenOffTime();
         if (!AppSettings.HAS_FULL_SCREEN_MODE && mReadViewPager.getPaddingTop() == 0) {
             mReadViewPager.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
             relayoutPageContent();
@@ -252,6 +302,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             AppSettings.setTotalReadTime(oldReadTime + newReadTime);
         }
         AppSettings.setLastStopReadTime(stop);
+        if (mHandler != null) {
+            mHandler.removeMessages(1);
+        }
     }
 
     @Override
@@ -359,6 +412,8 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             mBook = data.getParcelableExtra(EXTRA_BOOK);
             getIntent().putExtra(EXTRA_BOOK, mBook);
             recreate();
+        } else if (requestCode == 2 && resultCode == 1) {
+            initScreenOffTime();
         }
     }
 
@@ -547,6 +602,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             return;
         }
         if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
+            checkScreenOffTime();
             ReadPage readPage = mPageManagers[mCurPosition].getReadPage();
             PageContent pageContent = readPage.getPageContent();
             readPage.checkLoading();
@@ -653,6 +709,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
             R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar })
     public void onViewClicked(View view) {
+        checkScreenOffTime();
         if (mSwipeLayout.isMenuOpen()) {
             mSwipeLayout.smoothToCloseMenu();
             hideReadToolBar();

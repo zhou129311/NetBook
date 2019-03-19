@@ -206,6 +206,8 @@ public class HtmlParse4 extends HtmlParse {
             text = text.replace(" ", "");
             text = text.replace("　", "");
             text = text.replace("www.35xs.com", "");
+            text = text.replace("35xs", "");
+            text = text.replace("闪舞小说网", "");
         }
         read.chapter.body = text;
         logi("end ,text=" + text);

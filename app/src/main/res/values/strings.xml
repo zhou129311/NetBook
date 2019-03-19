@@ -221,4 +221,6 @@
     <string name="zzb_warning_msg" translatable="false">渣渣宝，由于你连续阅读书籍时长超过1小时，此界面已被封印！</string>
     <string name="i_know" translatable="false">知道了</string>
 
+    <string name="screen_off_time" translatable="false">阅读时屏幕休眠时间</string>
+
 </resources>
