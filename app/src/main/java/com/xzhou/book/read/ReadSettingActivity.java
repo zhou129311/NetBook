@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SwitchCompat;
+import android.view.View;
 import android.widget.CompoundButton;
 
 import com.xzhou.book.R;
@@ -17,6 +18,7 @@ import com.xzhou.book.widget.SettingItemView;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 
 public class ReadSettingActivity extends BaseActivity {
 
@@ -63,18 +65,9 @@ public class ReadSettingActivity extends BaseActivity {
         super.finish();
     }
 
-    @OnCheckedChanged({ R.id.volume_turn_page_sw, R.id.next_page_sw, R.id.full_screen_mode_sw, R.id.screen_off_time_view })
-    public void onCheckedChanged(CompoundButton button, boolean checked) {
-        switch (button.getId()) {
-        case R.id.volume_turn_page_sw:
-            AppSettings.saveVolumeTurnPage(checked);
-            break;
-        case R.id.next_page_sw:
-            AppSettings.saveClickNextPage(checked);
-            break;
-        case R.id.full_screen_mode_sw:
-            AppSettings.saveFullScreenMode(checked);
-            break;
+    @OnClick({ R.id.screen_off_time_view })
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
         case R.id.screen_off_time_view:
             ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
             builder.setTitle(R.string.screen_off_time)
@@ -92,6 +85,21 @@ public class ReadSettingActivity extends BaseActivity {
                             dialog.dismiss();
                         }
                     }).show();
+            break;
+        }
+    }
+
+    @OnCheckedChanged({ R.id.volume_turn_page_sw, R.id.next_page_sw, R.id.full_screen_mode_sw })
+    public void onCheckedChanged(CompoundButton button, boolean checked) {
+        switch (button.getId()) {
+        case R.id.volume_turn_page_sw:
+            AppSettings.saveVolumeTurnPage(checked);
+            break;
+        case R.id.next_page_sw:
+            AppSettings.saveClickNextPage(checked);
+            break;
+        case R.id.full_screen_mode_sw:
+            AppSettings.saveFullScreenMode(checked);
             break;
         }
     }
