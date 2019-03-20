@@ -78,13 +78,15 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                         if (parse != null) {
                             List<Entities.Chapters> oldList = AppSettings.getChapterList(book._id);
                             List<Entities.Chapters> newList = parse.parseChapters(book.readUrl);
-                            if (newList != null && (oldList == null || newList.size() > oldList.size())) {
-                                hasUpdated = true;
+                            if (newList != null && newList.size() > 0) {
                                 AppSettings.saveChapterList(book._id, newList);
-                                book.isShowRed = true;
-                                book.updated = System.currentTimeMillis();
-                                book.lastChapter = newList.get(newList.size() - 1).title;
-                                updateList.add(book);
+                                if (oldList == null || newList.size() > oldList.size()) {
+                                    hasUpdated = true;
+                                    book.isShowRed = true;
+                                    book.updated = System.currentTimeMillis();
+                                    book.lastChapter = newList.get(newList.size() - 1).title;
+                                    updateList.add(book);
+                                }
                             }
                         }
                         continue;

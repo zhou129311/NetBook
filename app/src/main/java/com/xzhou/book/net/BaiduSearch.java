@@ -50,6 +50,7 @@ public class BaiduSearch {
     private boolean mCancel = false;
     private int mCurSize;
     private int mCurParseSize;
+    private List<String> mBookHosts = new ArrayList<>();
 
     public void setCancel(boolean cancel) {
         mCancel = cancel;
@@ -92,6 +93,7 @@ public class BaiduSearch {
         mCurSize = 0;
         mCurParseSize = 0;
         mCancel = false;
+        mBookHosts.clear();
         List<BaiduModel.BaiduBook> bookList = new ArrayList<>();
         try {
             trustEveryone();
@@ -161,13 +163,14 @@ public class BaiduSearch {
                         continue;
                     }
                     BaiduModel.BaiduBook book = parseResult(t);
-                    if (book != null && book.hasValid()) {
+                    if (book != null && book.hasValid() && !mBookHosts.contains(book.sourceHost)) {
                         if (urlInvalid(book.readUrl)) {
                             continue;
                         }
                         Log.i(TAG, "book = " + book);
                         bookList.add(book);
                         mCurSize += 1;
+                        mBookHosts.add(book.sourceHost);
                         if (BaiduModel.hasSupportLocalRead(book.sourceHost)) {
                             mCurParseSize += 1;
                             break;
@@ -216,6 +219,8 @@ public class BaiduSearch {
                     if (read_url != null && read_url.toLowerCase().startsWith("http")) {
                         if (read_url.contains("m.23us.la")) {
                             read_url = read_url.replace("m.23us.la", "www.23us.la");
+                        } else if (read_url.contains("m.f96.la")) {
+                            read_url = read_url.replace("m.f96.la", "www.f96.la");
                         }
                         book.readUrl = read_url;
                         book.sourceHost = AppUtils.getHostFromUrl(read_url);

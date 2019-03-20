@@ -26,14 +26,21 @@ public class HtmlParse2 extends HtmlParse {
 
         Element body = document.body();
         Elements eList = body.select("div#list-chapterAll");
+        Elements dd;
         if (eList.isEmpty()) {
             eList = body.select("dl.chapterlist").select(".cate");
         }
         if (eList.isEmpty()) {
             eList = body.select("dl.chapterlist");
         }
-        Elements chapterList = eList.last().children();
-        for (Element c : chapterList) {
+        if (eList.isEmpty()) {
+            eList = body.select("div.fulllistall");
+        }
+        dd = eList.select("dd");
+        if (dd.isEmpty()) {
+            return null;
+        }
+        for (Element c : dd) {
             if ("dd".equals(c.tagName())) {
                 Elements dd_a = c.getElementsByTag("a");
                 String title = dd_a.text();
@@ -49,8 +56,8 @@ public class HtmlParse2 extends HtmlParse {
                 }
             }
         }
-        list = sortAndRemoveDuplicate(list);
-        return list;
+        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override
@@ -60,6 +67,9 @@ public class HtmlParse2 extends HtmlParse {
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("div.readcontent");
+        if (content.isEmpty()) {
+            content = body.select("div.chaptercontent").select(".dus52");
+        }
         if (content.isEmpty()) {
             content = body.select("div#BookText");
         }

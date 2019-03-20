@@ -3,9 +3,7 @@ package com.xzhou.book.models;
 import android.text.TextUtils;
 
 import com.xzhou.book.utils.AppUtils;
-import com.xzhou.book.utils.Log;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -18,22 +16,22 @@ public class HtmlParse6 extends HtmlParse {
         TAG = "HtmlParse6";
     }
 
-    public List<Entities.Chapters> parseChapters(String readUrl) {
-        try {
-            trustEveryone();
-            if (readUrl.contains("www.123du.cc") && !readUrl.endsWith("list/")) {
-                readUrl += "list/";
-            }
-            Document document = Jsoup.connect(readUrl).timeout(10000).get();
-            if (readUrl.contains("www.123du.cc")) {
-                readUrl = readUrl.replace("list/", "");
-            }
-            return parseChapters(readUrl, document);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    public List<Entities.Chapters> parseChapters(String readUrl) {
+//        try {
+//            trustEveryone();
+//            if (readUrl.contains("www.123du.cc") && !readUrl.endsWith("list/")) {
+//                readUrl += "list/";
+//            }
+//            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(10000).get();
+//            if (readUrl.contains("www.123du.cc")) {
+//                readUrl = readUrl.replace("list/", "");
+//            }
+//            return parseChapters(readUrl, document);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     @Override
     public List<Entities.Chapters> parseChapters(String readUrl, Document document) {
@@ -54,6 +52,9 @@ public class HtmlParse6 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("div.chaper0");
         }
+        if (eList.isEmpty()) {
+            eList = body.select("div.pt-chapter-cont-detail").select(".full");
+        }
         Elements a = null;
         if (!eList.isEmpty()) {
             a = eList.select("a");
@@ -64,9 +65,9 @@ public class HtmlParse6 extends HtmlParse {
         for (Element element : a) {
             String title = element.text();
             String link = element.attr("href");
-            if ("www.123du.cc".equals(host) && link.startsWith("../")) {
-                link = link.replace("../", "");
-            }
+//            if ("www.123du.cc".equals(host) && link.startsWith("../")) {
+//                link = link.replace("../", "");
+//            }
             if (!link.contains("/")) {
                 link = readUrl + link;
             } else if (!link.startsWith("http")) {
@@ -77,7 +78,8 @@ public class HtmlParse6 extends HtmlParse {
                 list.add(new Entities.Chapters(title, link));
             }
         }
-        return list;
+        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override
@@ -86,18 +88,22 @@ public class HtmlParse6 extends HtmlParse {
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("DIV#content");
-        if (chapterUrl.contains("www.123du.cc")) {
-            Log.i(TAG, "body = " + body);
-            content = getContent(body);
-            Log.i(TAG, "content = " + content);
-        }
+//        if (chapterUrl.contains("www.123du.cc")) {
+//            Log.i(TAG, "body = " + body);
+//            content = getContent(body);
+//            Log.i(TAG, "content = " + content);
+//        }
         if (content.isEmpty()) {
             content = body.select("div.txt");
+        }
+        if (content.isEmpty()) {
+            //size16 color5 pt-read-text
+            content = body.select("div.size16").select(".color5").select(".pt-read-text");
         }
         read.chapter = new Entities.Chapter();
         String text = formatContent(chapterUrl, content);
         text = replaceCommon(text);
-        if (chapterUrl.contains("www.123du.cc")) {
+        if (chapterUrl.contains("f96.la")) {
             text = text.replace("\n", "");
             text = text.replace("<p>", "\n");
             text = text.replace(" ", "");

@@ -64,8 +64,8 @@ public class HtmlParse1 extends HtmlParse {
                 }
             }
         }
-        list = sortAndRemoveDuplicate(list);
-        return list;
+        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override

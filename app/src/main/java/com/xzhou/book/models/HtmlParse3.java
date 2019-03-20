@@ -57,8 +57,8 @@ public class HtmlParse3 extends HtmlParse {
                 }
             }
         }
-        list = sortAndRemoveDuplicate(list);
-        return list;
+        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override
@@ -69,7 +69,6 @@ public class HtmlParse3 extends HtmlParse {
         Elements content = body.select("div#content");
         read.chapter = new Entities.Chapter();
         String text = formatContent(content);
-        text = text.replace("</fon>", "");
         text = replaceCommon(text);
         read.chapter.body = text;
         logi("end ,text=" + text);

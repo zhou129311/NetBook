@@ -9,7 +9,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * packageName：com.xzhou.book.models
@@ -34,7 +37,19 @@ public class HtmlParse5 extends HtmlParse {
 
         Element body = document.body();
         Elements eList = body.select("dl.book");
-        Elements cd = eList.first().children();
+        Elements cd;
+        if (eList.isEmpty()) {
+            eList = body.select("div.listmain");
+            if (eList.isEmpty()) {
+                eList = body.select("div#list");
+            }
+            cd = eList.select("dl").first().children();
+        } else {
+            cd = eList.first().children();
+        }
+        if (cd.isEmpty()) {
+            return null;
+        }
         int dtSize = 0;
         for (Element c : cd) {
             if ("dt".equals(c.tagName())) {
@@ -55,8 +70,18 @@ public class HtmlParse5 extends HtmlParse {
                 }
             }
         }
-        list = sortAndRemoveDuplicate(list);
-        return list;
+        if (list.size() > 0) {
+            Set<Entities.Chapters> set = new HashSet<>();
+            List<Entities.Chapters> newList = new ArrayList<>();
+            for (Entities.Chapters element : list) {
+                if (set.add(element)) {
+                    newList.add(element);
+                }
+            }
+            return newList;
+        }
+//        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override
@@ -65,6 +90,12 @@ public class HtmlParse5 extends HtmlParse {
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
         Element body = document.body();
         Elements content = body.select("p.Text");
+        if (content.isEmpty()) {
+            content = body.select("div#content");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.content");
+        }
         read.chapter = new Entities.Chapter();
         String text = formatContent(content);
         text = replaceCommon(text);

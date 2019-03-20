@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -24,7 +26,12 @@ import javax.net.ssl.X509TrustManager;
 
 public abstract class HtmlParse {
     protected String TAG = "HtmlParse";
+    static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
 
+    private static Pattern PATTERN1 = Pattern.compile("<div(.*?)>");
+    private static Pattern PATTERN2 = Pattern.compile("<fon(.*?)>");
+    private static Pattern PATTERN3 = Pattern.compile("<p(.*?)>");
+    private static Pattern PATTERN4 = Pattern.compile("<!--(.*?)-->");
     private static final List<String> E_TAGS = new ArrayList<String>() {
         {
             add("div.kongwen");
@@ -44,10 +51,24 @@ public abstract class HtmlParse {
         }
     };
 
+    private static final List<String> COMPARATOR2 = new ArrayList<String>() {
+        {
+            add("www.cdzdgw.com");
+            add("www.xszww.com");
+            add("www.biquge.lu");
+        }
+    };
+
     public List<Entities.Chapters> parseChapters(String readUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(readUrl).timeout(10000).get();
+            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(10000).get();
+            if (readUrl.endsWith("index.html")) {
+                readUrl = readUrl.replace("index.html", "");
+            }
+            if (readUrl.endsWith("list/")) {
+                readUrl = readUrl.replace("list/", "");
+            }
             return parseChapters(readUrl, document);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +81,7 @@ public abstract class HtmlParse {
     public Entities.ChapterRead parseChapterRead(String chapterUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(chapterUrl).timeout(10000).get();
+            Document document = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(10000).get();
             Log.i(TAG, "parseChapterRead:baseUri=" + document.baseUri());
             return parseChapterRead(chapterUrl, document);
         } catch (Exception e) {
@@ -71,17 +92,23 @@ public abstract class HtmlParse {
 
     public abstract Entities.ChapterRead parseChapterRead(String chapterUrl, Document document);
 
-    protected List<Entities.Chapters> sortAndRemoveDuplicate(List<Entities.Chapters> list) {
+    List<Entities.Chapters> sortAndRemoveDuplicate(List<Entities.Chapters> list, String host) {
+        Comparator<Entities.Chapters> comparator;
+        if (COMPARATOR2.contains(host)) {
+            comparator = sComparator2;
+        } else {
+            comparator = sComparator1;
+        }
         if (list.size() > 0) {
             try {
-                Set<Entities.Chapters> s = new TreeSet<>(sComparator);
+                Set<Entities.Chapters> s = new TreeSet<>(comparator);
                 s.addAll(list);
                 return new ArrayList<>(s);
             } catch (Exception e) {
                 Log.e(TAG, e);
             }
         }
-        return null;
+        return list;
     }
 
     protected String formatContent(Elements content) {
@@ -89,42 +116,41 @@ public abstract class HtmlParse {
     }
 
     protected String formatContent(String chapterUrl, Elements content) {
-        if (!chapterUrl.contains("www.35xs.com")) {
+        if (!chapterUrl.contains("www.35xs.com")
+                && !chapterUrl.contains("www.f96.la")) {
             removeContentTag(content);
         }
         String text = content.toString();
         Log.i(TAG, "formatContent:text = " + text);
-        int cIndexStart = text.indexOf("<!--<div");
-        int cIndexEnd = text.indexOf(">-->");
-        if (cIndexEnd > cIndexStart && cIndexStart >= 0) {
-            text = text.substring(cIndexEnd + 5);
+
+        Matcher m4 = PATTERN4.matcher(text);
+        while (m4.find()) {
+            text = text.replace(m4.group(), "");
         }
 
-        text = text.replace("</div>", "");
-        for (int i = 0; i < 5; i++) {
-            int divIndexStart = text.indexOf("<div");
-            if (divIndexStart < 0) {
-                break;
-            }
-            int divIndexEnd = text.indexOf(">");
-            if (divIndexEnd > divIndexStart) {
-                text = text.substring(divIndexEnd + 1);
-            }
+        Matcher m1 = PATTERN1.matcher(text);
+        while (m1.find()) {
+            text = text.replace(m1.group(), "");
         }
-        int fonIndexStart = text.indexOf("<fon");
-        int fonIndexEnd = text.indexOf(">");
-        if (fonIndexEnd > fonIndexStart && fonIndexStart >= 0) {
-            text = text.substring(fonIndexEnd + 1);
+
+        Matcher m2 = PATTERN2.matcher(text);
+        while (m2.find()) {
+            text = text.replace(m2.group(), "");
         }
-        if (!chapterUrl.contains("www.35xs.com")) {
-            int pIndexStart = text.indexOf("<p");
-            int pIndexEnd = text.indexOf(">");
-            if (pIndexEnd > pIndexStart && pIndexStart >= 0) {
-                text = text.substring(pIndexEnd + 1);
+
+        if (!chapterUrl.contains("www.35xs.com")
+                && !chapterUrl.contains("www.f96.la")) {
+            Matcher m3 = PATTERN3.matcher(text);
+            while (m3.find()) {
+                text = text.replace(m3.group(), "");
             }
         }
         text = text.replace("</div>", "");
         text = text.replace("</fon>", "");
+        text = text.replace("<span>", "");
+        text = text.replace("</span>", "");
+        text = text.replace("<center>", "");
+        text = text.replace("</center>", "");
         text = text.replace("&amp;", "&");
         text = text.replace("amp;", "&");
         text = text.replace("&lt;", "<");
@@ -140,7 +166,7 @@ public abstract class HtmlParse {
         }
     }
 
-    protected String replaceCommon(String text) {
+    String replaceCommon(String text) {
         text = text.replace("\n", "");
         text = text.replace("<br>", "\n");
         text = text.replace("&nbsp;", "");
@@ -152,7 +178,7 @@ public abstract class HtmlParse {
         return text;
     }
 
-    protected void trustEveryone() {
+    void trustEveryone() {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
                 @SuppressLint("BadHostnameVerifier")
@@ -181,7 +207,7 @@ public abstract class HtmlParse {
         }
     }
 
-    public static Comparator<Entities.Chapters> sComparator = new Comparator<Entities.Chapters>() {
+    private static Comparator<Entities.Chapters> sComparator1 = new Comparator<Entities.Chapters>() {
         @Override
         public int compare(Entities.Chapters o1, Entities.Chapters o2) {
             String link1 = getLinkIndex(o1.link);
@@ -200,14 +226,34 @@ public abstract class HtmlParse {
             } else {
                 rel = link1.compareTo(link2);
             }
-            if (link1.equals("12326239") || link2.equals("12326239")) {
-                Log.i("link1 = " + link1 + ",link2 = " + link2 + ",rel= " + rel);
+            return rel;
+        }
+    };
+
+    private static Comparator<Entities.Chapters> sComparator2 = new Comparator<Entities.Chapters>() {
+        @Override
+        public int compare(Entities.Chapters o1, Entities.Chapters o2) {
+            String link1 = getLinkIndex(o1.link);
+            String link2 = getLinkIndex(o2.link);
+            int rel;
+            try {
+                int int1 = Integer.valueOf(link1);
+                int int2 = Integer.valueOf(link2);
+                return int2 - int1;
+            } catch (NumberFormatException ignored) {
+            }
+            if (link1.length() > link2.length()) {
+                rel = -1;
+            } else if (link1.length() < link2.length()) {
+                rel = 1;
+            } else {
+                rel = link2.compareTo(link1);
             }
             return rel;
         }
     };
 
-    public static String getLinkIndex(String link) {
+    private static String getLinkIndex(String link) {
         String last1 = link.substring(link.lastIndexOf("/") + 1);
         int i = last1.lastIndexOf(".");
         if (i > 0) {
@@ -225,7 +271,7 @@ public abstract class HtmlParse {
         Log.d(TAG, str);
     }
 
-    protected void logi(String str) {
+    void logi(String str) {
         int max_str_length = 2001;
         while (str.length() > max_str_length) {
             Log.i(TAG, str.substring(0, max_str_length));

@@ -3,14 +3,12 @@ package com.xzhou.book.models;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
-import com.xzhou.book.utils.Log;
-
 import java.util.HashMap;
 
 public class BaiduModel {
 
-    @IntDef({ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
-            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6})
+    @IntDef({ ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
+            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6 })
     public @interface ParseType {
         int PARSE_TYPE_1 = 1;
         int PARSE_TYPE_2 = 2;
@@ -41,8 +39,6 @@ public class BaiduModel {
             put("www.shu008.com", ParseType.PARSE_TYPE_1);
             put("www.518east.com", ParseType.PARSE_TYPE_1);
             put("www.cilook.net", ParseType.PARSE_TYPE_1);
-            put("www.biqukan.com", ParseType.PARSE_TYPE_1);
-            put("www.biqudu.com", ParseType.PARSE_TYPE_1);
             put("www.kbiquge.com", ParseType.PARSE_TYPE_1);
             put("www.xbiquge.la", ParseType.PARSE_TYPE_1);
             put("www.bequge.com", ParseType.PARSE_TYPE_1);
@@ -63,6 +59,12 @@ public class BaiduModel {
             put("www.u33.cc", ParseType.PARSE_TYPE_1);
             put("www.78zw.com", ParseType.PARSE_TYPE_1);
             put("www.tianyabook.com", ParseType.PARSE_TYPE_1);
+            put("www.a306.com", ParseType.PARSE_TYPE_1);
+            put("www.xszww.com", ParseType.PARSE_TYPE_1);
+            put("www.biqu6.com", ParseType.PARSE_TYPE_1);
+            put("www.cdzdgw.com", ParseType.PARSE_TYPE_1);
+            put("www.biqugemm.com", ParseType.PARSE_TYPE_1);
+            put("www.xs222.tw", ParseType.PARSE_TYPE_1);
 //            put("www.123du.cc", ParseType.PARSE_TYPE_1);
 
             put("www.23us.la", ParseType.PARSE_TYPE_2);
@@ -71,6 +73,8 @@ public class BaiduModel {
             put("www.milepub.com", ParseType.PARSE_TYPE_2);
             put("www.x82xs.com", ParseType.PARSE_TYPE_2);
             put("www.xhxswz.com", ParseType.PARSE_TYPE_2);
+            put("www.aoyuge.com", ParseType.PARSE_TYPE_2);
+            put("www.52dus.com", ParseType.PARSE_TYPE_2);
 
             put("www.fengyunok.com", ParseType.PARSE_TYPE_3);
 
@@ -93,18 +97,33 @@ public class BaiduModel {
             put("www.lewentxt.com", ParseType.PARSE_TYPE_4);
             put("www.lingyu.org", ParseType.PARSE_TYPE_4);
             put("www.w23us.com", ParseType.PARSE_TYPE_4);
+            put("www.16sy.com", ParseType.PARSE_TYPE_4);
+            put("www.23wx.cm", ParseType.PARSE_TYPE_4);
+            put("www.yanqingshu.com", ParseType.PARSE_TYPE_4);
+            put("www.i7wx.com", ParseType.PARSE_TYPE_4);
+//            put("www.daizhuzai.com", ParseType.PARSE_TYPE_4);
 //            put("www.biqige.cc", ParseType.PARSE_TYPE_4);
 //            put("www.38lu.com", ParseType.PARSE_TYPE_4);
 //            put("www.zhetian.org", ParseType.PARSE_TYPE_4);
 
             put("www.fpzw.com", ParseType.PARSE_TYPE_5);
+            put("www.biqukan.com", ParseType.PARSE_TYPE_5);
+            put("www.touxiang.la", ParseType.PARSE_TYPE_5);
+            put("www.dushuzhe.com", ParseType.PARSE_TYPE_5);
+            put("www.biqudu.com", ParseType.PARSE_TYPE_5);
+            put("www.bixiadu.com", ParseType.PARSE_TYPE_5);
+            put("www.wenshulou.cc", ParseType.PARSE_TYPE_5);
+            put("www.e8zw.com", ParseType.PARSE_TYPE_5);
+            put("www.173kt.net", ParseType.PARSE_TYPE_5);
+            put("www.abcxs.com", ParseType.PARSE_TYPE_5);
+            put("www.aixiashu.com", ParseType.PARSE_TYPE_5);
+            put("www.3zm.la", ParseType.PARSE_TYPE_5);
 
             put("www.okdd.net", ParseType.PARSE_TYPE_6);
-//            put("www.123du.cc", ParseType.PARSE_TYPE_6);
             put("www.mywenxue.com", ParseType.PARSE_TYPE_6);
+            put("www.f96.la", ParseType.PARSE_TYPE_6);
 
 //            put("www.ggdown.org", PARSE_GGD);
-
 
 //            put("fm.x88dushu.com", ParseType.PARSE_TYPE_6);
         }
@@ -136,9 +155,7 @@ public class BaiduModel {
         public boolean hasValid() {
             boolean valid = !TextUtils.isEmpty(readUrl) && !TextUtils.isEmpty(bookName) && !TextUtils.isEmpty(sourceHost);
             if (valid) {
-                id = bookName + "_" + readUrl;
-            } else {
-                Log.i("Book", "invalid book = " + toString());
+                id = String.valueOf((bookName + "_" + readUrl).hashCode());
             }
             return valid;
         }

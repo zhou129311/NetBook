@@ -28,7 +28,7 @@ public class HtmlParse4 extends HtmlParse {
     public List<Entities.Chapters> parseChapters(String readUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(readUrl).timeout(10000).get();
+            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(10000).get();
             if (readUrl.contains("kenshu.cc")) {
                 Element body = document.body();
                 Elements all = body.select("div.bookbtn-txt");
@@ -39,6 +39,9 @@ public class HtmlParse4 extends HtmlParse {
                     readUrl = preUrl + a.attr("href");
                     document = Jsoup.connect(readUrl).timeout(10000).get();
                 }
+            }
+            if (readUrl.endsWith("index.html")) {
+                readUrl = readUrl.replace("index.html", "");
             }
             return parseChapters(readUrl, document);
         } catch (Exception e) {
@@ -57,6 +60,9 @@ public class HtmlParse4 extends HtmlParse {
 
         Element body = document.body();
         Elements eList = body.select("div.article_texttitleb");
+        if (eList.isEmpty()) {
+            eList = body.select("ul.vol_list");
+        }
         Elements li = null;
         if (eList.isEmpty()) {
             eList = body.select("ul.dirlist").select(".three").select(".clearfix");
@@ -65,6 +71,9 @@ public class HtmlParse4 extends HtmlParse {
             }
             if (eList.isEmpty()) {
                 eList = body.select("ul.dirlist").select(".clearfix");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.clearfix").select(".dirconone");
             }
             if (eList.isEmpty()) {
                 eList = body.select("ul.list-group").select(".list-charts");
@@ -78,6 +87,9 @@ public class HtmlParse4 extends HtmlParse {
             }
             if (eList.isEmpty()) {
                 eList = body.select("div.book_con_list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.book_list");
             }
             if (eList.isEmpty()) {
                 eList = body.select("ul#chapters-list");
@@ -137,8 +149,8 @@ public class HtmlParse4 extends HtmlParse {
                 }
             }
         }
-        list = sortAndRemoveDuplicate(list);
-        return list;
+        list = sortAndRemoveDuplicate(list, host);
+        return list.size() > 0 ? list : null;
     }
 
     @Override
@@ -195,6 +207,15 @@ public class HtmlParse4 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div.nr_content");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#BookText");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#htmlContent");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.content_txt");
         }
         read.chapter = new Entities.Chapter();
         String text = formatContent(chapterUrl, content);

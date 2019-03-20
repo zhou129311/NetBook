@@ -51,7 +51,8 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
 
     @Override
     public boolean start() {
-        if (mChaptersList == null) {
+        if (mChaptersList == null || mChaptersList.size() <= 0) {
+            mChaptersList = null;
             final int[] progress = AppSettings.getReadProgress(mBook._id);
             mCurChapter = progress[0];
             final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1, null);
@@ -97,6 +98,11 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             AppSettings.saveChapterList(mBook._id, mChaptersList);
                         }
                     }
+                    if (mChaptersList == null || mChaptersList.size() <= 0) {
+                        int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
+                        showError(0, error, null);
+                        return;
+                    }
                     if (mChaptersList != null && mBook.isBookshelf()) {
                         new Thread(new Runnable() {
                             @Override
@@ -114,11 +120,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         }).start();
                     }
                     initChaptersList();
-                    if (mChaptersList == null || mChaptersList.size() <= 0) {
-                        int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
-                        showError(0, error, null);
-                        return;
-                    }
                     loadReadProgress(mCurChapter, progress[1], newItem, false);
                 }
             });
@@ -179,19 +180,21 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         }
         boolean hasCache = FileUtils.hasCacheChapter(mBook._id, mCurChapter);
         Log.i(TAG, "mCurChapter =" + mCurChapter + ",hasCache = " + hasCache);
-        if (FileUtils.hasCacheChapter(mBook._id, mCurChapter)) {
+        if (hasCache) {
             chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();
         } else {
             Entities.ChapterRead chapterRead = null;
             if (mBook.isBaiduBook) {
                 HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
+                Log.i(TAG, "chapters.link = " + chapters.link + ", htmlParse=" + htmlParse);
                 if (htmlParse != null) {
                     chapterRead = htmlParse.parseChapterRead(chapters.link);
                 }
             } else {
                 chapterRead = ZhuiShuSQApi.getChapterRead(chapters.link);
             }
+
             if (chapterRead != null && chapterRead.chapter != null && chapterRead.chapter.body != null) {
                 success = curBuffer.openNetBookChapter(chapterRead.chapter, saveCurChapter);
             }
