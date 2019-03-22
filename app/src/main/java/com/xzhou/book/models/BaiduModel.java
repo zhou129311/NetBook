@@ -75,6 +75,8 @@ public class BaiduModel {
             put("www.xhxswz.com", ParseType.PARSE_TYPE_2);
             put("www.aoyuge.com", ParseType.PARSE_TYPE_2);
             put("www.52dus.com", ParseType.PARSE_TYPE_2);
+            put("www.tianyibook.la", ParseType.PARSE_TYPE_2);
+            put("www.77dushu.com", ParseType.PARSE_TYPE_2);
 
             put("www.fengyunok.com", ParseType.PARSE_TYPE_3);
 
@@ -101,6 +103,7 @@ public class BaiduModel {
             put("www.23wx.cm", ParseType.PARSE_TYPE_4);
             put("www.yanqingshu.com", ParseType.PARSE_TYPE_4);
             put("www.i7wx.com", ParseType.PARSE_TYPE_4);
+            put("www.qianqianxs.com", ParseType.PARSE_TYPE_4);
 //            put("www.daizhuzai.com", ParseType.PARSE_TYPE_4);
 //            put("www.biqige.cc", ParseType.PARSE_TYPE_4);
 //            put("www.38lu.com", ParseType.PARSE_TYPE_4);
@@ -118,6 +121,7 @@ public class BaiduModel {
             put("www.abcxs.com", ParseType.PARSE_TYPE_5);
             put("www.aixiashu.com", ParseType.PARSE_TYPE_5);
             put("www.3zm.la", ParseType.PARSE_TYPE_5);
+            put("www.beidouxin.com", ParseType.PARSE_TYPE_5);
 
             put("www.okdd.net", ParseType.PARSE_TYPE_6);
             put("www.mywenxue.com", ParseType.PARSE_TYPE_6);

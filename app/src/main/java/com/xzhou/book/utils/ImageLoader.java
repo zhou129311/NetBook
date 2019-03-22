@@ -7,6 +7,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
@@ -77,6 +78,14 @@ public class ImageLoader {
             uri = idToUri(placeholder);
         }
         Glide.with(context).load(uri).apply(getOptions(placeholder)).into(imageView);
+    }
+
+    public static void showImageUrl(Context context, ImageView imageView, String uri, RequestListener<Drawable> listener) {
+        Glide.with(context).load(uri).listener(listener).into(imageView);
+    }
+
+    public static void showImageFile(Context context, ImageView imageView, File file, RequestListener<Bitmap> listener) {
+        Glide.with(context).asBitmap().load(file).listener(listener).into(imageView);
     }
 
     public static void showImageUrl(Context context, ImageView imageView, String uri, @DrawableRes int placeholder, @DrawableRes int error) {

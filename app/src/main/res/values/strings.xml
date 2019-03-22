@@ -222,5 +222,6 @@
     <string name="i_know" translatable="false">知道了</string>
 
     <string name="screen_off_time" translatable="false">阅读时屏幕休眠时间</string>
+    <string name="pic_load_fail" translatable="false">图片加载失败，请点击重试</string>
 
 </resources>

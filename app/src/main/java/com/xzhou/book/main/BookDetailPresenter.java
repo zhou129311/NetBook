@@ -78,6 +78,7 @@ public class BookDetailPresenter extends BasePresenter<BookDetailContract.View> 
         ZhuiShuSQApi.getPool().execute(new Runnable() {
             @Override
             public void run() {
+                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mBookDetail), false);
                 BookProvider.LocalBook book = BookManager.get().findById(mBookId);
                 String id = null;
                 if (book != null) {

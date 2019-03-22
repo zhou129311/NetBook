@@ -1,6 +1,7 @@
 package com.xzhou.book.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Environment;
 
 import com.xzhou.book.MyApp;
@@ -23,11 +24,16 @@ public class FileUtils {
     }
 
     public static String getCartoonPicPath(String bookId, int chapter, int page) {
-        return getCartoonDir(bookId, chapter) + File.separator + page + "_picture";
+        return getCartoonDir(bookId, chapter) + File.separator + "picture_" + page;
     }
 
     public static String getCartoonReadPath(String bookId, int chapter) {
         return getCartoonDir(bookId, chapter) + File.separator + chapter + ".json";
+    }
+
+    public static boolean hasPicCacheChapter(String bookId, int chapter) {
+        File file = new File(FileUtils.getCartoonReadPath(bookId, chapter));
+        return file.exists();
     }
 
     public static File getChapterFile(String bookId, int chapter) {
@@ -89,6 +95,19 @@ public class FileUtils {
             fos = new FileOutputStream(filePath, isAppend);
             byte[] bytes = content.getBytes();
             fos.write(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            AppUtils.close(fos);
+        }
+    }
+
+    public static void saveBitmap(Bitmap bitmap, String path) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

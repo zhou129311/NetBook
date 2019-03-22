@@ -19,6 +19,7 @@ import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -348,6 +349,8 @@ public class Entities {
     }
 
     public static class Chapter {
+        public static final Type TYPE = new TypeToken<Chapter>() {
+        }.getType();
         //文字
         public String title;
         public String body;
@@ -362,7 +365,7 @@ public class Entities {
 
         public List<String> getImages() {
             if (TextUtils.isEmpty(images)) {
-                return null;
+                return new ArrayList<>();
             }
             String[] list = images.split(",");
             return Arrays.asList(list);
@@ -370,7 +373,7 @@ public class Entities {
 
         public List<String> getImageScales() {
             if (TextUtils.isEmpty(imageScale)) {
-                return null;
+                return new ArrayList<>();
             }
             String[] list = imageScale.split(",");
             return Arrays.asList(list);

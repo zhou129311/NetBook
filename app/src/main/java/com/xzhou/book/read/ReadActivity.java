@@ -142,7 +142,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             super.handleMessage(msg);
             ReadActivity activity = mOwner.get();
             if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                activity.getWindow().addFlags(~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
     }
@@ -234,12 +234,20 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void initScreenOffTime() {
+        if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_NONE) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (mHandler != null) {
+                mHandler.removeMessages(1);
+                mHandler = null;
+            }
+            return;
+        }
         if (mHandler == null) {
             mHandler = new MyHandler(this);
         }
         mHandler.removeMessages(1);
         if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_SYSTEM) {
-            getWindow().addFlags(~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_5) {
@@ -251,7 +259,12 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     }
 
     private void checkScreenOffTime() {
-        mHandler.removeMessages(1);
+        if (mHandler == null) {
+            return;
+        }
+        if (mHandler.hasMessages(1)) {
+            mHandler.removeMessages(1);
+        }
         if (AppSettings.SCREEN_OFF_MODE == AppSettings.PRE_VALUE_SCREEN_OFF_5) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             mHandler.sendEmptyMessageDelayed(1, 5 * 60 * 1000);
@@ -352,6 +365,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             }
         }
         DownloadManager.get().removeCallback(mBook._id, this);
+        if (mBook != null && !mBook.isBookshelf()) {
+            AppSettings.deleteReadProgress(mBook._id);
+            AppSettings.deleteChapterList(mBook._id);
+        }
     }
 
     @Override

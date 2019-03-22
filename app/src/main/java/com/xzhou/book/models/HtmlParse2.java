@@ -26,7 +26,7 @@ public class HtmlParse2 extends HtmlParse {
 
         Element body = document.body();
         Elements eList = body.select("div#list-chapterAll");
-        Elements dd;
+        Elements dd = null;
         if (eList.isEmpty()) {
             eList = body.select("dl.chapterlist").select(".cate");
         }
@@ -36,7 +36,18 @@ public class HtmlParse2 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("div.fulllistall");
         }
-        dd = eList.select("dd");
+        if (eList.isEmpty()) {
+            eList = body.select("dl.zjlist");
+        }
+        if (eList.isEmpty()) {
+            eList = body.select("dl.panel-body").select(".panel-chapterlist");
+            if (!eList.isEmpty() && eList.size() == 2) {
+                dd = eList.get(0).select("dd");
+            }
+        }
+        if (dd == null || dd.isEmpty()) {
+            dd = eList.select("dd");
+        }
         if (dd.isEmpty()) {
             return null;
         }
@@ -72,6 +83,12 @@ public class HtmlParse2 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div#BookText");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.panel-body");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.page-content");
         }
         String text = formatContent(content);
         if (chapterUrl.contains("milepub")) {

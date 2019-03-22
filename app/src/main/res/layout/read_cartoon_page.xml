@@ -6,9 +6,20 @@
 
     <com.xzhou.book.widget.PhotoView
         android:id="@+id/photo_view"
-        android:src="@mipmap/picture"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/picture"/>
+
+    <TextView
+        android:id="@+id/load_error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:text="@string/pic_load_fail"
+        tools:ignore="ContentDescription"/>
 
     <LinearLayout
         android:id="@+id/cartoon_bottom_view"
@@ -49,10 +60,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:text="WiFi"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:text="WiFi"
-            tools:ignore="RelativeOverlap"
+            tools:ignore="HardcodedText,RelativeOverlap"
             tools:text="WiFi"/>
 
         <TextClock
@@ -67,15 +78,13 @@
 
         <TextView
             android:id="@+id/battery_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="14dp"
             android:layout_marginStart="10dp"
             android:background="@mipmap/icon_battary"
             android:gravity="center"
-            android:paddingBottom="1dp"
             android:paddingEnd="5dp"
             android:paddingStart="3dp"
-            android:paddingTop="1dp"
             android:textColor="@color/black"
             android:textSize="10dp"
             tools:ignore="SpUsage"

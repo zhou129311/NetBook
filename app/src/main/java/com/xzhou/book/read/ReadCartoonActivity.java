@@ -1,13 +1,17 @@
 package com.xzhou.book.read;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +35,7 @@ import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
+import com.xzhou.book.widget.PhotoView;
 
 import java.util.List;
 
@@ -83,10 +88,13 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             return;
         }
         setContentView(R.layout.activity_read_cartoon);
+        mCartoonAblTopMenu.setPadding(0, AppUtils.getStatusBarHeight(), 0, 0);
         hideReadToolBar();
         initViewPager();
         initBrightness();
         registerReceiver(mWifiStateReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+        Intent intent = registerReceiver(mBatteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        updateBattery(intent);
     }
 
     private void initBrightness() {
@@ -128,36 +136,27 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             });
             mPageManagers[i] = new ReadPageManager();
             mPageManagers[i].setReadCartoonPage(page);
-        }
-//        final ReadCartoonPage page = mPageManagers[0].getReadCartoonPage();
-//        page.setTextLayoutListener(new ReadPage.TextLayoutListener() {
-//
-//            @Override
-//            public void onLayout(boolean isFirst) {
-//                if (isFinishing() || isDestroyed()) {
-//                    return;
-//                }
-//                Log.i(TAG, "onLayout::isFirst = " + isFirst);
-////                relayoutPageContent();
-//                if (isFirst) {
-//                    mPresenter.start();
-//                }
-//            }
-//        });
-        mCartoonViewPager.setPageManagers(mPageManagers);
-//        mCartoonViewPager.setSwipeLayout(mSwipeLayout);
-        mCartoonViewPager.setOffscreenPageLimit(3);
-        mCartoonViewPager.setOnClickChangePageListener(new ReadViewPager.OnClickChangePageListener() {
-            @Override
-            public void onPrevious() {
-                previousPage();
-            }
+            page.setOnClickChangePageListener(new PhotoView.OnClickChangePageListener() {
+                @Override
+                public void onCenter() {
+                    if (!hideReadToolBar()) {
+                        showReadToolBar();
+                    }
+                }
 
-            @Override
-            public void onNext() {
-                nextPage();
-            }
-        });
+                @Override
+                public void onPrevious() {
+                    previousPage();
+                }
+
+                @Override
+                public void onNext() {
+                    nextPage();
+                }
+            });
+        }
+        mCartoonViewPager.setPageManagers(mPageManagers);
+        mCartoonViewPager.setOffscreenPageLimit(3);
         mCartoonViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -182,20 +181,69 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
     }
 
     private void changePage() {
-
+        if (mCurPosition == mPrePosition) {
+            return;
+        }
+        if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
+//            checkScreenOffTime();
+            ReadCartoonPage readPage = mPageManagers[mCurPosition].getReadCartoonPage();
+            CartoonContent pageContent = readPage.getContent();
+            readPage.checkLoading();
+            Log.d(TAG, "changePage:: cur pageContent = " + pageContent);
+            hideReadToolBar();
+            if (mCurPosition > mPrePosition) {
+                mPresenter.loadNextPage(mCurPosition, pageContent);
+            } else if (mCurPosition < mPrePosition) {
+                mPresenter.loadPreviousPage(mCurPosition, pageContent);
+            }
+            mCartoonViewPager.setCanTouch(false);
+        }
     }
 
     private void nextPage() {
-
+        if (hideReadToolBar()) {
+            return;
+        }
+        int curPos = mCartoonViewPager.getCurrentItem();
+        if (curPos >= 2) {
+            return;
+        }
+        ReadCartoonPage page = mPageManagers[curPos].getReadCartoonPage();
+        if (page.isPageEnd()) {
+            return;
+        }
+        mCartoonViewPager.setCurrentItem(curPos + 1, false);
+        mCurPosition = curPos + 1;
+        changePage();
     }
 
     private void previousPage() {
-
+        if (hideReadToolBar()) {
+            return;
+        }
+        int curPos = mCartoonViewPager.getCurrentItem();
+        if (curPos <= 0) {
+            if (mPageManagers[0].getReadCartoonPage().isPageStart()) {
+                ToastUtils.showShortToast("已经是第一页了");
+            }
+            return;
+        }
+        mCartoonViewPager.setCurrentItem(curPos - 1, false);
+        mCurPosition = curPos - 1;
+        changePage();
     }
 
     @Override
     protected CartoonContract.Presenter createPresenter() {
         return new CartoonPresenter(this, mBook);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (AppSettings.HAS_FULL_SCREEN_MODE && mReadBottomBar.getVisibility() != View.VISIBLE) {
+            hideSystemBar();
+        }
     }
 
     @Override
@@ -208,6 +256,7 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
     public void finish() {
         super.finish();
         unregisterReceiver(mWifiStateReceiver);
+        unregisterReceiver(mBatteryReceiver);
     }
 
     @Override
@@ -217,15 +266,10 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
         mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.previous_chapter_tv, R.id.next_chapter_tv, R.id.cartoon_view_pager,
+    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.previous_chapter_tv, R.id.next_chapter_tv,
             R.id.previous_page_tv, R.id.next_page_tv, R.id.toc_view, R.id.light_view, R.id.download_view, R.id.more_setting_view })
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.cartoon_view_pager:
-            if (!hideReadToolBar()) {
-                showReadToolBar();
-            }
-            break;
         case R.id.brightness_min: {
             int curProgress = mBrightnessSeekBar.getProgress();
             if (mBrightnessSeekBar.isEnabled() && curProgress > 0) {
@@ -240,16 +284,30 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             }
             break;
         case R.id.previous_chapter_tv:
-
+            if (mChaptersList == null || mChaptersList.size() < 1) {
+                return;
+            }
+            if (mCurChapter < 1) {
+                mPresenter.loadChapter(mCartoonViewPager.getCurrentItem(), mCurChapter - 1);
+            } else {
+                ToastUtils.showShortToast("已经是第一章了");
+            }
             break;
         case R.id.next_chapter_tv:
-
+            if (mChaptersList == null || mChaptersList.size() < 1) {
+                return;
+            }
+            if (mCurChapter >= mChaptersList.size() - 1) {
+                mPresenter.loadChapter(mCartoonViewPager.getCurrentItem(), mCurChapter + 1);
+            } else {
+                ToastUtils.showShortToast("已经是最后一章了");
+            }
             break;
         case R.id.previous_page_tv:
-
+            previousPage();
             break;
         case R.id.next_page_tv:
-
+            nextPage();
             break;
         case R.id.toc_view:
             if (mChaptersList == null || mChaptersList.size() < 1) {
@@ -363,7 +421,24 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
 //        }
     }
 
+    private void updateBattery(Intent intent) {
+        if (intent != null) {
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            int curBattery = (int) (((float) level / (float) scale) * 100f);
+            for (ReadPageManager page : mPageManagers) {
+                page.getReadCartoonPage().setBattery(curBattery);
+            }
+        }
+    }
+
     private void updateWiFiState() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.ACCESS_WIFI_STATE }, 0);
+                return;
+            }
+        }
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         boolean state = wifiInfo != null;
@@ -429,4 +504,11 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             return view;
         }
     }
+
+    private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateBattery(intent);
+        }
+    };
 }

@@ -153,7 +153,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         boolean success = false;
         ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
         if (curBuffer == null) {
-            curBuffer = new ChapterBufferTxt(mBook._id, mCurChapter);
+            curBuffer = new ChapterBuffer(mBook._id, mCurChapter);
         }
         //加入书架才可以边看边存
         boolean saveCurChapter = false;
@@ -677,11 +677,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     private void updatePages(final PageContent[] pageContents) {
-//        int i = 0;
-//        for (PageContent pageContent : pageContents) {
-//            Log.i(TAG, "updatePages " + i + "::" + pageContent);
-//            i++;
-//        }
         MyApp.runUI(new Runnable() {
             @Override
             public void run() {

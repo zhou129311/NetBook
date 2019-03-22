@@ -13,8 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ChapterBuffer {
-    String TAG = "ChapterBuffer";
+public class ChapterBuffer {
+    private static final String TAG = "ChapterBuffer";
     private byte[] mBuffer;
     private long mBufferLen;
     private String mBookId;

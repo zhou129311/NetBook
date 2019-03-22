@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
 import com.xzhou.book.utils.AppSettings;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.SwipeLayout;
 
 public class ReadViewPager extends ViewPager {

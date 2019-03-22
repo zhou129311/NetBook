@@ -27,6 +27,8 @@ public class ReadCartoonPage extends RelativeLayout {
     TextView mWifiView;
     @BindView(R.id.battery_view)
     TextView mBatteryView;
+    @BindView(R.id.load_error_view)
+    TextView mErrorView;
 
     private ReadLoadView mLoadingView;
     private ValueAnimator mLoadAnimator;
@@ -44,14 +46,6 @@ public class ReadCartoonPage extends RelativeLayout {
     public ReadCartoonPage(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
-        mPhotoView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mContent != null && mContent.bitmap == null && mReloadListener != null) {
-                    mReloadListener.onReload();
-                }
-            }
-        });
     }
 
     public void setOnReloadListener(OnReloadListener listener) {
@@ -62,27 +56,83 @@ public class ReadCartoonPage extends RelativeLayout {
         return mContent;
     }
 
+    public void setOnClickChangePageListener(PhotoView.OnClickChangePageListener listener){
+        mPhotoView.setOnClickChangePageListener(listener);
+    }
+
     private void initView(Context context) {
         View view = View.inflate(context, R.layout.read_cartoon_page, this);
         ButterKnife.bind(this, view);
         mLoadingView = new ReadLoadView(context);
+        mPhotoView.setEnableScale(true);
+        mErrorView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mReloadListener != null) {
+                    mReloadListener.onReload();
+                }
+            }
+        });
+    }
+
+    public void checkLoading() {
+        if (mContent == null || mContent.bitmap == null) {
+            setLoadState(true);
+        }
+    }
+
+    public boolean isPageEnd() {
+        return mContent != null && mContent.isEnd;
+    }
+
+    public boolean isPageStart() {
+        return mContent != null && mContent.isStart;
+    }
+
+    public void reset() {
+        mContent = null;
+        mPageTitle.setText("");
+        mPageNumber.setText("");
+        mPhotoView.setImageResource(R.mipmap.picture);
+        setLoadState(false);
+        setErrorView(false);
     }
 
     public void setPageContent(CartoonContent content) {
         mContent = content;
+        if (mContent == null) {
+            reset();
+            return;
+        }
+        setLoadState(content.isLoading);
+        setErrorView(content.error != ReadPresenter.Error.NONE);
         if (content.bitmap != null && !content.bitmap.isRecycled()) {
             mPhotoView.setImageBitmap(content.bitmap);
         }
+        mPhotoView.setMaxScale(content.maxScale);
         mPageTitle.setText(content.title);
         mPageNumber.setText((content.curPage + 1) + "/" + content.totalPage);
-        setLoadState(content.isLoading);
         if (content.isShow) {
             AppSettings.saveReadProgress(content.bookId, content.chapter, content.curPage);
         }
     }
 
+    public void setBattery(int curBattery) {
+        mBatteryView.setText(String.valueOf(curBattery));
+    }
+
     public void updateWiFiState(boolean state) {
         mWifiView.setVisibility(state ? VISIBLE : GONE);
+    }
+
+    public void setErrorView(boolean visible) {
+        if (visible) {
+            setLoadState(false);
+            mPhotoView.setImageResource(R.mipmap.picture);
+            mErrorView.setVisibility(VISIBLE);
+        } else {
+            mErrorView.setVisibility(GONE);
+        }
     }
 
     public void setLoadState(boolean isLoading) {

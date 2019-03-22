@@ -155,11 +155,10 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_download && mDetail != null) {
-            if (!mPresenter.download()) {
-                ToastUtils.showShortToast("正在缓存中...");
-            } else {
-                BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail), false);
+            if (mPresenter.download()) {
                 updateJoinBtn(true);
+            } else {
+                ToastUtils.showShortToast("正在缓存中...");
             }
             return true;
         }

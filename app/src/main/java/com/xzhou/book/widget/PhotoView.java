@@ -80,6 +80,8 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
     private PointF mScaleCenter = new PointF();
     private PointF mRotateCenter = new PointF();
 
+    private RectF mCenterRect = new RectF();
+
     private Transform mTranslate = new Transform();
 
     private RectF mClip;
@@ -88,6 +90,21 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
     private Runnable mCompleteCallBack;
 
     private OnLongClickListener mLongClick;
+
+    private OnClickChangePageListener mClickChangePageListener;
+
+    public interface OnClickChangePageListener {
+
+        void onCenter();
+
+        void onPrevious();
+
+        void onNext();
+    }
+
+    public void setOnClickChangePageListener(OnClickChangePageListener listener) {
+        mClickChangePageListener = listener;
+    }
 
     public PhotoView(Context context) {
         super(context);
@@ -122,9 +139,10 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
 
     /**
      * 这个在全屏显示的PhotoView初始化时需要设置为false，否则图片会移位
+     *
      * @param isChangeSizeInit 是否在PhotoView大小改变时候初始化参数
      */
-    public void setChangeSizeInit(boolean isChangeSizeInit){
+    public void setChangeSizeInit(boolean isChangeSizeInit) {
         this.isChangeSizeInit = isChangeSizeInit;
     }
 
@@ -543,9 +561,14 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
 //        Log.i(TAG,"onSizeChanged w = " + w + ",h = " + h);
         mWidgetRect.set(0, 0, w, h);
         mScreenCenter.set(w / 2, h / 2);
+        float left = getMeasuredWidth() / 4f;
+        float right = left * 3;
+        float top = getMeasuredHeight() / 4f;
+        float bottom = top * 3;
+        mCenterRect.set(left, top, right, bottom);
         if (!isKnowSize) {
             isKnowSize = true;
-            if(isChangeSizeInit) {
+            if (isChangeSizeInit) {
                 initBase();
             }
         }
@@ -753,6 +776,7 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
         public void run() {
             if (mClickListener != null) {
                 mClickListener.onClick(PhotoView.this);
+
             }
         }
     };
@@ -872,6 +896,17 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             postDelayed(mClickRunnable, 250);
+            float upX = e.getRawX();
+            float upY = e.getRawY();
+            if (mClickChangePageListener != null) {
+                if (mCenterRect.contains(upX, upY)) {
+                    mClickChangePageListener.onCenter();
+                } else if (upX < mCenterRect.right && (upY < mCenterRect.bottom || upX < mCenterRect.left)) {
+                    mClickChangePageListener.onPrevious();
+                } else {
+                    mClickChangePageListener.onNext();
+                }
+            }
             return false;
         }
 
@@ -1178,7 +1213,6 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
             mAnimaMatrix.postTranslate(mTranslateX, mTranslateY);
             executeTranslate();
         }
-
 
         private void postExecute() {
             if (isRuning) post(this);
