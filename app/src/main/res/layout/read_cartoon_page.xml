@@ -8,15 +8,16 @@
         android:id="@+id/photo_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:src="@mipmap/picture"/>
+        android:scaleType="fitCenter"/>
 
     <TextView
         android:id="@+id/load_error_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
+        android:drawablePadding="10dp"
         android:textColor="@color/white"
+        android:drawableTop="@mipmap/picture"
         android:textSize="16sp"
         android:text="@string/pic_load_fail"
         tools:ignore="ContentDescription"/>

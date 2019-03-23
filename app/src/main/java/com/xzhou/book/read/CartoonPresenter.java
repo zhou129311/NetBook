@@ -309,7 +309,7 @@ public class CartoonPresenter extends BasePresenter<CartoonContract.View> implem
         int nextChapter = chapter + 1;
         if (!hasEndChapter(chapter)) {
             nextChapters = mChaptersList.get(nextChapter);
-            nextBuffer = mCacheChapterBuffers.get(String.valueOf(mCurChapter));
+            nextBuffer = mCacheChapterBuffers.get(String.valueOf(nextChapter));
         }
 
         if (chapter == 0 && curPage == 0) { //第一章且第一页

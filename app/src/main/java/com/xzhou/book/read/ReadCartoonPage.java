@@ -56,7 +56,7 @@ public class ReadCartoonPage extends RelativeLayout {
         return mContent;
     }
 
-    public void setOnClickChangePageListener(PhotoView.OnClickChangePageListener listener){
+    public void setOnClickChangePageListener(PhotoView.OnClickChangePageListener listener) {
         mPhotoView.setOnClickChangePageListener(listener);
     }
 
@@ -93,7 +93,7 @@ public class ReadCartoonPage extends RelativeLayout {
         mContent = null;
         mPageTitle.setText("");
         mPageNumber.setText("");
-        mPhotoView.setImageResource(R.mipmap.picture);
+        mPhotoView.setVisibility(GONE);
         setLoadState(false);
         setErrorView(false);
     }
@@ -128,7 +128,7 @@ public class ReadCartoonPage extends RelativeLayout {
     public void setErrorView(boolean visible) {
         if (visible) {
             setLoadState(false);
-            mPhotoView.setImageResource(R.mipmap.picture);
+            mPhotoView.setVisibility(GONE);
             mErrorView.setVisibility(VISIBLE);
         } else {
             mErrorView.setVisibility(GONE);
@@ -137,6 +137,7 @@ public class ReadCartoonPage extends RelativeLayout {
 
     public void setLoadState(boolean isLoading) {
         if (isLoading) {
+            mPhotoView.setVisibility(GONE);
             mLoadingView.setProgress(0);
             if (indexOfChild(mLoadingView) == -1) {
                 int radius = AppUtils.dip2px(45);
@@ -172,6 +173,7 @@ public class ReadCartoonPage extends RelativeLayout {
                 mLoadAnimator.start();
             }
         } else {
+            mPhotoView.setVisibility(VISIBLE);
             if (mLoadAnimator != null) {
                 mLoadAnimator.removeAllUpdateListeners();
                 mLoadAnimator.cancel();

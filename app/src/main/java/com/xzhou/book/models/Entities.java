@@ -378,6 +378,16 @@ public class Entities {
             String[] list = imageScale.split(",");
             return Arrays.asList(list);
         }
+
+        @Override
+        public String toString() {
+            return "Chapter{" +
+                    "title='" + title + '\'' +
+                    ", id='" + id + '\'' +
+                    ", images='" + images + '\'' +
+                    ", imageScale='" + imageScale + '\'' +
+                    '}';
+        }
     }
 
     public static class HotWord {

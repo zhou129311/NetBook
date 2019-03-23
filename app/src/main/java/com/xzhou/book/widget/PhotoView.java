@@ -907,7 +907,7 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
                     mClickChangePageListener.onNext();
                 }
             }
-            return false;
+            return true;
         }
 
         @Override
@@ -950,7 +950,7 @@ public class PhotoView extends android.support.v7.widget.AppCompatImageView {
             mTranslate.withScale(from, to);
             mTranslate.start();
 
-            return false;
+            return true;
         }
     };
 

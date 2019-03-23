@@ -630,7 +630,6 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             } else if (mCurPosition < mPrePosition) {
                 mPresenter.loadPreviousPage(mCurPosition, pageContent);
             }
-            mReadViewPager.setCanTouch(false);
         }
     }
 

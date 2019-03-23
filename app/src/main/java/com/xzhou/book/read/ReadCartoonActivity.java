@@ -196,7 +196,6 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             } else if (mCurPosition < mPrePosition) {
                 mPresenter.loadPreviousPage(mCurPosition, pageContent);
             }
-            mCartoonViewPager.setCanTouch(false);
         }
     }
 
@@ -266,8 +265,8 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
         mToolbar.setBackgroundColor(getResources().getColor(R.color.reader_menu_bg_color));
     }
 
-    @OnClick({ R.id.brightness_min, R.id.brightness_max, R.id.previous_chapter_tv, R.id.next_chapter_tv,
-            R.id.previous_page_tv, R.id.next_page_tv, R.id.toc_view, R.id.light_view, R.id.download_view, R.id.more_setting_view })
+    @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.previous_chapter_tv, R.id.next_chapter_tv,
+            R.id.previous_page_tv, R.id.next_page_tv, R.id.toc_view, R.id.light_view, R.id.download_view, R.id.more_setting_view})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.brightness_min: {
@@ -328,7 +327,11 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
             fragmentDialog.show(getSupportFragmentManager(), "TocDialog");
             break;
         case R.id.light_view:
-
+            if (mReadLightBar.getVisibility() == View.VISIBLE) {
+                mReadLightBar.setVisibility(View.GONE);
+            } else {
+                mReadLightBar.setVisibility(View.VISIBLE);
+            }
             break;
         case R.id.download_view:
             CartoonDownloadActivity.startActivity(this, mBook);
@@ -350,8 +353,8 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
 
     @Override
     public void onUpdatePages(CartoonContent[] pageContent) {
+        mCartoonViewPager.setCanTouch(false);
         if (pageContent != null && pageContent.length == 3) {
-            mCartoonViewPager.setCanTouch(false);
             for (int i = 0; i < 3; i++) {
                 mPageManagers[i].getReadCartoonPage().setPageContent(pageContent[i]);
                 Log.d(TAG, "onUpdatePages:: pageContent[" + i + "] = " + pageContent[i]);
@@ -365,8 +368,7 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
                 }
             }
         } else {
-//            mPageManagers[mCartoonViewPager.getCurrentItem()].getReadPage().setErrorView(true);
-            mCartoonViewPager.setCanTouch(false);
+            mPageManagers[mCartoonViewPager.getCurrentItem()].getReadPage().setErrorView(true);
         }
     }
 
@@ -435,7 +437,7 @@ public class ReadCartoonActivity extends BaseActivity<CartoonContract.Presenter>
     private void updateWiFiState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[] { Manifest.permission.ACCESS_WIFI_STATE }, 0);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_WIFI_STATE}, 0);
                 return;
             }
         }

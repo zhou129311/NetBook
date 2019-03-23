@@ -42,6 +42,7 @@ public class ChapterBufferImage {
             raf.read(bytes);
             String json = new String(bytes);
             mReadChapter = new Gson().fromJson(json, Entities.Chapter.TYPE);
+            Log.i(TAG, "openCacheBookChapter:" + mReadChapter);
             if (mReadChapter != null) {
                 mUrls = mReadChapter.getImages();
                 mScales = mReadChapter.getImageScales();
@@ -67,6 +68,7 @@ public class ChapterBufferImage {
     }
 
     public boolean openNetBookChapter(Entities.Chapter data, boolean hasSave) {
+        Log.i(TAG, "openNetBookChapter:" + data);
         mReadChapter = data;
         mUrls = mReadChapter.getImages();
         mScales = mReadChapter.getImageScales();
@@ -109,6 +111,7 @@ public class ChapterBufferImage {
 
     public String getUrl(int pos) {
         if (mUrls == null || pos < 0 || pos > mUrls.size()) {
+            Log.i(TAG, "mUrls = " + mUrls + ",pos= " + pos);
             return null;
         }
         return mUrls.get(pos);
@@ -135,7 +138,7 @@ public class ChapterBufferImage {
         return mUrls.size();
     }
 
-    public int getChapter(){
+    public int getChapter() {
         return mChapter;
     }
 
