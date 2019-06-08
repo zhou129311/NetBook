@@ -8,11 +8,11 @@ import android.util.LruCache;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 public class ReadPresenter extends BasePresenter<ReadContract.View> implements ReadContract.Presenter {
     private static final String TAG = "ReadPresenter";
 
-    @IntDef({ Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE })
+    @IntDef({Error.NO_NETWORK, Error.CONNECTION_FAIL, Error.NO_CONTENT, Error.NONE})
     public @interface Error {
         int NONE = 0;
         int NO_NETWORK = 1;
@@ -166,11 +166,11 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 break;
             case AppSettings.PRE_VALUE_READ_CACHE_5:
                 saveCurChapter = true;
-                download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList);
+                download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
                 break;
             case AppSettings.PRE_VALUE_READ_CACHE_10:
                 saveCurChapter = true;
-                download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList);
+                download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
                 break;
             }
             if (download != null) {
@@ -179,7 +179,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             }
         }
         boolean hasCache = FileUtils.hasCacheChapter(mBook._id, mCurChapter);
-        Log.i(TAG, "mCurChapter =" + mCurChapter + ",hasCache = " + hasCache);
+        Log.i(TAG, "mBook._id =" + mBook._id + ",mCurChapter =" + mCurChapter + ",hasCache = " + hasCache);
         if (hasCache) {
             chapters.hasLocal = true;
             success = curBuffer.openCacheBookChapter();

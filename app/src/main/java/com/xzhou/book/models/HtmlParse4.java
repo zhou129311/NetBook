@@ -157,7 +157,20 @@ public class HtmlParse4 extends HtmlParse {
     public Entities.ChapterRead parseChapterRead(String chapterUrl, Document document) {
         Entities.ChapterRead read = new Entities.ChapterRead();
         logi("parseChapterRead::chapterUrl=" + chapterUrl);
+        Document document2 = null;
+        if (chapterUrl.contains("www.xqianqian.com")) {
+            chapterUrl = chapterUrl.replace(".html", "_2.html");
+            try {
+                document2 = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(5000).get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         Element body = document.body();
+        Element body2 = null;
+        if (document2 != null) {
+            body2 = document2.body();
+        }
 //        Elements transcode = body.select("div.title");
 //        if (!transcode.isEmpty()) {
 //            Elements info = transcode.select("div.info");
@@ -166,6 +179,7 @@ public class HtmlParse4 extends HtmlParse {
 //            }
 //        }
         Elements content = body.select("div#book_text");
+        Elements content2 = null;
         if (content.isEmpty()) {
             content = body.select("div.bookreadercontent");
         }
@@ -174,6 +188,9 @@ public class HtmlParse4 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div.panel-body").select(".content-body").select(".content-ext");
+            if (!content.isEmpty() && body2 != null) {
+                content2 = body2.select("div.panel-body").select(".content-body").select(".content-ext");
+            }
         }
         if (content.isEmpty()) {
             content = body.select("div#content-txt");
@@ -219,7 +236,9 @@ public class HtmlParse4 extends HtmlParse {
         }
         read.chapter = new Entities.Chapter();
         String text = formatContent(chapterUrl, content);
+        String text2 = formatContent(chapterUrl, content2);
         text = replaceCommon(text);
+        text2 = replaceCommon(text2);
         if (chapterUrl.contains("www.35xs.com")) {
             text = text.replace("\n", "");
             text = text.replace("<p>", "");
@@ -230,8 +249,8 @@ public class HtmlParse4 extends HtmlParse {
             text = text.replace("35xs", "");
             text = text.replace("闪舞小说网", "");
         }
-        read.chapter.body = text;
-        logi("end ,text=" + text);
+        read.chapter.body = text + text2;
+        logi("end ,text=" + text + text2);
         return read;
     }
 }

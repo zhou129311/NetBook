@@ -2,10 +2,10 @@ package com.xzhou.book;
 
 import android.text.TextUtils;
 
-import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -28,7 +28,7 @@ public class DownloadManager {
     public static final int CHAPTER_LATER_ALL = 1;
     public static final int CHAPTER_ALL = 2;
 
-    public static final String[] DOWNLOAD_ITEMS = new String[] {
+    public static final String[] DOWNLOAD_ITEMS = new String[]{
             "后面五十章", "后面全部", "全部"
     };
 
@@ -81,9 +81,10 @@ public class DownloadManager {
         return download;
     }
 
-    public static Download createReadCacheDownload(int curChapter, int size, List<Entities.Chapters> list) {
+    public static Download createReadCacheDownload(int curChapter, int size, List<Entities.Chapters> list, String host) {
         Download download = new Download();
         download.list = list;
+        download.host = host;
         download.start = curChapter;
         download.end = download.start + size + 1;
         if (download.end > list.size()) {

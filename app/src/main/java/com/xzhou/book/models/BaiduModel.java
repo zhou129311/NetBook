@@ -104,6 +104,7 @@ public class BaiduModel {
             put("www.yanqingshu.com", ParseType.PARSE_TYPE_4);
             put("www.i7wx.com", ParseType.PARSE_TYPE_4);
             put("www.qianqianxs.com", ParseType.PARSE_TYPE_4);
+            put("www.xqianqian.com", ParseType.PARSE_TYPE_4);
 //            put("www.daizhuzai.com", ParseType.PARSE_TYPE_4);
 //            put("www.biqige.cc", ParseType.PARSE_TYPE_4);
 //            put("www.38lu.com", ParseType.PARSE_TYPE_4);

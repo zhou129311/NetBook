@@ -116,6 +116,9 @@ public abstract class HtmlParse {
     }
 
     protected String formatContent(String chapterUrl, Elements content) {
+        if (content == null || content.isEmpty()) {
+            return "";
+        }
         if (!chapterUrl.contains("www.35xs.com")
                 && !chapterUrl.contains("www.f96.la")) {
             removeContentTag(content);
@@ -188,7 +191,7 @@ public abstract class HtmlParse {
             });
 
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[] { new X509TrustManager() {
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 @SuppressLint("TrustAllX509TrustManager")
                 public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
@@ -200,7 +203,7 @@ public abstract class HtmlParse {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            } }, new SecureRandom());
+            }}, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             // e.printStackTrace();
