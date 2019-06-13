@@ -53,7 +53,7 @@ public class ResultFragment extends BaseFragment {
         }
         mTabData = new Entities.TabData();
         mTabData.source = Constant.TabSource.SOURCE_SEARCH;
-        mTabData.params = new String[] { mKey };
+        mTabData.params = new String[]{mKey};
         initChildFragment();
     }
 
@@ -64,7 +64,10 @@ public class ResultFragment extends BaseFragment {
         }
         mTabData.params[0] = mKey;
         if (!TextUtils.isEmpty(key)) {
-            mPresenterList.get(mViewPager.getCurrentItem()).refresh();
+            TabContract.Presenter p = mPresenterList.get(mViewPager.getCurrentItem());
+            if (p != null) {
+                p.refresh();
+            }
             for (int i = 0, size = mPresenterList.size(); i < size; i++) {
                 TabContract.Presenter presenter = mPresenterList.valueAt(i);
                 if (presenter != null) {
@@ -84,14 +87,12 @@ public class ResultFragment extends BaseFragment {
         List<String> tabNames = Arrays.asList(getResources().getStringArray(R.array.search_result_tabs));
 
         List<Fragment> fragmentList = getChildFragmentManager().getFragments();
-        if (fragmentList != null) {
-            for (int i = 0, size = fragmentList.size(); i < size; i++) {
-                Fragment fragment = fragmentList.get(i);
-                if (fragment instanceof TabFragment) {
-                    TabFragment f = (TabFragment) fragment;
-                    mFragments.put(f.getTabId(), f);
-                    mPresenterList.put(f.getTabId(), new TabPresenter(f, mTabData, f.getTabId()));
-                }
+        for (int i = 0, size = fragmentList.size(); i < size; i++) {
+            Fragment fragment = fragmentList.get(i);
+            if (fragment instanceof TabFragment) {
+                TabFragment f = (TabFragment) fragment;
+                mFragments.put(f.getTabId(), f);
+                mPresenterList.put(f.getTabId(), new TabPresenter(f, mTabData, f.getTabId()));
             }
         }
         for (int i = 0, size = tabNames.size(); i < size; i++) {

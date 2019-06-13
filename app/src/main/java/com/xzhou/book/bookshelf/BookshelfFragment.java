@@ -143,9 +143,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     @Override
     public void onBookshelfUpdated(boolean update, String error) {
-        String toast = getString(update ? R.string.update_success : R.string.update_none);
-        if (error != null) {
+        String toast;
+        if (!TextUtils.isEmpty(error)) {
             toast = error;
+        } else {
+            toast = getString(update ? R.string.update_success : R.string.update_none);
         }
         ToastUtils.showShortToast(toast);
     }
@@ -196,25 +198,25 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 //        }
     }
 
-    @OnClick({ R.id.select_all_tv, R.id.delete_tv })
+    @OnClick({R.id.select_all_tv, R.id.delete_tv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.select_all_tv:
-            String text = mSelectAllTv.getText().toString();
-            if (text.equals(getString(R.string.select_all))) {
-                changeSelectedAll(true);
-            } else {
-                changeSelectedAll(false);
-            }
-            break;
-        case R.id.delete_tv:
-            List<String> list = getCheckedList();
-            if (list.size() < 1) {
-                ToastUtils.showShortToast(R.string.has_not_selected_delete_book);
-            } else {
-                showDeleteDialog(list);
-            }
-            break;
+            case R.id.select_all_tv:
+                String text = mSelectAllTv.getText().toString();
+                if (text.equals(getString(R.string.select_all))) {
+                    changeSelectedAll(true);
+                } else {
+                    changeSelectedAll(false);
+                }
+                break;
+            case R.id.delete_tv:
+                List<String> list = getCheckedList();
+                if (list.size() < 1) {
+                    ToastUtils.showShortToast(R.string.has_not_selected_delete_book);
+                } else {
+                    showDeleteDialog(list);
+                }
+                break;
         }
     }
 
@@ -307,11 +309,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     private class Adapter extends BaseQuickAdapter<BookProvider.LocalBook, CommonViewHolder> {
 
-        private final String[] DIALOG_ITEM_UPTOP = new String[] {
+        private final String[] DIALOG_ITEM_UPTOP = new String[]{
                 "置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 
-        private final String[] DIALOG_ITEM_TOP = new String[] {
+        private final String[] DIALOG_ITEM_TOP = new String[]{
                 "取消置顶", "书籍详情", "缓存全本", "删除", "批量管理"
         };
 
@@ -373,32 +375,32 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             switch (which) {
-                            case 0:
-                                item.hasTop = !item.hasTop;
-                                BookProvider.updateHasTop(item);
-                                break;
-                            case 1:
-                                if (item.isBaiduBook) {
-                                    ReadWebActivity.startActivity(getContext(), item);
-                                    return;
-                                }
-                                BookDetailActivity.startActivity(mContext, item._id);
-                                break;
-                            case 2:
-                                if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
-                                    ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
-                                    return;
-                                }
-                                mPresenter.download(item);
-                                break;
-                            case 3:
-                                List<String> list = new ArrayList<>();
-                                list.add(item._id);
-                                showDeleteDialog(list);
-                                break;
-                            case 4:
-                                changeEditMode(true);
-                                break;
+                                case 0:
+                                    item.hasTop = !item.hasTop;
+                                    BookProvider.updateHasTop(item);
+                                    break;
+                                case 1:
+                                    if (item.isBaiduBook) {
+                                        ReadWebActivity.startActivity(getContext(), item);
+                                        return;
+                                    }
+                                    BookDetailActivity.startActivity(mContext, item._id);
+                                    break;
+                                case 2:
+                                    if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
+                                        ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
+                                        return;
+                                    }
+                                    mPresenter.download(item);
+                                    break;
+                                case 3:
+                                    List<String> list = new ArrayList<>();
+                                    list.add(item._id);
+                                    showDeleteDialog(list);
+                                    break;
+                                case 4:
+                                    changeEditMode(true);
+                                    break;
                             }
                         }
                     }).show();

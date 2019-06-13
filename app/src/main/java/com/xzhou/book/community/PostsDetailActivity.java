@@ -154,7 +154,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
     @Override
     protected void initToolBar() {
         super.initToolBar();
-        String title = getString(R.string.discussion_detail_title);
+        String title;
         switch (mType) {
         case TYPE_HELP:
             title = getString(R.string.help_detail_title);
@@ -164,6 +164,9 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             break;
         case TYPE_GIRL:
             title = getString(R.string.girl_detail_title);
+            break;
+        default:
+            title = getString(R.string.discussion_detail_title);
             break;
         }
         mToolbar.setTitle(title);
@@ -400,6 +403,7 @@ public class PostsDetailActivity extends BaseActivity<PostsDetailContract.Presen
             String regex3 = "\\{\\{(.*?)\\}\\}";
             Pattern p3 = Pattern.compile(regex2);
             Matcher m3 = p2.matcher(content);
+            //图片解析
 
             replaceGroups.addAll(0, groups1);
             return RichTextUtils.getColorString(content, replaceGroups, AppUtils.getColor(R.color.orange), listenerMap);

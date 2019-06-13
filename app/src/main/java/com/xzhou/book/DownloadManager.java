@@ -45,7 +45,7 @@ public class DownloadManager {
         public boolean isPause;
         public boolean isNotify = true;
 
-        public boolean isValid() {
+        public boolean valid() {
             return list != null && list.size() >= end && end > start && start >= 0;
         }
     }
@@ -122,7 +122,7 @@ public class DownloadManager {
         mPool.execute(new Runnable() {
             @Override
             public void run() {
-                if (download.isValid() && !download.isPause) {
+                if (download.valid() && !download.isPause) {
                     int error = ERROR_NONE;
                     int fail = 0;
                     int exist = 0;

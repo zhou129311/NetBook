@@ -61,8 +61,6 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
             "45分钟",
     };
 
-    private SimpleDateFormat mDateFormat = new SimpleDateFormat("HH小时mm分钟ss秒", Locale.getDefault());
-
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
         context.startActivity(intent);
@@ -71,12 +69,11 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+0"));
         setContentView(R.layout.activity_settings);
         mBookSortView.setValue(mSortItems[AppSettings.BOOK_ORDER]);
         mBookReadDlView.setValue(mCacheItems[AppSettings.READ_CACHE_MODE]);
         mSavingTrafficCb.setChecked(AppSettings.HAS_SAVING_TRAFFIC);
-        mReadTimeView.setValue(mDateFormat.format(AppSettings.getTotalReadTime()));
+        mReadTimeView.setValue(AppUtils.formatMillTimeToHHmm(AppSettings.getTotalReadTime()));
         mSleepTimeView.setValue(mSleepItems[getSleepCheckItem()]);
     }
 

@@ -61,9 +61,9 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = title;
         data.source = Constant.TabSource.SOURCE_COMMUNITY;
-        data.filtrate = new String[] { AppUtils.getString(R.string.sort_default),
-                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count) };
-        data.params = new String[] { bookId };
+        data.filtrate = new String[]{AppUtils.getString(R.string.sort_default),
+                AppUtils.getString(R.string.sort_created), AppUtils.getString(R.string.sort_comment_count)};
+        data.params = new String[]{bookId};
         TabActivity.startActivity(context, data, tabId);
     }
 
@@ -71,7 +71,7 @@ public class AppUtils {
         Entities.TabData data = new Entities.TabData();
         data.title = context.getString(R.string.book_detail_recommend_book_list);
         data.source = Constant.TabSource.SOURCE_RECOMMEND;
-        data.params = new String[] { bookId };
+        data.params = new String[]{bookId};
         TabActivity.startActivity(context, data);
     }
 
@@ -385,7 +385,7 @@ public class AppUtils {
 
     public static String escapeExprSpecialWord(String keyword) {
         if (!TextUtils.isEmpty(keyword)) {
-            String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
+            String[] fbsArr = {"\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"};
             for (String key : fbsArr) {
                 if (keyword.contains(key)) {
                     keyword = keyword.replace(key, "\\" + key);
@@ -393,5 +393,20 @@ public class AppUtils {
             }
         }
         return keyword;
+    }
+
+    public static String formatMillTimeToHHmm(long time) {
+        if (time < ONE_MINUTE) {
+            long seconds = toSeconds(time);
+            return (seconds <= 0 ? 1 : seconds) + "秒";
+        }
+        if (time < 60 * ONE_MINUTE) {
+            long minutes = toMinutes(time);
+            return (minutes <= 0 ? 1 : minutes) + "分钟";
+        }
+        long hours = toHours(time);
+        long remain = time - hours;
+        long minutes = toMinutes(remain);
+        return (hours <= 0 ? 1 : hours) + "小时" + (minutes <= 0 ? 1 : minutes) + "分钟";
     }
 }

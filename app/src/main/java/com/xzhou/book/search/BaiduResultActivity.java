@@ -118,7 +118,6 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
         if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
             Spanned str = Html.fromHtml("已搜索到<b><font color=#ff0000>" + bookSize + "本</font></b>相关书籍<br />已解析<b><font color=#ff0000>"
                     + parseSize + "本</font></b>书籍<br />正在解析网站：" + curHost);
-//            mLoadingDialog.setMessage("已搜索到" + bookSize + "本相关书籍\n正在解析网站：" + curHost);
             mLoadingDialog.setMessage(str);
         }
     }
@@ -149,7 +148,6 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
         mLoadingDialog.setCanceledOnTouchOutside(false);
         mLoadingDialog.setCancelable(false);
         mLoadingDialog.show();
-        Log.i(TAG, "showLoadingDialog");
     }
 
     @Override
@@ -158,7 +156,7 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
 
     private class Adapter extends BaseQuickAdapter<BaiduModel.BaiduBook, CommonViewHolder> {
 
-        public Adapter() {
+        private Adapter() {
             super(R.layout.item_view_search_result);
         }
 

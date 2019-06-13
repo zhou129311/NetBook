@@ -187,14 +187,12 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_SEARCH_KEY, key);
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                if (fragment instanceof HistoryFragment) {
-                    mFragments.put(TAB_HISTORY, fragment);
-                } else if (fragment instanceof ResultFragment) {
-                    fragment.setArguments(bundle);
-                    mFragments.put(TAB_RESULT, fragment);
-                }
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof HistoryFragment) {
+                mFragments.put(TAB_HISTORY, fragment);
+            } else if (fragment instanceof ResultFragment) {
+                fragment.setArguments(bundle);
+                mFragments.put(TAB_RESULT, fragment);
             }
         }
         Fragment fragment = mFragments.get(TAB_HISTORY);
