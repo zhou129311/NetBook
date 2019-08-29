@@ -17,6 +17,7 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.WebFragment;
 import com.xzhou.book.db.BookProvider;
+import com.xzhou.book.search.BaiduResultActivity;
 
 public class ReadWebActivity extends BaseActivity {
     private static final String TAG = "ReadWebActivity";
@@ -35,6 +36,9 @@ public class ReadWebActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBaiduBook = getIntent().getParcelableExtra("baidu_book");
+        if (mBaiduBook == null && savedInstanceState != null) {
+            mBaiduBook = savedInstanceState.getParcelable("baidu_book");
+        }
         if (mBaiduBook == null || !mBaiduBook.isBaiduBook) {
             finish();
             return;
@@ -55,10 +59,27 @@ public class ReadWebActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBaiduBook != null && mBaiduBook.isBookshelf()) {
+            mWebFragment.saveCurReadUrl(mBaiduBook._id);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null) {
+            outState.putParcelable("baidu_book", mBaiduBook);
+        }
+    }
+
     private Fragment createFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
         bundle.putString("url", mBaiduBook.readUrl);
+        bundle.putString("bookId", mBaiduBook._id);
         mWebFragment.setArguments(bundle);
         return mWebFragment;
     }
@@ -82,14 +103,17 @@ public class ReadWebActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_add_bookshelf:
-            if (mBaiduBook.isBookshelf()) {
-                showDeleteDialog(mBaiduBook);
-            } else {
-                BookProvider.insertOrUpdate(mBaiduBook, false);
-                mAddMenuItem.setTitle(R.string.book_read_remove);
-            }
-            return true;
+            case R.id.menu_add_bookshelf:
+                if (mBaiduBook.isBookshelf()) {
+                    showDeleteDialog(mBaiduBook);
+                } else {
+                    BookProvider.insertOrUpdate(mBaiduBook, false);
+                    mAddMenuItem.setTitle(R.string.book_read_remove);
+                }
+                return true;
+            case R.id.menu_search_baidu:
+                BaiduResultActivity.startActivity(this, mBaiduBook.title);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

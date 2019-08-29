@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.DownloadListener;
@@ -25,6 +26,7 @@ import android.widget.ProgressBar;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.read.ReadWebActivity;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 
@@ -72,7 +74,11 @@ public class WebFragment extends BaseFragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            final String url = bundle.getString("url");
+            String bookId = bundle.getString("bookId");
+            String url = AppSettings.getWebReadProgress(bookId);
+            if (TextUtils.isEmpty(url)) {
+                url = bundle.getString("url");
+            }
             Log.d(TAG, "loadUrl:" + url);
             mHost = AppUtils.getHostFromUrl(url);
             int index = mHost.indexOf(".");
@@ -97,6 +103,10 @@ public class WebFragment extends BaseFragment {
             return;
         }
         mWebView.loadUrl(url);
+    }
+
+    public void saveCurReadUrl(String bookId) {
+        AppSettings.saveWebReadProgress(bookId, mWebView.getUrl());
     }
 
     @Override

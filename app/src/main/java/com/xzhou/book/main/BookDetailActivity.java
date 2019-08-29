@@ -29,6 +29,7 @@ import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.read.ReadActivity;
+import com.xzhou.book.search.BaiduResultActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.TabSource;
@@ -154,12 +155,19 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_download && mDetail != null) {
+        if (mDetail == null) {
+            return super.onOptionsItemSelected(item);
+        }
+        switch (item.getItemId()) {
+        case R.id.menu_download:
             if (mPresenter.download()) {
                 updateJoinBtn(true);
             } else {
                 ToastUtils.showShortToast("正在缓存中...");
             }
+            return true;
+        case R.id.menu_search_baidu:
+            BaiduResultActivity.startActivity(this, mDetail.title);
             return true;
         }
         return super.onOptionsItemSelected(item);

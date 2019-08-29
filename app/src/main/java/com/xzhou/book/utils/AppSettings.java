@@ -294,7 +294,15 @@ public class AppSettings {
     public static int[] getReadProgress(String bookId) {
         int chapter = SPUtils.get().getInt(getChapterKey(bookId), 0);
         int startPos = SPUtils.get().getInt(getStartPosKey(bookId), 0);
-        return new int[] { chapter, startPos };
+        return new int[]{chapter, startPos};
+    }
+
+    public static void saveWebReadProgress(String bookId, String url) {
+        SPUtils.get().putString(getChapterKey(bookId) + "_web", url);
+    }
+
+    public static String getWebReadProgress(String bookId) {
+        return SPUtils.get().getString(getChapterKey(bookId) + "_web", null);
     }
 
     public static void deleteChapterList(String bookId) {

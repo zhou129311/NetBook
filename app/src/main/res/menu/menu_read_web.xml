@@ -4,5 +4,10 @@
     <item
         android:id="@+id/menu_add_bookshelf"
         android:title="@string/book_read_join"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_search_baidu"
+        android:title="@string/other_source"
+        app:showAsAction="never"/>
 </menu>

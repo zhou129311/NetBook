@@ -405,7 +405,7 @@ public class AppUtils {
             return (minutes <= 0 ? 1 : minutes) + "分钟";
         }
         long hours = toHours(time);
-        long remain = time - hours;
+        long remain = time - (hours * 60 * 60000);
         long minutes = toMinutes(remain);
         return (hours <= 0 ? 1 : hours) + "小时" + (minutes <= 0 ? 1 : minutes) + "分钟";
     }

@@ -5,5 +5,11 @@
         android:id="@+id/menu_download"
         android:orderInCategory="80"
         android:title="@string/download_book"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_search_baidu"
+        android:orderInCategory="80"
+        android:title="@string/other_source"
+        app:showAsAction="never"/>
 </menu>
