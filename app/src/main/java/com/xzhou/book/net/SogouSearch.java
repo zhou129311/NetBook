@@ -21,7 +21,7 @@ import java.util.List;
 import static com.xzhou.book.models.HtmlParse.USER_AGENT;
 
 /**
- * File Description:
+ * File Description: 搜狗搜索引擎
  * Author: zhouxian
  * Create Date: 19-11-23
  * Change List:
@@ -78,7 +78,6 @@ public class SogouSearch extends JsoupSearch {
 //                    }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e(TAG, e);
         }
         return bookList;
@@ -194,9 +193,8 @@ public class SogouSearch extends JsoupSearch {
                 } else if (property.equals("og:novel:latest_chapter_url")) {
                     book.latestChapterUrl = content;
                 } else if (property.equals("og:image")) {
-                    String imageUrl = content;
-                    if (imageUrl.startsWith("http")) {
-                        book.image = imageUrl;
+                    if (content.startsWith("http")) {
+                        book.image = content;
                     }
                 }/* else if (property.equals("mobile-agent")) {
 //                    book.readUrl = read_url;
@@ -247,14 +245,5 @@ public class SogouSearch extends JsoupSearch {
             Log.e(TAG, "parseResult error", e);
         }
         return book;
-    }
-
-    public String gbk2utf8(String gbk) {
-        try {
-            Log.i(TAG, gbk + ">>>>" + URLDecoder.decode(gbk, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return new String(gbk.getBytes(), StandardCharsets.UTF_8);
     }
 }

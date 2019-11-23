@@ -1,5 +1,6 @@
 package com.xzhou.book.net;
 
+import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -44,7 +45,7 @@ public class OkHttpUtils {
     private static final int CACHE_MAXAGE = 60; // s
     private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
-    public static OkHttpClient getClient() {
+    private static OkHttpClient getClient() {
         if (sGetClient == null) {
             File httpCacheDirectory = new File(FileUtils.getCachePath(MyApp.getContext()), "okhttps");
             Cache cache = new Cache(httpCacheDirectory, CACHE_SIZE);
@@ -96,6 +97,7 @@ public class OkHttpUtils {
     private static void addHttpAuthority(OkHttpClient.Builder builder) {
         try {
             builder.hostnameVerifier(new HostnameVerifier() {
+                @SuppressLint("BadHostnameVerifier")
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
@@ -106,12 +108,14 @@ public class OkHttpUtils {
             sc.init(null, TRUST_ALL_CERTS, new SecureRandom());
             final SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
             builder.sslSocketFactory(sslSocketFactory, new X509TrustManager() {
+                @SuppressLint("TrustAllX509TrustManager")
                 @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
 
+                @SuppressLint("TrustAllX509TrustManager")
                 @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
                 }
 
                 @Override
@@ -119,18 +123,19 @@ public class OkHttpUtils {
                     return new X509Certificate[0];
                 }
             });
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
     private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{new X509TrustManager() {
+        @SuppressLint("TrustAllX509TrustManager")
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {
         }
 
+        @SuppressLint("TrustAllX509TrustManager")
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {
         }
 
         @Override

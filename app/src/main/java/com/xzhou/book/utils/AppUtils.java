@@ -377,8 +377,7 @@ public class AppUtils {
         try {
             URL u = new URL(url);
             return u.getHost();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return "";
     }

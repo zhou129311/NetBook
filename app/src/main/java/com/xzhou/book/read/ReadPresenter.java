@@ -103,7 +103,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                         showError(0, error, null);
                         return;
                     }
-                    if (mChaptersList != null && mBook.isBookshelf()) {
+                    if (mBook.isBookshelf()) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {

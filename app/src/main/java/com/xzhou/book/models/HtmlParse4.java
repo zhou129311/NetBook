@@ -46,7 +46,7 @@ public class HtmlParse4 extends HtmlParse {
             }
             return parseChapters(readUrl, document);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return null;
     }

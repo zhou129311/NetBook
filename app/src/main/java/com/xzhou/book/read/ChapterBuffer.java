@@ -44,7 +44,7 @@ public class ChapterBuffer {
                     success = true;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e);
                 success = false;
             } finally {
                 AppUtils.close(raf);
@@ -66,7 +66,7 @@ public class ChapterBuffer {
 //            Log.i(TAG, "openNetBookChapter:mBufferLen = " + mBufferLen);
             return true;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return false;
     }
@@ -120,7 +120,7 @@ public class ChapterBuffer {
             try {
                 paragraphStr = new String(paragraph, mCharset);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                Log.e(TAG, e);
             }
             while (paragraphStr.length() > 0) {
                 int paintSize = paint.breakText(paragraphStr, true, width, null);
@@ -139,7 +139,7 @@ public class ChapterBuffer {
                 try {
                     mReadPos -= (paragraphStr).getBytes(mCharset).length;
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e);
                 }
             }
         }

@@ -60,7 +60,7 @@ public class ChapterBufferImage {
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         } finally {
             AppUtils.close(raf);
         }
@@ -91,7 +91,7 @@ public class ChapterBufferImage {
                     FileUtils.saveBitmap(bitmap, FileUtils.getCartoonPicPath(mBookId, mChapter, i));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e);
                 allDown = false;
             }
         }
@@ -101,7 +101,7 @@ public class ChapterBufferImage {
                     String content = new Gson().toJson(mReadChapter);
                     FileUtils.writeFile(FileUtils.getCartoonReadPath(mBookId, mChapter), content, false);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e);
                 }
             }
             return true;
@@ -149,7 +149,7 @@ public class ChapterBufferImage {
         try {
             return Float.valueOf(mScales.get(pos));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return 1.5f;
     }

@@ -243,7 +243,7 @@ public abstract class JsoupSearch {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return book;
     }
