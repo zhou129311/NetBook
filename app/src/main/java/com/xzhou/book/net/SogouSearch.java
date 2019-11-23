@@ -12,8 +12,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.xzhou.book.models.HtmlParse.USER_AGENT;
 
 /**
  * File Description:
@@ -36,14 +41,9 @@ public class SogouSearch extends JsoupSearch {
         List<SearchModel.SearchBook> bookList = new ArrayList<>();
         try {
             trustEveryone();
-            //   https://www.sogou.com?query=%E8%B6%85%E7%A5%9E%E6%9C%BA%E6%A2%B0%E5%B8%88&cid=&s_from=result_up&sut=4945&sst0=1574488956100&lkt=0%2C0%2C0&sugsuv=002FC07CD24B12C55D382CDA3F2B6593&sugtime=1574488956100&page=2&ie=utf8&p=40040100&dp=1&w=01029901&dr=1
             String url = "https://www.sogou.com/web?query=" + key;
 
-            String html = OkHttpUtils.getPcString(url);
-
-            Document document = Jsoup.parse(html);
-//            Document document = Jsoup.connect(url).timeout(10000).get();
-//            Element body = document.body();
+            Document document = Jsoup.connect(url).userAgent(USER_AGENT).timeout(10000).get();
             Elements page = document.getElementsByClass("p");
             Log.i(TAG, "page: " + page.toString());
             Elements a = page.select("a");
@@ -68,7 +68,7 @@ public class SogouSearch extends JsoupSearch {
                 if (mCancel) {
                     break;
                 }
-                Document pageDocument = Jsoup.parse(OkHttpUtils.getPcString(pageUrl));
+                Document pageDocument = Jsoup.connect(pageUrl).userAgent(USER_AGENT).timeout(10000).get();
                 List<SearchModel.SearchBook> list2 = getBookListForDocument(pageDocument);
                 if (list2 != null) {
                     bookList.addAll(list2);
@@ -93,6 +93,9 @@ public class SogouSearch extends JsoupSearch {
             bookList = new ArrayList<>();
             if (h3 != null) {
                 for (Element element : h3) {
+                    if (mCancel) {
+                        return null;
+                    }
                     Elements a = element.select("a");
                     String link = a.attr("href");
                     if (link != null) {
@@ -130,51 +133,54 @@ public class SogouSearch extends JsoupSearch {
     }
 
     protected SearchModel.SearchBook parseResult(Title title) {
+        if (mCancel) {
+            return null;
+        }
         SearchModel.SearchBook book = new SearchModel.SearchBook();
         try {
             trustEveryone();
-            Document document = Jsoup.parse(OkHttpUtils.getPcString(title.url));
-            Log.d(TAG, "title= " + title.title + ",url=" + title.url);
-            if (mCallback != null && !mCancel) {
-                mCallback.onCurParse(mCurSize, mCurParseSize, title.title + "-" + document.baseUri());
-            }
+            Document document = Jsoup.connect(title.url).get();
+            Log.d(TAG, "title= " + title.title + ",url=" + title.url + " ,charset=" + document.charset());
             Element head = document.head();
             Elements metas = head.getElementsByTag("meta");
             if (metas == null || metas.isEmpty()) {
                 metas = document.getElementsByTag("meta");
-//                logi("metas:" + metas.toString());
-                for (Element meta : metas) {
-                    Attributes attributes = meta.attributes();
-                    String refresh = attributes.get("http-equiv");
-                    if ("refresh".equals(refresh)) {
-                        String content = attributes.get("content");
-                        if (!TextUtils.isEmpty(content)) {
-                            String url = content.substring(content.indexOf("URL='") + 5, content.length() - 1);
-                            logi("refresh url = " + url);
-                            title.url = url;
-                            return parseResult(title);
-                        }
+            }
+            for (Element meta : metas) {
+                Attributes attributes = meta.attributes();
+                String refresh = attributes.get("http-equiv");
+                logi("http-equiv:" + refresh);
+                if ("refresh".equals(refresh)) {
+                    String content = attributes.get("content");
+                    logi("refresh content:" + content);
+                    if (!TextUtils.isEmpty(content)) {
+                        String url = content.substring(content.indexOf("URL='") + 5, content.length() - 1);
+                        logi("refresh url = " + url);
+                        title.url = url;
+                        return parseResult(title);
                     }
                 }
+            }
+            if (mCallback != null && !mCancel) {
+                mCallback.onCurParse(mCurSize, mCurParseSize, title.title + "-" + title.url);
             }
 //            logi("metas:" + metas.toString());
             for (Element meta : metas) {
                 Attributes attributes = meta.attributes();
 //                logi(TAG, "meta = " + attributes.toString() + ",size = " + attributes.size());
+                //http-equiv="Content-Type" content="text/html; charset=gbk"
                 String property = attributes.get("property");
-                if (property == null) {
-                    continue;
-                }
-                logi("property = " + attributes.toString());
+                String content = attributes.get("content");
+                logi("attributes =" + attributes.toString());
                 if (property.equals("og:novel:author")) {
-                    book.author = attributes.get("content");
+                    book.author = content;
                 } else if (property.equals("author")) {
-                    book.author = attributes.get("content");
+                    book.author = content;
                 } else if (property.equals("og:novel:book_name")) {
-                    book.bookName = attributes.get("content");
+                    book.bookName = content;
                 } else if (property.equals("og:novel:read_url") || property.equals("og:url")) {
-                    String read_url = attributes.get("content");
-                    if (read_url != null && read_url.toLowerCase().startsWith("http")) {
+                    String read_url = content;
+                    if (read_url.toLowerCase().startsWith("http")) {
                         if (read_url.contains("m.23us.la")) {
                             read_url = read_url.replace("m.23us.la", "www.23us.la");
                         } else if (read_url.contains("m.f96.la")) {
@@ -184,12 +190,12 @@ public class SogouSearch extends JsoupSearch {
                         book.sourceHost = AppUtils.getHostFromUrl(read_url);
                     }
                 } else if (property.equals("og:novel:latest_chapter_name")) {
-                    book.latestChapterName = attributes.get("content");
+                    book.latestChapterName = content;
                 } else if (property.equals("og:novel:latest_chapter_url")) {
-                    book.latestChapterUrl = attributes.get("content");
+                    book.latestChapterUrl = content;
                 } else if (property.equals("og:image")) {
-                    String imageUrl = attributes.get("content");
-                    if (imageUrl != null && imageUrl.startsWith("http")) {
+                    String imageUrl = content;
+                    if (imageUrl.startsWith("http")) {
                         book.image = imageUrl;
                     }
                 }/* else if (property.equals("mobile-agent")) {
@@ -215,7 +221,7 @@ public class SogouSearch extends JsoupSearch {
                     }
                 }
             }
-            if (TextUtils.isEmpty(book.sourceName)) {
+            if (TextUtils.isEmpty(book.sourceName) && title.title != null) {
                 int index = title.title.lastIndexOf("-");
                 if (index < 0) {
                     index = title.title.lastIndexOf("_");
@@ -230,7 +236,7 @@ public class SogouSearch extends JsoupSearch {
                     book.sourceName = title.title.substring(index + 1);
                 }
             }
-            if (TextUtils.isEmpty(book.sourceName)) {
+            if (TextUtils.isEmpty(book.sourceName) && book.sourceHost != null) {
                 int i1 = book.sourceHost.indexOf(".");
                 int i2 = book.sourceHost.lastIndexOf(".");
                 if (i2 > i1 && i1 > 0) {
@@ -238,9 +244,17 @@ public class SogouSearch extends JsoupSearch {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "parseResult error", e);
         }
         return book;
     }
 
+    public String gbk2utf8(String gbk) {
+        try {
+            Log.i(TAG, gbk + ">>>>" + URLDecoder.decode(gbk, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return new String(gbk.getBytes(), StandardCharsets.UTF_8);
+    }
 }

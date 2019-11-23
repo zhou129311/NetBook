@@ -65,6 +65,15 @@ public class SearchModel {
             put("www.cdzdgw.com", ParseType.PARSE_TYPE_1);
             put("www.biqugemm.com", ParseType.PARSE_TYPE_1);
             put("www.xs222.tw", ParseType.PARSE_TYPE_1);
+            put("www.zanghaihuatxt.com", ParseType.PARSE_TYPE_1);
+            put("www.wuxianxs.com", ParseType.PARSE_TYPE_1);
+            put("www.xs98.com", ParseType.PARSE_TYPE_1);
+            put("www.quledu.net", ParseType.PARSE_TYPE_1);
+            put("www.52bqg.com", ParseType.PARSE_TYPE_1);
+            put("www.dingdianxs.com", ParseType.PARSE_TYPE_1);
+            put("www.qizi.cc", ParseType.PARSE_TYPE_1);
+            put("www.ihxs.la", ParseType.PARSE_TYPE_1);
+            put("www.qqxsw.la", ParseType.PARSE_TYPE_1);
 //            put("www.123du.cc", ParseType.PARSE_TYPE_1);
 
             put("www.23us.la", ParseType.PARSE_TYPE_2);
@@ -77,6 +86,10 @@ public class SearchModel {
             put("www.52dus.com", ParseType.PARSE_TYPE_2);
             put("www.tianyibook.la", ParseType.PARSE_TYPE_2);
             put("www.77dushu.com", ParseType.PARSE_TYPE_2);
+            put("www.biquger.com", ParseType.PARSE_TYPE_2);
+            put("www.qqxs.cc", ParseType.PARSE_TYPE_2);
+            put("www.tuhaoxs.com", ParseType.PARSE_TYPE_2);
+            put("www.hongyeshuzhai.com", ParseType.PARSE_TYPE_2);
 
             put("www.fengyunok.com", ParseType.PARSE_TYPE_3);
 
@@ -105,6 +118,11 @@ public class SearchModel {
             put("www.i7wx.com", ParseType.PARSE_TYPE_4);
             put("www.qianqianxs.com", ParseType.PARSE_TYPE_4);
             put("www.xqianqian.com", ParseType.PARSE_TYPE_4);
+            put("www.duokan8.com", ParseType.PARSE_TYPE_4);
+            put("www.heiyan.org", ParseType.PARSE_TYPE_4);
+            put("www.39shubao.com", ParseType.PARSE_TYPE_4);
+            put("www.shupengwang.com", ParseType.PARSE_TYPE_4);
+            put("www.biquw.com", ParseType.PARSE_TYPE_4);
 //            put("www.daizhuzai.com", ParseType.PARSE_TYPE_4);
 //            put("www.biqige.cc", ParseType.PARSE_TYPE_4);
 //            put("www.38lu.com", ParseType.PARSE_TYPE_4);
@@ -123,10 +141,16 @@ public class SearchModel {
             put("www.aixiashu.com", ParseType.PARSE_TYPE_5);
             put("www.3zm.la", ParseType.PARSE_TYPE_5);
             put("www.beidouxin.com", ParseType.PARSE_TYPE_5);
+            put("www.zhuaji.org", ParseType.PARSE_TYPE_5);
+            put("www.miaojiang8.com", ParseType.PARSE_TYPE_5);
+            put("www.bishenge.com", ParseType.PARSE_TYPE_5);
+            put("www.xbiquge6.com", ParseType.PARSE_TYPE_5);
+            put("www.22xs.net", ParseType.PARSE_TYPE_5);
 
             put("www.okdd.net", ParseType.PARSE_TYPE_6);
             put("www.mywenxue.com", ParseType.PARSE_TYPE_6);
             put("www.f96.la", ParseType.PARSE_TYPE_6);
+            put("www.1dwx.com", ParseType.PARSE_TYPE_6);
 
 //            put("www.ggdown.org", PARSE_GGD);
 

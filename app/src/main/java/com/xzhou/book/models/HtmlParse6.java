@@ -73,7 +73,7 @@ public class HtmlParse6 extends HtmlParse {
             } else if (!link.startsWith("http")) {
                 link = preUrl + link;
             }
-            logi("title = " + title + ", link=" + link);
+//            logi("title = " + title + ", link=" + link);
             if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
                 list.add(new Entities.Chapters(title, link));
             }
@@ -104,8 +104,6 @@ public class HtmlParse6 extends HtmlParse {
         String text = formatContent(chapterUrl, content);
         text = replaceCommon(text);
         if (chapterUrl.contains("f96.la")) {
-            text = text.replace("\n", "");
-            text = text.replace("<p>", "\n");
             text = text.replace(" ", "");
             text = text.replace("　", "");
         }

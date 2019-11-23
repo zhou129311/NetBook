@@ -25,6 +25,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
+import static com.xzhou.book.models.HtmlParse.USER_AGENT;
+
 /**
  * File Description: 使用Jsoup解析其他搜索接口的数据
  * Author: zhouxian
@@ -150,7 +152,7 @@ public abstract class JsoupSearch {
         try {
             trustEveryone();
 
-            Document document = Jsoup.parse(OkHttpUtils.getPcString(title.url));
+            Document document = Jsoup.connect(title.url).userAgent(USER_AGENT).timeout(10000).get();
             Log.d(TAG, "title= " + title.title + ",url=" + title.url);
             if (mCallback != null && !mCancel) {
                 mCallback.onCurParse(mCurSize, mCurParseSize, title.title + "-" + document.baseUri());

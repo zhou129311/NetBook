@@ -3,6 +3,7 @@ package com.xzhou.book.models;
 import android.text.TextUtils;
 
 import com.xzhou.book.utils.AppUtils;
+import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -95,6 +96,9 @@ public class HtmlParse4 extends HtmlParse {
                 eList = body.select("ul#chapters-list");
             }
             if (eList.isEmpty()) {
+                eList = body.select("ul#chapterlist");
+            }
+            if (eList.isEmpty()) {
                 eList = body.select("div.chapterlist");
             }
             if (eList.isEmpty()) {
@@ -102,9 +106,6 @@ public class HtmlParse4 extends HtmlParse {
             }
             if (eList.isEmpty()) {
                 eList = body.select("div.pc_list");
-            }
-            if (eList.isEmpty()) {
-                eList = body.select("div.book_list");
             }
             if (eList.isEmpty()) {
                 eList = body.select("div.ml_list");
@@ -120,6 +121,12 @@ public class HtmlParse4 extends HtmlParse {
             }
             if (eList.isEmpty()) {
                 eList = body.select("div.list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("div.chapter-list");
+            }
+            if (eList.isEmpty()) {
+                eList = body.select("ul.chapters");
             }
             if (!eList.isEmpty() && li == null) {
                 li = eList.last().select("li");
@@ -143,7 +150,7 @@ public class HtmlParse4 extends HtmlParse {
                 } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
-                logi("title = " + title + ", link=" + link);
+//                logi("title = " + title + ", link=" + link);
                 if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
                     list.add(new Entities.Chapters(title, link));
                 }
@@ -163,7 +170,7 @@ public class HtmlParse4 extends HtmlParse {
             try {
                 document2 = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(5000).get();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e);
             }
         }
         Element body = document.body();
@@ -230,10 +237,21 @@ public class HtmlParse4 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div#htmlContent");
+            if (content.size() > 0) {
+                content = content.get(0).children();
+            }
         }
         if (content.isEmpty()) {
             content = body.select("div.content_txt");
         }
+        if (content.isEmpty()) {
+            content = body.select("div.contentbox");
+            Log.i(TAG, "contentbox = " + content.toString());
+        }
+        if (content.isEmpty()) {
+            content = body.select("div#contentbox");
+        }
+        logi("parseChapterRead::content=" + content.toString());
         read.chapter = new Entities.Chapter();
         String text = formatContent(chapterUrl, content);
         String text2 = formatContent(chapterUrl, content2);

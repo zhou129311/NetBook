@@ -47,6 +47,9 @@ public class HtmlParse1 extends HtmlParse {
         if (eList.isEmpty()) {
             eList = body.select("div#list-chapterAll");
         }
+        if (eList.isEmpty()) {
+            eList = body.select("div.book_list");
+        }
         Elements dl = eList.last().select("dl").first().children();
         for (Element c : dl) {
             if ("dd".equals(c.tagName())) {
@@ -58,7 +61,7 @@ public class HtmlParse1 extends HtmlParse {
                 } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
-                logi("title = " + title + ",link = " + link);
+//                logi("title = " + title + ",link = " + link);
                 if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
                     list.add(new Entities.Chapters(title, link));
                 }
@@ -82,6 +85,9 @@ public class HtmlParse1 extends HtmlParse {
         }
         if (content.isEmpty()) {
             content = body.select("div.panel-body");
+        }
+        if (content.isEmpty()) {
+            content = body.select("div.showtxt");
         }
 
         read.chapter = new Entities.Chapter();

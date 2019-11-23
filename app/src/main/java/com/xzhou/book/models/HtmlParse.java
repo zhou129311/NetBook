@@ -26,7 +26,7 @@ import javax.net.ssl.X509TrustManager;
 
 public abstract class HtmlParse {
     protected String TAG = "HtmlParse";
-    static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
 
     private static Pattern PATTERN1 = Pattern.compile("<div(.*?)>");
     private static Pattern PATTERN2 = Pattern.compile("<fon(.*?)>");
@@ -42,7 +42,7 @@ public abstract class HtmlParse {
             add("div#ali");
             add("a");
             add("b");
-            add("p");
+            //add("p");
             //add("fon");
             add("font");
             add("strong");
@@ -71,7 +71,7 @@ public abstract class HtmlParse {
             }
             return parseChapters(readUrl, document);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return null;
     }
@@ -85,7 +85,7 @@ public abstract class HtmlParse {
             Log.i(TAG, "parseChapterRead:baseUri=" + document.baseUri());
             return parseChapterRead(chapterUrl, document);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e);
         }
         return null;
     }
@@ -117,10 +117,13 @@ public abstract class HtmlParse {
 
     protected String formatContent(String chapterUrl, Elements content) {
         if (content == null || content.isEmpty()) {
+            Log.i(TAG, "formatContent:content = null");
             return "";
         }
         if (!chapterUrl.contains("www.35xs.com")
-                && !chapterUrl.contains("www.f96.la")) {
+                && !chapterUrl.contains("www.f96.la")
+                && !chapterUrl.contains("www.tuhaoxs.com")
+                && !chapterUrl.contains("www.1dwx.com")) {
             removeContentTag(content);
         }
         String text = content.toString();
@@ -142,6 +145,8 @@ public abstract class HtmlParse {
         }
 
         if (!chapterUrl.contains("www.35xs.com")
+                && !chapterUrl.contains("www.1dwx.com")
+                && !chapterUrl.contains("www.tuhaoxs.com")
                 && !chapterUrl.contains("www.f96.la")) {
             Matcher m3 = PATTERN3.matcher(text);
             while (m3.find()) {
@@ -172,6 +177,8 @@ public abstract class HtmlParse {
     String replaceCommon(String text) {
         text = text.replace("\n", "");
         text = text.replace("<br>", "\n");
+        text = text.replace("<p>", "\n");
+        text = text.replace("</p>", "\n");
         text = text.replace("&nbsp;", "");
         text = text.replace(" ", "");
         text = text.replace("　", "");

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * packageName：com.xzhou.book.models
@@ -43,6 +42,9 @@ public class HtmlParse5 extends HtmlParse {
             if (eList.isEmpty()) {
                 eList = body.select("div#list");
             }
+            if (eList.isEmpty()) {
+                eList = body.select("div.mulu");
+            }
             cd = eList.select("dl").first().children();
         } else {
             cd = eList.first().children();
@@ -50,12 +52,8 @@ public class HtmlParse5 extends HtmlParse {
         if (cd.isEmpty()) {
             return null;
         }
-        int dtSize = 0;
         for (Element c : cd) {
-            if ("dt".equals(c.tagName())) {
-                dtSize++;
-            }
-            if (dtSize == 2 && "dd".equals(c.tagName())) {
+            if ("dd".equals(c.tagName())) {
                 Elements u = c.getElementsByTag("a");
                 String title = u.text();
                 String link = u.attr("href");
@@ -64,7 +62,7 @@ public class HtmlParse5 extends HtmlParse {
                 } else if (!link.startsWith("http")) {
                     link = preUrl + link;
                 }
-                logi("title = " + title + ", link=" + link);
+//                logi("title = " + title + ", link=" + link);
                 if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(link)) {
                     list.add(new Entities.Chapters(title, link));
                 }
@@ -81,7 +79,7 @@ public class HtmlParse5 extends HtmlParse {
             return newList;
         }
 //        list = sortAndRemoveDuplicate(list, host);
-        return list.size() > 0 ? list : null;
+        return null;
     }
 
     @Override
