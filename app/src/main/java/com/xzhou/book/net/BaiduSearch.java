@@ -63,7 +63,6 @@ public class BaiduSearch extends JsoupSearch {
 //                    }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e(TAG, e);
         }
         return bookList;
