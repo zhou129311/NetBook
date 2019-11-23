@@ -29,7 +29,7 @@ import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.read.ReadActivity;
-import com.xzhou.book.search.BaiduResultActivity;
+import com.xzhou.book.search.OtherResultActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.TabSource;
@@ -167,7 +167,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             }
             return true;
         case R.id.menu_search_baidu:
-            BaiduResultActivity.startActivity(this, mDetail.title);
+            OtherResultActivity.startActivity(this, mDetail.title);
             return true;
         }
         return super.onOptionsItemSelected(item);

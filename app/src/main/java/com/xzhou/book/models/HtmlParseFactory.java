@@ -7,7 +7,7 @@ public class HtmlParseFactory {
     private static final SparseArray<HtmlParse> PARSES = new SparseArray<>();
 
     public static HtmlParse getHtmlParse(String host) {
-        Integer type = BaiduModel.getType(host);
+        Integer type = SearchModel.getType(host);
         if (type == null) {
             return null;
         }
@@ -19,19 +19,19 @@ public class HtmlParseFactory {
         return parse;
     }
 
-    private static HtmlParse createParse(@BaiduModel.ParseType int type) {
+    private static HtmlParse createParse(@SearchModel.ParseType int type) {
         switch (type) {
-        case BaiduModel.ParseType.PARSE_TYPE_1:
+        case SearchModel.ParseType.PARSE_TYPE_1:
             return new HtmlParse1();
-        case BaiduModel.ParseType.PARSE_TYPE_2:
+        case SearchModel.ParseType.PARSE_TYPE_2:
             return new HtmlParse2();
-        case BaiduModel.ParseType.PARSE_TYPE_3:
+        case SearchModel.ParseType.PARSE_TYPE_3:
             return new HtmlParse3();
-        case BaiduModel.ParseType.PARSE_TYPE_4:
+        case SearchModel.ParseType.PARSE_TYPE_4:
             return new HtmlParse4();
-        case BaiduModel.ParseType.PARSE_TYPE_5:
+        case SearchModel.ParseType.PARSE_TYPE_5:
             return new HtmlParse5();
-        case BaiduModel.ParseType.PARSE_TYPE_6:
+        case SearchModel.ParseType.PARSE_TYPE_6:
             return new HtmlParse6();
         }
         return null;

@@ -11,7 +11,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
-import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
@@ -76,7 +76,7 @@ public class BookProvider {
             isPicture = detail.isPicture();
         }
 
-        public LocalBook(BaiduModel.BaiduBook baiduBook) {
+        public LocalBook(SearchModel.SearchBook baiduBook) {
             isBaiduBook = true;
             _id = baiduBook.id;
             title = baiduBook.bookName;

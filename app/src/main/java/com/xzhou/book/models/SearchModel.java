@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import java.util.HashMap;
 
-public class BaiduModel {
+public class SearchModel {
 
     @IntDef({ ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
             , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6 })
@@ -142,7 +142,7 @@ public class BaiduModel {
         return BOOK_HOSTS.get(host);
     }
 
-    public static class BaiduBook {
+    public static class SearchBook {
         public String image;
         public String sourceName;
         public String sourceHost;
@@ -154,7 +154,7 @@ public class BaiduModel {
         public String id;
         public long updated;
 
-        public BaiduBook() {
+        public SearchBook() {
         }
 
         public boolean hasValid() {
@@ -167,7 +167,7 @@ public class BaiduModel {
 
         @Override
         public String toString() {
-            return "BaiduBook{" +
+            return "SearchBook{" +
                     "id='" + id + '\'' +
                     "image='" + image + '\'' +
                     ", sourceName='" + sourceName + '\'' +

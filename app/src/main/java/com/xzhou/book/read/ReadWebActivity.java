@@ -17,7 +17,7 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.WebFragment;
 import com.xzhou.book.db.BookProvider;
-import com.xzhou.book.search.BaiduResultActivity;
+import com.xzhou.book.search.OtherResultActivity;
 
 public class ReadWebActivity extends BaseActivity {
     private static final String TAG = "ReadWebActivity";
@@ -112,7 +112,7 @@ public class ReadWebActivity extends BaseActivity {
                 }
                 return true;
             case R.id.menu_search_baidu:
-                BaiduResultActivity.startActivity(this, mBaiduBook.title);
+                OtherResultActivity.startActivity(this, mBaiduBook.title);
                 return true;
         }
         return super.onOptionsItemSelected(item);

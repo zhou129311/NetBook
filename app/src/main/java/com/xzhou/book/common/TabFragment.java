@@ -15,10 +15,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.search.BaiduResultActivity;
+import com.xzhou.book.search.OtherResultActivity;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.Constant.TabSource;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 import com.xzhou.book.widget.CommonLoadMoreView;
 
@@ -174,7 +173,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
                 @Override
                 public void onClick(View v) {
                     if (!TextUtils.isEmpty(mTabData.params[0])) {
-                        BaiduResultActivity.startActivity(getContext(), mTabData.params[0]);
+                        OtherResultActivity.startActivity(getContext(), mTabData.params[0]);
                     } else {
                         ToastUtils.showShortToast("请输入关键字进行搜索");
                     }

@@ -76,7 +76,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/NavigationBarTheme"/>
         <activity
-            android:name=".search.BaiduResultActivity"
+            android:name=".search.OtherResultActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NavigationBarTheme"/>
         <activity

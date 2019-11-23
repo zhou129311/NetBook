@@ -22,7 +22,7 @@ import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.search.BaiduResultActivity;
+import com.xzhou.book.search.OtherResultActivity;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.FileUtils;
@@ -92,7 +92,7 @@ public class ReadSourceActivity extends BaseActivity<ReadPresenter> implements R
         header.findViewById(R.id.baidu_source_tv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaiduResultActivity.startActivity(mActivity, mBook.title);
+                OtherResultActivity.startActivity(mActivity, mBook.title);
             }
         });
 

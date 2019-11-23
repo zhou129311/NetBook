@@ -44,7 +44,7 @@ public class OkHttpUtils {
     private static final int CACHE_MAXAGE = 60; // s
     private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
-    private static OkHttpClient getClient() {
+    public static OkHttpClient getClient() {
         if (sGetClient == null) {
             File httpCacheDirectory = new File(FileUtils.getCachePath(MyApp.getContext()), "okhttps");
             Cache cache = new Cache(httpCacheDirectory, CACHE_SIZE);
@@ -124,7 +124,7 @@ public class OkHttpUtils {
         }
     }
 
-    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[] { new X509TrustManager() {
+    private static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{new X509TrustManager() {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
@@ -137,7 +137,29 @@ public class OkHttpUtils {
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
         }
-    } };
+    }};
+
+    public static String getPcString(String url) {
+        Request req = new Request.Builder()
+                .url(url)
+                .cacheControl(CacheControl.FORCE_NETWORK)
+                .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
+                .get()
+                .build();
+        ResponseBody body = null;
+        try {
+            Response response = getClient().newCall(req).execute();
+            body = response.body();
+            return body.string();
+        } catch (Exception e) {
+            Log.e("get url = " + url + "\nerror:", e);
+        } finally {
+            if (body != null) {
+                body.close();
+            }
+        }
+        return null;
+    }
 
     public static Object getObject(HttpRequest request, Type typeOfT, HashMap<String, String> params) {
         return getObject(request, typeOfT, params, true);

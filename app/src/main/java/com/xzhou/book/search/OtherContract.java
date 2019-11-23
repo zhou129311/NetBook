@@ -1,11 +1,11 @@
 package com.xzhou.book.search;
 
 import com.xzhou.book.common.BaseContract;
-import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.models.SearchModel;
 
 import java.util.List;
 
-public interface BaiduContract {
+public interface OtherContract {
     interface Presenter extends BaseContract.Presenter {
 
         void search(String key);
@@ -21,6 +21,6 @@ public interface BaiduContract {
 
         void onSearchProgress(int bookSize, int parseSize, String curHost);
 
-        void onSearchResult(List<BaiduModel.BaiduBook> list);
+        void onSearchResult(List<SearchModel.SearchBook> list);
     }
 }

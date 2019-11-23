@@ -26,7 +26,7 @@ import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.main.MainActivity;
-import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
@@ -356,7 +356,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         cb.setChecked(!cb.isChecked());
                         return;
                     }
-                    if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
+                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
                         ReadWebActivity.startActivity(getContext(), item);
                     } else {
                         ReadActivity.startActivity(getRecyclerView().getContext(), item);
@@ -387,7 +387,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                                     BookDetailActivity.startActivity(mContext, item._id);
                                     break;
                                 case 2:
-                                    if (item.isBaiduBook && !BaiduModel.hasSupportLocalRead(item.curSourceHost)) {
+                                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
                                         ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
                                         return;
                                     }

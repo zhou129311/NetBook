@@ -20,7 +20,7 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.db.BookProvider;
-import com.xzhou.book.models.BaiduModel;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.Log;
@@ -32,8 +32,8 @@ import butterknife.BindView;
 
 import static com.xzhou.book.search.SearchActivity.EXTRA_SEARCH_KEY;
 
-public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> implements BaiduContract.View {
-    private static final String TAG = "BaiduResultActivity";
+public class OtherResultActivity extends BaseActivity<OtherContract.Presenter> implements OtherContract.View {
+    private static final String TAG = "OtherResultActivity";
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -45,7 +45,7 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     private android.app.AlertDialog mLoadingDialog;
 
     public static void startActivity(Context context, String key) {
-        Intent intent = new Intent(context, BaiduResultActivity.class);
+        Intent intent = new Intent(context, OtherResultActivity.class);
         intent.putExtra(EXTRA_SEARCH_KEY, key);
         context.startActivity(intent);
     }
@@ -84,8 +84,8 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
-    protected BaiduContract.Presenter createPresenter() {
-        return new BaiduPresenter(this, mKey);
+    protected OtherContract.Presenter createPresenter() {
+        return new OtherPresenter(this, mKey);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
-    public void onSearchResult(List<BaiduModel.BaiduBook> list) {
+    public void onSearchResult(List<SearchModel.SearchBook> list) {
         if (list == null || list.size() < 1) {
             mAdapter.setEmptyView(mEmptyView);
         }
@@ -151,17 +151,17 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
     }
 
     @Override
-    public void setPresenter(BaiduContract.Presenter presenter) {
+    public void setPresenter(OtherContract.Presenter presenter) {
     }
 
-    private class Adapter extends BaseQuickAdapter<BaiduModel.BaiduBook, CommonViewHolder> {
+    private class Adapter extends BaseQuickAdapter<SearchModel.SearchBook, CommonViewHolder> {
 
         private Adapter() {
             super(R.layout.item_view_search_result);
         }
 
         @Override
-        protected void convert(CommonViewHolder holder, final BaiduModel.BaiduBook item) {
+        protected void convert(CommonViewHolder holder, final SearchModel.SearchBook item) {
             String sub = (TextUtils.isEmpty(item.sourceName) ? item.sourceHost : item.sourceName + " | " + item.sourceHost);
             if (!TextUtils.isEmpty(item.author)) {
                 sub = item.author + " | " + sub;
@@ -169,12 +169,12 @@ public class BaiduResultActivity extends BaseActivity<BaiduContract.Presenter> i
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
                     .setText(R.id.book_h2, sub)
-                    .setGone(R.id.local_read_tv, BaiduModel.hasSupportLocalRead(item.sourceHost));
+                    .setGone(R.id.local_read_tv, SearchModel.hasSupportLocalRead(item.sourceHost));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
-                    if (BaiduModel.hasSupportLocalRead(item.sourceHost)) {
+                    if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
                         ReadActivity.startActivity(mActivity, localBook);
                     } else {
                         ReadWebActivity.startActivity(mActivity, localBook);

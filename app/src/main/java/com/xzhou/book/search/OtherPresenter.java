@@ -2,33 +2,45 @@ package com.xzhou.book.search;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.models.BaiduModel;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.net.BaiduSearch;
+import com.xzhou.book.net.JsoupSearch;
+import com.xzhou.book.net.SogouSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements BaiduContract.Presenter {
+public class OtherPresenter extends BasePresenter<OtherContract.View> implements OtherContract.Presenter {
 
     private ExecutorService mPool = Executors.newSingleThreadExecutor();
-    private BaiduSearch mBaiduSearch;
+    private List<JsoupSearch> mSearchList = new ArrayList<>();
     private String mKey;
     private boolean isStart;
 
-    BaiduPresenter(BaiduContract.View view, String key) {
+    OtherPresenter(OtherContract.View view, String key) {
         super(view);
         mKey = key;
-        mBaiduSearch = new BaiduSearch();
-        mBaiduSearch.setProgressCallback(new BaiduSearch.ProgressCallback() {
+        BaiduSearch baiduSearch = new BaiduSearch();
+        baiduSearch.setProgressCallback(new JsoupSearch.ProgressCallback() {
             @Override
             public void onCurParse(int size, int parseSize, String curResult) {
                 updateSearchProgress(size, parseSize, curResult);
             }
         });
+        SogouSearch sogouSearch = new SogouSearch();
+        sogouSearch.setProgressCallback(new JsoupSearch.ProgressCallback() {
+            @Override
+            public void onCurParse(int size, int parseSize, String curResult) {
+                updateSearchProgress(size, parseSize, curResult);
+            }
+        });
+        mSearchList.add(baiduSearch);
+        mSearchList.add(sogouSearch);
     }
 
     @Override
@@ -44,7 +56,9 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
     @Override
     public void destroy() {
         super.destroy();
-        mBaiduSearch.setProgressCallback(null);
+        for (JsoupSearch search : mSearchList) {
+            search.setProgressCallback(null);
+        }
     }
 
     @Override
@@ -53,7 +67,13 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
         mPool.execute(new Runnable() {
             @Override
             public void run() {
-                List<BaiduModel.BaiduBook> list = mBaiduSearch.parseSearchKey(key);
+                List<SearchModel.SearchBook> list = null;
+                for (JsoupSearch search : mSearchList) {
+                    list = search.parseSearchKey(key);
+                    if (list != null && list.size() > 0) {
+                        break;
+                    }
+                }
                 updateSearchResult(list);
                 updateLoadingState(false);
             }
@@ -78,10 +98,12 @@ public class BaiduPresenter extends BasePresenter<BaiduContract.View> implements
 
     @Override
     public void cancel() {
-        mBaiduSearch.setCancel(true);
+        for (JsoupSearch search : mSearchList) {
+            search.setCancel(true);
+        }
     }
 
-    private void updateSearchResult(final List<BaiduModel.BaiduBook> list) {
+    private void updateSearchResult(final List<SearchModel.SearchBook> list) {
         MyApp.runUI(new Runnable() {
             @Override
             public void run() {
