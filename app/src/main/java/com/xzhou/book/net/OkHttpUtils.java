@@ -144,24 +144,24 @@ public class OkHttpUtils {
         }
     }};
 
-    public static String getPcString(String url) {
+    public static Response getPcRel(String url) {
         Request req = new Request.Builder()
                 .url(url)
                 .cacheControl(CacheControl.FORCE_NETWORK)
-                .addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 7.0; Windows 7)")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
                 .get()
                 .build();
-        ResponseBody body = null;
+//        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            body = response.body();
-            return body.string();
+//            body = response.body();
+            return response;
         } catch (Exception e) {
             Log.e("get url = " + url + "\nerror:", e);
         } finally {
-            if (body != null) {
-                body.close();
-            }
+//            if (body != null) {
+//                body.close();
+//            }
         }
         return null;
     }

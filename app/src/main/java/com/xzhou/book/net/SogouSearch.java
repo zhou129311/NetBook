@@ -12,11 +12,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Response;
 
 import static com.xzhou.book.models.HtmlParse.USER_AGENT;
 
@@ -32,6 +33,26 @@ public class SogouSearch extends JsoupSearch {
         super("SogouSearch");
     }
 
+    /**
+     * @return 搜狗验证码机制是通过cookie触发，每次搜索对cookie进行设置可以避免验证码
+     */
+    private Map<String, String> getCookies() {
+        Map<String, String> cookies = new HashMap<>();
+        String url = "https://www.sogou.com/web?query=%E6%90%9C%E7%8B%97%E8%81%94%E7%9B%9F%E7%99%BB%E5%BD%95&page=1";
+        Response req = OkHttpUtils.getPcRel(url);
+        if (req != null) {
+            List<String> cookieList = req.headers().values("Set-Cookie");
+            Log.i(TAG, "cookieList = " + cookieList);
+            if (cookieList != null) {
+                for (String cookie : cookieList) {
+                    if (cookie.contains("BAIDUID=")) {
+                        cookies.put("BAIDUID", cookie.substring(9));
+                    }
+                }
+            }
+        }
+        return cookies;
+    }
 
     public List<SearchModel.SearchBook> parseSearchKey(String key) {
         mCurSize = 0;
@@ -43,7 +64,7 @@ public class SogouSearch extends JsoupSearch {
             trustEveryone();
             String url = "https://www.sogou.com/web?query=" + key;
 
-            Document document = Jsoup.connect(url).userAgent(USER_AGENT).timeout(10000).get();
+            Document document = Jsoup.connect(url).cookies(getCookies()).userAgent(USER_AGENT).timeout(10000).get();
             Elements page = document.getElementsByClass("p");
             Log.i(TAG, "page: " + page.toString());
             Elements a = page.select("a");
@@ -138,7 +159,7 @@ public class SogouSearch extends JsoupSearch {
         SearchModel.SearchBook book = new SearchModel.SearchBook();
         try {
             trustEveryone();
-            Document document = Jsoup.connect(title.url).get();
+            Document document = Jsoup.connect(title.url).userAgent(UA).get();
             Log.d(TAG, "title= " + title.title + ",url=" + title.url + " ,charset=" + document.charset());
             Element head = document.head();
             Elements metas = head.getElementsByTag("meta");

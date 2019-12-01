@@ -34,6 +34,7 @@ import static com.xzhou.book.models.HtmlParse.USER_AGENT;
  * Change List:
  */
 public abstract class JsoupSearch {
+    String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
     String TAG;
 
     public static class Title {
