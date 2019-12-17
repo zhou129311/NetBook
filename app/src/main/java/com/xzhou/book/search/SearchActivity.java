@@ -51,6 +51,8 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
     ImageView mClearEtIv;
     @BindView(R.id.auto_complete_rv)
     RecyclerView mRecyclerView;
+    @BindView(R.id.search_source_tv)
+    TextView mRelSourceTv;
 
     private String mKey;
     private Fragment mCurFragment;
@@ -230,6 +232,9 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
             if (!TextUtils.isEmpty(mKey)) {
                 search(mKey);
             }
+            break;
+        case R.id.more_iv:
+
             break;
         case R.id.clear_et_iv:
             mSearchEt.setText("");

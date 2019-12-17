@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="55dp"
@@ -18,21 +19,13 @@
             android:layout_centerVertical="true"
             android:scaleType="center"
             android:src="@mipmap/ab_back"
-            tools:ignore="ContentDescription"/>
-
-        <View
-            android:id="@+id/div_1"
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@id/back_iv"
-            android:background="#DA000000"/>
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
 
         <EditText
             android:id="@+id/search_et"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@id/div_1"
-            android:layout_toStartOf="@id/div_2"
             android:background="@null"
             android:cursorVisible="true"
             android:gravity="center_vertical|start"
@@ -40,56 +33,77 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
-            android:paddingEnd="36dp"
             android:paddingStart="15dp"
+            android:paddingEnd="36dp"
             android:textColor="@color/white"
             android:textColorHint="@color/common_h3"
             android:textCursorDrawable="@drawable/cursor_color"
             android:textSize="16dp"
-            tools:ignore="Autofill,SpUsage"/>
+            app:layout_constraintEnd_toStartOf="@id/clear_et_iv"
+            app:layout_constraintStart_toEndOf="@id/back_iv"
+            tools:ignore="Autofill,SpUsage" />
 
         <ImageView
             android:id="@+id/clear_et_iv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignEnd="@id/search_et"
             android:layout_centerVertical="true"
-            android:paddingEnd="10dp"
             android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:scaleType="center"
             android:src="@drawable/sel_search_clear"
             android:visibility="gone"
-            tools:ignore="ContentDescription"/>
-
-        <View
-            android:id="@+id/div_2"
-            android:layout_width="1px"
-            android:layout_height="match_parent"
-            android:layout_toStartOf="@id/search_iv"
-            android:background="#DA000000"/>
+            app:layout_constraintEnd_toStartOf="@id/search_iv"
+            app:layout_constraintStart_toEndOf="@id/search_et"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/search_iv"
             android:layout_width="55dp"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
             android:scaleType="center"
             android:src="@mipmap/ic_action_search"
-            tools:ignore="ContentDescription"/>
+            app:layout_constraintEnd_toStartOf="@id/more_iv"
+            tools:ignore="ContentDescription" />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/more_iv"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@mipmap/ic_menu_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/search_source_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:paddingBottom="10dp"
+        android:background="@color/colorPrimary"
+        android:layout_below="@id/search_toolbar"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_12"
+        android:elevation="1dp"
+        android:visibility="gone"
+        tools:text="数据来源：追书神器"
+        tools:visibility="visible"
+        tools:ignore="RtlSymmetry" />
 
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_toolbar"/>
+        android:layout_below="@id/search_type_tv" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/auto_complete_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_toolbar"
+        android:layout_below="@id/search_type_tv"
         android:background="@color/common_bg"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </RelativeLayout>
