@@ -3,12 +3,19 @@ package com.xzhou.book.models;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.xzhou.book.utils.SPUtils;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SearchModel {
 
-    @IntDef({ ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
-            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6 })
+    @IntDef({ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
+            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6})
     public @interface ParseType {
         int PARSE_TYPE_1 = 1;
         int PARSE_TYPE_2 = 2;
@@ -157,6 +164,56 @@ public class SearchModel {
 //            put("fm.x88dushu.com", ParseType.PARSE_TYPE_6);
         }
     };
+
+    public static class HostType {
+        public static final Type TYPE = new TypeToken<List<HostType>>() {
+        }.getType();
+
+        public String host;
+        public @ParseType
+        int parseType;
+    }
+
+    public static void initSupportParseMap() {
+        List<HostType> list = getHostTypeList();
+        if (list != null) {
+            for (HostType hostType : list) {
+                BOOK_HOSTS.put(hostType.host, hostType.parseType);
+            }
+        }
+    }
+
+    public static List<HostType> getHostTypeList() {
+        List<HostType> list = null;
+        String listStr = SPUtils.get().getString("support_local_read_host");
+        if (listStr != null) {
+            try {
+                list = new Gson().fromJson(listStr, HostType.TYPE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    public static void saveHostType(HostType hostType) {
+        if (hostType == null) {
+            return;
+        }
+        BOOK_HOSTS.put(hostType.host, hostType.parseType);
+        List<HostType> list = getHostTypeList();
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        list.add(hostType);
+        String listStr = null;
+        try {
+            listStr = new Gson().toJson(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        SPUtils.get().putString("support_local_read_host", listStr);
+    }
 
     public static boolean hasSupportLocalRead(String host) {
         return BOOK_HOSTS.containsKey(host);

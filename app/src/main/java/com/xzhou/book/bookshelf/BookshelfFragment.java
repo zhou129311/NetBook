@@ -357,7 +357,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         return;
                     }
                     if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                        ReadWebActivity.startActivity(getContext(), item);
+                        ReadWebActivity.startActivity(getContext(), item, null);
                     } else {
                         ReadActivity.startActivity(getRecyclerView().getContext(), item);
                     }
@@ -381,7 +381,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                                     break;
                                 case 1:
                                     if (item.isBaiduBook) {
-                                        ReadWebActivity.startActivity(getContext(), item);
+                                        ReadWebActivity.startActivity(getContext(), item, null);
                                         return;
                                     }
                                     BookDetailActivity.startActivity(mContext, item._id);

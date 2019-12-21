@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.Response;
-
 public class BaiduSearch extends JsoupSearch {
 
     public BaiduSearch() {
@@ -110,5 +108,50 @@ public class BaiduSearch extends JsoupSearch {
             Log.e(TAG, e);
         }
         return bookList;
+    }
+
+    @Override
+    public List<SearchModel.SearchBook> parseFirstPageHtml(String html) {
+        logd("parseFirstPageHtml:" + html);
+        mCurSize = 0;
+        mCurParseSize = 0;
+        mCancel = false;
+        mBookHosts.clear();
+        try {
+            Document document = Jsoup.parse(html);
+            Element body = document.body();
+            Elements page = body.select("div#page");
+            Elements a = page.select("a");
+            if (mPageUrlList == null) {
+                mPageUrlList = new ArrayList<>();
+            } else {
+                mPageUrlList.clear();
+            }
+            if (a != null) {
+                for (Element element : a) {
+                    String link = element.attr("href");
+                    if (link != null && link.startsWith("/s")) {
+                        mPageUrlList.add("http://www.baidu.com" + link);
+                    }
+                    if (mPageUrlList.size() > 8) {
+                        break;
+                    }
+                    Log.i(TAG, "page: " + link);
+                }
+            }
+            List<SearchModel.SearchBook> list = getBookListForDocument(document);
+            if (mUrlCallback != null) {
+                if (mPageUrlList.size() > 0 && !mCancel) {
+                    String url = mPageUrlList.remove(0);
+                    mUrlCallback.onNextUrl(url);
+                } else {
+                    mUrlCallback.onLoadEnd();
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            Log.e(TAG, e);
+        }
+        return null;
     }
 }

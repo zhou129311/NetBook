@@ -73,4 +73,10 @@
         <item>色情，淫秽内容</item>
         <item>激进时政、敏感信息</item>
     </string-array>
+
+    <string-array name="search_type">
+        <item>百度搜索</item>
+        <item>搜狗搜索</item>
+        <item>追书搜索</item>
+    </string-array>
 </resources>

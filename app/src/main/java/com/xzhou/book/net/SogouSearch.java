@@ -104,6 +104,50 @@ public class SogouSearch extends JsoupSearch {
         return bookList;
     }
 
+    @Override
+    public List<SearchModel.SearchBook> parseFirstPageHtml(String html) {
+        mCurSize = 0;
+        mCurParseSize = 0;
+        mCancel = false;
+        mBookHosts.clear();
+        try {
+            Document document = Jsoup.parse(html);
+            Element body = document.body();
+            Elements page = body.select("div#page");
+            Elements a = page.select("a");
+            if (mPageUrlList == null) {
+                mPageUrlList = new ArrayList<>();
+            } else {
+                mPageUrlList.clear();
+            }
+            if (a != null) {
+                for (Element element : a) {
+                    String link = element.attr("href");
+                    if (link != null && link.startsWith("?")) {
+                        mPageUrlList.add("https://www.sogou.com/web" + link);
+                    }
+                    if (mPageUrlList.size() > 8) {
+                        break;
+                    }
+                    Log.i(TAG, "page: " + link);
+                }
+            }
+            List<SearchModel.SearchBook> list = getBookListForDocument(document);
+            if (mUrlCallback != null) {
+                if (mPageUrlList.size() > 0 && !mCancel) {
+                    String url = mPageUrlList.remove(0);
+                    mUrlCallback.onNextUrl(url);
+                } else {
+                    mUrlCallback.onLoadEnd();
+                }
+            }
+            return list;
+        } catch (Exception e) {
+            Log.e(TAG, e);
+        }
+        return null;
+    }
+
     protected List<SearchModel.SearchBook> getBookListForDocument(Document document) {
         List<SearchModel.SearchBook> bookList = null;
         try {

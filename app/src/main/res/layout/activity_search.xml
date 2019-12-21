@@ -88,7 +88,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/sp_12"
         android:elevation="1dp"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:text="数据来源：追书神器"
         tools:visibility="visible"
         tools:ignore="RtlSymmetry" />
@@ -97,13 +97,13 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_type_tv" />
+        android:layout_below="@id/search_source_tv" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/auto_complete_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_type_tv"
+        android:layout_below="@id/search_source_tv"
         android:background="@color/common_bg"
         android:visibility="gone" />
 </RelativeLayout>

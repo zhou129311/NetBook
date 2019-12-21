@@ -34,8 +34,10 @@ import static com.xzhou.book.models.HtmlParse.USER_AGENT;
  * Change List:
  */
 public abstract class JsoupSearch {
-    String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
+    public static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
     String TAG;
+
+    List<String> mPageUrlList;
 
     public static class Title {
         public String title;
@@ -54,7 +56,14 @@ public abstract class JsoupSearch {
         void onCurParse(int size, int parseSize, String curResult);
     }
 
+    public interface UrlCallback {
+        void onNextUrl(String url);
+
+        void onLoadEnd();
+    }
+
     protected ProgressCallback mCallback;
+    protected UrlCallback mUrlCallback;
     protected boolean mCancel = false;
     protected int mCurSize;
     protected int mCurParseSize;
@@ -70,6 +79,10 @@ public abstract class JsoupSearch {
 
     public void setProgressCallback(ProgressCallback callback) {
         mCallback = callback;
+    }
+
+    public void setUrlCallback(UrlCallback callback) {
+        mUrlCallback = callback;
     }
 
     protected void trustEveryone() {
@@ -103,10 +116,26 @@ public abstract class JsoupSearch {
 
     public abstract List<SearchModel.SearchBook> parseSearchKey(String key);
 
+    public abstract List<SearchModel.SearchBook> parseFirstPageHtml(String html);
+
+    public List<SearchModel.SearchBook> parsePageHtml(String html) {
+        Document document = Jsoup.parse(html);
+        List<SearchModel.SearchBook> list = getBookListForDocument(document);
+        if (mUrlCallback != null) {
+            if (mPageUrlList != null && mPageUrlList.size() > 0 && !mCancel) {
+                String url = mPageUrlList.remove(0);
+                mUrlCallback.onNextUrl(url);
+            } else {
+                mUrlCallback.onLoadEnd();
+            }
+        }
+        return list;
+    }
+
     protected List<SearchModel.SearchBook> getBookListForDocument(Document document) {
         List<SearchModel.SearchBook> bookList = null;
         try {
-            Elements result = document.getElementsByClass("result c-container ");
+            Elements result = document.select("div.result").select(".c-container");
             logd("title=" + document.title() + ",result size=" + result.size());
             bookList = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {

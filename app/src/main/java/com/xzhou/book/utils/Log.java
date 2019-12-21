@@ -1,5 +1,7 @@
 package com.xzhou.book.utils;
 
+import com.xzhou.book.BuildConfig;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,7 +11,7 @@ import java.util.concurrent.Executors;
 public class Log {
 
     //    public static final boolean LOG_DEBUG = BuildConfig.DEBUG;
-    public static final boolean LOG_DEBUG = true;
+    public static final boolean LOG_DEBUG = BuildConfig.DEBUG;
 
     private static final String TAG = "zx";
     private static ExecutorService mWorker = Executors.newSingleThreadExecutor();

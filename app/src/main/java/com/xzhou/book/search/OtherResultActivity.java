@@ -53,7 +53,7 @@ public class OtherResultActivity extends BaseActivity<OtherContract.Presenter> i
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_result_baidu);
+        setContentView(R.layout.activity_search_result_net);
 
         LayoutInflater inflater = LayoutInflater.from(this);
         mEmptyView = inflater.inflate(R.layout.common_empty_view, null);
@@ -177,7 +177,7 @@ public class OtherResultActivity extends BaseActivity<OtherContract.Presenter> i
                     if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
                         ReadActivity.startActivity(mActivity, localBook);
                     } else {
-                        ReadWebActivity.startActivity(mActivity, localBook);
+                        ReadWebActivity.startActivity(mActivity, localBook, null);
                     }
                 }
             });

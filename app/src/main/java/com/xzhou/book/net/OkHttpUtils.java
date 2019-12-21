@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,7 +194,7 @@ public class OkHttpUtils {
             body = response.body();
             String bodys = body.string();
             if (!url.contains("chapter2.zhuishushenqi.com")) {
-                loge("get url = " + url + "\nresponse =" + bodys);
+                logi("get url = " + url + "\nresponse =" + bodys);
             }
             return new Gson().fromJson(bodys, typeOfT);
         } catch (Exception e) {
@@ -221,7 +220,7 @@ public class OkHttpUtils {
             Response response = getClient().newCall(req).execute();
             body = response.body();
             String bodys = body.string();
-            loge("post url = " + url + ", content = " + content + "\nresponse =" + bodys);
+            logi("post url = " + url + ", content = " + content + "\nresponse =" + bodys);
             Object result = null;
             if (typeOfT != null) {
                 result = new Gson().fromJson(bodys, typeOfT);
@@ -237,12 +236,16 @@ public class OkHttpUtils {
         return null;
     }
 
-    public static void loge(String str) {
+    public static void logi(String str) {
+        logi("Http", str);
+    }
+
+    public static void logi(String tag, String str) {
         int max_str_length = 2001;
         while (str.length() > max_str_length) {
-            Log.i("Http", str.substring(0, max_str_length));
+            Log.i(tag, str.substring(0, max_str_length));
             str = str.substring(max_str_length);
         }
-        Log.i("Http", str);
+        Log.i(tag, str);
     }
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.xzhou.book.db.BookManager;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.ThemeUtils;
 
@@ -21,6 +22,7 @@ public class MyApp extends Application {
         super.onCreate();
         mInstance = this;
         mHandler = new Handler();
+        SearchModel.initSupportParseMap();
         initNightMode();
         BookManager.get().init();
         AppSettings.init();

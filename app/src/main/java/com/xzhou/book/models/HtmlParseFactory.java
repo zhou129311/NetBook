@@ -11,6 +11,10 @@ public class HtmlParseFactory {
         if (type == null) {
             return null;
         }
+        return getHtmlParse(type);
+    }
+
+    public static HtmlParse getHtmlParse(@SearchModel.ParseType int type) {
         HtmlParse parse = PARSES.get(type);
         if (parse == null) {
             parse = createParse(type);

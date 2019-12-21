@@ -8,8 +8,12 @@ import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.models.Entities;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SearchPresenter extends BasePresenter<SearchContract.View> implements SearchContract.Presenter {
+
+    private ExecutorService mSearchPool = Executors.newSingleThreadExecutor();
 
     SearchPresenter(SearchContract.View view) {
         super(view);
@@ -17,7 +21,7 @@ public class SearchPresenter extends BasePresenter<SearchContract.View> implemen
 
     @Override
     public void autoComplete(final String key) {
-        ZhuiShuSQApi.getPool().execute(new Runnable() {
+        mSearchPool.execute(new Runnable() {
             @Override
             public void run() {
                 List<Entities.Suggest> list = null;

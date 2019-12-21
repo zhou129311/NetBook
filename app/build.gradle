@@ -14,8 +14,8 @@ android {
         applicationId "com.xzhou.analyhtml"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.0.b"
+        versionCode 4
+        versionName "1.0.c"
     }
     buildTypes {
         release {

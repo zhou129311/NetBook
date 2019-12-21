@@ -161,7 +161,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
             mAdapter.setNewData(null);
         } else {
             mAdapter.setNewData(list);
-            checkAddHeaderView();
+//            checkAddHeaderView();
         }
     }
 

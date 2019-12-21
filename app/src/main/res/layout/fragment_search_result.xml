@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:rvp="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/net_search_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <com.xzhou.book.widget.Indicator
         android:id="@+id/search_indicator"
@@ -31,7 +36,8 @@
     </android.support.v4.widget.SwipeRefreshLayout>-->
     <android.support.v4.view.ViewPager
         android:id="@+id/search_rel_view_pager"
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-</LinearLayout>
+</FrameLayout>
 

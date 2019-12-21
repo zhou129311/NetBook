@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,10 +26,12 @@ public class ReadWebActivity extends BaseActivity {
     private WebFragment mWebFragment;
     private BookProvider.LocalBook mBaiduBook;
     private MenuItem mAddMenuItem;
+    private String mCurUrl;
 
-    public static void startActivity(Context context, BookProvider.LocalBook book) {
+    public static void startActivity(Context context, BookProvider.LocalBook book, String url) {
         Intent intent = new Intent(context, ReadWebActivity.class);
         intent.putExtra("baidu_book", book);
+        intent.putExtra("cur_url", url);
         context.startActivity(intent);
     }
 
@@ -36,8 +39,10 @@ public class ReadWebActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBaiduBook = getIntent().getParcelableExtra("baidu_book");
+        mCurUrl = getIntent().getStringExtra("cur_url");
         if (mBaiduBook == null && savedInstanceState != null) {
             mBaiduBook = savedInstanceState.getParcelable("baidu_book");
+            mCurUrl = savedInstanceState.getString("cur_url");
         }
         if (mBaiduBook == null || !mBaiduBook.isBaiduBook) {
             finish();
@@ -72,13 +77,14 @@ public class ReadWebActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
         if (outState != null) {
             outState.putParcelable("baidu_book", mBaiduBook);
+            outState.putString("cur_url", mCurUrl);
         }
     }
 
     private Fragment createFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("url", mBaiduBook.readUrl);
+        bundle.putString("url", TextUtils.isEmpty(mCurUrl) ? mBaiduBook.readUrl : mCurUrl);
         bundle.putString("bookId", mBaiduBook._id);
         mWebFragment.setArguments(bundle);
         return mWebFragment;
@@ -103,17 +109,17 @@ public class ReadWebActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_bookshelf:
-                if (mBaiduBook.isBookshelf()) {
-                    showDeleteDialog(mBaiduBook);
-                } else {
-                    BookProvider.insertOrUpdate(mBaiduBook, false);
-                    mAddMenuItem.setTitle(R.string.book_read_remove);
-                }
-                return true;
-            case R.id.menu_search_baidu:
-                OtherResultActivity.startActivity(this, mBaiduBook.title);
-                return true;
+        case R.id.menu_add_bookshelf:
+            if (mBaiduBook.isBookshelf()) {
+                showDeleteDialog(mBaiduBook);
+            } else {
+                BookProvider.insertOrUpdate(mBaiduBook, false);
+                mAddMenuItem.setTitle(R.string.book_read_remove);
+            }
+            return true;
+        case R.id.menu_search_baidu:
+            OtherResultActivity.startActivity(this, mBaiduBook.title);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
