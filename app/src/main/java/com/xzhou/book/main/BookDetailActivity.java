@@ -29,7 +29,7 @@ import com.xzhou.book.community.PostsDetailActivity;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.read.ReadActivity;
-import com.xzhou.book.search.OtherResultActivity;
+import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Constant.TabSource;
@@ -167,7 +167,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             }
             return true;
         case R.id.menu_search_baidu:
-            OtherResultActivity.startActivity(this, mDetail.title);
+            SearchActivity.startActivity(this, mDetail.title, SearchActivity.SEARCH_TYPE_BAIDU);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -253,7 +253,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                     Entities.TabData data = new Entities.TabData();
                     data.title = tag;
                     data.source = TabSource.SOURCE_TAG;
-                    data.params = new String[] { tag };
+                    data.params = new String[]{tag};
                     TabActivity.startActivity(mActivity, data);
                 }
             });
@@ -360,8 +360,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
         }
     }
 
-    @OnClick({ R.id.load_error_view, R.id.detail_book_author, R.id.detail_join, R.id.detail_read
-            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend })
+    @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_join, R.id.detail_read
+            , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
     public void onViewClicked(View view) {
         switch (view.getId()) {
         case R.id.load_error_view:
@@ -371,7 +371,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
             data.source = TabSource.SOURCE_AUTHOR;
-            data.params = new String[] { data.title };
+            data.params = new String[]{data.title};
             TabActivity.startActivity(mActivity, data);
             break;
         }

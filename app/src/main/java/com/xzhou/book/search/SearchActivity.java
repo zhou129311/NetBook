@@ -91,16 +91,26 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         context.startActivity(intent);
     }
 
+    public static void startActivity(Context context, String key, int searchType) {
+        Intent intent = new Intent(context, SearchActivity.class);
+        intent.putExtra(EXTRA_SEARCH_KEY, key);
+        intent.putExtra(EXTRA_SEARCH_TYPE, searchType);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         mKey = getIntent().getStringExtra(EXTRA_SEARCH_KEY);
+        mSearchType = getIntent().getIntExtra(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
         if (savedInstanceState != null) {
             mKey = savedInstanceState.getString(EXTRA_SEARCH_KEY);
         }
         mSearchTypes = getResources().getStringArray(R.array.search_type);
-        mSearchType = SPUtils.get().getInt(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
+        if (mSearchType == SEARCH_TYPE_ZHUISHU) {
+            mSearchType = SPUtils.get().getInt(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
+        }
         mRelSourceTv.setText(getString(R.string.search_result_hint, mSearchTypes[mSearchType]));
         createFragment(mKey);
         if (TextUtils.isEmpty(mKey)) {

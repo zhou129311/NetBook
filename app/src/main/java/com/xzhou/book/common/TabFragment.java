@@ -173,7 +173,7 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
                 @Override
                 public void onClick(View v) {
                     if (!TextUtils.isEmpty(mTabData.params[0])) {
-                        OtherResultActivity.startActivity(getContext(), mTabData.params[0]);
+                        SearchActivity.startActivity(getContext(), mTabData.params[0], SearchActivity.SEARCH_TYPE_BAIDU);
                     } else {
                         ToastUtils.showShortToast("请输入关键字进行搜索");
                     }
