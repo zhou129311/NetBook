@@ -376,7 +376,24 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                         ToastUtils.showShortToast("已经加入书架了");
                         return true;
                     }
-                    if (!hasCache) {
+                    if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                        builder.setTitle("加入书架")
+                                .setMessage("是否将《" + item.bookName + "》加入书架")
+                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        BookProvider.insertOrUpdate(new BookProvider.LocalBook(item), false);
+                                    }
+                                })
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+                    } else if (!hasCache) {
                         ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
                         builder.setTitle(item.bookName).setItems(DIALOG_ITEM, new DialogInterface.OnClickListener() {
                             @Override
@@ -389,7 +406,6 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                                 }
                             }
                         }).show();
-
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
                         builder.setTitle("是否尝试自动解析《" + item.bookName + "》(" + item.sourceHost + ")?")

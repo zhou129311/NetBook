@@ -119,6 +119,9 @@ public abstract class JsoupSearch {
     public abstract List<SearchModel.SearchBook> parseFirstPageHtml(String html);
 
     public List<SearchModel.SearchBook> parsePageHtml(String html) {
+        if (mCancel) {
+            return null;
+        }
         Document document = Jsoup.parse(html);
         List<SearchModel.SearchBook> list = getBookListForDocument(document);
         if (mUrlCallback != null) {

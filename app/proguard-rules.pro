@@ -19,6 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# 序列化
 -keep class * implements android.os.Parcelable {public static final android.os.Parcelable$Creator *;}
 # 注解
 -keepattributes *Annotation*
@@ -40,14 +41,24 @@
 -keep public class * extends android.preference.Preference
 
 -keep class android.support.** {*;}
+-keep public class * extends android.support.**
+-keep public class * extends androidx.versionedparcelable.VersionedParcelable {
+      <init>();
+ }
 
--keep public class * extends android.support.v4.**
--keep public class * extends android.support.v7.**
--keep public class * extends android.support.annotation.**
+-keep class com.xzhou.book.utils.** {*;}
+-keep class com.xzhou.book.models.** {*;}
+-keep class com.xzhou.book.bookshelf.** {*;}
 
-#保留我们自定义控件（继承自View）不被混淆
+#保留自定义控件（继承自View）不被混淆
 -keep public class * extends android.view.View{*;}
 -keep public class * extends android.app.Fragment
+-keep public class * extends android.app.LinearLayoutManager
+-keep public class * extends android.app.GridLayoutManager
+
+-dontwarn org.jsoup.**
+-keep class org.jsoup.**{*;}
+-keep class android.support.constraint.ConstraintLayout
 
 -keep class com.chad.library.adapter.** {
 *;
@@ -59,6 +70,8 @@
 }
 
 -dontwarn com.yanzhenjie.permission.**
+-keep class com.yanzhenjie.permission.** { *;}
+-keep class com.yanzhenjie.permission.FileProvider
 
 -dontwarn com.squareup.okhttp3.**
 -keep class com.squareup.okhttp3.** { *;}
@@ -73,13 +86,15 @@
 
 ## gson[version 2.8.0]
 -keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.models.** { *; }
+-keep interface com.google.gson.examples.models.** { *; }
+-keep class com.google.gson.examples.upgrade.internal.VersionInfo {*;}
 -keep class com.google.gson.stream.** { *; }
 -keep class com.google.gson.examples.android.model.** { *; }
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer-keep
 -keep class * implements com.google.gson.JsonDeserializer
 ## gson
-
 
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {  **[] $VALUES;  public *;}
