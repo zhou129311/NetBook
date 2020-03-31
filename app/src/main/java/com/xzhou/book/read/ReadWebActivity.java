@@ -51,12 +51,12 @@ public class ReadWebActivity extends BaseActivity {
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        Fragment fragment = fm.findFragmentByTag("web");
-        if (fragment == null) {
+        mWebFragment = (WebFragment) fm.findFragmentByTag("web");
+        if (mWebFragment == null) {
             ft.add(R.id.web_content, createFragment(), "web");
             ft.commitAllowingStateLoss();
         } else {
-            ft.show(fragment);
+            ft.show(mWebFragment);
         }
         if (mBaiduBook.isBookshelf()) {
             BookProvider.updateReadTime(mBaiduBook);
@@ -66,7 +66,7 @@ public class ReadWebActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mBaiduBook != null && mBaiduBook.isBookshelf()) {
+        if (mBaiduBook != null && mBaiduBook.isBookshelf() && mWebFragment != null) {
             mWebFragment.saveCurReadUrl(mBaiduBook._id);
         }
     }
@@ -80,7 +80,7 @@ public class ReadWebActivity extends BaseActivity {
         }
     }
 
-    private Fragment createFragment() {
+    private WebFragment createFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
         bundle.putString("url", TextUtils.isEmpty(mCurUrl) ? mBaiduBook.readUrl : mCurUrl);
