@@ -114,12 +114,13 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         mRelSourceTv.setText(getString(R.string.search_result_hint, mSearchTypes[mSearchType]));
         createFragment(mKey);
         if (TextUtils.isEmpty(mKey)) {
+            mSearchEt.requestFocus();
             showFragment(TAB_HISTORY);
         } else {
             showFragment(mSearchType == SEARCH_TYPE_ZHUISHU ? TAB_RESULT_ZHUI : TAB_RESULT_NET);
             mSearchEt.setText(mKey);
+            getHistoryFragment().addNewHistory(mKey);
         }
-        mSearchEt.requestFocus();
         mSearchEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -202,9 +203,10 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         }
         getHistoryFragment().addNewHistory(key);
         mSearchEt.postDelayed(mEnableRun, 2000);
+        mSearchEt.clearFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         if (imm == null) return;
-        imm.hideSoftInputFromWindow(mSearchEt.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
     }
 
     private Runnable mEnableRun = new Runnable() {

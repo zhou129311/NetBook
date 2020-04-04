@@ -12,6 +12,8 @@ public interface BookshelfContract {
 
         void refresh();
 
+        void updateNetBook(BookProvider.LocalBook book);
+
         void download(BookProvider.LocalBook localBook);
 
         void login(String openId, String token, String loginType);

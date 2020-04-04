@@ -6,12 +6,12 @@ import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.db.BookManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.HtmlParse;
 import com.xzhou.book.models.HtmlParseFactory;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.ToastUtils;
@@ -140,6 +140,46 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                     BookProvider.updateLocalBooks(updateList);
                 }
                 updated(hasUpdated, error);
+            }
+        });
+    }
+
+    @Override
+    public void updateNetBook(final BookProvider.LocalBook book) {
+        if (!book.isBaiduBook) {
+            return;
+        }
+        mView.onLoadingState(true);
+        ZhuiShuSQApi.getPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean hasUpdated = false;
+                HtmlParse parse = HtmlParseFactory.getHtmlParse(book.curSourceHost);
+                if (parse != null) {
+                    List<Entities.Chapters> oldList = AppSettings.getChapterList(book._id);
+                    List<Entities.Chapters> newList = parse.parseChapters(book.readUrl);
+                    String msg;
+                    if (newList != null && newList.size() > 0) {
+                        AppSettings.saveChapterList(book._id, newList);
+                        if (oldList == null || newList.size() > oldList.size()) {
+                            book.isShowRed = true;
+                            book.updated = System.currentTimeMillis();
+                            book.lastChapter = newList.get(newList.size() - 1).title;
+                            hasUpdated = true;
+                            msg = "《" + book.getTitle() + "》" + "已更新";
+                        } else {
+                            msg = "《" + book.getTitle() + "》" + "暂无更新";
+                        }
+                    } else {
+                        msg = "《" + book.getTitle() + "》" + "更新失败";
+                    }
+                    if (hasUpdated) {
+                        List<BookProvider.LocalBook> updateList = new ArrayList<>();
+                        updateList.add(book);
+                        BookProvider.updateLocalBooks(updateList);
+                    }
+                    updated(hasUpdated, msg);
+                }
             }
         });
     }

@@ -148,7 +148,11 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                 mSearchUrl = "https://www.sogou.com/web?query=" + mKey;
             }
             Log.i(TAG, "mSearchUrl = " + mSearchUrl);
-            mWebView.loadUrl(mSearchUrl);
+            if (mSearchUrl.equals(mWebView.getUrl())) {
+                mWebView.reload();
+            } else {
+                mWebView.loadUrl(mSearchUrl);
+            }
         }
     }
 
@@ -237,13 +241,13 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     @Override
     public void onLoadingState(boolean loading) {
         if (!loading) {
+            mAdapter.setEmptyView(mEmptyView);
             mRecyclerView.setVisibility(View.VISIBLE);
             mWebView.setVisibility(View.GONE);
             if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
                 mLoadingDialog.dismiss();
                 mLoadingDialog = null;
             }
-            mAdapter.setEmptyView(mEmptyView);
         } else {
             mWebView.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
@@ -329,7 +333,6 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mPresenter.cancel();
-                        mLoadingDialog.setMessage("正在结束搜索...");
                         mAdapter.setEmptyView(mLoadView);
                     }
                 }).create();
