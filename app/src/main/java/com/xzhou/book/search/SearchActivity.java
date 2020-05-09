@@ -103,12 +103,12 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         mKey = getIntent().getStringExtra(EXTRA_SEARCH_KEY);
-        mSearchType = getIntent().getIntExtra(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
+        mSearchType = getIntent().getIntExtra(EXTRA_SEARCH_TYPE, -1);
         if (savedInstanceState != null) {
             mKey = savedInstanceState.getString(EXTRA_SEARCH_KEY);
         }
         mSearchTypes = getResources().getStringArray(R.array.search_type);
-        if (mSearchType == SEARCH_TYPE_ZHUISHU) {
+        if (mSearchType == -1) {
             mSearchType = SPUtils.get().getInt(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
         }
         mRelSourceTv.setText(getString(R.string.search_result_hint, mSearchTypes[mSearchType]));
@@ -141,7 +141,9 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
                     mSearchIv.setEnabled(true);
                     mClearEtIv.setVisibility(View.VISIBLE);
                 }
-                mPresenter.autoComplete(text);
+                if (mSearchType == SEARCH_TYPE_ZHUISHU) {
+                    mPresenter.autoComplete(text);
+                }
             }
         });
         mSearchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -189,6 +191,9 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
     }
 
     private void search(String key, boolean force) {
+        if (TextUtils.isEmpty(key)) {
+            return;
+        }
         Log.i(TAG, "search:" + key + ", mSearchType:" + mSearchType);
         mSearchEt.removeCallbacks(mEnableRun);
         mIsEnableAutoSuggest = false;

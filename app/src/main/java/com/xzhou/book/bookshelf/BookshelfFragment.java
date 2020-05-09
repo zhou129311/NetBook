@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.CommonViewHolder;
@@ -28,18 +29,20 @@ import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.main.MainActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.SearchModel;
+import com.xzhou.book.net.AutoParseNetBook;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter> implements BookshelfContract.View {
+public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter> implements BookshelfContract.View, AutoParseNetBook.Callback {
     private static final String TAG = "BookshelfFragment";
 
     @BindView(R.id.recycler_view)
@@ -55,6 +58,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
 
     private Adapter mAdapter;
     private View mEmptyView;
+    private AlertDialog mParsingDialog;
 
     @Override
     public int getLayoutResId() {
@@ -80,6 +84,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         mSwipeLayout.setColorSchemeResources(R.color.colorPrimary);
         mSwipeLayout.setOnRefreshListener(mRefreshListener);
         mSwipeLayout.setEnabled(false);
+        AutoParseNetBook.addCallback(this);
     }
 
     @Override
@@ -96,6 +101,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         for (BookProvider.LocalBook book : mAdapter.getData()) {
             book.checkRemoveDownloadCallback();
         }
+        AutoParseNetBook.removeCallback(this);
     }
 
     @Override
@@ -201,22 +207,22 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
     @OnClick({R.id.select_all_tv, R.id.delete_tv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.select_all_tv:
-            String text = mSelectAllTv.getText().toString();
-            if (text.equals(getString(R.string.select_all))) {
-                changeSelectedAll(true);
-            } else {
-                changeSelectedAll(false);
-            }
-            break;
-        case R.id.delete_tv:
-            List<String> list = getCheckedList();
-            if (list.size() < 1) {
-                ToastUtils.showShortToast(R.string.has_not_selected_delete_book);
-            } else {
-                showDeleteDialog(list);
-            }
-            break;
+            case R.id.select_all_tv:
+                String text = mSelectAllTv.getText().toString();
+                if (text.equals(getString(R.string.select_all))) {
+                    changeSelectedAll(true);
+                } else {
+                    changeSelectedAll(false);
+                }
+                break;
+            case R.id.delete_tv:
+                List<String> list = getCheckedList();
+                if (list.size() < 1) {
+                    ToastUtils.showShortToast(R.string.has_not_selected_delete_book);
+                } else {
+                    showDeleteDialog(list);
+                }
+                break;
         }
     }
 
@@ -307,14 +313,45 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         }).show();
     }
 
+    @Override
+    public void onParseState(boolean state, boolean success, String message) {
+        if (state) {
+            showParsingDialog(message);
+        } else {
+            if (mParsingDialog != null) {
+                mParsingDialog.dismiss();
+                mParsingDialog = null;
+            }
+            if (success) {
+                mAdapter.notifyDataSetChanged();
+            }
+            ToastUtils.showShortToast(message);
+        }
+    }
+
+    private void showParsingDialog(String title) {
+        if (mParsingDialog != null && mParsingDialog.isShowing()) {
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        mParsingDialog = builder.setTitle(title)
+                .setMessage("正在解析中...")
+                .setPositiveButton("结束解析", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        AutoParseNetBook.stopParse();
+                    }
+                }).create();
+        mParsingDialog.setCanceledOnTouchOutside(false);
+        mParsingDialog.setCancelable(false);
+        mParsingDialog.show();
+    }
+
     private class Adapter extends BaseQuickAdapter<BookProvider.LocalBook, CommonViewHolder> {
 
-        private final String[] DIALOG_ITEM_UPTOP = new String[]{
-                "置顶", "书籍详情", "缓存全本", "删除", "批量管理", "网络更新"
-        };
-
-        private final String[] DIALOG_ITEM_TOP = new String[]{
-                "取消置顶", "书籍详情", "缓存全本", "删除", "批量管理", "网络更新"
+        private final String[] DIALOG_ITEMS = new String[]{
+                "书籍详情", "缓存全本", "删除", "批量管理", "网络更新"
         };
 
         Adapter() {
@@ -370,44 +407,54 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         return true;
                     }
                     ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
-                    builder.setTitle(item.title).setItems(item.hasTop ? DIALOG_ITEM_TOP : DIALOG_ITEM_UPTOP, new DialogInterface.OnClickListener() {
+                    List<String> list = new ArrayList<>();
+                    String top_untop = item.hasTop ? "取消置顶" : "置顶";
+                    list.add(top_untop);
+                    Collections.addAll(list, DIALOG_ITEMS);
+                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
+                        list.add(getString(R.string.parse_net_book));
+                    }
+                    builder.setTitle(item.title).setItems(list.toArray(new String [0]), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             switch (which) {
-                            case 0:
-                                item.hasTop = !item.hasTop;
-                                BookProvider.updateHasTop(item);
-                                break;
-                            case 1:
-                                if (item.isBaiduBook) {
-                                    ReadWebActivity.startActivity(getContext(), item, null);
-                                    return;
-                                }
-                                BookDetailActivity.startActivity(mContext, item._id);
-                                break;
-                            case 2:
-                                if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                                    ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
-                                    return;
-                                }
-                                mPresenter.download(item);
-                                break;
-                            case 3:
-                                List<String> list = new ArrayList<>();
-                                list.add(item._id);
-                                showDeleteDialog(list);
-                                break;
-                            case 4:
-                                changeEditMode(true);
-                                break;
-                            case 5:
-                                if (item.isBaiduBook) {
-                                    mPresenter.updateNetBook(item);
-                                } else {
-                                    ToastUtils.showShortToast("暂不支持更新追书书源:" + item.title);
-                                }
-                                break;
+                                case 0:
+                                    item.hasTop = !item.hasTop;
+                                    BookProvider.updateHasTop(item);
+                                    break;
+                                case 1:
+                                    if (item.isBaiduBook) {
+                                        ReadWebActivity.startActivity(getContext(), item, null);
+                                        return;
+                                    }
+                                    BookDetailActivity.startActivity(mContext, item._id);
+                                    break;
+                                case 2:
+                                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
+                                        ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
+                                        return;
+                                    }
+                                    mPresenter.download(item);
+                                    break;
+                                case 3:
+                                    List<String> list = new ArrayList<>();
+                                    list.add(item._id);
+                                    showDeleteDialog(list);
+                                    break;
+                                case 4:
+                                    changeEditMode(true);
+                                    break;
+                                case 5:
+                                    if (item.isBaiduBook) {
+                                        mPresenter.updateNetBook(item);
+                                    } else {
+                                        ToastUtils.showShortToast("暂不支持更新追书书源:" + item.title);
+                                    }
+                                    break;
+                                case 6:
+                                    AutoParseNetBook.tryParseBook(item.title, item.readUrl, item.curSourceHost);
+                                    break;
                             }
                         }
                     }).show();

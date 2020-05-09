@@ -136,16 +136,16 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     private void loadUrl() {
         Log.i(TAG, "loadUrl = " + mKey);
         if (!TextUtils.isEmpty(mKey)) {
+            String key;
+            try {
+                key = URLEncoder.encode(mKey, "gb2312");
+            } catch (UnsupportedEncodingException ignored) {
+                key = mKey;
+            }
             if (mSearchType == SEARCH_TYPE_BAIDU) {
-                String key;
-                try {
-                    key = URLEncoder.encode(mKey, "gb2312");
-                } catch (UnsupportedEncodingException ignored) {
-                    key = mKey;
-                }
                 mSearchUrl = "http://www.baidu.com/s?wd=" + key + "&cl=3";
             } else {
-                mSearchUrl = "https://www.sogou.com/web?query=" + mKey;
+                mSearchUrl = "https://www.sogou.com/web?query=" + key;
             }
             Log.i(TAG, "mSearchUrl = " + mSearchUrl);
             if (mSearchUrl.equals(mWebView.getUrl())) {
@@ -153,6 +153,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             } else {
                 mWebView.loadUrl(mSearchUrl);
             }
+            showLoadingDialog();
         }
     }
 
@@ -213,8 +214,10 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                 public void onReceiveValue(String value) {
                     if (mSearchUrl != null && mSearchUrl.equals(url)) {
                         mPresenter.startSearch(mSearchType, value);
+                        Log.i(TAG, "onReceiveValue: startSearch");
                     } else {
                         mPresenter.updateHtml(value);
+                        Log.i(TAG, "onReceiveValue: updateHtml ");
                     }
                 }
             });
@@ -230,6 +233,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             } else {
                 handler.cancel();
             }
+            hideLoadingDialog();
         }
     };
 
@@ -242,15 +246,12 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     public void onLoadingState(boolean loading) {
         if (!loading) {
             mAdapter.setEmptyView(mEmptyView);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mWebView.setVisibility(View.GONE);
-            if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-                mLoadingDialog.dismiss();
-                mLoadingDialog = null;
-            }
+//            mRecyclerView.setVisibility(View.VISIBLE);
+//            mWebView.setVisibility(View.GONE);
+            hideLoadingDialog();
         } else {
-            mWebView.setVisibility(View.VISIBLE);
-            mRecyclerView.setVisibility(View.GONE);
+//            mWebView.setVisibility(View.VISIBLE);
+//            mRecyclerView.setVisibility(View.GONE);
             showLoadingDialog();
             mAdapter.setEmptyView(mLoadView);
         }
@@ -339,6 +340,13 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         mLoadingDialog.setCanceledOnTouchOutside(false);
         mLoadingDialog.setCancelable(false);
         mLoadingDialog.show();
+    }
+
+    private void hideLoadingDialog() {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            mLoadingDialog.dismiss();
+            mLoadingDialog = null;
+        }
     }
 
     private class Adapter extends BaseQuickAdapter<SearchModel.SearchBook, CommonViewHolder> {

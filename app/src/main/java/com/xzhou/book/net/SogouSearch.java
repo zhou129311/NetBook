@@ -110,10 +110,11 @@ public class SogouSearch extends JsoupSearch {
         mCurParseSize = 0;
         mCancel = false;
         mBookHosts.clear();
+        List<SearchModel.SearchBook> list = null;
         try {
             Document document = Jsoup.parse(html);
             Element body = document.body();
-            Elements page = body.select("div#page");
+            Elements page = body.select("div#pagebar_container");
             Elements a = page.select("a");
             if (mPageUrlList == null) {
                 mPageUrlList = new ArrayList<>();
@@ -132,7 +133,8 @@ public class SogouSearch extends JsoupSearch {
                     Log.i(TAG, "page: " + link);
                 }
             }
-            List<SearchModel.SearchBook> list = getBookListForDocument(document);
+            Log.i(TAG, "mPageUrlList: " + mPageUrlList.size());
+            list = getBookListForDocument(document);
             if (mUrlCallback != null) {
                 if (mPageUrlList.size() > 0 && !mCancel) {
                     String url = mPageUrlList.remove(0);
@@ -141,11 +143,10 @@ public class SogouSearch extends JsoupSearch {
                     mUrlCallback.onLoadEnd();
                 }
             }
-            return list;
         } catch (Exception e) {
             Log.e(TAG, e);
         }
-        return null;
+        return list;
     }
 
     protected List<SearchModel.SearchBook> getBookListForDocument(Document document) {
@@ -158,7 +159,7 @@ public class SogouSearch extends JsoupSearch {
             if (h3 != null) {
                 for (Element element : h3) {
                     if (mCancel) {
-                        return null;
+                        return bookList;
                     }
                     Elements a = element.select("a");
                     String link = a.attr("href");

@@ -43,6 +43,7 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     private Paint mPaint;
     private int mTextViewWidth;
     private int mCurChapter;
+    private String mWebProgress;
 
     ReadPresenter(ReadContract.View view, BookProvider.LocalBook book) {
         super(view);
@@ -55,6 +56,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             mChaptersList = null;
             final int[] progress = AppSettings.getReadProgress(mBook._id);
             mCurChapter = progress[0];
+            if (mCurChapter == 0 && progress[1] == 0) {
+                mWebProgress = AppSettings.getWebReadProgress(mBook._id);
+            }
             final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1, null);
             mSinglePool.execute(new Runnable() {
                 @Override
@@ -69,9 +73,20 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                             HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
                             if (htmlParse != null) {
                                 mChaptersList = htmlParse.parseChapters(mBook.readUrl);
-                                if (mChaptersList != null && mChaptersList.size() > 0 && mBook.isBookshelf()) {
-                                    mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
-                                    BookProvider.insertOrUpdate(mBook, true);
+                                if (mChaptersList != null && mChaptersList.size() > 0) {
+                                    if (mBook.isBookshelf()) {
+                                        mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
+                                        BookProvider.insertOrUpdate(mBook, true);
+                                    }
+                                    if (!TextUtils.isEmpty(mWebProgress)) {
+                                        for (int i = 0, s = mChaptersList.size(); i < s; i++) {
+                                            Entities.Chapters chapters = mChaptersList.get(i);
+                                            if (mWebProgress.equals(chapters.link)) {
+                                                mCurChapter = i;
+                                                break;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         } else {
@@ -161,17 +176,17 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             int cacheMode = AppSettings.getReadCacheMode();
             DownloadManager.Download download = null;
             switch (cacheMode) {
-            case AppSettings.PRE_VALUE_READ_CACHE_1:
-                saveCurChapter = true;
-                break;
-            case AppSettings.PRE_VALUE_READ_CACHE_5:
-                saveCurChapter = true;
-                download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
-                break;
-            case AppSettings.PRE_VALUE_READ_CACHE_10:
-                saveCurChapter = true;
-                download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
-                break;
+                case AppSettings.PRE_VALUE_READ_CACHE_1:
+                    saveCurChapter = true;
+                    break;
+                case AppSettings.PRE_VALUE_READ_CACHE_5:
+                    saveCurChapter = true;
+                    download = DownloadManager.createReadCacheDownload(mCurChapter, 5, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
+                    break;
+                case AppSettings.PRE_VALUE_READ_CACHE_10:
+                    saveCurChapter = true;
+                    download = DownloadManager.createReadCacheDownload(mCurChapter, 10, mChaptersList, mBook.isBaiduBook ? mBook.curSourceHost : null);
+                    break;
             }
             if (download != null) {
                 download.isNotify = false;

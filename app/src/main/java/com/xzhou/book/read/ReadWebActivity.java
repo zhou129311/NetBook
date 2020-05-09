@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -18,14 +17,18 @@ import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CheckDialog;
 import com.xzhou.book.common.WebFragment;
 import com.xzhou.book.db.BookProvider;
+import com.xzhou.book.models.SearchModel;
+import com.xzhou.book.net.AutoParseNetBook;
 import com.xzhou.book.search.SearchActivity;
+import com.xzhou.book.utils.ToastUtils;
 
-public class ReadWebActivity extends BaseActivity {
+public class ReadWebActivity extends BaseActivity implements AutoParseNetBook.Callback {
 
     private WebFragment mWebFragment;
     private BookProvider.LocalBook mBaiduBook;
     private MenuItem mAddMenuItem;
     private String mCurUrl;
+    private AlertDialog mParsingDialog;
 
     public static void startActivity(Context context, BookProvider.LocalBook book, String url) {
         Intent intent = new Intent(context, ReadWebActivity.class);
@@ -61,6 +64,7 @@ public class ReadWebActivity extends BaseActivity {
         if (mBaiduBook.isBookshelf()) {
             BookProvider.updateReadTime(mBaiduBook);
         }
+        AutoParseNetBook.addCallback(this);
     }
 
     @Override
@@ -69,6 +73,12 @@ public class ReadWebActivity extends BaseActivity {
         if (mBaiduBook != null && mBaiduBook.isBookshelf() && mWebFragment != null) {
             mWebFragment.saveCurReadUrl(mBaiduBook._id);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AutoParseNetBook.removeCallback(this);
     }
 
     @Override
@@ -106,19 +116,31 @@ public class ReadWebActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem parse = menu.findItem(R.id.menu_parse);
+        if (SearchModel.hasSupportLocalRead(mBaiduBook.curSourceHost)) {
+            parse.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_add_bookshelf:
-            if (mBaiduBook.isBookshelf()) {
-                showDeleteDialog(mBaiduBook);
-            } else {
-                BookProvider.insertOrUpdate(mBaiduBook, false);
-                mAddMenuItem.setTitle(R.string.book_read_remove);
-            }
-            return true;
-        case R.id.menu_search_baidu:
-            SearchActivity.startActivity(this, mBaiduBook.title, SearchActivity.SEARCH_TYPE_BAIDU);
-            return true;
+            case R.id.menu_add_bookshelf:
+                if (mBaiduBook.isBookshelf()) {
+                    showDeleteDialog(mBaiduBook);
+                } else {
+                    BookProvider.insertOrUpdate(mBaiduBook, false);
+                    mAddMenuItem.setTitle(R.string.book_read_remove);
+                }
+                return true;
+            case R.id.menu_search_baidu:
+                SearchActivity.startActivity(this, mBaiduBook.title, SearchActivity.SEARCH_TYPE_BAIDU);
+                return true;
+            case R.id.menu_parse:
+                AutoParseNetBook.tryParseBook(mBaiduBook.title, mBaiduBook.readUrl, mBaiduBook.curSourceHost);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -182,5 +204,55 @@ public class ReadWebActivity extends BaseActivity {
                     }
                 });
         builder.show();
+    }
+
+    @Override
+    public void onParseState(final boolean state, final boolean success, final String message) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        if (state) {
+            showParsingDialog(message);
+        } else {
+            if (mParsingDialog != null) {
+                mParsingDialog.dismiss();
+                mParsingDialog = null;
+            }
+            if (success) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ReadWebActivity.this);
+                builder.setTitle(message)
+                        .setMessage("是否跳转到本地书籍阅读？")
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                ReadActivity.startActivity(ReadWebActivity.this, mBaiduBook);
+                                finish();
+                            }
+                        }).show();
+            } else {
+                ToastUtils.showShortToast(message);
+            }
+        }
+    }
+
+    private void showParsingDialog(String title) {
+        if (mParsingDialog != null && mParsingDialog.isShowing()) {
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        mParsingDialog = builder.setTitle(title)
+                .setMessage("正在解析中...")
+                .setPositiveButton("结束解析", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        AutoParseNetBook.stopParse();
+                    }
+                }).create();
+        mParsingDialog.setCanceledOnTouchOutside(false);
+        mParsingDialog.setCancelable(false);
+        mParsingDialog.show();
     }
 }

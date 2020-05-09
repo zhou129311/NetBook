@@ -46,9 +46,16 @@
       <init>();
  }
 
--keep class com.xzhou.book.utils.** {*;}
--keep class com.xzhou.book.models.** {*;}
--keep class com.xzhou.book.bookshelf.** {*;}
+-keep class com.xzhou.book.models.Entities$* {*;}
+# 保留Parcelable序列化的类不被混淆
+-keep class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator *;
+}
+
+# 保留Serializable序列化的类不被混淆
+-keepclassmembers class * implements java.io.Serializable {
+    *;
+}
 
 #保留自定义控件（继承自View）不被混淆
 -keep public class * extends android.view.View{*;}

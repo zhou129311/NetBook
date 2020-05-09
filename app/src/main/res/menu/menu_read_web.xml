@@ -10,4 +10,9 @@
         android:id="@+id/menu_search_baidu"
         android:title="@string/other_source"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_parse"
+        android:title="@string/parse_net_book"
+        app:showAsAction="ifRoom"/>
 </menu>

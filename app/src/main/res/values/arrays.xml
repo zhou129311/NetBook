@@ -37,15 +37,6 @@
         <item>书评</item>
     </string-array>
 
-    <string-array name="favor_item_long_click_choice">
-        <item>置顶</item>
-        <item>书籍详情</item>
-        <item>移入养肥区</item>
-        <item>缓存全本</item>
-        <item>删除</item>
-        <item>批量管理</item>
-    </string-array>
-
     <string-array name="recommend_item_long_click_choice_local">
         <item>置顶</item>
         <item>删除</item>

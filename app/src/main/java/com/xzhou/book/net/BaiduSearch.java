@@ -112,11 +112,11 @@ public class BaiduSearch extends JsoupSearch {
 
     @Override
     public List<SearchModel.SearchBook> parseFirstPageHtml(String html) {
-        logd("parseFirstPageHtml:" + html);
         mCurSize = 0;
         mCurParseSize = 0;
         mCancel = false;
         mBookHosts.clear();
+        List<SearchModel.SearchBook> list = null;
         try {
             Document document = Jsoup.parse(html);
             Element body = document.body();
@@ -139,7 +139,7 @@ public class BaiduSearch extends JsoupSearch {
                     Log.i(TAG, "page: " + link);
                 }
             }
-            List<SearchModel.SearchBook> list = getBookListForDocument(document);
+            list = getBookListForDocument(document);
             if (mUrlCallback != null) {
                 if (mPageUrlList.size() > 0 && !mCancel) {
                     String url = mPageUrlList.remove(0);
@@ -148,10 +148,9 @@ public class BaiduSearch extends JsoupSearch {
                     mUrlCallback.onLoadEnd();
                 }
             }
-            return list;
         } catch (Exception e) {
             Log.e(TAG, e);
         }
-        return null;
+        return list;
     }
 }

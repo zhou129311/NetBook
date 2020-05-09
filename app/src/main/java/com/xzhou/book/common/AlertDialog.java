@@ -139,6 +139,8 @@ public class AlertDialog extends AppCompatDialog {
                 public void onClick(View v) {
                     if (mNegativeButtonListener != null) {
                         mNegativeButtonListener.onClick(dialog, Dialog.BUTTON_NEGATIVE);
+                    } else {
+                        dialog.dismiss();
                     }
                 }
             });
@@ -153,6 +155,8 @@ public class AlertDialog extends AppCompatDialog {
                 public void onClick(View v) {
                     if (mPositiveButtonListener != null) {
                         mPositiveButtonListener.onClick(dialog, Dialog.BUTTON_POSITIVE);
+                    } else {
+                        dialog.dismiss();
                     }
                 }
             });
