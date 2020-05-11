@@ -351,7 +351,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
     private class Adapter extends BaseQuickAdapter<BookProvider.LocalBook, CommonViewHolder> {
 
         private final String[] DIALOG_ITEMS = new String[]{
-                "书籍详情", "缓存全本", "删除", "批量管理", "网络更新"
+                "书籍详情", "缓存全本", "删除", "批量管理", "更新"
         };
 
         Adapter() {
@@ -407,52 +407,54 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                         return true;
                     }
                     ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
-                    List<String> list = new ArrayList<>();
+                    final List<String> list = new ArrayList<>();
                     String top_untop = item.hasTop ? "取消置顶" : "置顶";
                     list.add(top_untop);
                     Collections.addAll(list, DIALOG_ITEMS);
                     if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                        list.add(getString(R.string.parse_net_book));
+                        list.add("解析本书籍");
                     }
-                    builder.setTitle(item.title).setItems(list.toArray(new String [0]), new DialogInterface.OnClickListener() {
+                    builder.setTitle(item.title).setItems(list.toArray(new String[0]), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            switch (which) {
-                                case 0:
+                            String s = list.get(which);
+                            switch (s) {
+                                case "取消置顶":
+                                case "置顶":
                                     item.hasTop = !item.hasTop;
                                     BookProvider.updateHasTop(item);
                                     break;
-                                case 1:
+                                case "书籍详情":
                                     if (item.isBaiduBook) {
                                         ReadWebActivity.startActivity(getContext(), item, null);
                                         return;
                                     }
                                     BookDetailActivity.startActivity(mContext, item._id);
                                     break;
-                                case 2:
+                                case "缓存全本":
                                     if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
                                         ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
                                         return;
                                     }
                                     mPresenter.download(item);
                                     break;
-                                case 3:
+                                case "删除":
                                     List<String> list = new ArrayList<>();
                                     list.add(item._id);
                                     showDeleteDialog(list);
                                     break;
-                                case 4:
+                                case "批量管理":
                                     changeEditMode(true);
                                     break;
-                                case 5:
+                                case "更新":
                                     if (item.isBaiduBook) {
                                         mPresenter.updateNetBook(item);
                                     } else {
                                         ToastUtils.showShortToast("暂不支持更新追书书源:" + item.title);
                                     }
                                     break;
-                                case 6:
+                                case "解析本书籍":
                                     AutoParseNetBook.tryParseBook(item.title, item.readUrl, item.curSourceHost);
                                     break;
                             }

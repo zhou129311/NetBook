@@ -19,6 +19,14 @@ public class FileUtils {
         return file.exists() && file.length() > 10;
     }
 
+    public static boolean deleteCacheChapter(String bookId, int chapter) {
+        File file = getChapterFile(bookId, chapter);
+        if (file.exists()) {
+            return file.delete();
+        }
+        return false;
+    }
+
     public static String getChapterPath(String bookId, int chapter) {
         return getBookDir(bookId) + File.separator + chapter + ".txt";
     }

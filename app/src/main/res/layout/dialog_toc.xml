@@ -1,41 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_dialog_common"
-    android:orientation="vertical"
-    android:paddingBottom="30dp">
+    android:background="@drawable/bg_dialog_common">
 
     <TextView
         android:id="@+id/toc_title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:elevation="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="15dp"
         android:gravity="center"
-        android:paddingBottom="10dp"
         android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:textColor="@color/common_h1"
         android:textSize="16sp"
-        tools:text="人皇纪"/>
+        app:layout_constraintEnd_toStartOf="@id/toc_sort"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="人皇纪11111111111111111111111111111111111" />
+
+    <ImageView
+        android:id="@+id/toc_sort"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:src="@drawable/ic_resort"
+        app:layout_constraintBottom_toBottomOf="@id/toc_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toc_title" />
 
     <View
+        android:id="@+id/toc_div"
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="@color/common_divider_narrow"/>
+        android:background="@color/common_divider_narrow"
+        app:layout_constraintTop_toBottomOf="@id/toc_title" />
 
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:divider="@color/common_divider_narrow"
         android:dividerHeight="1px"
         android:fadeScrollbars="false"
         android:fastScrollEnabled="true"
-        android:paddingEnd="@dimen/dialog_margin"
         android:paddingStart="@dimen/dialog_margin"
+        android:paddingEnd="@dimen/dialog_margin"
+        android:layout_marginBottom="30dp"
         android:scrollbarSize="8dp"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollbarTrackVertical="@color/gray"/>
-</LinearLayout>
+        android:scrollbarTrackVertical="@color/gray"
+        app:layout_constraintTop_toBottomOf="@id/toc_div"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</android.support.constraint.ConstraintLayout>

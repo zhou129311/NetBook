@@ -1,5 +1,6 @@
 package com.xzhou.book.read;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +25,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -332,10 +332,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (AppSettings.HAS_VOLUME_TURN_PAGE) {
             switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                return true;
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                return true;
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    return true;
             }
         }
         return super.onKeyDown(keyCode, event);
@@ -345,12 +344,12 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (AppSettings.HAS_VOLUME_TURN_PAGE) {
             switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                nextPage();
-                return true;
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                previousPage();
-                return true;
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    nextPage();
+                    return true;
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    previousPage();
+                    return true;
             }
         }
         return super.onKeyUp(keyCode, event);
@@ -448,25 +447,32 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_community:
-            AppUtils.startDiscussionByBook(mActivity, mBook.title, mBook._id, 0);
-            return true;
-        case R.id.menu_change_source:
-            ReadSourceActivity.startActivity(this, mBook);
-            return true;
+            case R.id.menu_community:
+                AppUtils.startDiscussionByBook(mActivity, mBook.title, mBook._id, 0);
+                return true;
+            case R.id.menu_change_source:
+                ReadSourceActivity.startActivity(this, mBook);
+                return true;
         /*case R.id.menu_change_mode:
             return true;*/
-        case R.id.menu_book_detail:
-            BookDetailActivity.startActivity(mActivity, mBook._id);
-            return true;
-        case R.id.menu_read_web:
-            if (mChaptersList != null && mChaptersList.size() > mCurChapter) {
-                String url = mChaptersList.get(mCurChapter).link;
-                ReadWebActivity.startActivity(mActivity, mBook, url);
-            } else {
-                ReadWebActivity.startActivity(mActivity, mBook, null);
-            }
-            return true;
+            case R.id.menu_book_detail:
+                BookDetailActivity.startActivity(mActivity, mBook._id);
+                return true;
+            case R.id.menu_read_web:
+                if (mChaptersList != null && mChaptersList.size() > mCurChapter) {
+                    String url = mChaptersList.get(mCurChapter).link;
+                    ReadWebActivity.startActivity(mActivity, mBook, url);
+                } else {
+                    ReadWebActivity.startActivity(mActivity, mBook, null);
+                }
+                return true;
+            case R.id.menu_reload_chapter:
+                if (mChaptersList != null && mChaptersList.size() > 0) {
+                    mPresenter.loadChapter(mReadViewPager.getCurrentItem(), mCurChapter, true);
+                } else {
+                    ToastUtils.showShortToast("未找到该章节");
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -721,6 +727,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @OnClick({R.id.brightness_min, R.id.brightness_max, R.id.auto_reader_view, R.id.text_size_dec, R.id.text_size_inc,
             R.id.more_setting_view, R.id.day_night_view, R.id.orientation_view, R.id.setting_view, R.id.download_view,
             R.id.toc_view, R.id.read_view_pager, R.id.read_bottom_bar})
@@ -732,98 +739,98 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             return;
         }
         switch (view.getId()) {
-        case R.id.read_view_pager:
-            if (!hideReadToolBar() && mSwipeLayout.isMenuClosed()) {
-                showReadToolBar();
+            case R.id.read_view_pager:
+                if (!hideReadToolBar() && mSwipeLayout.isMenuClosed()) {
+                    showReadToolBar();
+                }
+                break;
+            case R.id.brightness_min: {
+                int curProgress = mBrightnessSeekBar.getProgress();
+                if (mBrightnessSeekBar.isEnabled() && curProgress > 0) {
+                    mBrightnessSeekBar.setProgress(curProgress - 1);
+                }
+                break;
             }
-            break;
-        case R.id.brightness_min: {
-            int curProgress = mBrightnessSeekBar.getProgress();
-            if (mBrightnessSeekBar.isEnabled() && curProgress > 0) {
-                mBrightnessSeekBar.setProgress(curProgress - 1);
-            }
-            break;
-        }
-        case R.id.brightness_max:
-            int curProgress = mBrightnessSeekBar.getProgress();
-            if (mBrightnessSeekBar.isEnabled() && curProgress < mBrightnessSeekBar.getMax()) {
-                mBrightnessSeekBar.setProgress(curProgress + 1);
-            }
-            break;
-        case R.id.auto_reader_view:
-            ToastUtils.showShortToast("该功能正在开发中...");
-            break;
-        case R.id.text_size_dec:
-            updateFontSize(true);
-            break;
-        case R.id.text_size_inc:
-            updateFontSize(false);
-            break;
-        case R.id.more_setting_view:
-            ReadSettingActivity.startActivity(mActivity);
-            break;
-        case R.id.day_night_view:
-            boolean isNight = !AppSettings.isNight();
-            AppSettings.setNight(isNight);
-            updateThemeView(AppSettings.READ_THEME, isNight);
-            AppCompatDelegate.setDefaultNightMode(isNight ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            break;
-        case R.id.orientation_view:
-            if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
-            break;
-        case R.id.setting_view:
-            if (mReadSettingLayout.getVisibility() == View.VISIBLE) {
-                mReadSettingLayout.setVisibility(View.GONE);
-            } else {
-                mReadSettingLayout.setVisibility(View.VISIBLE);
-            }
-            break;
-        case R.id.download_view:
-            if (mChaptersList == null || mChaptersList.size() < 1) {
-                ToastUtils.showShortToast("未找到章节列表");
-                return;
-            }
-            ItemDialog.Builder builder = new ItemDialog.Builder(this);
-            builder.setTitle("缓存多少章？").setItems(DownloadManager.DOWNLOAD_ITEMS, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (!mBook.isBookshelf()) {
-                        BookProvider.insertOrUpdate(mBook, true);
-                    }
+            case R.id.brightness_max:
+                int curProgress = mBrightnessSeekBar.getProgress();
+                if (mBrightnessSeekBar.isEnabled() && curProgress < mBrightnessSeekBar.getMax()) {
+                    mBrightnessSeekBar.setProgress(curProgress + 1);
+                }
+                break;
+            case R.id.auto_reader_view:
+                ToastUtils.showShortToast("该功能正在开发中...");
+                break;
+            case R.id.text_size_dec:
+                updateFontSize(true);
+                break;
+            case R.id.text_size_inc:
+                updateFontSize(false);
+                break;
+            case R.id.more_setting_view:
+                ReadSettingActivity.startActivity(mActivity);
+                break;
+            case R.id.day_night_view:
+                boolean isNight = !AppSettings.isNight();
+                AppSettings.setNight(isNight);
+                updateThemeView(AppSettings.READ_THEME, isNight);
+                AppCompatDelegate.setDefaultNightMode(isNight ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case R.id.orientation_view:
+                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }
+                break;
+            case R.id.setting_view:
+                if (mReadSettingLayout.getVisibility() == View.VISIBLE) {
                     mReadSettingLayout.setVisibility(View.GONE);
-                    DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList
-                            , mBook.isBaiduBook ? mBook.curSourceHost : null);
-                    boolean rel = DownloadManager.get().startDownload(mBook._id, download);
-                    if (!rel) {
-                        ToastUtils.showShortToast("正在缓存中...");
+                } else {
+                    mReadSettingLayout.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.download_view:
+                if (mChaptersList == null || mChaptersList.size() < 1) {
+                    ToastUtils.showShortToast("未找到章节列表");
+                    return;
+                }
+                ItemDialog.Builder builder = new ItemDialog.Builder(this);
+                builder.setTitle("缓存多少章？").setItems(DownloadManager.DOWNLOAD_ITEMS, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!mBook.isBookshelf()) {
+                            BookProvider.insertOrUpdate(mBook, true);
+                        }
+                        mReadSettingLayout.setVisibility(View.GONE);
+                        DownloadManager.Download download = DownloadManager.createDownload(which, mCurChapter, mChaptersList
+                                , mBook.isBaiduBook ? mBook.curSourceHost : null);
+                        boolean rel = DownloadManager.get().startDownload(mBook._id, download);
+                        if (!rel) {
+                            ToastUtils.showShortToast("正在缓存中...");
+                        }
+                        dialog.dismiss();
                     }
-                    dialog.dismiss();
+                });
+                builder.show();
+                break;
+            case R.id.toc_view:
+                if (mChaptersList == null || mChaptersList.size() < 1) {
+                    ToastUtils.showShortToast("未找到章节列表");
+                    return;
                 }
-            });
-            builder.show();
-            break;
-        case R.id.toc_view:
-            if (mChaptersList == null || mChaptersList.size() < 1) {
-                ToastUtils.showShortToast("未找到章节列表");
-                return;
-            }
 
-            final CommonDialog fragmentDialog = getDialog(mChaptersList);
-            fragmentDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
-                @Override
-                public void onClickItem(int chapter, Entities.Chapters chapters) {
-                    Log.i(TAG, "onClickItem::" + chapter);
-                    mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter);
-                    fragmentDialog.dismiss();
-                }
-            });
-            fragmentDialog.setChapter(mCurChapter);
-            fragmentDialog.show(getSupportFragmentManager(), "TocDialog");
-            break;
+                final CommonDialog fragmentDialog = getDialog(mChaptersList);
+                fragmentDialog.setOnItemClickListener(new BookTocDialog.OnItemClickListener() {
+                    @Override
+                    public void onClickItem(int chapter, Entities.Chapters chapters) {
+                        Log.i(TAG, "onClickItem::" + chapter);
+                        mPresenter.loadChapter(mReadViewPager.getCurrentItem(), chapter, false);
+                        fragmentDialog.dismiss();
+                    }
+                });
+                fragmentDialog.setChapter(mCurChapter);
+                fragmentDialog.show(getSupportFragmentManager(), "TocDialog");
+                break;
         }
     }
 
@@ -898,6 +905,10 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     public void resetFirstReadTime() {
         mFirstStartReadTime = SystemClock.elapsedRealtime();
         mSleepDialog = null;
+    }
+
+    public void refreshChapterList() {
+        mPresenter.restart();
     }
 
     private void showSleepTimeDialog(long countDownTime) {
@@ -1008,7 +1019,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         }
     }
 
-    public class ThemeItemDecoration extends RecyclerView.ItemDecoration {
+    public static class ThemeItemDecoration extends RecyclerView.ItemDecoration {
         private int mSpace;
 
         ThemeItemDecoration(int space) {

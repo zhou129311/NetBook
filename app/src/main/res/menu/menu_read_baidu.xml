@@ -5,5 +5,10 @@
     <item
         android:id="@+id/menu_read_web"
         android:title="@string/read_web"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_reload_chapter"
+        android:title="@string/reload_chapter"
+        app:showAsAction="never"/>
 </menu>

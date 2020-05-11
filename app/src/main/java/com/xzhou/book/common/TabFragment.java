@@ -15,7 +15,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;
-import com.xzhou.book.search.OtherResultActivity;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.Constant.TabSource;
 import com.xzhou.book.utils.ToastUtils;
@@ -212,13 +211,13 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private boolean hasEnableRefresh() {
         boolean enable = false;
         switch (mTabData.source) {
-        case TabSource.SOURCE_CATEGORY_SUB:
-        case TabSource.SOURCE_RANK_SUB:
-        case TabSource.SOURCE_TOPIC_LIST:
-        case TabSource.SOURCE_COMMUNITY:
-        case TabSource.SOURCE_SEARCH:
-            enable = true;
-            break;
+            case TabSource.SOURCE_CATEGORY_SUB:
+            case TabSource.SOURCE_RANK_SUB:
+            case TabSource.SOURCE_TOPIC_LIST:
+            case TabSource.SOURCE_COMMUNITY:
+            case TabSource.SOURCE_SEARCH:
+                enable = true;
+                break;
         }
         return enable;
     }
@@ -226,13 +225,13 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
     private boolean hasEnableLoadMore() {
         boolean enable = false;
         switch (mTabData.source) {
-        case TabSource.SOURCE_CATEGORY_SUB:
-        case TabSource.SOURCE_TOPIC_LIST:
-        case TabSource.SOURCE_TAG:
-        case TabSource.SOURCE_COMMUNITY:
-        case TabSource.SOURCE_SEARCH:
-            enable = true;
-            break;
+            case TabSource.SOURCE_CATEGORY_SUB:
+            case TabSource.SOURCE_TOPIC_LIST:
+            case TabSource.SOURCE_TAG:
+            case TabSource.SOURCE_COMMUNITY:
+            case TabSource.SOURCE_SEARCH:
+                enable = true;
+                break;
         }
         return enable;
     }

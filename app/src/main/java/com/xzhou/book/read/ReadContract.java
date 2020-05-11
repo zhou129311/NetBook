@@ -12,7 +12,7 @@ public interface ReadContract {
 
         void setTextViewParams(int maxLineCount, Paint paint, int width, PageLines pageLines);
 
-        void loadChapter(int itemPosition, int chapter);
+        void loadChapter(int itemPosition, int chapter, boolean isReload);
 
         void reloadCurPage(int itemPosition, PageContent pageContent);
 
@@ -21,6 +21,8 @@ public interface ReadContract {
         void loadNextPage(int itemPosition, PageContent pageContent);
 
         void loadAllSource();
+
+        void restart();
     }
 
     interface View extends BaseContract.View<Presenter> {

@@ -51,6 +51,12 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     @Override
+    public void restart() {
+        mChaptersList = null;
+        start();
+    }
+
+    @Override
     public boolean start() {
         if (mChaptersList == null || mChaptersList.size() <= 0) {
             mChaptersList = null;
@@ -269,11 +275,15 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     @Override
-    public void loadChapter(final int item, final int chapter) {
+    public void loadChapter(final int item, final int chapter, final boolean isReload) {
         Log.i(TAG, "loadChapter::" + chapter);
         if (chapter < 0 || mChaptersList == null || mChaptersList.size() < chapter + 1) {
             Log.e(TAG, "loadChapter error");
             return;
+        }
+        if (isReload) {
+            mCacheChapterBuffers.remove(getKey(chapter));
+            FileUtils.deleteCacheChapter(mBook._id, chapter);
         }
         ChapterBuffer buffer = mCacheChapterBuffers.get(getKey(chapter));
         if (chapter == mCurChapter && buffer != null) {

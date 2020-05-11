@@ -1,6 +1,7 @@
 package com.xzhou.book.models;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 
 import com.xzhou.book.utils.Log;
 
@@ -83,7 +84,11 @@ public abstract class HtmlParse {
             trustEveryone();
             Document document = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(10000).get();
             Log.i(TAG, "parseChapterRead:baseUri=" + document.baseUri());
-            return parseChapterRead(chapterUrl, document);
+            Entities.ChapterRead read = parseChapterRead(chapterUrl, document);
+            if (read != null && read.chapter != null && read.chapter.body != null && TextUtils.isEmpty(read.chapter.body.trim())) {
+                return null;
+            }
+            return read;
         } catch (Exception e) {
             Log.e(TAG, e);
         }

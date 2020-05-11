@@ -104,13 +104,14 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
         setContentView(R.layout.activity_search);
         mKey = getIntent().getStringExtra(EXTRA_SEARCH_KEY);
         mSearchType = getIntent().getIntExtra(EXTRA_SEARCH_TYPE, -1);
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && TextUtils.isEmpty(mKey)) {
             mKey = savedInstanceState.getString(EXTRA_SEARCH_KEY);
         }
         mSearchTypes = getResources().getStringArray(R.array.search_type);
         if (mSearchType == -1) {
             mSearchType = SPUtils.get().getInt(EXTRA_SEARCH_TYPE, SEARCH_TYPE_BAIDU);
         }
+        Log.i(TAG, "mKey = " + mKey + " ,mSearchType = " + mSearchType);
         mRelSourceTv.setText(getString(R.string.search_result_hint, mSearchTypes[mSearchType]));
         createFragment(mKey);
         if (TextUtils.isEmpty(mKey)) {
@@ -174,6 +175,14 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
     }
 
     @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+        if (savedInstanceState != null) {
+            mKey = savedInstanceState.getString(EXTRA_SEARCH_KEY);
+        }
+    }
+
+    @Override
     protected SearchContract.Presenter createPresenter() {
         return new SearchPresenter(this);
     }
@@ -226,10 +235,16 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
             return;
         }
 
+        Log.i(TAG, "showFragment:" + tab);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (mCurFragment != null) {
             ft.hide(mCurFragment);
             mCurFragment = null;
+        } else {
+            List<Fragment> list = getSupportFragmentManager().getFragments();
+            for (Fragment fragment : list) {
+                ft.hide(fragment);
+            }
         }
 
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(getTagName(tab));
@@ -302,22 +317,22 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
     @OnClick({R.id.back_iv, R.id.search_iv, R.id.clear_et_iv, R.id.more_iv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.back_iv:
-            onBackPressed();
-            break;
-        case R.id.search_iv:
-            mKey = mSearchEt.getText().toString();
-            if (!TextUtils.isEmpty(mKey)) {
-                search(mKey, true);
-            }
-            break;
-        case R.id.more_iv:
-            showSearchTypeWindow();
-            break;
-        case R.id.clear_et_iv:
-            mSearchEt.setText("");
-            mRecyclerView.setVisibility(View.GONE);
-            break;
+            case R.id.back_iv:
+                onBackPressed();
+                break;
+            case R.id.search_iv:
+                mKey = mSearchEt.getText().toString();
+                if (!TextUtils.isEmpty(mKey)) {
+                    search(mKey, true);
+                }
+                break;
+            case R.id.more_iv:
+                showSearchTypeWindow();
+                break;
+            case R.id.clear_et_iv:
+                mSearchEt.setText("");
+                mRecyclerView.setVisibility(View.GONE);
+                break;
         }
     }
 

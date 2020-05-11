@@ -2,6 +2,7 @@ package com.xzhou.book.read;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
@@ -10,22 +11,29 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xzhou.book.R;
+import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.utils.AppSettings;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class BookTocDialog extends AppCompatDialog {
 
     @BindView(R.id.toc_title)
     TextView mTocTitle;
+    @BindView(R.id.toc_sort)
+    ImageView mTocSortView;
     @BindView(R.id.list_view)
     ListView mListView;
     private View mView;
@@ -58,6 +66,27 @@ public class BookTocDialog extends AppCompatDialog {
         mListView.setAdapter(mAdapter);
         setContentView(mView, lp);
         setCanceledOnTouchOutside(true);
+    }
+
+    @OnClick({R.id.toc_sort})
+    public void onViewClicked(View view) {
+        dismiss();
+        final Activity activity = getOwnerActivity();
+        if (activity instanceof ReadActivity) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("确定倒序排列？")
+                    .setMessage("倒序排列后会重置已记录的阅读章节")
+                    .setPositiveButton(R.string.confirm, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Collections.reverse(mChaptersList);
+                            AppSettings.saveChapterList(mLocalBook._id, mChaptersList);
+                            AppSettings.saveReadProgress(mLocalBook._id, 0, 0);
+                            ((ReadActivity) activity).refreshChapterList();
+                        }
+                    }).setNegativeButton(R.string.cancel, null).show();
+        }
     }
 
     public void setCurChapter(int curChapter) {
