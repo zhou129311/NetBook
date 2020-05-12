@@ -75,10 +75,7 @@ public class WebFragment extends BaseFragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             String bookId = bundle.getString("bookId");
-            String url = AppSettings.getWebReadProgress(bookId);
-            if (TextUtils.isEmpty(url)) {
-                url = bundle.getString("url");
-            }
+            String url = bundle.getString("url");
             Log.d(TAG, "loadUrl:" + url);
             mHost = AppUtils.getHostFromUrl(url);
             int index = mHost.indexOf(".");
@@ -106,7 +103,11 @@ public class WebFragment extends BaseFragment {
     }
 
     public void saveCurReadUrl(String bookId) {
-        AppSettings.saveWebReadProgress(bookId, mWebView.getUrl());
+        if (mWebView.getUrl().contains(mHost)) {
+            AppSettings.saveWebReadProgress(bookId, mWebView.getUrl());
+        } else if (getArguments() != null){
+            AppSettings.saveWebReadProgress(bookId, getArguments().getString("url"));
+        }
     }
 
     @Override

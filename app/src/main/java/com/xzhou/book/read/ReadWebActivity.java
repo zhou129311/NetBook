@@ -20,6 +20,7 @@ import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.net.AutoParseNetBook;
 import com.xzhou.book.search.SearchActivity;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.ToastUtils;
 
 public class ReadWebActivity extends BaseActivity implements AutoParseNetBook.Callback {
@@ -93,7 +94,16 @@ public class ReadWebActivity extends BaseActivity implements AutoParseNetBook.Ca
     private WebFragment createFragment() {
         mWebFragment = new WebFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("url", TextUtils.isEmpty(mCurUrl) ? mBaiduBook.readUrl : mCurUrl);
+        String url;
+        if (!TextUtils.isEmpty(mCurUrl)) {
+            url = mCurUrl;
+        } else {
+            url = AppSettings.getWebReadProgress(mBaiduBook._id);
+            if (TextUtils.isEmpty(url)) {
+                url = mBaiduBook.readUrl;
+            }
+        }
+        bundle.putString("url", url);
         bundle.putString("bookId", mBaiduBook._id);
         mWebFragment.setArguments(bundle);
         return mWebFragment;
