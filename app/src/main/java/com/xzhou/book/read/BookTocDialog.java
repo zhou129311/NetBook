@@ -118,9 +118,14 @@ public class BookTocDialog extends AppCompatDialog {
                     mListView.setFastScrollAlwaysVisible(true);
                 }
                 mTocTitle.setText(mLocalBook.getTitle());
-                mListView.setSelection(mCurChapter);
             }
         });
+        mListView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mListView.setSelection(mCurChapter);
+            }
+        }, 200);
     }
 
     @Override
