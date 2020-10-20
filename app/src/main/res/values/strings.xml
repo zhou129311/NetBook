@@ -227,4 +227,5 @@
     <string name="pic_load_fail" translatable="false">图片加载失败，请点击重试</string>
 
     <string name="search_result_hint" translatable="false">数据来源：%1$s</string>
+    <string name="stop_search">结束搜索</string>
 </resources>

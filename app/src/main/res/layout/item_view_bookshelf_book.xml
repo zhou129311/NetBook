@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,9 +10,9 @@
         android:id="@+id/book_image"
         android:layout_width="45dp"
         android:layout_height="58dp"
-        android:layout_marginBottom="@dimen/book_item_margin_v"
         android:layout_marginStart="@dimen/book_item_margin_h"
         android:layout_marginTop="@dimen/book_item_margin_v"
+        android:layout_marginBottom="@dimen/book_item_margin_v"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_cover_default"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,7 +20,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/book_top"
@@ -32,7 +31,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/book_title"
@@ -47,22 +46,22 @@
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toTopOf="@id/book_image"
         app:layout_goneMarginEnd="10dp"
-        tools:text="武侠世界自由行"/>
+        tools:text="武侠世界自由行" />
 
     <TextView
         android:id="@+id/book_subhead"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/book_item_margin_h"
         android:layout_marginTop="8dp"
         android:textColor="@color/common_h2"
         android:textSize="13sp"
-        android:layout_marginStart="@dimen/book_item_margin_h"
         app:layout_constraintBottom_toTopOf="@id/download_status"
         app:layout_constraintEnd_toStartOf="@id/book_checkbox"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/book_image"
         app:layout_constraintTop_toBottomOf="@id/book_title"
-        tools:text="13小时前:灌口二郎神显圣 第1037章..."/>
+        tools:text="13小时前:灌口二郎神显圣 第1037章..." />
 
     <TextView
         android:id="@+id/download_status"
@@ -80,9 +79,9 @@
         app:layout_constraintStart_toStartOf="@id/book_title"
         app:layout_constraintTop_toBottomOf="@id/book_subhead"
         tools:text="正在缓存:%1$s(%2$d/%3$d)&#8230;"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
-    <android.support.v7.widget.AppCompatCheckBox
+    <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/book_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -92,7 +91,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/book_updated_iv"
@@ -105,5 +104,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
-        tools:visibility="visible"/>
-</android.support.constraint.ConstraintLayout>
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

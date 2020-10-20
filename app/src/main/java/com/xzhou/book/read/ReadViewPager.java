@@ -2,16 +2,16 @@ package com.xzhou.book.read;
 
 import android.content.Context;
 import android.graphics.RectF;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.xzhou.book.utils.AppSettings;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.widget.SwipeLayout;
 
 public class ReadViewPager extends ViewPager {
@@ -91,59 +91,59 @@ public class ReadViewPager extends ViewPager {
     public boolean onTouchEvent(MotionEvent ev) {
 //        Log.d(TAG, "onTouchEvent:" + ev);
         switch (ev.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-            mLastX = mDownX = ev.getRawX();
-            mDownY = ev.getRawY();
-            isMove = false;
-            return true;
-        case MotionEvent.ACTION_MOVE:
-            if (!isMove) {
-                isMove = Math.abs(mDownX - ev.getRawX()) > mScaledTouchSlop || Math.abs(mDownY - ev.getRawY()) > mScaledTouchSlop;
-            }
-            if (mSwipeLayout != null) {
-                if (hasCurEndPager() || !isCanLeftTouch) {
-                    if (mDownX - ev.getRawX() > 0) {
-                        //左滑
-                        int deltaX = (int) (mLastX - ev.getRawX());
-                        mSwipeLayout.onMove(deltaX);
-                        mLastX = ev.getRawX();
-                        return false;
-                    } else {
-                        if (mSwipeLayout.getCurrentState() != SwipeLayout.STATE_CLOSED) {
-                            //右滑
-                            mSwipeLayout.smoothToCloseMenu();
-                            return false;
-                        }
-                    }
-                }
-            }
-            break;
-        case MotionEvent.ACTION_UP:
-        case MotionEvent.ACTION_CANCEL:
-            if (mSwipeLayout != null) {
-                mSwipeLayout.onUpOrCancel();
-            }
-            float upX = ev.getRawX();
-            float upY = ev.getRawY();
-            if (!isMove) {
-                if (mCenterRect.contains(upX, upY)) {
-                    return performClick();
-                } else if (upX < mCenterRect.right && (upY < mCenterRect.bottom || upX < mCenterRect.left)) {
-                    if (mClickChangePageListener != null) {
-                        if (AppSettings.HAS_CLICK_NEXT_PAGE) {
-                            mClickChangePageListener.onNext();
-                        } else {
-                            mClickChangePageListener.onPrevious();
-                        }
-                    }
-                } else {
-                    if (mClickChangePageListener != null) {
-                        mClickChangePageListener.onNext();
-                    }
-                }
+            case MotionEvent.ACTION_DOWN:
+                mLastX = mDownX = ev.getRawX();
+                mDownY = ev.getRawY();
+                isMove = false;
                 return true;
-            }
-            break;
+            case MotionEvent.ACTION_MOVE:
+                if (!isMove) {
+                    isMove = Math.abs(mDownX - ev.getRawX()) > mScaledTouchSlop || Math.abs(mDownY - ev.getRawY()) > mScaledTouchSlop;
+                }
+                if (mSwipeLayout != null) {
+                    if (hasCurEndPager() || !isCanLeftTouch) {
+                        if (mDownX - ev.getRawX() > 0) {
+                            //左滑
+                            int deltaX = (int) (mLastX - ev.getRawX());
+                            mSwipeLayout.onMove(deltaX);
+                            mLastX = ev.getRawX();
+                            return false;
+                        } else {
+                            if (mSwipeLayout.getCurrentState() != SwipeLayout.STATE_CLOSED) {
+                                //右滑
+                                mSwipeLayout.smoothToCloseMenu();
+                                return false;
+                            }
+                        }
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                if (mSwipeLayout != null) {
+                    mSwipeLayout.onUpOrCancel();
+                }
+                float upX = ev.getRawX();
+                float upY = ev.getRawY();
+                if (!isMove) {
+                    if (mCenterRect.contains(upX, upY)) {
+                        return performClick();
+                    } else if (upX < mCenterRect.right && (upY < mCenterRect.bottom || upX < mCenterRect.left)) {
+                        if (mClickChangePageListener != null) {
+                            if (AppSettings.HAS_CLICK_NEXT_PAGE) {
+                                mClickChangePageListener.onNext();
+                            } else {
+                                mClickChangePageListener.onPrevious();
+                            }
+                        }
+                    } else {
+                        if (mClickChangePageListener != null) {
+                            mClickChangePageListener.onNext();
+                        }
+                    }
+                    return true;
+                }
+                break;
         }
         return isCanTouch && super.onTouchEvent(ev);
     }

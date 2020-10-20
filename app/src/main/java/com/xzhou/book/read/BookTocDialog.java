@@ -3,8 +3,9 @@ package com.xzhou.book.read;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDialog;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialog;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

@@ -17,18 +17,6 @@ package com.chad.library.adapter.base;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.support.annotation.IdRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.IntRange;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutParams;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +24,18 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.chad.library.adapter.base.animation.AlphaInAnimation;
 import com.chad.library.adapter.base.animation.BaseAnimation;
@@ -101,7 +101,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     private OnItemChildClickListener mOnItemChildClickListener;
     private OnItemChildLongClickListener mOnItemChildLongClickListener;
 
-    @IntDef({ ALPHAIN, SCALEIN, SLIDEIN_BOTTOM, SLIDEIN_LEFT, SLIDEIN_RIGHT })
+    @IntDef({ALPHAIN, SCALEIN, SLIDEIN_BOTTOM, SLIDEIN_LEFT, SLIDEIN_RIGHT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimationType {
     }
@@ -707,22 +707,22 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (getEmptyViewCount() == 1) {
             boolean header = mHeadAndEmptyEnable && getHeaderLayoutCount() != 0;
             switch (position) {
-            case 0:
-                if (header) {
-                    return HEADER_VIEW;
-                } else {
-                    return EMPTY_VIEW;
-                }
-            case 1:
-                if (header) {
-                    return EMPTY_VIEW;
-                } else {
+                case 0:
+                    if (header) {
+                        return HEADER_VIEW;
+                    } else {
+                        return EMPTY_VIEW;
+                    }
+                case 1:
+                    if (header) {
+                        return EMPTY_VIEW;
+                    } else {
+                        return FOOTER_VIEW;
+                    }
+                case 2:
                     return FOOTER_VIEW;
-                }
-            case 2:
-                return FOOTER_VIEW;
-            default:
-                return EMPTY_VIEW;
+                default:
+                    return EMPTY_VIEW;
             }
         }
         int numHeaders = getHeaderLayoutCount();
@@ -758,21 +758,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         this.mContext = parent.getContext();
         this.mLayoutInflater = LayoutInflater.from(mContext);
         switch (viewType) {
-        case LOADING_VIEW:
-            baseViewHolder = getLoadingView(parent);
-            break;
-        case HEADER_VIEW:
-            baseViewHolder = createBaseViewHolder(mHeaderLayout);
-            break;
-        case EMPTY_VIEW:
-            baseViewHolder = createBaseViewHolder(mEmptyLayout);
-            break;
-        case FOOTER_VIEW:
-            baseViewHolder = createBaseViewHolder(mFooterLayout);
-            break;
-        default:
-            baseViewHolder = onCreateDefViewHolder(parent, viewType);
-            bindViewClickListener(baseViewHolder);
+            case LOADING_VIEW:
+                baseViewHolder = getLoadingView(parent);
+                break;
+            case HEADER_VIEW:
+                baseViewHolder = createBaseViewHolder(mHeaderLayout);
+                break;
+            case EMPTY_VIEW:
+                baseViewHolder = createBaseViewHolder(mEmptyLayout);
+                break;
+            case FOOTER_VIEW:
+                baseViewHolder = createBaseViewHolder(mFooterLayout);
+                break;
+            default:
+                baseViewHolder = onCreateDefViewHolder(parent, viewType);
+                bindViewClickListener(baseViewHolder);
         }
         baseViewHolder.setAdapter(this);
         return baseViewHolder;
@@ -934,21 +934,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
-        case 0:
-            convert(holder, getItem(position - getHeaderLayoutCount()));
-            break;
-        case LOADING_VIEW:
-            mLoadMoreView.convert(holder);
-            break;
-        case HEADER_VIEW:
-            break;
-        case EMPTY_VIEW:
-            break;
-        case FOOTER_VIEW:
-            break;
-        default:
-            convert(holder, getItem(position - getHeaderLayoutCount()));
-            break;
+            case 0:
+                convert(holder, getItem(position - getHeaderLayoutCount()));
+                break;
+            case LOADING_VIEW:
+                mLoadMoreView.convert(holder);
+                break;
+            case HEADER_VIEW:
+                break;
+            case EMPTY_VIEW:
+                break;
+            case FOOTER_VIEW:
+                break;
+            default:
+                convert(holder, getItem(position - getHeaderLayoutCount()));
+                break;
         }
     }
 
@@ -1536,23 +1536,23 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         this.mOpenAnimationEnable = true;
         mCustomAnimation = null;
         switch (animationType) {
-        case ALPHAIN:
-            mSelectAnimation = new AlphaInAnimation();
-            break;
-        case SCALEIN:
-            mSelectAnimation = new ScaleInAnimation();
-            break;
-        case SLIDEIN_BOTTOM:
-            mSelectAnimation = new SlideInBottomAnimation();
-            break;
-        case SLIDEIN_LEFT:
-            mSelectAnimation = new SlideInLeftAnimation();
-            break;
-        case SLIDEIN_RIGHT:
-            mSelectAnimation = new SlideInRightAnimation();
-            break;
-        default:
-            break;
+            case ALPHAIN:
+                mSelectAnimation = new AlphaInAnimation();
+                break;
+            case SCALEIN:
+                mSelectAnimation = new ScaleInAnimation();
+                break;
+            case SLIDEIN_BOTTOM:
+                mSelectAnimation = new SlideInBottomAnimation();
+                break;
+            case SLIDEIN_LEFT:
+                mSelectAnimation = new SlideInLeftAnimation();
+                break;
+            case SLIDEIN_RIGHT:
+                mSelectAnimation = new SlideInRightAnimation();
+                break;
+            default:
+                break;
         }
     }
 

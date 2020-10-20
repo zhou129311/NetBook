@@ -3,7 +3,7 @@ package com.xzhou.book.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import android.text.TextUtils;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;

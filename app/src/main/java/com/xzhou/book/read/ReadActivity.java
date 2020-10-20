@@ -16,14 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -38,7 +30,16 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.android.material.appbar.AppBarLayout;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
@@ -50,6 +51,7 @@ import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
@@ -453,8 +455,9 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
             case R.id.menu_change_source:
                 ReadSourceActivity.startActivity(this, mBook);
                 return true;
-        /*case R.id.menu_change_mode:
-            return true;*/
+            case R.id.menu_more_source:
+                SearchActivity.startActivity(this, mBook.title, SearchActivity.SEARCH_TYPE_BAIDU);
+                return true;
             case R.id.menu_book_detail:
                 BookDetailActivity.startActivity(mActivity, mBook._id);
                 return true;
@@ -851,7 +854,7 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
     private void relayoutPageContent() {
         ReadPage curPage = mPageManagers[mReadViewPager.getCurrentItem()].getReadPage();
         int maxLineCount = curPage.mChapterContent.getMaxLineCount();
-        int width = curPage.mChapterContent.getMeasuredWidth();
+        int width = curPage.mChapterContent.getMeasuredWidth() - AppUtils.dip2px(10);
         PageLines pageLines = curPage.getPageContent() == null ? null : curPage.getPageContent().mPageLines;
         mPresenter.setTextViewParams(maxLineCount, curPage.mChapterContent.getPaint(), width, pageLines);
     }

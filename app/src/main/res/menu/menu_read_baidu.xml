@@ -11,4 +11,9 @@
         android:id="@+id/menu_reload_chapter"
         android:title="@string/reload_chapter"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_more_source"
+        android:title="更多来源"
+        app:showAsAction="never"/>
 </menu>

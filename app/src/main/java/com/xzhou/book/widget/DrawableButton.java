@@ -5,7 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-public class DrawableButton extends android.support.v7.widget.AppCompatTextView {
+import androidx.appcompat.widget.AppCompatTextView;
+
+public class DrawableButton extends AppCompatTextView {
 
     public DrawableButton(Context context) {
         super(context);

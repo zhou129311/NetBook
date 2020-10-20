@@ -95,7 +95,7 @@
             tools:text="回复 静静(22楼)"/>
     </RelativeLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/comment_tool_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -174,5 +174,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/agree_view"
             app:layout_constraintTop_toTopOf="parent"/>
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.xzhou.book.widget.SwipeItemLayout>

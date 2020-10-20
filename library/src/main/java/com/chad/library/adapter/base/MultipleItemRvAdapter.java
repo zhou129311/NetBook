@@ -1,8 +1,9 @@
 package com.chad.library.adapter.base;
 
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.provider.BaseItemProvider;
 import com.chad.library.adapter.base.util.MultiTypeDelegate;

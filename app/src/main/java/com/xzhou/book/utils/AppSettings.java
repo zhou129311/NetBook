@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.utils.Constant.ReadTheme;
 
 import java.util.List;
@@ -332,6 +333,31 @@ public class AppSettings {
             }
         }
         return chapters;
+    }
+
+    public static void saveSearchList(String key, List<SearchModel.SearchBook> list) {
+        String listStr = null;
+        try {
+            listStr = new Gson().toJson(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (listStr != null) {
+            SPUtils.get().putSearchString(key, listStr);
+        }
+    }
+
+    public static List<SearchModel.SearchBook> getSearchList(String key) {
+        List<SearchModel.SearchBook> relsut = null;
+        String listStr = SPUtils.get().getSearchString(key);
+        if (listStr != null) {
+            try {
+                relsut = new Gson().fromJson(listStr, SearchModel.SearchBook.TYPE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return relsut;
     }
 
     private static String getChapterListKey(String bookId) {

@@ -1,8 +1,9 @@
 package com.xzhou.book.common;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MyGridLayoutManager extends GridLayoutManager {
     private boolean mIsFixed = false; //是否可以滑动

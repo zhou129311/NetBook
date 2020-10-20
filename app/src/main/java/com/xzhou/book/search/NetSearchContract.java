@@ -38,6 +38,6 @@ public interface NetSearchContract {
 
         void onDataAdd(List<SearchModel.SearchBook> list);
 
-        void onParseState(boolean parsing, boolean success, String message);
+        void onParseState(SearchModel.SearchBook searchBook);
     }
 }

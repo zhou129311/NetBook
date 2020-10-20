@@ -2,9 +2,6 @@ package com.xzhou.book.search;
 
 import com.xzhou.book.MyApp;
 import com.xzhou.book.common.BasePresenter;
-import com.xzhou.book.models.Entities;
-import com.xzhou.book.models.HtmlParse;
-import com.xzhou.book.models.HtmlParseFactory;
 import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.net.AutoParseNetBook;
 import com.xzhou.book.net.BaiduSearch;
@@ -24,21 +21,17 @@ import java.util.concurrent.Executors;
  * Author：zhouxian
  * Date：2019/12/21 19:39
  */
-public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> implements NetSearchContract.Presenter, AutoParseNetBook.Callback {
+public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> implements NetSearchContract.Presenter
+        , AutoParseNetBook.ItemCallback {
 
-    private List<JsoupSearch> mSearchList = new ArrayList<>(2);
+    private final List<JsoupSearch> mSearchList = new ArrayList<>(2);
     private int mSearchType;
-    private ExecutorService mPool = Executors.newSingleThreadExecutor();
+    private final ExecutorService mPool = Executors.newSingleThreadExecutor();
 
     NetSearchPresenter(NetSearchContract.View view) {
         super(view);
         BaiduSearch baiduSearch = new BaiduSearch();
-        baiduSearch.setProgressCallback(new JsoupSearch.ProgressCallback() {
-            @Override
-            public void onCurParse(int size, int parseSize, String curResult) {
-                updateSearchProgress(size, parseSize, curResult);
-            }
-        });
+        baiduSearch.setProgressCallback(this::updateSearchProgress);
         baiduSearch.setUrlCallback(new JsoupSearch.UrlCallback() {
             @Override
             public void onNextUrl(String url) {
@@ -53,12 +46,7 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
             }
         });
         SogouSearch sogouSearch = new SogouSearch();
-        sogouSearch.setProgressCallback(new JsoupSearch.ProgressCallback() {
-            @Override
-            public void onCurParse(int size, int parseSize, String curResult) {
-                updateSearchProgress(size, parseSize, curResult);
-            }
-        });
+        sogouSearch.setProgressCallback(this::updateSearchProgress);
         sogouSearch.setUrlCallback(new JsoupSearch.UrlCallback() {
             @Override
             public void onNextUrl(String url) {
@@ -74,32 +62,26 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
         });
         mSearchList.add(SearchActivity.SEARCH_TYPE_BAIDU, baiduSearch);
         mSearchList.add(SearchActivity.SEARCH_TYPE_SOGOU, sogouSearch);
-        AutoParseNetBook.addCallback(this);
+        AutoParseNetBook.setItemCallback(this);
     }
 
     @Override
     public void startSearch(int searchType, final String html) {
         updateLoadingState(true);
         mSearchType = searchType;
-        mPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                String value = handlerHtml(html);
-                List<SearchModel.SearchBook> list = mSearchList.get(mSearchType).parseFirstPageHtml(value);
-                updateData(list, false);
-            }
+        mPool.execute(() -> {
+            String value = handlerHtml(html);
+            List<SearchModel.SearchBook> list = mSearchList.get(mSearchType).parseFirstPageHtml(value);
+            updateData(list, false);
         });
     }
 
     @Override
     public void updateHtml(final String html) {
-        mPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                String value = handlerHtml(html);
-                List<SearchModel.SearchBook> list = mSearchList.get(mSearchType).parsePageHtml(value);
-                updateData(list, true);
-            }
+        mPool.execute(() -> {
+            String value = handlerHtml(html);
+            List<SearchModel.SearchBook> list = mSearchList.get(mSearchType).parsePageHtml(value);
+            updateData(list, true);
         });
     }
 
@@ -113,7 +95,7 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
 
     @Override
     public void tryParseBook(final SearchModel.SearchBook book) {
-        AutoParseNetBook.tryParseBook(book.bookName, book.readUrl, book.sourceHost);
+        AutoParseNetBook.tryParseBook(book);
     }
 
     @Override
@@ -124,7 +106,7 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
     @Override
     public void destroy() {
         super.destroy();
-        AutoParseNetBook.removeCallback(this);
+        AutoParseNetBook.setItemCallback(null);
         mPool.shutdown();
         for (JsoupSearch search : mSearchList) {
             search.setProgressCallback(null);
@@ -146,61 +128,46 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
     }
 
     private void updateLoadUrl(final String url) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onUrlLoad(url);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onUrlLoad(url);
             }
         });
     }
 
     private void updateData(final List<SearchModel.SearchBook> list, final boolean add) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    if (add) {
-                        mView.onDataAdd(list);
-                    } else {
-                        mView.onDataChange(list);
-                    }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                if (add) {
+                    mView.onDataAdd(list);
+                } else {
+                    mView.onDataChange(list);
                 }
             }
         });
     }
 
     private void updateLoadingState(final boolean isLoading) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onLoadingState(isLoading);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onLoadingState(isLoading);
             }
         });
     }
 
     private void updateSearchProgress(final int bookSize, final int parseSize, final String cur) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onSearchProgress(bookSize, parseSize, cur);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onSearchProgress(bookSize, parseSize, cur);
             }
         });
     }
 
     @Override
-    public void onParseState(final boolean state, final boolean success, final String message) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onParseState(state, success, message);
-                }
+    public void onParseState(final SearchModel.SearchBook searchBook) {
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onParseState(searchBook);
             }
         });
     }

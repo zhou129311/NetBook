@@ -3,11 +3,10 @@ package com.xzhou.book;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.GlideBuilder;
 import com.xzhou.book.db.BookManager;
 import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.utils.AppSettings;

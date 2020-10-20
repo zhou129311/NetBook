@@ -19,10 +19,11 @@ import java.util.concurrent.Executors;
  */
 public class AutoParseNetBook {
 
-    private static ExecutorService sPool = Executors.newSingleThreadExecutor();
+    private static final ExecutorService sPool = Executors.newCachedThreadPool();
     private static boolean sIsParsing;
     private static List<Integer> sParseTypeList;
     private static final List<Callback> sCallbacks = new ArrayList<>();
+    private static ItemCallback sItemCallback;
 
     public static void stopParse() {
         sIsParsing = false;
@@ -30,6 +31,14 @@ public class AutoParseNetBook {
 
     public interface Callback {
         void onParseState(boolean state, boolean success, String message);
+    }
+
+    public interface ItemCallback {
+        void onParseState(SearchModel.SearchBook book);
+    }
+
+    public static void setItemCallback(ItemCallback callback) {
+        sItemCallback = callback;
     }
 
     public static void addCallback(Callback callback) {
@@ -48,6 +57,52 @@ public class AutoParseNetBook {
             public void run() {
                 for (Callback callback : sCallbacks) {
                     callback.onParseState(state, success, message);
+                }
+            }
+        });
+    }
+
+    public static void tryParseBook(final SearchModel.SearchBook searchBook) {
+        searchBook.isParsing = true;
+        if (sItemCallback != null) {
+            sItemCallback.onParseState(searchBook);
+        }
+        sPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (sParseTypeList == null) {
+                    sParseTypeList = new ArrayList<>(6);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_1);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_2);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_3);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_4);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_5);
+                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_6);
+                }
+                boolean success = false;
+                for (int type : sParseTypeList) {
+                    HtmlParse parse = HtmlParseFactory.getHtmlParse(type);
+                    if (parse != null) {
+                        List<Entities.Chapters> list = parse.parseChapters(searchBook.readUrl);
+                        if (list != null && list.size() > 0) {
+                            Entities.Chapters chapters = list.get(0);
+                            Entities.ChapterRead read = parse.parseChapterRead(chapters.link);
+                            if (read != null && read.chapter != null
+                                    && read.chapter.body != null && read.chapter.body.length() > 200) {
+                                SearchModel.HostType hostType = new SearchModel.HostType();
+                                hostType.host = searchBook.sourceHost;
+                                hostType.parseType = type;
+                                SearchModel.saveHostType(hostType);
+                                success = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                searchBook.parseText = success ? "解析成功" : "解析失败";
+                searchBook.isParsing = false;
+                if (sItemCallback != null) {
+                    sItemCallback.onParseState(searchBook);
                 }
             }
         });

@@ -67,7 +67,7 @@
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/saving_traffic_cb"
                 style="@style/SettingItemSwitch"
                 android:layout_width="match_parent"

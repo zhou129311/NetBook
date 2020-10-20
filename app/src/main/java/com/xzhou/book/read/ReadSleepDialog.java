@@ -2,10 +2,11 @@ package com.xzhou.book.read;
 
 import android.content.Context;
 import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatDialog;
 
 import com.xzhou.book.R;
 import com.xzhou.book.utils.AppSettings;

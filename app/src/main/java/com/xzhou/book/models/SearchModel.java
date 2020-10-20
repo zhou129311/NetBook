@@ -1,7 +1,8 @@
 package com.xzhou.book.models;
 
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
+
+import androidx.annotation.IntDef;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -224,6 +225,8 @@ public class SearchModel {
     }
 
     public static class SearchBook {
+        public static final Type TYPE = new TypeToken<List<SearchBook>>() {
+        }.getType();
         public String image;
         public String sourceName;
         public String sourceHost;
@@ -234,6 +237,8 @@ public class SearchModel {
         public String latestChapterUrl;
         public String id;
         public long updated;
+        public boolean isParsing;
+        public String parseText = "开始解析";
 
         public SearchBook() {
         }

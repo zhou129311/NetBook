@@ -2,13 +2,14 @@ package com.xzhou.book.common;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
 
 public class MyLinearLayoutManager extends LinearLayoutManager {
-    private boolean mIsFixed;
+    private final boolean mIsFixed;
 
     public MyLinearLayoutManager(Context context) {
         this(context, false);

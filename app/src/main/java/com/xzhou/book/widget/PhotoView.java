@@ -19,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
-public class PhotoView extends android.support.v7.widget.AppCompatImageView {
+import androidx.appcompat.widget.AppCompatImageView;
+
+public class PhotoView extends AppCompatImageView {
     private static final java.lang.String TAG = "PhotoView";
     private final static int MIN_ROTATE = 35;
     private final static int ANIMA_DURING = 340;

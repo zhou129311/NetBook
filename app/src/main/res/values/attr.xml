@@ -65,4 +65,10 @@
             <enum name="gone" value="2"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="LoadingButtonStyle">
+        <attr name="loading_text" format="string" />
+        <attr name="normal_text" format="string" />
+    </declare-styleable>
+
 </resources>

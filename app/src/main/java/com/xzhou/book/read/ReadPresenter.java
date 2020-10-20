@@ -1,9 +1,10 @@
 package com.xzhou.book.read;
 
 import android.graphics.Paint;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.LruCache;
+
+import androidx.annotation.IntDef;
 
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;

@@ -1,8 +1,7 @@
 package com.xzhou.book.common;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.text.TextUtils;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="55dp"
@@ -74,8 +74,7 @@
             android:src="@mipmap/ic_menu_more"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="ContentDescription" />
-
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/search_source_tv"
@@ -99,7 +98,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/search_source_tv" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/auto_complete_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

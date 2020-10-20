@@ -1,9 +1,9 @@
 package com.xzhou.book.utils;
 
-import android.support.annotation.ColorInt;
-import android.support.design.widget.Snackbar;
+import androidx.annotation.ColorInt;
 import android.view.View;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 

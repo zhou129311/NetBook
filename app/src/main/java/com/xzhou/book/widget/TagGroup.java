@@ -28,6 +28,8 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.xzhou.book.R;
 
 import java.util.ArrayList;
@@ -645,7 +647,7 @@ public class TagGroup extends ViewGroup {
     /**
      * The tag view which has two states can be either NORMAL or INPUT.
      */
-    class TagView extends android.support.v7.widget.AppCompatTextView {
+    class TagView extends AppCompatTextView {
         public static final int STATE_NORMAL = 1;
         public static final int STATE_INPUT = 2;
 

@@ -8,9 +8,11 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import java.util.List;
 
-public class JustifyTextView extends android.support.v7.widget.AppCompatTextView {
+public class JustifyTextView extends AppCompatTextView {
 
     private int mLineY;
     private int mViewWidth;

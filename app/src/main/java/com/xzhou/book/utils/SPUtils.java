@@ -9,7 +9,8 @@ import java.util.Set;
 
 public class SPUtils {
     private static SPUtils mInstance;
-    private SharedPreferences mPreferences;
+    private final SharedPreferences mPreferences;
+    private final SharedPreferences mSearchPreferences;
 
     public static SPUtils get() {
         if (mInstance == null) {
@@ -20,6 +21,7 @@ public class SPUtils {
 
     private SPUtils() {
         mPreferences = MyApp.getContext().getSharedPreferences("book_preference", Context.MODE_PRIVATE);
+        mSearchPreferences = MyApp.getContext().getSharedPreferences("book_search_pref", Context.MODE_PRIVATE);
     }
 
     public boolean getBoolean(String key, boolean defaultVal) {
@@ -32,6 +34,10 @@ public class SPUtils {
 
     public String getString(String key) {
         return mPreferences.getString(key, null);
+    }
+
+    public String getSearchString(String key) {
+        return mSearchPreferences.getString(key, null);
     }
 
     public Set<String> getStringSet(String key) {
@@ -54,6 +60,12 @@ public class SPUtils {
 
     public SPUtils putString(String key, String value) {
         SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(key, value).apply();
+        return this;
+    }
+
+    public SPUtils putSearchString(String key, String value) {
+        SharedPreferences.Editor editor = mSearchPreferences.edit();
         editor.putString(key, value).apply();
         return this;
     }

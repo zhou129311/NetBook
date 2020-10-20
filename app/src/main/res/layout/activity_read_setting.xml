@@ -27,7 +27,7 @@
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/volume_turn_page_sw"
                 style="@style/SettingItemSwitch"
                 android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/next_page_sw"
                 style="@style/SettingItemSwitch"
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/full_screen_mode_sw"
                 style="@style/SettingItemSwitch"
                 android:layout_width="match_parent"

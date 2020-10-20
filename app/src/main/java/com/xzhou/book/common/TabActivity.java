@@ -3,17 +3,18 @@ package com.xzhou.book.common;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.util.SparseArrayCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.ListPopupWindow;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
+
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.collection.SparseArrayCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.xzhou.book.R;
 import com.xzhou.book.models.Entities;

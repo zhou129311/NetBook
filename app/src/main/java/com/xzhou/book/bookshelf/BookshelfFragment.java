@@ -3,17 +3,17 @@ package com.xzhou.book.bookshelf;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
@@ -355,7 +355,7 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         };
 
         Adapter() {
-            super(R.layout.item_view_bookshelf_book, null);
+            super(R.layout.item_view_bookshelf_book);
         }
 
         @Override
@@ -379,89 +379,77 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                     .setGone(R.id.book_top, item.hasTop);
             final CheckBox cb = helper.getView(R.id.book_checkbox);
             cb.setChecked(item.isChecked);
-            cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    item.isChecked = isChecked;
-                    updateDeleteTv();
+            cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                item.isChecked = isChecked;
+                updateDeleteTv();
+            });
+            helper.itemView.setOnClickListener(v -> {
+                if (hasEdit()) {
+                    cb.setChecked(!cb.isChecked());
+                    return;
+                }
+                if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
+                    ReadWebActivity.startActivity(getContext(), item, null);
+                } else {
+                    ReadActivity.startActivity(getRecyclerView().getContext(), item);
                 }
             });
-            helper.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (hasEdit()) {
-                        cb.setChecked(!cb.isChecked());
-                        return;
-                    }
-                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                        ReadWebActivity.startActivity(getContext(), item, null);
-                    } else {
-                        ReadActivity.startActivity(getRecyclerView().getContext(), item);
-                    }
-                }
-            });
-            helper.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (hasEdit() || mSwipeLayout.isRefreshing()) {
-                        return true;
-                    }
-                    ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
-                    final List<String> list = new ArrayList<>();
-                    String top_untop = item.hasTop ? "取消置顶" : "置顶";
-                    list.add(top_untop);
-                    Collections.addAll(list, DIALOG_ITEMS);
-                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                        list.add("解析本书籍");
-                    }
-                    builder.setTitle(item.title).setItems(list.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            String s = list.get(which);
-                            switch (s) {
-                                case "取消置顶":
-                                case "置顶":
-                                    item.hasTop = !item.hasTop;
-                                    BookProvider.updateHasTop(item);
-                                    break;
-                                case "书籍详情":
-                                    if (item.isBaiduBook) {
-                                        ReadWebActivity.startActivity(getContext(), item, null);
-                                        return;
-                                    }
-                                    BookDetailActivity.startActivity(mContext, item._id);
-                                    break;
-                                case "缓存全本":
-                                    if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
-                                        ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
-                                        return;
-                                    }
-                                    mPresenter.download(item);
-                                    break;
-                                case "删除":
-                                    List<String> list = new ArrayList<>();
-                                    list.add(item._id);
-                                    showDeleteDialog(list);
-                                    break;
-                                case "批量管理":
-                                    changeEditMode(true);
-                                    break;
-                                case "更新":
-                                    if (item.isBaiduBook) {
-                                        mPresenter.updateNetBook(item);
-                                    } else {
-                                        ToastUtils.showShortToast("暂不支持更新追书书源:" + item.title);
-                                    }
-                                    break;
-                                case "解析本书籍":
-                                    AutoParseNetBook.tryParseBook(item.title, item.readUrl, item.curSourceHost);
-                                    break;
-                            }
-                        }
-                    }).show();
+            helper.itemView.setOnLongClickListener(v -> {
+                if (hasEdit() || mSwipeLayout.isRefreshing()) {
                     return true;
                 }
+                ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
+                final List<String> list = new ArrayList<>();
+                String top_untop = item.hasTop ? "取消置顶" : "置顶";
+                list.add(top_untop);
+                Collections.addAll(list, DIALOG_ITEMS);
+                if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
+                    list.add("解析本书籍");
+                }
+                builder.setTitle(item.title).setItems(list.toArray(new String[0]), (dialog, which) -> {
+                    dialog.dismiss();
+                    String s = list.get(which);
+                    switch (s) {
+                        case "取消置顶":
+                        case "置顶":
+                            item.hasTop = !item.hasTop;
+                            BookProvider.updateHasTop(item);
+                            break;
+                        case "书籍详情":
+                            if (item.isBaiduBook) {
+                                ReadWebActivity.startActivity(getContext(), item, null);
+                                return;
+                            }
+                            BookDetailActivity.startActivity(mContext, item._id);
+                            break;
+                        case "缓存全本":
+                            if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
+                                ToastUtils.showShortToast("暂不支持缓存:" + item.curSourceHost);
+                                return;
+                            }
+                            mPresenter.download(item);
+                            break;
+                        case "删除":
+                            List<String> list1 = new ArrayList<>();
+                            list1.add(item._id);
+                            showDeleteDialog(list1);
+                            break;
+                        case "批量管理":
+                            changeEditMode(true);
+                            break;
+                        case "更新":
+                            if (item.isBaiduBook) {
+                                mPresenter.updateNetBook(item);
+                            } else {
+                                ToastUtils.showShortToast("暂不支持更新追书书源:" + item.title);
+                            }
+                            break;
+                        case "解析本书籍":
+                            AutoParseNetBook.tryParseBook(item.title, item.readUrl, item.curSourceHost);
+                            break;
+                    }
+                }).show();
+                return true;
             });
         }
     }

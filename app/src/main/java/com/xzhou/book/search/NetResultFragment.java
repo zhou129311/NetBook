@@ -1,15 +1,12 @@
 package com.xzhou.book.search;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -24,6 +21,12 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.MyApp;
@@ -31,15 +34,16 @@ import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
 import com.xzhou.book.common.BaseFragment;
 import com.xzhou.book.common.CommonViewHolder;
-import com.xzhou.book.common.ItemDialog;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.net.JsoupSearch;
 import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.read.ReadWebActivity;
+import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
+import com.xzhou.book.widget.LoadingButton;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -66,14 +70,15 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     private View mEmptyView;
-    private View mLoadView;
+    //    private View mLoadView;
+    private View mHeaderView;
+    private TextView mHeaderTv;
 
     private String mKey;
     private int mSearchType;
     private Adapter mAdapter;
-    private android.app.AlertDialog mLoadingDialog;
-    private android.app.AlertDialog mParsingDialog;
     private String mSearchUrl;
+    private boolean mIsAddHeader;
 
     @Override
     public int getLayoutResId() {
@@ -105,7 +110,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
 
         LayoutInflater inflater = LayoutInflater.from(getContext());
         mEmptyView = inflater.inflate(R.layout.common_empty_view, null);
-        mLoadView = inflater.inflate(R.layout.baidu_search_loading_view, null);
+//        mLoadView = inflater.inflate(R.layout.baidu_search_loading_view, null);
         mEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,11 +119,50 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         });
         mAdapter = new Adapter();
         mAdapter.bindToRecyclerView(mRecyclerView);
+        mHeaderView = inflater.inflate(R.layout.header_search_loading, null);
+        mHeaderTv = mHeaderView.findViewById(R.id.search_load_tv);
+        mHeaderView.findViewById(R.id.stop_search_tv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHeaderTv.setText("正在结束搜索...");
+                mPresenter.stopParse();
+            }
+        });
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         loadUrl();
+    }
+
+    public boolean onBackPressed() {
+        final List<SearchModel.SearchBook> list = mAdapter.getData();
+        if (list.size() > 0) {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
+            Dialog dialog = builder.setTitle("是否保存该搜索结果？")
+                    .setMessage("保存后再次搜索该书名时可以直接显示该结果。")
+                    .setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            AppSettings.saveSearchList(mKey, list);
+                            getActivity().finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            getActivity().finish();
+                        }
+                    })
+                    .create();
+            dialog.show();
+            return true;
+        } else {
+            mPresenter.cancel();
+            return false;
+        }
     }
 
     @Override
@@ -136,6 +180,13 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     private void loadUrl() {
         Log.i(TAG, "loadUrl = " + mKey);
         if (!TextUtils.isEmpty(mKey)) {
+            if (mAdapter.getData().size() < 1) {
+                List<SearchModel.SearchBook> old = AppSettings.getSearchList(mKey);
+                if (old != null && old.size() > 0) {
+                    mAdapter.setNewData(old);
+                    return;
+                }
+            }
             String key;
             try {
                 key = URLEncoder.encode(mKey, "gb2312");
@@ -153,7 +204,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             } else {
                 mWebView.loadUrl(mSearchUrl);
             }
-            showLoadingDialog();
+            showSearchLoading();
         }
     }
 
@@ -233,7 +284,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             } else {
                 handler.cancel();
             }
-            hideLoadingDialog();
+            hideSearchLoading();
         }
     };
 
@@ -248,22 +299,23 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             mAdapter.setEmptyView(mEmptyView);
 //            mRecyclerView.setVisibility(View.VISIBLE);
 //            mWebView.setVisibility(View.GONE);
-            hideLoadingDialog();
+            hideSearchLoading();
         } else {
 //            mWebView.setVisibility(View.VISIBLE);
 //            mRecyclerView.setVisibility(View.GONE);
-            showLoadingDialog();
-            mAdapter.setEmptyView(mLoadView);
+            mHeaderTv.setText("全网搜索耗时较长，请耐心等待，当前正在全网搜索...");
+            showSearchLoading();
+//            mAdapter.setEmptyView(mLoadView);
         }
     }
 
     @Override
     public void onSearchProgress(int bookSize, int parseSize, String curHost) {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+        if (mHeaderView != null) {
             Spanned str = Html.fromHtml("已搜索到<b><font color=#ff0000>" + bookSize
                     + "本</font></b>相关书籍<br />已解析<b><font color=#ff0000>"
                     + parseSize + "本</font></b>书籍<br />正在解析网站：" + curHost);
-            mLoadingDialog.setMessage(str);
+            mHeaderTv.setText(str);
         }
     }
 
@@ -275,7 +327,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     @Override
     public void onDataAdd(List<SearchModel.SearchBook> list) {
         if (list != null) {
-            if (mAdapter.getItemCount() == 0) {
+            if (mAdapter.getData().size() < 1) {
                 mAdapter.setNewData(list);
             } else {
                 mAdapter.addData(list);
@@ -284,19 +336,8 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     }
 
     @Override
-    public void onParseState(boolean parsing, boolean success, String message) {
-        if (parsing) {
-            showParsingDialog(message);
-        } else {
-            if (mParsingDialog != null) {
-                mParsingDialog.dismiss();
-                mParsingDialog = null;
-            }
-            if (success) {
-                mAdapter.notifyDataSetChanged();
-            }
-            ToastUtils.showShortToast(message);
-        }
+    public void onParseState(SearchModel.SearchBook searchBook) {
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -304,54 +345,25 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         mPresenter = presenter;
     }
 
-    private void showParsingDialog(String title) {
-        if (mParsingDialog != null && mParsingDialog.isShowing()) {
+    private void showSearchLoading() {
+        if (mIsAddHeader) {
             return;
         }
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-        mParsingDialog = builder.setTitle(title)
-                .setMessage("正在解析中...")
-                .setPositiveButton("结束解析", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        mPresenter.stopParse();
-                    }
-                }).create();
-        mParsingDialog.setCanceledOnTouchOutside(false);
-        mParsingDialog.setCancelable(false);
-        mParsingDialog.show();
+        mIsAddHeader = true;
+        mAdapter.addHeaderView(mHeaderView);
     }
 
-    private void showLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+    private void hideSearchLoading() {
+        if (!mIsAddHeader) {
             return;
         }
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-        mLoadingDialog = builder.setTitle("全网搜索耗时较长，请耐心等待...")
-                .setMessage("正在全网搜索中")
-                .setPositiveButton("结束搜索", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.cancel();
-                        mAdapter.setEmptyView(mLoadView);
-                    }
-                }).create();
-        mLoadingDialog.setCanceledOnTouchOutside(false);
-        mLoadingDialog.setCancelable(false);
-        mLoadingDialog.show();
-    }
-
-    private void hideLoadingDialog() {
-        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
-            mLoadingDialog.dismiss();
-            mLoadingDialog = null;
-        }
+        mIsAddHeader = false;
+        mAdapter.removeHeaderView(mHeaderView);
     }
 
     private class Adapter extends BaseQuickAdapter<SearchModel.SearchBook, CommonViewHolder> {
         private final String[] DIALOG_ITEM = new String[]{
-                "加入书架", "尝试自动解析"
+                "加入书架"/*, "尝试自动解析"*/
         };
 
         private Adapter() {
@@ -364,78 +376,40 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             if (!TextUtils.isEmpty(item.author)) {
                 sub = item.author + " | " + sub;
             }
+            boolean support = SearchModel.hasSupportLocalRead(item.sourceHost);
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
                     .setText(R.id.book_h2, sub)
-                    .setGone(R.id.local_read_tv, SearchModel.hasSupportLocalRead(item.sourceHost));
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
-                    if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
-                        ReadActivity.startActivity(getActivity(), localBook);
-                    } else {
-                        ReadWebActivity.startActivity(getActivity(), localBook, null);
-                    }
+                    .setGone(R.id.local_read_tv, support);
+
+            LoadingButton button = holder.getView(R.id.auto_parse_btn);
+            button.setVisibility(support ? View.GONE : View.VISIBLE);
+            button.initText("解析中...", item.parseText);
+            button.setLoading(item.isParsing);
+            button.setOnClickListener(v -> mPresenter.tryParseBook(item));
+            holder.itemView.setOnClickListener(v -> {
+                BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);
+                if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
+                    ReadActivity.startActivity(getActivity(), localBook);
+                } else {
+                    ReadWebActivity.startActivity(getActivity(), localBook, null);
                 }
             });
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    boolean hasCache = BookProvider.hasCacheData(item.id);
-                    if (hasCache && SearchModel.hasSupportLocalRead(item.sourceHost)) {
-                        ToastUtils.showShortToast("已经加入书架了");
-                        return true;
-                    }
-                    if (SearchModel.hasSupportLocalRead(item.sourceHost)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setTitle("加入书架")
-                                .setMessage("是否将《" + item.bookName + "》加入书架")
-                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        BookProvider.insertOrUpdate(new BookProvider.LocalBook(item), false);
-                                    }
-                                })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                }).show();
-                    } else if (!hasCache) {
-                        ItemDialog.Builder builder = new ItemDialog.Builder(mContext);
-                        builder.setTitle(item.bookName).setItems(DIALOG_ITEM, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                if (which == 0) {
-                                    BookProvider.insertOrUpdate(new BookProvider.LocalBook(item), false);
-                                } else {
-                                    mPresenter.tryParseBook(item);
-                                }
-                            }
-                        }).show();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-                        builder.setTitle("是否尝试自动解析《" + item.bookName + "》(" + item.sourceHost + ")?")
-                                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        mPresenter.tryParseBook(item);
-                                    }
-                                })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                }).show();
-                    }
+            holder.itemView.setOnLongClickListener(v -> {
+                boolean hasCache = BookProvider.hasCacheData(item.id);
+                if (hasCache) {
+                    ToastUtils.showShortToast("已经加入书架了");
                     return true;
                 }
+                AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                builder.setTitle("加入书架")
+                        .setMessage("是否将《" + item.bookName + "》加入书架")
+                        .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                            dialog.dismiss();
+                            BookProvider.insertOrUpdate(new BookProvider.LocalBook(item), false);
+                        })
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
+                return true;
             });
         }
     }

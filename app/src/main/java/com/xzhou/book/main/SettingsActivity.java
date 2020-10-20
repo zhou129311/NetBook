@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.xzhou.book.R;
 import com.xzhou.book.common.AlertDialog;
@@ -17,10 +18,6 @@ import com.xzhou.book.db.BookManager;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.widget.SettingItemView;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
@@ -41,20 +38,20 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     @BindView(R.id.sleep_time_view)
     SettingItemView mSleepTimeView;
 
-    private String[] mSortItems = new String[] {
+    private String[] mSortItems = new String[]{
             AppUtils.getString(R.string.bookshelf_sort_add),
             AppUtils.getString(R.string.bookshelf_sort_read),
             AppUtils.getString(R.string.bookshelf_sort_update),
     };
 
-    private String[] mCacheItems = new String[] {
+    private String[] mCacheItems = new String[]{
             AppUtils.getString(R.string.download_read_book_none),
             AppUtils.getString(R.string.download_read_book_1),
             AppUtils.getString(R.string.download_read_book_5),
             AppUtils.getString(R.string.download_read_book_10),
     };
 
-    private String[] mSleepItems = new String[] {
+    private String[] mSleepItems = new String[]{
             "关闭",
             "15分钟",
             "30分钟",
@@ -94,103 +91,103 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         return new SettingPresenter(this);
     }
 
-    @OnCheckedChanged({ R.id.saving_traffic_cb })
+    @OnCheckedChanged({R.id.saving_traffic_cb})
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         AppSettings.setSavingTraffic(checked);
     }
 
-    @OnClick({ R.id.book_sort_view, R.id.book_read_dl_view, R.id.clear_cache_view, R.id.sleep_time_view })
+    @OnClick({R.id.book_sort_view, R.id.book_read_dl_view, R.id.clear_cache_view, R.id.sleep_time_view})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-        case R.id.book_sort_view: {
-            ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
-            builder.setTitle(R.string.bookshelf_sort_dialog)
-                    .setSingleChoiceItems(mSortItems, AppSettings.getBookshelfOrder(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            AppSettings.saveBookshelfOrder(which);
-                            mBookSortView.setValue(mSortItems[which]);
-                            BookManager.get().reloadList();
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-            break;
-        }
-        case R.id.book_read_dl_view: {
-            ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
-            builder.setTitle(R.string.download_read_book)
-                    .setSingleChoiceItems(mCacheItems, AppSettings.getReadCacheMode(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            AppSettings.saveReadCacheMode(which);
-                            mBookReadDlView.setValue(mCacheItems[which]);
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-            break;
-        }
-        case R.id.clear_cache_view: {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-            builder.setTitle(R.string.clear_cache_dialog_title)
-                    .setMessage(R.string.clear_cache_dialog_message)
-                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            mPresenter.clearCache();
-                            mClearCacheView.setEnabled(false);
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-            break;
-        }
-        case R.id.sleep_time_view:
-            ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
-            builder.setTitle(R.string.sleep_time)
-                    .setSingleChoiceItems(mSleepItems, getSleepCheckItem(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            long sleepTime = 45 * 60 * 1000;
-                            switch (which) {
-                            case 0:
-                                sleepTime = 0;
-                                break;
-                            case 1:
-                                sleepTime = 15 * 60 * 1000;
-                                break;
-                            case 2:
-                                sleepTime = 30 * 60 * 1000;
-                                break;
+            case R.id.book_sort_view: {
+                ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
+                builder.setTitle(R.string.bookshelf_sort_dialog)
+                        .setSingleChoiceItems(mSortItems, AppSettings.getBookshelfOrder(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppSettings.saveBookshelfOrder(which);
+                                mBookSortView.setValue(mSortItems[which]);
+                                BookManager.get().reloadList();
+                                dialog.dismiss();
                             }
-                            AppSettings.setSleepTime(sleepTime);
-                            mSleepTimeView.setValue(mSleepItems[which]);
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-            break;
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                break;
+            }
+            case R.id.book_read_dl_view: {
+                ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
+                builder.setTitle(R.string.download_read_book)
+                        .setSingleChoiceItems(mCacheItems, AppSettings.getReadCacheMode(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppSettings.saveReadCacheMode(which);
+                                mBookReadDlView.setValue(mCacheItems[which]);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                break;
+            }
+            case R.id.clear_cache_view: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                builder.setTitle(R.string.clear_cache_dialog_title)
+                        .setMessage(R.string.clear_cache_dialog_message)
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mPresenter.clearCache();
+                                mClearCacheView.setEnabled(false);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                break;
+            }
+            case R.id.sleep_time_view:
+                ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
+                builder.setTitle(R.string.sleep_time)
+                        .setSingleChoiceItems(mSleepItems, getSleepCheckItem(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                long sleepTime = 45 * 60 * 1000;
+                                switch (which) {
+                                    case 0:
+                                        sleepTime = 0;
+                                        break;
+                                    case 1:
+                                        sleepTime = 15 * 60 * 1000;
+                                        break;
+                                    case 2:
+                                        sleepTime = 30 * 60 * 1000;
+                                        break;
+                                }
+                                AppSettings.setSleepTime(sleepTime);
+                                mSleepTimeView.setValue(mSleepItems[which]);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+                break;
         }
     }
 
