@@ -33,15 +33,14 @@
 -keepattributes InnerClasses,Signature,EnclosingMethod
 
 -keep public class * extends android.app.Activity
--keep public class * extends android.app.Appliction
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 
--keep class android.support.** {*;}
--keep public class * extends android.support.**
+-keep class androidx.** {*;}
+-keep public class * extends androidx.**
 -keep public class * extends androidx.versionedparcelable.VersionedParcelable {
       <init>();
  }
@@ -59,13 +58,9 @@
 
 #保留自定义控件（继承自View）不被混淆
 -keep public class * extends android.view.View{*;}
--keep public class * extends android.app.Fragment
--keep public class * extends android.app.LinearLayoutManager
--keep public class * extends android.app.GridLayoutManager
 
 -dontwarn org.jsoup.**
 -keep class org.jsoup.**{*;}
--keep class android.support.constraint.ConstraintLayout
 
 -keep class com.chad.library.adapter.** {
 *;

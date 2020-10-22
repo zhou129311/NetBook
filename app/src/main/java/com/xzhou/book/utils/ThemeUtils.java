@@ -67,14 +67,13 @@ public class ThemeUtils {
     }
 
     public static int getThemeColor(@Constant.ReadTheme int theme) {
-        int color = AppUtils.getColor(R.color.read_theme_white);
-        switch (theme) {
-        case Constant.ReadTheme.BROWN:
+        int color;
+        if (theme == Constant.ReadTheme.BROWN) {
             color = AppUtils.getColor(R.color.read_theme_brown);
-            break;
-        case Constant.ReadTheme.GREEN:
+        } else if (theme == Constant.ReadTheme.GREEN) {
             color = AppUtils.getColor(R.color.read_theme_green);
-            break;
+        } else {
+            color = AppUtils.getColor(R.color.read_theme_white);
         }
         return color;
     }

@@ -134,20 +134,25 @@ public class TabActivity extends BaseActivity {
             return;
         }
         switch (mTabData.source) {
-        case TabSource.SOURCE_CATEGORY_SUB:
-            mTabNames = Arrays.asList(getResources().getStringArray(R.array.category_sub_tabs));
-            break;
-        case TabSource.SOURCE_RANK_SUB:
-            if (!AppUtils.isEmpty(mTabData.params[1]) && !AppUtils.isEmpty(mTabData.params[2])) {
-                mTabNames = Arrays.asList(getResources().getStringArray(R.array.sub_rank_tabs));
-            }
-            break;
-        case TabSource.SOURCE_TOPIC_LIST:
-            mTabNames = Arrays.asList(getResources().getStringArray(R.array.topic_tabs));
-            break;
-        case TabSource.SOURCE_COMMUNITY:
-            mTabNames = Arrays.asList(getResources().getStringArray(R.array.community_tabs));
-            break;
+            case TabSource.SOURCE_CATEGORY_SUB:
+                mTabNames = Arrays.asList(getResources().getStringArray(R.array.category_sub_tabs));
+                break;
+            case TabSource.SOURCE_RANK_SUB:
+                if (!AppUtils.isEmpty(mTabData.params[1]) && !AppUtils.isEmpty(mTabData.params[2])) {
+                    mTabNames = Arrays.asList(getResources().getStringArray(R.array.sub_rank_tabs));
+                }
+                break;
+            case TabSource.SOURCE_TOPIC_LIST:
+                mTabNames = Arrays.asList(getResources().getStringArray(R.array.topic_tabs));
+                break;
+            case TabSource.SOURCE_COMMUNITY:
+                mTabNames = Arrays.asList(getResources().getStringArray(R.array.community_tabs));
+                break;
+            case TabSource.SOURCE_AUTHOR:
+            case TabSource.SOURCE_RECOMMEND:
+            case TabSource.SOURCE_SEARCH:
+            case TabSource.SOURCE_TAG:
+                break;
         }
         if (mTabNames == null) {
             mTabNames = new ArrayList<>();
@@ -282,11 +287,6 @@ public class TabActivity extends BaseActivity {
      * @return true 右上角筛选对所有TabFragment生效, false 右上角筛选只对当前TabFragment生效
      */
     private boolean hasAllTabFiltrate() {
-        switch (mTabData.source) {
-        case TabSource.SOURCE_COMMUNITY:
-            return false;
-        default:
-            return true;
-        }
+        return mTabData.source != TabSource.SOURCE_COMMUNITY;
     }
 }

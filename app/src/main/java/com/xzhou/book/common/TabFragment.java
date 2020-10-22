@@ -219,6 +219,11 @@ public class TabFragment extends BaseFragment<TabContract.Presenter> implements 
             case TabSource.SOURCE_SEARCH:
                 enable = true;
                 break;
+            case TabSource.SOURCE_AUTHOR:
+            case TabSource.SOURCE_RECOMMEND:
+            case TabSource.SOURCE_TAG:
+                enable = false;
+                break;
         }
         return enable;
     }

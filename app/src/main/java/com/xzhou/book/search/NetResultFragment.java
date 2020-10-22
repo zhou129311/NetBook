@@ -125,7 +125,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             @Override
             public void onClick(View v) {
                 mHeaderTv.setText("正在结束搜索...");
-                mPresenter.stopParse();
+                mPresenter.cancel();
             }
         });
         mRecyclerView.setHasFixedSize(true);

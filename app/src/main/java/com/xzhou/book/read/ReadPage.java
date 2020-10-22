@@ -149,13 +149,10 @@ public class ReadPage extends RelativeLayout {
                 titleColor = AppUtils.getColor(R.color.chapter_title_day);
             }
             batteryRes = R.mipmap.reader_battery_bg_normal;
-            switch (mTheme) {
-            case Constant.ReadTheme.BROWN:
+            if (mTheme == Constant.ReadTheme.BROWN) {
                 batteryRes = R.mipmap.reader_battery_bg_brown;
-                break;
-            case Constant.ReadTheme.GREEN:
+            } else if (mTheme == Constant.ReadTheme.GREEN) {
                 batteryRes = R.mipmap.reader_battery_bg_green;
-                break;
             }
         }
         if (bgRes > 0) {
@@ -210,18 +207,20 @@ public class ReadPage extends RelativeLayout {
         mChapterContent.setLines(page.isLoading ? null : page.getLines());
         setErrorView(page.error != ReadPresenter.Error.NONE);
         switch (page.error) {
-        case ReadPresenter.Error.CONNECTION_FAIL:
-            mErrorImage.setImageResource(R.mipmap.ic_reader_connection_error);
-            mErrorHint.setText(R.string.read_error_connect_fail);
-            break;
-        case ReadPresenter.Error.NO_CONTENT:
-            mErrorImage.setImageResource(R.mipmap.ic_reader_error_no_content);
-            mErrorHint.setText(R.string.read_error_no_content);
-            break;
-        case ReadPresenter.Error.NO_NETWORK:
-            mErrorImage.setImageResource(R.mipmap.ic_reader_no_network);
-            mErrorHint.setText(R.string.read_error_no_network);
-            break;
+            case ReadPresenter.Error.CONNECTION_FAIL:
+                mErrorImage.setImageResource(R.mipmap.ic_reader_connection_error);
+                mErrorHint.setText(R.string.read_error_connect_fail);
+                break;
+            case ReadPresenter.Error.NO_CONTENT:
+                mErrorImage.setImageResource(R.mipmap.ic_reader_error_no_content);
+                mErrorHint.setText(R.string.read_error_no_content);
+                break;
+            case ReadPresenter.Error.NO_NETWORK:
+                mErrorImage.setImageResource(R.mipmap.ic_reader_no_network);
+                mErrorHint.setText(R.string.read_error_no_network);
+                break;
+            case ReadPresenter.Error.NONE:
+                break;
         }
     }
 
