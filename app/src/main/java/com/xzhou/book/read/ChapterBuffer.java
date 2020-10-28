@@ -123,11 +123,15 @@ public class ChapterBuffer {
                 Log.e(TAG, e);
             }
             while (paragraphStr.length() > 0) {
-                int paintSize = paint.breakText(paragraphStr, true, width, null);
+                int paintSize = paint.breakText(paragraphStr, true, width - 15, null);
                 String line = paragraphStr.substring(0, paintSize);
                 if (AppUtils.isEmpty(line.trim())) {
                     paragraphStr = paragraphStr.substring(paintSize);
                     continue;
+                }
+                if (line.length() > 5 && line.charAt(0) == ' ' && line.charAt(1) == ' '
+                        && line.charAt(2) == ' ' && line.charAt(3) == ' ') {
+                    line = line.substring(2);
                 }
                 pageContent.lines.add(line);
                 paragraphStr = paragraphStr.substring(paintSize);

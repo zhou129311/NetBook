@@ -65,12 +65,7 @@ public class WebFragment extends BaseFragment {
         mWebView.setWebChromeClient(mWebChromeClient);
 
         mSwipeContainer.setColorSchemeColors(AppUtils.getColor(R.color.colorPrimary));
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mWebView.loadUrl(mWebView.getUrl());
-            }
-        });
+        mSwipeContainer.setOnRefreshListener(() -> mWebView.loadUrl(mWebView.getUrl()));
 
         Bundle bundle = getArguments();
         if (bundle != null) {
