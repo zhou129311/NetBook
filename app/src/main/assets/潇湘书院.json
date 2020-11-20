@@ -1,0 +1,516 @@
+{
+  "name": "潇湘书院",
+  "url": "https://www.xxsy.net/",
+  "icon": "https://www.xxsy.net/favicon.ico",
+  "searchUrl": "https://www.xxsy.net/search",
+  "searchKey": "s_wd",
+  "pageKey": "pn",
+  "entry": [
+    {
+      "gender": "女",
+      "desc": "潇湘书院-只为女性提供小说",
+      "rootUrl": "https://www.xxsy.net/search",
+      "params": [
+        {
+          "name": "类别",
+          "key": "s_type",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部 "
+            },
+            {
+              "value": "3",
+              "name": "玄幻言情"
+            },
+            {
+              "value": "4",
+              "name": "仙侠奇缘"
+            },
+            {
+              "value": "1",
+              "name": "古代言情"
+            },
+            {
+              "value": "2",
+              "name": "现代言情"
+            },
+            {
+              "value": "6",
+              "name": "浪漫青春"
+            },
+            {
+              "value": "5",
+              "name": "悬疑灵异"
+            },
+            {
+              "value": "7",
+              "name": "科幻空间"
+            },
+            {
+              "value": "8",
+              "name": "游戏竞技"
+            },
+            {
+              "value": "9",
+              "name": "N次元 "
+            },
+            {
+              "value": "10",
+              "name": "耽美小说"
+            },
+            {
+              "value": "11",
+              "name": "短篇 "
+            }
+          ]
+        },
+        {
+          "name": "状态",
+          "key": "s_lianzai",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "连载"
+            },
+            {
+              "value": "2",
+              "name": "完结"
+            },
+            {
+              "value": "3",
+              "name": "出版"
+            }
+          ]
+        },
+        {
+          "name": "风格",
+          "key": "s_fg",
+          "enums": [
+            {
+              "value": "",
+              "name": "全部"
+            },
+            {
+              "value": "轻松",
+              "name": "轻松"
+            },
+            {
+              "value": "爆笑",
+              "name": "爆笑"
+            },
+            {
+              "value": "虐恋",
+              "name": "虐恋"
+            },
+            {
+              "value": "治愈",
+              "name": "治愈"
+            },
+            {
+              "value": "恶搞",
+              "name": "恶搞"
+            },
+            {
+              "value": "开放式结局",
+              "name": "开放式结局"
+            },
+            {
+              "value": "正剧",
+              "name": "正剧"
+            },
+            {
+              "value": "生死大爱",
+              "name": "生死大爱"
+            },
+            {
+              "value": "温馨清水",
+              "name": "温馨清水"
+            },
+            {
+              "value": "囧文",
+              "name": "囧文"
+            },
+            {
+              "value": "小白",
+              "name": "小白"
+            },
+            {
+              "value": "宠文",
+              "name": "宠文"
+            },
+            {
+              "value": "唯美",
+              "name": "唯美"
+            },
+            {
+              "value": "暧昧",
+              "name": "暧昧"
+            },
+            {
+              "value": "励志",
+              "name": "励志"
+            },
+            {
+              "value": "甜文",
+              "name": "甜文"
+            },
+            {
+              "value": "悲剧",
+              "name": "悲剧"
+            },
+            {
+              "value": "铁血",
+              "name": "铁血"
+            },
+            {
+              "value": "爽文",
+              "name": "爽文"
+            },
+            {
+              "value": "轻小说",
+              "name": "轻小说"
+            },
+            {
+              "value": "苦恋",
+              "name": "苦恋"
+            },
+            {
+              "value": "暗黑",
+              "name": "暗黑"
+            },
+            {
+              "value": "苏",
+              "name": "苏"
+            },
+            {
+              "value": "浪漫",
+              "name": "浪漫"
+            },
+            {
+              "value": "HE",
+              "name": "HE"
+            }
+          ]
+        },
+        {
+          "name": "流派",
+          "key": "s_lp",
+          "enums": [
+            {
+              "value": "",
+              "name": "全部"
+            },
+            {
+              "value": "穿越",
+              "name": "穿越"
+            },
+            {
+              "value": "女强",
+              "name": "女强"
+            },
+            {
+              "value": "魂穿",
+              "name": "魂穿"
+            },
+            {
+              "value": "复仇",
+              "name": "复仇"
+            },
+            {
+              "value": "清穿",
+              "name": "清穿"
+            },
+            {
+              "value": "争霸",
+              "name": "争霸"
+            },
+            {
+              "value": "反穿越",
+              "name": "反穿越"
+            },
+            {
+              "value": "契约",
+              "name": "契约"
+            },
+            {
+              "value": "重生",
+              "name": "重生"
+            },
+            {
+              "value": "红楼",
+              "name": "红楼"
+            },
+            {
+              "value": "学院",
+              "name": "学院"
+            },
+            {
+              "value": "变身",
+              "name": "变身"
+            },
+            {
+              "value": "古娱",
+              "name": "古娱"
+            },
+            {
+              "value": "转世",
+              "name": "转世"
+            },
+            {
+              "value": "种田文",
+              "name": "种田文"
+            },
+            {
+              "value": "书本穿",
+              "name": "书本穿"
+            },
+            {
+              "value": "随身流",
+              "name": "随身流"
+            },
+            {
+              "value": "群穿",
+              "name": "群穿"
+            },
+            {
+              "value": "修仙",
+              "name": "修仙"
+            },
+            {
+              "value": "系统流",
+              "name": "系统流"
+            },
+            {
+              "value": "美食",
+              "name": "美食"
+            },
+            {
+              "value": "废柴流",
+              "name": "废柴流"
+            },
+            {
+              "value": "盗墓",
+              "name": "盗墓"
+            },
+            {
+              "value": "养成",
+              "name": "养成"
+            },
+            {
+              "value": "鉴宝",
+              "name": "鉴宝"
+            },
+            {
+              "value": "升级文",
+              "name": "升级文"
+            },
+            {
+              "value": "宝宝",
+              "name": "宝宝"
+            },
+            {
+              "value": "赌石",
+              "name": "赌石"
+            },
+            {
+              "value": "宠物",
+              "name": "宠物"
+            },
+            {
+              "value": "灵魂互换",
+              "name": "灵魂互换"
+            }
+          ]
+        },
+        {
+          "name": "元素",
+          "key": "s_ys",
+          "enums": [
+            {
+              "value": "",
+              "name": "全部"
+            },
+            {
+              "value": "青梅竹马",
+              "name": "青梅竹马"
+            },
+            {
+              "value": "白领浪漫",
+              "name": "白领浪漫"
+            },
+            {
+              "value": "策马江湖",
+              "name": "策马江湖"
+            },
+            {
+              "value": "乡村爱情",
+              "name": "乡村爱情"
+            },
+            {
+              "value": "青楼宫廷",
+              "name": "青楼宫廷"
+            },
+            {
+              "value": "豪门",
+              "name": "豪门"
+            },
+            {
+              "value": "江湖恩怨",
+              "name": "江湖恩怨"
+            },
+            {
+              "value": "选秀",
+              "name": "选秀"
+            },
+            {
+              "value": "别后重逢",
+              "name": "别后重逢"
+            },
+            {
+              "value": "平凡生活",
+              "name": "平凡生活"
+            },
+            {
+              "value": "麻雀变凤凰",
+              "name": "麻雀变凤凰"
+            },
+            {
+              "value": "家长里短",
+              "name": "家长里短"
+            },
+            {
+              "value": "异国情缘",
+              "name": "异国情缘"
+            },
+            {
+              "value": "姐弟恋",
+              "name": "姐弟恋"
+            },
+            {
+              "value": "暗恋成真",
+              "name": "暗恋成真"
+            },
+            {
+              "value": "日久生情",
+              "name": "日久生情"
+            },
+            {
+              "value": "欢喜冤家",
+              "name": "欢喜冤家"
+            },
+            {
+              "value": "乔装改扮",
+              "name": "乔装改扮"
+            },
+            {
+              "value": "西方罗曼",
+              "name": "西方罗曼"
+            },
+            {
+              "value": "午夜惊魂",
+              "name": "午夜惊魂"
+            },
+            {
+              "value": "炮灰逆袭",
+              "name": "炮灰逆袭"
+            },
+            {
+              "value": "代嫁",
+              "name": "代嫁"
+            },
+            {
+              "value": "影视名家",
+              "name": "影视名家"
+            },
+            {
+              "value": "生存奇遇",
+              "name": "生存奇遇"
+            },
+            {
+              "value": "奋斗",
+              "name": "奋斗"
+            },
+            {
+              "value": "相亲",
+              "name": "相亲"
+            },
+            {
+              "value": "隐婚",
+              "name": "隐婚"
+            },
+            {
+              "value": "裸婚",
+              "name": "裸婚"
+            },
+            {
+              "value": "同居",
+              "name": "同居"
+            },
+            {
+              "value": "待嫁",
+              "name": "待嫁"
+            },
+            {
+              "value": "复合",
+              "name": "复合"
+            },
+            {
+              "value": "军婚",
+              "name": "军婚"
+            },
+            {
+              "value": "逃婚",
+              "name": "逃婚"
+            },
+            {
+              "value": "花季雨季",
+              "name": "花季雨季"
+            },
+            {
+              "value": "失忆",
+              "name": "失忆"
+            },
+            {
+              "value": "斗智斗勇",
+              "name": "斗智斗勇"
+            },
+            {
+              "value": "咸鱼翻身",
+              "name": "咸鱼翻身"
+            },
+            {
+              "value": "全息",
+              "name": "全息"
+            },
+            {
+              "value": "冒险",
+              "name": "冒险"
+            },
+            {
+              "value": "神秘文化",
+              "name": "神秘文化"
+            },
+            {
+              "value": "权谋",
+              "name": "权谋"
+            },
+            {
+              "value": "吐糟",
+              "name": "吐糟"
+            },
+            {
+              "value": "一见钟情",
+              "name": "一见钟情"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -11,8 +11,8 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.xzhou.book.DownloadManager;
 import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
-import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.models.Entities;
+import com.xzhou.book.models.SearchModel;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
@@ -40,6 +40,7 @@ public class BookProvider {
     // baidu
     static final String COLUMN_IS_BAIDU = "is_baidu";
     static final String COLUMN_READ_URL = "read_url";
+    static final String COLUMN_DESC = "bock_desc";
 
     public static class LocalBook implements MultiItemEntity, Parcelable {
         public String _id;
@@ -58,6 +59,7 @@ public class BookProvider {
         // baidu
         public boolean isBaiduBook;
         public String readUrl;
+        public String desc;
 
         public boolean isChecked;
         public boolean isEdit;
@@ -76,16 +78,21 @@ public class BookProvider {
             isPicture = detail.isPicture();
         }
 
-        public LocalBook(SearchModel.SearchBook baiduBook) {
+        public LocalBook(SearchModel.SearchBook book) {
             isBaiduBook = true;
-            _id = baiduBook.id;
-            title = baiduBook.bookName;
-            curSourceHost = baiduBook.sourceHost;
-            sourceId = baiduBook.sourceName;
-            cover = baiduBook.image;
-            lastChapter = baiduBook.latestChapterName;
-            updated = baiduBook.updated;
-            readUrl = baiduBook.readUrl;
+            _id = book.id;
+            title = book.bookName;
+            curSourceHost = book.sourceHost;
+            sourceId = book.sourceName;
+            cover = book.image;
+            lastChapter = book.latestChapterName;
+            updated = book.updated;
+            readUrl = book.readUrl;
+            if (book.desc != null && book.desc.length() > 20) {
+                desc = book.desc.substring(0, 20) + "...";
+            } else {
+                desc = book.desc;
+            }
         }
 
         public LocalBook() {
@@ -177,6 +184,7 @@ public class BookProvider {
             values.put(COLUMN_IS_BAIDU, isBaiduBook ? 1 : 0);
             values.put(COLUMN_READ_URL, readUrl);
             values.put(COLUMN_IS_PICTURE, isPicture ? 1 : 0);
+            values.put(COLUMN_DESC, desc);
             return values;
         }
 
@@ -196,6 +204,7 @@ public class BookProvider {
             isBaiduBook = in.readInt() == 1;
             readUrl = in.readString();
             isPicture = in.readInt() == 1;
+            desc = in.readString();
         }
 
         public static final Creator<LocalBook> CREATOR = new Creator<LocalBook>() {
@@ -237,6 +246,7 @@ public class BookProvider {
             dest.writeInt(isBaiduBook ? 1 : 0);
             dest.writeString(readUrl);
             dest.writeInt(isPicture ? 1 : 0);
+            dest.writeString(desc);
         }
 
         @Override
@@ -254,6 +264,8 @@ public class BookProvider {
                     ", isShowRed=" + isShowRed +
                     ", hasTop=" + hasTop +
                     ", isPicture=" + isPicture +
+                    ", readUrl=" + readUrl +
+                    ", desc=" + desc +
                     '}';
         }
     }
@@ -295,6 +307,7 @@ public class BookProvider {
             book.isBaiduBook = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_BAIDU)) == 1;
             book.readUrl = cursor.getString(cursor.getColumnIndex(COLUMN_READ_URL));
             book.isPicture = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_PICTURE)) == 1;
+            book.desc = cursor.getString(cursor.getColumnIndex(COLUMN_DESC));
             book.isBookshelf = true;
             list.add(book);
         }
@@ -305,7 +318,7 @@ public class BookProvider {
         try {
             ContentValues values = new ContentValues();
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { book._id };
+            String[] args = new String[]{book._id};
             values.put(COLUMN_LAST_READ_TIME, System.currentTimeMillis());
             values.put(COLUMN_IS_SHOW_RED, 0);
             MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
@@ -318,7 +331,7 @@ public class BookProvider {
         try {
             ContentValues values = new ContentValues();
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { book._id };
+            String[] args = new String[]{book._id};
             values.put(COLUMN_ORDER_TOP, book.hasTop ? 1 : 0);
             MyApp.getContext().getContentResolver().update(BookProviderImpl.BOOKSHELF_CONTENT_URI, values, where, args);
         } catch (Exception e) {
@@ -333,7 +346,7 @@ public class BookProvider {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         for (LocalBook book : books) {
             ops.add(ContentProviderOperation.newUpdate(BookProviderImpl.BOOKSHELF_CONTENT_URI)
-                    .withSelection(COLUMN_ID + "=?", new String[] { book._id })
+                    .withSelection(COLUMN_ID + "=?", new String[]{book._id})
                     .withValues(book.toContentValues())
                     .withYieldAllowed(true)
                     .build());
@@ -357,7 +370,7 @@ public class BookProvider {
             ContentValues values = book.toContentValues();
             book.isBookshelf = true;
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { book._id };
+            String[] args = new String[]{book._id};
             if (hasCacheData(book._id)) {
                 if (setReadTime) {
                     values.put(COLUMN_LAST_READ_TIME, time);
@@ -371,12 +384,7 @@ public class BookProvider {
                 }
                 values.put(COLUMN_ADD_TIME, System.currentTimeMillis());
                 MyApp.getContext().getContentResolver().insert(BookProviderImpl.BOOKSHELF_CONTENT_URI, values);
-                MyApp.runUI(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_joined_the_book_shelf, book.title));
-                    }
-                });
+                MyApp.runUI(() -> ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_joined_the_book_shelf, book.title)));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -392,7 +400,7 @@ public class BookProvider {
                     AppUtils.deleteBookCache(bookId);
                 }
                 ops.add(ContentProviderOperation.newDelete(BookProviderImpl.BOOKSHELF_CONTENT_URI)
-                        .withSelection(COLUMN_ID + "=?", new String[] { bookId })
+                        .withSelection(COLUMN_ID + "=?", new String[]{bookId})
                         .withYieldAllowed(true)
                         .build());
             }
@@ -416,7 +424,7 @@ public class BookProvider {
     public static void delete(String bookId, final String title, boolean deleteCache) {
         try {
             String where = COLUMN_ID + "=?";
-            String[] args = new String[] { bookId };
+            String[] args = new String[]{bookId};
             MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
             MyApp.runUI(new Runnable() {
                 @Override
@@ -435,7 +443,7 @@ public class BookProvider {
 
     public static boolean hasCacheData(String bookId) {
         String where = COLUMN_ID + "=?";
-        String[] args = new String[] { bookId };
+        String[] args = new String[]{bookId};
         try (Cursor cursor = MyApp.getContext().getContentResolver().query(BookProviderImpl.BOOKSHELF_CONTENT_URI, null,
                 where, args, null)) {
             return (cursor != null && cursor.getCount() > 0);
@@ -449,15 +457,15 @@ public class BookProvider {
         int order = AppSettings.getBookshelfOrder();
         String sortOrder = COLUMN_ORDER_TOP + " DESC, ";
         switch (order) {
-        case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME:
-            sortOrder += COLUMN_UPDATED + " DESC";
-            break;
-        case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_READ_TIME:
-            sortOrder += COLUMN_LAST_READ_TIME + " DESC";
-            break;
-        default:
-            sortOrder += COLUMN_ADD_TIME + " DESC";
-            break;
+            case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_UPDATE_TIME:
+                sortOrder += COLUMN_UPDATED + " DESC";
+                break;
+            case AppSettings.PRE_VALUE_BOOKSHELF_ORDER_READ_TIME:
+                sortOrder += COLUMN_LAST_READ_TIME + " DESC";
+                break;
+            default:
+                sortOrder += COLUMN_ADD_TIME + " DESC";
+                break;
         }
         return sortOrder;
     }

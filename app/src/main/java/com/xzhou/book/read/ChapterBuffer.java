@@ -17,9 +17,9 @@ public class ChapterBuffer {
     private static final String TAG = "ChapterBuffer";
     private byte[] mBuffer;
     private long mBufferLen;
-    private String mBookId;
-    private int mChapter;
-    private List<PageLines> mPageList = new ArrayList<>();
+    private final String mBookId;
+    private final int mChapter;
+    private final List<PageLines> mPageList = new ArrayList<>();
     private String mCharset = "UTF-8";
     private int mReadPos = 0;
 

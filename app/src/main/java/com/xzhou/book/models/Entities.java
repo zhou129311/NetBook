@@ -3,8 +3,9 @@ package com.xzhou.book.models;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.DrawableRes;
 import android.text.TextUtils;
+
+import androidx.annotation.DrawableRes;
 
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
@@ -12,8 +13,8 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.R;
 import com.xzhou.book.community.PostsDetailActivity;
-import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.main.BookDetailActivity;
+import com.xzhou.book.net.ZhuiShuSQApi;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
@@ -250,6 +251,8 @@ public class Entities {
         public int latelyFollower; //最近阅读人数
         public double retentionRatio; //留存率 73.76
         public int chaptersCount;
+
+        public String webUrl;
 
         @Override
         public int getItemType() {
@@ -557,7 +560,7 @@ public class Entities {
         public String _id;
         public String author;
         public int banned;
-        private String cover;
+        public String cover;
         public String creater;
         public Object dramaPoint;
         public int followerCount;
@@ -598,6 +601,9 @@ public class Entities {
         public Object gender; // MLGB, 偶尔是String，偶尔是Array
 
         public String cover() {
+            if (cover != null && cover.startsWith("https")) {
+                return cover;
+            }
             return ZhuiShuSQApi.IMG_BASE_URL + cover;
         }
 
@@ -1464,6 +1470,105 @@ public class Entities {
             } else {
                 Log.e("startTargetActivity error: idType = " + idType);
             }
+        }
+    }
+
+    public static class SupportBean {
+        public static final Type TYPE = new TypeToken<SupportBean>() {
+        }.getType();
+
+        public String name;
+        public String url;
+        public String icon;
+        public String searchUrl;
+        public String searchKey;
+        public String pageKey;
+        public List<SupportBeanEntry> entry;
+        public int checkIndex;
+
+        @Override
+        public String toString() {
+            return "SupportBean{" +
+                    "name='" + name + '\'' +
+                    ", url='" + url + '\'' +
+                    ", icon='" + icon + '\'' +
+                    ", searchUrl='" + searchUrl + '\'' +
+                    ", searchKey='" + searchKey + '\'' +
+                    ", pageKey='" + pageKey + '\'' +
+                    ", entry=" + entry +
+                    '}';
+        }
+    }
+
+    public static class SupportBeanEntry {
+        public String gender;
+        public String desc;
+        public String rootUrl;
+        public List<SupportBeanEntryParam> params;
+
+        @Override
+        public String toString() {
+            return "SupportBeanEntry{" +
+                    "gender='" + gender + '\'' +
+                    ", desc='" + desc + '\'' +
+                    ", rootUrl='" + rootUrl + '\'' +
+                    ", params=" + params +
+                    '}';
+        }
+    }
+
+    public static class SupportBeanEntryParam {
+        public String name;
+        public String key;
+        public List<SupportBeanEntryParamEnum> enums;
+        private List<String> tags;
+        public int checkIndex = 0;
+
+        public List<String> getTags() {
+            if (tags == null) {
+                tags = new ArrayList<>();
+                for (SupportBeanEntryParamEnum entryParamEnum : enums) {
+                    tags.add(entryParamEnum.name + "," + entryParamEnum.value);
+                }
+            }
+            return tags;
+        }
+
+        @Override
+        public String toString() {
+            return "SupportBeanEntryParam{" +
+                    "name='" + name + '\'' +
+                    ", key='" + key + '\'' +
+                    ", enums=" + enums +
+                    '}';
+        }
+    }
+
+    public static class SupportBeanEntryParamEnum {
+        public String name;
+        public String value;
+
+        @Override
+        public String toString() {
+            return "SupportBeanEntryParamEnum{" +
+                    "name='" + name + '\'' +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+
+    public static class ThirdBookData {
+        public int pageCount = 1;
+        public int pageCurrent = 0;
+        public List<SearchModel.SearchBook> list;
+
+        @Override
+        public String toString() {
+            return "ThirdBookData{" +
+                    "pageCount=" + pageCount +
+                    ", pageCurrent=" + pageCurrent +
+                    ", list=" + list +
+                    '}';
         }
     }
 }

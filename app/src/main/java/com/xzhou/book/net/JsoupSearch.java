@@ -19,10 +19,8 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.X509TrustManager;
 
 import static com.xzhou.book.models.HtmlParse.USER_AGENT;
@@ -87,12 +85,7 @@ public abstract class JsoupSearch {
 
     protected void trustEveryone() {
         try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @SuppressLint("BadHostnameVerifier")
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
+            HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, new X509TrustManager[]{new X509TrustManager() {
@@ -114,7 +107,9 @@ public abstract class JsoupSearch {
         }
     }
 
-    public abstract List<SearchModel.SearchBook> parseSearchKey(String key);
+    public List<SearchModel.SearchBook> parseSearchKey(String key) {
+        return null;
+    }
 
     public abstract List<SearchModel.SearchBook> parseFirstPageHtml(String html);
 

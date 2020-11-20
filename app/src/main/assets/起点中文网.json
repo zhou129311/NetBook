@@ -1,0 +1,932 @@
+{
+  "name": "起点中文网",
+  "url": "https://www.qidian.com/",
+  "icon": "https://www.qidian.com/favicon.ico",
+  "searchUrl": "https://www.qidian.com/search?vip=0",
+  "searchKey": "kw",
+  "pageKey": "page",
+  "entry": [
+    {
+      "gender": "女",
+      "desc": "起点中文网-女",
+      "rootUrl": "https://www.qidian.com/mm/all?vip=0",
+      "params": [
+        {
+          "name": "分类",
+          "key": "chanId",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "80",
+              "name": "古代言情"
+            },
+            {
+              "value": "81",
+              "name": "仙侠奇缘"
+            },
+            {
+              "value": "82",
+              "name": "现代言情"
+            },
+            {
+              "value": "83",
+              "name": "浪漫青春"
+            },
+            {
+              "value": "84",
+              "name": "玄幻言情"
+            },
+            {
+              "value": "85",
+              "name": "悬疑灵异"
+            },
+            {
+              "value": "86",
+              "name": "科幻空间"
+            },
+            {
+              "value": "88",
+              "name": "游戏竞技"
+            },
+            {
+              "value": "87",
+              "name": "N次元"
+            }
+          ]
+        },
+        {
+          "name": "状态",
+          "key": "action",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "0",
+              "name": "连载"
+            },
+            {
+              "value": "1",
+              "name": "完本"
+            }
+          ]
+        },
+        {
+          "name": "字数",
+          "key": "size",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "30万字以下"
+            },
+            {
+              "value": "2",
+              "name": "30-50万字"
+            },
+            {
+              "value": "3",
+              "name": "50-100万字"
+            },
+            {
+              "value": "4",
+              "name": "100-200万字"
+            },
+            {
+              "value": "5",
+              "name": "200万字以上"
+            }
+          ]
+        },
+        {
+          "name": "品质",
+          "key": "sign",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "签约作品"
+            },
+            {
+              "value": "2",
+              "name": "精品小说"
+            }
+          ]
+        },
+        {
+          "name": "更新时间",
+          "key": "update",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "三日内"
+            },
+            {
+              "value": "2",
+              "name": "七日内"
+            },
+            {
+              "value": "3",
+              "name": "半月内"
+            },
+            {
+              "value": "4",
+              "name": "一月内"
+            }
+          ]
+        },
+        {
+          "name": "标签",
+          "key": "tag",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "豪门",
+              "name": "豪门"
+            },
+            {
+              "value": "孤儿",
+              "name": "孤儿"
+            },
+            {
+              "value": "盗贼",
+              "name": "盗贼"
+            },
+            {
+              "value": "特工",
+              "name": "特工"
+            },
+            {
+              "value": "黑客",
+              "name": "黑客"
+            },
+            {
+              "value": "明星",
+              "name": "明星"
+            },
+            {
+              "value": "特种兵",
+              "name": "特种兵"
+            },
+            {
+              "value": "杀手",
+              "name": "杀手"
+            },
+            {
+              "value": "老师",
+              "name": "老师"
+            },
+            {
+              "value": "学生",
+              "name": "学生"
+            },
+            {
+              "value": "胖子",
+              "name": "胖子"
+            },
+            {
+              "value": "宠物",
+              "name": "宠物"
+            },
+            {
+              "value": "蜀山",
+              "name": "蜀山"
+            },
+            {
+              "value": "魔王附体",
+              "name": "魔王附体"
+            },
+            {
+              "value": "LOL",
+              "name": "LOL"
+            },
+            {
+              "value": "废材流",
+              "name": "废材流"
+            },
+            {
+              "value": "护短",
+              "name": "护短"
+            },
+            {
+              "value": "卡片",
+              "name": "卡片"
+            },
+            {
+              "value": "手游",
+              "name": "手游"
+            },
+            {
+              "value": "法师",
+              "name": "法师"
+            },
+            {
+              "value": "医生",
+              "name": "医生"
+            },
+            {
+              "value": "感情",
+              "name": "感情"
+            },
+            {
+              "value": "鉴宝",
+              "name": "鉴宝"
+            },
+            {
+              "value": "亡灵",
+              "name": "亡灵"
+            },
+            {
+              "value": "职场",
+              "name": "职场"
+            },
+            {
+              "value": "吸血鬼",
+              "name": "吸血鬼"
+            },
+            {
+              "value": "龙",
+              "name": "龙"
+            },
+            {
+              "value": "西游",
+              "name": "西游"
+            },
+            {
+              "value": "鬼怪",
+              "name": "鬼怪"
+            },
+            {
+              "value": "阵法",
+              "name": "阵法"
+            },
+            {
+              "value": "魔兽",
+              "name": "魔兽"
+            },
+            {
+              "value": "勇猛",
+              "name": "勇猛"
+            },
+            {
+              "value": "玄学",
+              "name": "玄学"
+            },
+            {
+              "value": "群穿",
+              "name": "群穿"
+            },
+            {
+              "value": "丹药",
+              "name": "丹药"
+            },
+            {
+              "value": "练功流",
+              "name": "练功流"
+            },
+            {
+              "value": "召唤流",
+              "name": "召唤流"
+            },
+            {
+              "value": "恶搞",
+              "name": "恶搞"
+            },
+            {
+              "value": "爆笑",
+              "name": "爆笑"
+            },
+            {
+              "value": "轻松",
+              "name": "轻松"
+            },
+            {
+              "value": "冷酷",
+              "name": "冷酷"
+            },
+            {
+              "value": "腹黑",
+              "name": "腹黑"
+            },
+            {
+              "value": "阳光",
+              "name": "阳光"
+            },
+            {
+              "value": "狡猾",
+              "name": "狡猾"
+            },
+            {
+              "value": "机智",
+              "name": "机智"
+            },
+            {
+              "value": "猥琐",
+              "name": "猥琐"
+            },
+            {
+              "value": "嚣张",
+              "name": "嚣张"
+            },
+            {
+              "value": "淡定",
+              "name": "淡定"
+            },
+            {
+              "value": "僵尸",
+              "name": "僵尸"
+            },
+            {
+              "value": "丧尸",
+              "name": "丧尸"
+            },
+            {
+              "value": "盗墓",
+              "name": "盗墓"
+            },
+            {
+              "value": "随身流",
+              "name": "随身流"
+            },
+            {
+              "value": "软饭流",
+              "name": "软饭流"
+            },
+            {
+              "value": "无敌文",
+              "name": "无敌文"
+            },
+            {
+              "value": "异兽流",
+              "name": "异兽流"
+            },
+            {
+              "value": "系统流",
+              "name": "系统流"
+            },
+            {
+              "value": "洪荒流",
+              "name": "洪荒流"
+            },
+            {
+              "value": "学院流",
+              "name": "学院流"
+            },
+            {
+              "value": "位面",
+              "name": "位面"
+            },
+            {
+              "value": "铁血",
+              "name": "铁血"
+            },
+            {
+              "value": "励志",
+              "name": "励志"
+            },
+            {
+              "value": "坚毅",
+              "name": "坚毅"
+            },
+            {
+              "value": "变身",
+              "name": "变身"
+            },
+            {
+              "value": "强者回归",
+              "name": "强者回归"
+            },
+            {
+              "value": "赚钱",
+              "name": "赚钱"
+            },
+            {
+              "value": "争霸流",
+              "name": "争霸流"
+            },
+            {
+              "value": "种田文",
+              "name": "种田文"
+            },
+            {
+              "value": "宅男",
+              "name": "宅男"
+            },
+            {
+              "value": "无限流",
+              "name": "无限流"
+            },
+            {
+              "value": "技术流",
+              "name": "技术流"
+            },
+            {
+              "value": "凡人流",
+              "name": "凡人流"
+            },
+            {
+              "value": "热血",
+              "name": "热血"
+            },
+            {
+              "value": "重生",
+              "name": "重生"
+            },
+            {
+              "value": "穿越",
+              "name": "穿越"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "gender": "男",
+      "desc": "起点中文网-男",
+      "rootUrl": "https://www.qidian.com/all?vip=0",
+      "params": [
+        {
+          "name": "分类",
+          "key": "chanId",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "21",
+              "name": "玄幻"
+            },
+            {
+              "value": "1",
+              "name": "奇幻"
+            },
+            {
+              "value": "2",
+              "name": "武侠"
+            },
+            {
+              "value": "22",
+              "name": "仙侠"
+            },
+            {
+              "value": "4",
+              "name": "都市"
+            },
+            {
+              "value": "15",
+              "name": "现实"
+            },
+            {
+              "value": "6",
+              "name": "军事"
+            },
+            {
+              "value": "5",
+              "name": "历史"
+            },
+            {
+              "value": "7",
+              "name": "游戏"
+            },
+            {
+              "value": "8",
+              "name": "体育"
+            },
+            {
+              "value": "9",
+              "name": "科幻"
+            },
+            {
+              "value": "10",
+              "name": "灵异"
+            },
+            {
+              "value": "12",
+              "name": "二次元"
+            },
+            {
+              "value": "20076",
+              "name": "短篇"
+            }
+          ]
+        },
+        {
+          "name": "状态",
+          "key": "action",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "0",
+              "name": "连载"
+            },
+            {
+              "value": "1",
+              "name": "完本"
+            }
+          ]
+        },
+        {
+          "name": "字数",
+          "key": "size",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "30万字以下"
+            },
+            {
+              "value": "2",
+              "name": "30-50万字"
+            },
+            {
+              "value": "3",
+              "name": "50-100万字"
+            },
+            {
+              "value": "4",
+              "name": "100-200万字"
+            },
+            {
+              "value": "5",
+              "name": "200万字以上"
+            }
+          ]
+        },
+        {
+          "name": "品质",
+          "key": "sign",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "签约作品"
+            },
+            {
+              "value": "2",
+              "name": "精品小说"
+            }
+          ]
+        },
+        {
+          "name": "更新时间",
+          "key": "update",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "三日内"
+            },
+            {
+              "value": "2",
+              "name": "七日内"
+            },
+            {
+              "value": "3",
+              "name": "半月内"
+            },
+            {
+              "value": "4",
+              "name": "一月内"
+            }
+          ]
+        },
+        {
+          "name": "标签",
+          "key": "tag",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "豪门",
+              "name": "豪门"
+            },
+            {
+              "value": "孤儿",
+              "name": "孤儿"
+            },
+            {
+              "value": "盗贼",
+              "name": "盗贼"
+            },
+            {
+              "value": "特工",
+              "name": "特工"
+            },
+            {
+              "value": "黑客",
+              "name": "黑客"
+            },
+            {
+              "value": "明星",
+              "name": "明星"
+            },
+            {
+              "value": "特种兵",
+              "name": "特种兵"
+            },
+            {
+              "value": "杀手",
+              "name": "杀手"
+            },
+            {
+              "value": "老师",
+              "name": "老师"
+            },
+            {
+              "value": "学生",
+              "name": "学生"
+            },
+            {
+              "value": "胖子",
+              "name": "胖子"
+            },
+            {
+              "value": "宠物",
+              "name": "宠物"
+            },
+            {
+              "value": "蜀山",
+              "name": "蜀山"
+            },
+            {
+              "value": "魔王附体",
+              "name": "魔王附体"
+            },
+            {
+              "value": "LOL",
+              "name": "LOL"
+            },
+            {
+              "value": "废材流",
+              "name": "废材流"
+            },
+            {
+              "value": "护短",
+              "name": "护短"
+            },
+            {
+              "value": "卡片",
+              "name": "卡片"
+            },
+            {
+              "value": "手游",
+              "name": "手游"
+            },
+            {
+              "value": "法师",
+              "name": "法师"
+            },
+            {
+              "value": "医生",
+              "name": "医生"
+            },
+            {
+              "value": "感情",
+              "name": "感情"
+            },
+            {
+              "value": "鉴宝",
+              "name": "鉴宝"
+            },
+            {
+              "value": "亡灵",
+              "name": "亡灵"
+            },
+            {
+              "value": "职场",
+              "name": "职场"
+            },
+            {
+              "value": "吸血鬼",
+              "name": "吸血鬼"
+            },
+            {
+              "value": "龙",
+              "name": "龙"
+            },
+            {
+              "value": "西游",
+              "name": "西游"
+            },
+            {
+              "value": "鬼怪",
+              "name": "鬼怪"
+            },
+            {
+              "value": "阵法",
+              "name": "阵法"
+            },
+            {
+              "value": "魔兽",
+              "name": "魔兽"
+            },
+            {
+              "value": "勇猛",
+              "name": "勇猛"
+            },
+            {
+              "value": "玄学",
+              "name": "玄学"
+            },
+            {
+              "value": "群穿",
+              "name": "群穿"
+            },
+            {
+              "value": "丹药",
+              "name": "丹药"
+            },
+            {
+              "value": "练功流",
+              "name": "练功流"
+            },
+            {
+              "value": "召唤流",
+              "name": "召唤流"
+            },
+            {
+              "value": "恶搞",
+              "name": "恶搞"
+            },
+            {
+              "value": "爆笑",
+              "name": "爆笑"
+            },
+            {
+              "value": "轻松",
+              "name": "轻松"
+            },
+            {
+              "value": "冷酷",
+              "name": "冷酷"
+            },
+            {
+              "value": "腹黑",
+              "name": "腹黑"
+            },
+            {
+              "value": "阳光",
+              "name": "阳光"
+            },
+            {
+              "value": "狡猾",
+              "name": "狡猾"
+            },
+            {
+              "value": "机智",
+              "name": "机智"
+            },
+            {
+              "value": "猥琐",
+              "name": "猥琐"
+            },
+            {
+              "value": "嚣张",
+              "name": "嚣张"
+            },
+            {
+              "value": "淡定",
+              "name": "淡定"
+            },
+            {
+              "value": "僵尸",
+              "name": "僵尸"
+            },
+            {
+              "value": "丧尸",
+              "name": "丧尸"
+            },
+            {
+              "value": "盗墓",
+              "name": "盗墓"
+            },
+            {
+              "value": "随身流",
+              "name": "随身流"
+            },
+            {
+              "value": "软饭流",
+              "name": "软饭流"
+            },
+            {
+              "value": "无敌文",
+              "name": "无敌文"
+            },
+            {
+              "value": "异兽流",
+              "name": "异兽流"
+            },
+            {
+              "value": "系统流",
+              "name": "系统流"
+            },
+            {
+              "value": "洪荒流",
+              "name": "洪荒流"
+            },
+            {
+              "value": "学院流",
+              "name": "学院流"
+            },
+            {
+              "value": "位面",
+              "name": "位面"
+            },
+            {
+              "value": "铁血",
+              "name": "铁血"
+            },
+            {
+              "value": "励志",
+              "name": "励志"
+            },
+            {
+              "value": "坚毅",
+              "name": "坚毅"
+            },
+            {
+              "value": "变身",
+              "name": "变身"
+            },
+            {
+              "value": "强者回归",
+              "name": "强者回归"
+            },
+            {
+              "value": "赚钱",
+              "name": "赚钱"
+            },
+            {
+              "value": "争霸流",
+              "name": "争霸流"
+            },
+            {
+              "value": "种田文",
+              "name": "种田文"
+            },
+            {
+              "value": "宅男",
+              "name": "宅男"
+            },
+            {
+              "value": "无限流",
+              "name": "无限流"
+            },
+            {
+              "value": "技术流",
+              "name": "技术流"
+            },
+            {
+              "value": "凡人流",
+              "name": "凡人流"
+            },
+            {
+              "value": "热血",
+              "name": "热血"
+            },
+            {
+              "value": "重生",
+              "name": "重生"
+            },
+            {
+              "value": "穿越",
+              "name": "穿越"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

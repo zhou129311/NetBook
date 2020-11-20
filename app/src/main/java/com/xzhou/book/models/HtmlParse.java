@@ -29,10 +29,10 @@ public abstract class HtmlParse {
     protected String TAG = "HtmlParse";
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
 
-    private static Pattern PATTERN1 = Pattern.compile("<div(.*?)>");
-    private static Pattern PATTERN2 = Pattern.compile("<fon(.*?)>");
-    private static Pattern PATTERN3 = Pattern.compile("<p(.*?)>");
-    private static Pattern PATTERN4 = Pattern.compile("<!--(.*?)-->");
+    private static final Pattern PATTERN1 = Pattern.compile("<div(.*?)>");
+    private static final Pattern PATTERN2 = Pattern.compile("<fon(.*?)>");
+    private static final Pattern PATTERN3 = Pattern.compile("<p(.*?)>");
+    private static final Pattern PATTERN4 = Pattern.compile("<!--(.*?)-->");
     private static final List<String> E_TAGS = new ArrayList<String>() {
         {
             add("div.kongwen");

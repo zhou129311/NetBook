@@ -297,19 +297,13 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
             return;
         }
         CheckDialog.Builder builder = new CheckDialog.Builder(activity);
-        builder.setNegativeButton(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                changeEditMode(false);
-            }
-        }).setPositiveButton(new CheckDialog.OnPositiveClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, boolean isChecked) {
-                dialog.dismiss();
-                changeEditMode(false);
-                BookProvider.delete(list, isChecked);
-            }
+        builder.setNegativeButton((dialog, which) -> {
+            dialog.dismiss();
+            changeEditMode(false);
+        }).setPositiveButton((dialog, isChecked) -> {
+            dialog.dismiss();
+            changeEditMode(false);
+            BookProvider.delete(list, isChecked);
         }).show();
     }
 
@@ -362,7 +356,11 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
         protected void convert(CommonViewHolder helper, final BookProvider.LocalBook item) {
             String sub;
             if (item.isBaiduBook) {
-                sub = "最新章节：" + item.lastChapter + "\n" + item.sourceId + " | " + item.curSourceHost;
+                if (TextUtils.isEmpty(item.lastChapter)) {
+                    sub = item.desc + "\n" + item.sourceId + " | " + item.curSourceHost;
+                } else {
+                    sub = "最新章节：" + item.lastChapter + "\n" + item.sourceId + " | " + item.curSourceHost;
+                }
             } else {
                 sub = AppUtils.getDescriptionTimeFromTimeMills(item.updated) + " : " + item.lastChapter;
             }

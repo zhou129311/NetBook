@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BookProviderImpl extends ContentProvider {
     private static final String AUTHORITY = "com.xzhou.book.provider";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "book.db";
     private static final String TABLE_BOOK = "bookshelf";
     //    private static final int MARCH_BOOK = 1;
@@ -139,6 +139,9 @@ public class BookProviderImpl extends ContentProvider {
             if (oldVersion == 1) {
                 String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_PICTURE + " INTEGER ";
                 db.execSQL(sql);
+            } else if (oldVersion == 2) {
+                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_DESC + " TEXT ";
+                db.execSQL(sql);
             }
 //            if (oldVersion <= 3) {
 //                String sql = "ALTER TABLE " + TABLE_BOOK + " ADD COLUMN " + BookProvider.COLUMN_IS_SHOW_RED + " INTEGER ";
@@ -173,7 +176,8 @@ public class BookProviderImpl extends ContentProvider {
                     + BookProvider.COLUMN_CUR_SOURCE_ID + " TEXT, "
                     + BookProvider.COLUMN_IS_BAIDU + " INTEGER, "
                     + BookProvider.COLUMN_IS_PICTURE + " INTEGER, "
-                    + BookProvider.COLUMN_READ_URL + " TEXT);");
+                    + BookProvider.COLUMN_READ_URL + " TEXT, "
+                    + BookProvider.COLUMN_DESC + " TEXT);");
         }
     }
 }

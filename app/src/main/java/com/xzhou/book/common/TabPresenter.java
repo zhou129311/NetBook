@@ -68,12 +68,79 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
         if (mView != null) {
             mView.onRefreshStateChange(true);
         }
-        ZhuiShuSQApi.getPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<MultiItemEntity> list = null;
-                mDataNumber = 0;
+        ZhuiShuSQApi.getPool().execute(() -> {
+            List<MultiItemEntity> list = null;
+            mDataNumber = 0;
+            switch (mTabData.source) {
+            case TabSource.SOURCE_CATEGORY_SUB:
+                list = getCategorySubData();
+                break;
+            case TabSource.SOURCE_TOPIC_LIST:
+                list = getTopicListData();
+                break;
+            case TabSource.SOURCE_TAG:
+                list = getBookByTagData();
+                break;
+            case TabSource.SOURCE_COMMUNITY:
+                if (mTabId == 0) {
+                    list = getDiscussionList();
+                } else {
+                    list = getBookReviewList();
+                }
+                break;
+            case TabSource.SOURCE_RANK_SUB:
+                String rankId = mTabData.params[mTabId];
+                Entities.Rankings rankings = ZhuiShuSQApi.getRanking(rankId);
+                if (rankings != null) {
+                    list = new ArrayList<>();
+                    if (rankings.ranking != null && rankings.ranking.books != null) {
+                        list.addAll(rankings.ranking.books);
+                    }
+                }
+                break;
+            case TabSource.SOURCE_AUTHOR:
+                Entities.BooksByTag searchBooks = ZhuiShuSQApi.searchBooksByAuthor(mTabData.params[0]);
+                if (searchBooks != null) {
+                    list = new ArrayList<>();
+                    if (searchBooks.books != null && searchBooks.books.size() > 0) {
+                        list.addAll(searchBooks.books);
+                    }
+                }
+                break;
+            case TabSource.SOURCE_RECOMMEND:
+                Entities.Recommend recommend = ZhuiShuSQApi.getRecommendBook(mTabData.params[0]);
+                if (recommend != null) {
+                    list = new ArrayList<>();
+                    if (recommend.books != null && recommend.books.size() > 0) {
+                        list.addAll(recommend.books);
+                    }
+                }
+                break;
+            case TabSource.SOURCE_SEARCH:
+                // 书籍 漫画 书单 社区
+                list = getSearchResult();
+                break;
+            }
+            if (list != null && list.size() > 0) {
+                mDataNumber = list.size();
+            }
+            setDataList(list, false);
+        });
+    }
+
+    @Override
+    public void loadMore() {
+        ZhuiShuSQApi.getPool().execute(() -> {
+            List<MultiItemEntity> list = null;
+            if (mDataNumber % PAGE_SIZE != 0) {
+                list = new ArrayList<>(); //没有更多了
+            } else {
                 switch (mTabData.source) {
+                case TabSource.SOURCE_RANK_SUB:
+                case TabSource.SOURCE_AUTHOR:
+                case TabSource.SOURCE_RECOMMEND:
+                    // do nothing
+                    break;
                 case TabSource.SOURCE_CATEGORY_SUB:
                     list = getCategorySubData();
                     break;
@@ -90,88 +157,15 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
                         list = getBookReviewList();
                     }
                     break;
-                case TabSource.SOURCE_RANK_SUB:
-                    String rankId = mTabData.params[mTabId];
-                    Entities.Rankings rankings = ZhuiShuSQApi.getRanking(rankId);
-                    if (rankings != null) {
-                        list = new ArrayList<>();
-                        if (rankings.ranking != null && rankings.ranking.books != null) {
-                            list.addAll(rankings.ranking.books);
-                        }
-                    }
-                    break;
-                case TabSource.SOURCE_AUTHOR:
-                    Entities.BooksByTag searchBooks = ZhuiShuSQApi.searchBooksByAuthor(mTabData.params[0]);
-                    if (searchBooks != null) {
-                        list = new ArrayList<>();
-                        if (searchBooks.books != null && searchBooks.books.size() > 0) {
-                            list.addAll(searchBooks.books);
-                        }
-                    }
-                    break;
-                case TabSource.SOURCE_RECOMMEND:
-                    Entities.Recommend recommend = ZhuiShuSQApi.getRecommendBook(mTabData.params[0]);
-                    if (recommend != null) {
-                        list = new ArrayList<>();
-                        if (recommend.books != null && recommend.books.size() > 0) {
-                            list.addAll(recommend.books);
-                        }
-                    }
-                    break;
                 case TabSource.SOURCE_SEARCH:
-                    // 书籍 漫画 书单 社区
                     list = getSearchResult();
                     break;
                 }
-                if (list != null && list.size() > 0) {
-                    mDataNumber = list.size();
-                }
-                setDataList(list, false);
             }
-        });
-    }
-
-    @Override
-    public void loadMore() {
-        ZhuiShuSQApi.getPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<MultiItemEntity> list = null;
-                if (mDataNumber % PAGE_SIZE != 0) {
-                    list = new ArrayList<>(); //没有更多了
-                } else {
-                    switch (mTabData.source) {
-                    case TabSource.SOURCE_RANK_SUB:
-                    case TabSource.SOURCE_AUTHOR:
-                    case TabSource.SOURCE_RECOMMEND:
-                        // do nothing
-                        break;
-                    case TabSource.SOURCE_CATEGORY_SUB:
-                        list = getCategorySubData();
-                        break;
-                    case TabSource.SOURCE_TOPIC_LIST:
-                        list = getTopicListData();
-                        break;
-                    case TabSource.SOURCE_TAG:
-                        list = getBookByTagData();
-                        break;
-                    case TabSource.SOURCE_COMMUNITY:
-                        if (mTabId == 0) {
-                            list = getDiscussionList();
-                        } else {
-                            list = getBookReviewList();
-                        }
-                        break;
-                    case TabSource.SOURCE_SEARCH:
-                        list = getSearchResult();
-                        break;
-                    }
-                }
-                if (list != null && list.size() > 0) {
-                    mDataNumber += list.size();
-                }
-                setDataList(list, true);
+            if (list != null && list.size() > 0) {
+                mDataNumber += list.size();
             }
+            setDataList(list, true);
         });
     }
 
@@ -324,16 +318,13 @@ public class TabPresenter extends BasePresenter<TabContract.View> implements Tab
 
     private void setDataList(final List<MultiItemEntity> list, final boolean isLoadMore) {
         int delayMills = list == null ? 100 : 0;
-        MyApp.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    if (isLoadMore) {
-                        mView.onLoadMore(list);
-                    } else {
-                        mView.onRefreshStateChange(false);
-                        mView.onDataChange(list);
-                    }
+        MyApp.getHandler().postDelayed(() -> {
+            if (mView != null) {
+                if (isLoadMore) {
+                    mView.onLoadMore(list);
+                } else {
+                    mView.onRefreshStateChange(false);
+                    mView.onDataChange(list);
                 }
             }
         }, delayMills);

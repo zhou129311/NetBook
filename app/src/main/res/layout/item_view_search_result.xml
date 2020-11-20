@@ -41,8 +41,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/book_item_margin_h"
-        android:textColor="@color/common_h3"
+        android:textColor="@color/common_h2"
         android:textSize="13sp"
+        android:maxLines="3"
+        android:ellipsize="end"
         app:layout_constraintBottom_toBottomOf="@id/book_image"
         app:layout_constraintEnd_toStartOf="@id/auto_parse_btn"
         app:layout_constraintHorizontal_bias="0.0"
@@ -70,7 +72,7 @@
         tools:ignore="SmallSp"
         tools:visibility="visible" />
 
-    <com.xzhou.book.widget.LoadingButton
+    <TextView
         android:id="@+id/auto_parse_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

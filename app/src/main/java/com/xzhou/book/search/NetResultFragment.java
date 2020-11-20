@@ -43,7 +43,6 @@ import com.xzhou.book.read.ReadWebActivity;
 import com.xzhou.book.utils.AppSettings;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
-import com.xzhou.book.widget.LoadingButton;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -111,12 +110,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         LayoutInflater inflater = LayoutInflater.from(getContext());
         mEmptyView = inflater.inflate(R.layout.common_empty_view, null);
 //        mLoadView = inflater.inflate(R.layout.baidu_search_loading_view, null);
-        mEmptyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadUrl();
-            }
-        });
+        mEmptyView.setOnClickListener(v -> loadUrl());
         mAdapter = new Adapter();
         mAdapter.bindToRecyclerView(mRecyclerView);
         mHeaderView = inflater.inflate(R.layout.header_search_loading, null);
@@ -382,10 +376,9 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
                     .setText(R.id.book_h2, sub)
                     .setGone(R.id.local_read_tv, support);
 
-            LoadingButton button = holder.getView(R.id.auto_parse_btn);
+            TextView button = holder.getView(R.id.auto_parse_btn);
             button.setVisibility(support ? View.GONE : View.VISIBLE);
-            button.initText("解析中...", item.parseText);
-            button.setLoading(item.isParsing);
+            button.setText(item.isParsing ? "解析中..." : item.parseText);
             button.setOnClickListener(v -> mPresenter.tryParseBook(item));
             holder.itemView.setOnClickListener(v -> {
                 BookProvider.LocalBook localBook = new BookProvider.LocalBook(item);

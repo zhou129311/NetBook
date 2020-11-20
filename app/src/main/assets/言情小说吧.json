@@ -1,0 +1,286 @@
+{
+  "name": "言情小说吧",
+  "url": "https://www.xs8.cn/",
+  "icon": "https://qidian.gtimg.com/xs8/favicon/favicon.ico",
+  "pageKey": "pageNum",
+  "entry": [
+    {
+      "gender": "女",
+      "desc": "言情小说吧",
+      "rootUrl": "https://www.xs8.cn/all?gender=2&isVip=1",
+      "params": [
+        {
+          "name": "分类",
+          "key": "catId",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "30020",
+              "name": "现代言情"
+            },
+            {
+              "value": "30013",
+              "name": "古代言情"
+            },
+            {
+              "value": "30031",
+              "name": "浪漫青春"
+            },
+            {
+              "value": "30001",
+              "name": "玄幻言情"
+            },
+            {
+              "value": "30008",
+              "name": "仙侠奇缘"
+            },
+            {
+              "value": "30036",
+              "name": "悬疑灵异"
+            },
+            {
+              "value": "30042",
+              "name": "科幻空间"
+            },
+            {
+              "value": "30050",
+              "name": "游戏竞技"
+            },
+            {
+              "value": "30083",
+              "name": "短篇小说"
+            },
+            {
+              "value": "30055",
+              "name": "N次元"
+            }
+          ]
+        },
+        {
+          "name": "字数",
+          "key": "size",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "6",
+              "name": "30万以下"
+            },
+            {
+              "value": "2",
+              "name": "30~50万"
+            },
+            {
+              "value": "3",
+              "name": "50~100万"
+            },
+            {
+              "value": "4",
+              "name": "100~200万"
+            },
+            {
+              "value": "5",
+              "name": "200万以上"
+            }
+          ]
+        },
+        {
+          "name": "状态",
+          "key": "isFinish",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "0",
+              "name": "连载"
+            },
+            {
+              "value": "1",
+              "name": "完本"
+            }
+          ]
+        },
+        {
+          "name": "更新时间",
+          "key": "updT",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "三日内"
+            },
+            {
+              "value": "2",
+              "name": "七日内"
+            },
+            {
+              "value": "6",
+              "name": "半月内"
+            },
+            {
+              "value": "3",
+              "name": "一月内"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "gender": "男",
+      "desc": "言情小说吧",
+      "rootUrl": "https://www.xs8.cn/all?gender=1&isVip=1",
+      "params": [
+        {
+          "name": "分类",
+          "key": "catId",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "20001",
+              "name": "玄幻"
+            },
+            {
+              "value": "20005",
+              "name": "奇幻"
+            },
+            {
+              "value": "20010",
+              "name": "武侠"
+            },
+            {
+              "value": "20014",
+              "name": "仙侠"
+            },
+            {
+              "value": "20019",
+              "name": "都市"
+            },
+            {
+              "value": "20065",
+              "name": "现实"
+            },
+            {
+              "value": "20032",
+              "name": "军事"
+            },
+            {
+              "value": "20028",
+              "name": "历史"
+            },
+            {
+              "value": "20050",
+              "name": "游戏"
+            },
+            {
+              "value": "20054",
+              "name": "体育"
+            },
+            {
+              "value": "20042",
+              "name": "科幻"
+            },
+            {
+              "value": "20037",
+              "name": "灵异"
+            },
+            {
+              "value": "20059",
+              "name": "二次元"
+            },
+            {
+              "value": "20076",
+              "name": "短篇"
+            }
+          ]
+        },
+        {
+          "name": "字数",
+          "key": "size",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "6",
+              "name": "30万以下"
+            },
+            {
+              "value": "2",
+              "name": "30~50万"
+            },
+            {
+              "value": "3",
+              "name": "50~100万"
+            },
+            {
+              "value": "4",
+              "name": "100~200万"
+            },
+            {
+              "value": "5",
+              "name": "200万以上"
+            }
+          ]
+        },
+        {
+          "name": "状态",
+          "key": "isFinish",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "0",
+              "name": "连载"
+            },
+            {
+              "value": "1",
+              "name": "完本"
+            }
+          ]
+        },
+        {
+          "name": "更新时间",
+          "key": "updT",
+          "enums": [
+            {
+              "value": "-1",
+              "name": "全部"
+            },
+            {
+              "value": "1",
+              "name": "三日内"
+            },
+            {
+              "value": "2",
+              "name": "七日内"
+            },
+            {
+              "value": "6",
+              "name": "半月内"
+            },
+            {
+              "value": "3",
+              "name": "一月内"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

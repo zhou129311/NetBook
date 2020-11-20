@@ -22,7 +22,7 @@
     <string name="male_topic" translatable="false">男生书单</string>
     <string name="female_topic" translatable="false">女生书单</string>
     <string name="find_category" translatable="false">分类</string>
-    <string name="find_random_read" translatable="false">随机看书</string>
+    <string name="third_website" translatable="false">第三方小说网</string>
     <string name="rank_other" translatable="false">别人家的排行榜</string>
 
     <string name="net_book_author" translatable="false">%1$s&#160;|&#160;%2$s</string>

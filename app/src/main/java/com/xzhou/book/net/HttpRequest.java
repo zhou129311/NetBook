@@ -39,7 +39,7 @@ public class HttpRequest {
             for (String path : mPath) {
                 if (!TextUtils.isEmpty(path)) {
                     String encode = null;
-                    if(path.startsWith("http://")) {
+                    if (path.startsWith("http://")) {
                         try {
                             encode = URLEncoder.encode(path, "UTF-8");
                         } catch (UnsupportedEncodingException ignored) {
@@ -57,10 +57,13 @@ public class HttpRequest {
             return url;
         }
 
-        boolean isFirstParam = true;
+        boolean isFirstParam = !url.contains("?") && !url.contains("=");
         StringBuilder sb = new StringBuilder(url);
 
         for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (TextUtils.isEmpty(entry.getValue())) {
+                continue;
+            }
             if (!isFirstParam) {
                 sb.append('&');
             } else {

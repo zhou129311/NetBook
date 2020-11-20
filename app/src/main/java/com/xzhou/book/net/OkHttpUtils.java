@@ -10,7 +10,6 @@ import com.xzhou.book.utils.FileUtils;
 import com.xzhou.book.utils.Log;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -19,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -60,21 +57,18 @@ public class OkHttpUtils {
         return sGetClient;
     }
 
-    private static Interceptor interceptor = new Interceptor() {
-        @Override
-        public Response intercept(Interceptor.Chain chain) throws IOException {
-            Request request = chain.request();
-            Response response = chain.proceed(request);
+    private static final Interceptor interceptor = chain -> {
+        Request request = chain.request();
+        Response response = chain.proceed(request);
 
-            String cacheControl = request.cacheControl().toString();
-            if (TextUtils.isEmpty(cacheControl)) {
-                cacheControl = "public, max-age=" + CACHE_MAXAGE;
-            }
-            return response.newBuilder()
-                    .header("Cache-Control", cacheControl)
-                    .removeHeader("Pragma")
-                    .build();
+        String cacheControl = request.cacheControl().toString();
+        if (TextUtils.isEmpty(cacheControl)) {
+            cacheControl = "public, max-age=" + CACHE_MAXAGE;
         }
+        return response.newBuilder()
+                .header("Cache-Control", cacheControl)
+                .removeHeader("Pragma")
+                .build();
     };
 
     private static class LocalCookieJar implements CookieJar {
@@ -95,14 +89,6 @@ public class OkHttpUtils {
 
     private static void addHttpAuthority(OkHttpClient.Builder builder) {
         try {
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @SuppressLint("BadHostnameVerifier")
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            });
-
             SSLContext sc = SSLContext.getInstance("TLS");
             sc.init(null, TRUST_ALL_CERTS, new SecureRandom());
             final SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
@@ -121,7 +107,7 @@ public class OkHttpUtils {
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
                 }
-            });
+            }).hostnameVerifier((hostname, session) -> true);
         } catch (Exception ignored) {
         }
     }
@@ -143,24 +129,29 @@ public class OkHttpUtils {
         }
     }};
 
-    public static Response getPcRel(String url) {
+    public static String getPcRel(String url) {
         Request req = new Request.Builder()
                 .url(url)
-                .cacheControl(CacheControl.FORCE_NETWORK)
+                .cacheControl(new CacheControl.Builder()
+                        .maxAge(CACHE_MAXAGE, TimeUnit.SECONDS)
+                        .build())
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
                 .get()
                 .build();
-//        ResponseBody body = null;
+        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-//            body = response.body();
-            return response;
+            body = response.body();
+            if (body != null) {
+                logi("url: " + url + "\n" + body.toString());
+                return body.toString();
+            }
         } catch (Exception e) {
             Log.e("get url = " + url + "\nerror:", e);
         } finally {
-//            if (body != null) {
-//                body.close();
-//            }
+            if (body != null) {
+                body.close();
+            }
         }
         return null;
     }

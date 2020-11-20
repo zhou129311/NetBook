@@ -239,6 +239,8 @@ public class SearchModel {
         public long updated;
         public boolean isParsing;
         public String parseText = "开始解析";
+        public String desc;
+        public String tag;
 
         public SearchBook() {
         }
@@ -263,6 +265,7 @@ public class SearchModel {
                     ", readUrl='" + readUrl + '\'' +
                     ", latestChapterName='" + latestChapterName + '\'' +
                     ", latestChapterUrl='" + latestChapterUrl + '\'' +
+                    ", tag='" + tag + '\'' +
                     '}';
         }
     }

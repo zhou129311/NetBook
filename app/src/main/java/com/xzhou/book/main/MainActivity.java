@@ -85,35 +85,31 @@ public class MainActivity extends BaseActivity {
             mListPopupWindow = new ListPopupWindow(this);
             mListPopupWindow.setWidth((int) (AppUtils.getScreenWidth() / 2.6f));
             mListPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-            mListPopupWindow.setAnchorView(mToolbar);
+            mListPopupWindow.setAnchorView(findViewById(R.id.action_more));
             mListPopupWindow.setHorizontalOffset(AppUtils.dip2px(-16));//相对锚点偏移值，正值表示向右偏移
             mListPopupWindow.setVerticalOffset(AppUtils.dip2px(-5));//相对锚点偏移值，正值表示向下偏移
             mListPopupWindow.setDropDownGravity(Gravity.END);
             mListPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_dialog_common));
             mListPopupWindow.setModal(true);//模态框，设置为true响应物理键
             mListPopupWindow.setAdapter(mMenuAdapter);
-            mListPopupWindow.setAnimationStyle(R.style.popup_anim_style);
-            mListPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    mListPopupWindow.dismiss();
-                    switch (position) {
-                    case 0:
-                        if (AppSettings.isNight()) {
-                            AppSettings.setNight(false);
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                            mMainNight = false;
-                        } else {
-                            AppSettings.setNight(true);
-                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                            mMainNight = true;
-                        }
-                        recreate();
-                        break;
-                    case 1:
-                        SettingsActivity.startActivity(mActivity);
-                        break;
+            mListPopupWindow.setOnItemClickListener((parent, view, position, id) -> {
+                mListPopupWindow.dismiss();
+                switch (position) {
+                case 0:
+                    if (AppSettings.isNight()) {
+                        AppSettings.setNight(false);
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                        mMainNight = false;
+                    } else {
+                        AppSettings.setNight(true);
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                        mMainNight = true;
                     }
+                    recreate();
+                    break;
+                case 1:
+                    SettingsActivity.startActivity(mActivity);
+                    break;
                 }
             });
         }

@@ -13,13 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import okhttp3.Response;
-
-import static com.xzhou.book.models.HtmlParse.USER_AGENT;
 
 /**
  * File Description: 搜狗搜索引擎
@@ -33,76 +27,76 @@ public class SogouSearch extends JsoupSearch {
         super("SogouSearch");
     }
 
-    /**
-     * @return 搜狗验证码机制是通过cookie触发，每次搜索对cookie进行设置可以避免验证码
-     */
-    private Map<String, String> getCookies() {
-        Map<String, String> cookies = new HashMap<>();
-        String url = "https://www.sogou.com/web?query=%E6%90%9C%E7%8B%97%E8%81%94%E7%9B%9F%E7%99%BB%E5%BD%95&page=1";
-        Response req = OkHttpUtils.getPcRel(url);
-        if (req != null) {
-            List<String> cookieList = req.headers().values("Set-Cookie");
-            Log.i(TAG, "cookieList = " + cookieList);
-            if (cookieList != null) {
-                for (String cookie : cookieList) {
-                    if (cookie.contains("BAIDUID=")) {
-                        cookies.put("BAIDUID", cookie.substring(9));
-                    }
-                }
-            }
-        }
-        return cookies;
-    }
-
-    public List<SearchModel.SearchBook> parseSearchKey(String key) {
-        mCurSize = 0;
-        mCurParseSize = 0;
-        mCancel = false;
-        mBookHosts.clear();
-        List<SearchModel.SearchBook> bookList = new ArrayList<>();
-        try {
-            trustEveryone();
-            String url = "https://www.sogou.com/web?query=" + key;
-
-            Document document = Jsoup.connect(url).cookies(getCookies()).userAgent(USER_AGENT).timeout(10000).get();
-            Elements page = document.getElementsByClass("p");
-            Log.i(TAG, "page: " + page.toString());
-            Elements a = page.select("a");
-            List<String> pages = new ArrayList<>();
-            if (a != null) {
-                for (Element element : a) {
-                    String link = element.attr("href");
-                    if (link != null && link.startsWith("?")) {
-                        pages.add("https://www.sogou.com/web" + link);
-                    }
-                    if (pages.size() > 8) {
-                        break;
-                    }
-                    Log.i(TAG, "page: " + link);
-                }
-            }
-            List<SearchModel.SearchBook> list1 = getBookListForDocument(document);
-            if (list1 != null) {
-                bookList.addAll(list1);
-            }
-            for (String pageUrl : pages) {
-                if (mCancel) {
-                    break;
-                }
-                Document pageDocument = Jsoup.connect(pageUrl).userAgent(USER_AGENT).timeout(10000).get();
-                List<SearchModel.SearchBook> list2 = getBookListForDocument(pageDocument);
-                if (list2 != null) {
-                    bookList.addAll(list2);
-                }
-//                    if (bookList.size() > 10 && mCurParseSize > 0) {
+//    /**
+//     * @return 搜狗验证码机制是通过cookie触发，每次搜索对cookie进行设置可以避免验证码
+//     */
+//    private Map<String, String> getCookies() {
+//        Map<String, String> cookies = new HashMap<>();
+//        String url = "https://www.sogou.com/web?query=%E6%90%9C%E7%8B%97%E8%81%94%E7%9B%9F%E7%99%BB%E5%BD%95&page=1";
+//        Response req = OkHttpUtils.getPcRel(url);
+//        if (req != null) {
+//            List<String> cookieList = req.headers().values("Set-Cookie");
+//            Log.i(TAG, "cookieList = " + cookieList);
+//            if (cookieList != null) {
+//                for (String cookie : cookieList) {
+//                    if (cookie.contains("BAIDUID=")) {
+//                        cookies.put("BAIDUID", cookie.substring(9));
+//                    }
+//                }
+//            }
+//        }
+//        return cookies;
+//    }
+//
+//    public List<SearchModel.SearchBook> parseSearchKey(String key) {
+//        mCurSize = 0;
+//        mCurParseSize = 0;
+//        mCancel = false;
+//        mBookHosts.clear();
+//        List<SearchModel.SearchBook> bookList = new ArrayList<>();
+//        try {
+//            trustEveryone();
+//            String url = "https://www.sogou.com/web?query=" + key;
+//
+//            Document document = Jsoup.connect(url).cookies(getCookies()).userAgent(USER_AGENT).timeout(10000).get();
+//            Elements page = document.getElementsByClass("p");
+//            Log.i(TAG, "page: " + page.toString());
+//            Elements a = page.select("a");
+//            List<String> pages = new ArrayList<>();
+//            if (a != null) {
+//                for (Element element : a) {
+//                    String link = element.attr("href");
+//                    if (link != null && link.startsWith("?")) {
+//                        pages.add("https://www.sogou.com/web" + link);
+//                    }
+//                    if (pages.size() > 8) {
 //                        break;
 //                    }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e);
-        }
-        return bookList;
-    }
+//                    Log.i(TAG, "page: " + link);
+//                }
+//            }
+//            List<SearchModel.SearchBook> list1 = getBookListForDocument(document);
+//            if (list1 != null) {
+//                bookList.addAll(list1);
+//            }
+//            for (String pageUrl : pages) {
+//                if (mCancel) {
+//                    break;
+//                }
+//                Document pageDocument = Jsoup.connect(pageUrl).userAgent(USER_AGENT).timeout(10000).get();
+//                List<SearchModel.SearchBook> list2 = getBookListForDocument(pageDocument);
+//                if (list2 != null) {
+//                    bookList.addAll(list2);
+//                }
+////                    if (bookList.size() > 10 && mCurParseSize > 0) {
+////                        break;
+////                    }
+//            }
+//        } catch (Exception e) {
+//            Log.e(TAG, e);
+//        }
+//        return bookList;
+//    }
 
     @Override
     public List<SearchModel.SearchBook> parseFirstPageHtml(String html) {
