@@ -1,23 +1,13 @@
 package com.xzhou.book.find;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -32,17 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.xzhou.book.MyApp;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
 import com.xzhou.book.common.CommonViewHolder;
 import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
-import com.xzhou.book.main.BookDetailActivity;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.SearchModel;
-import com.xzhou.book.net.JsoupSearch;
-import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SPUtils;
 import com.xzhou.book.widget.SingleCheckGroup;
 
@@ -74,8 +60,8 @@ public class ThirdWebsiteActivity extends BaseActivity {
     RadioButton mRadioBtn1;
     @BindView(R.id.radio_btn2)
     RadioButton mRadioBtn2;
-    @BindView(R.id.web_view)
-    WebView mWebView;
+    //    @BindView(R.id.web_view)
+//    WebView mWebView;
     private ThirdViewModel mViewModel;
     //    private ListPopupWindow mListPopupWindow;
     private String mCheckedName;
@@ -114,11 +100,11 @@ public class ThirdWebsiteActivity extends BaseActivity {
         mLayoutInflater = LayoutInflater.from(this);
         mEmptyView = mLayoutInflater.inflate(R.layout.common_load_error_view, null);
         mEmptyView.setOnClickListener(v -> {
-            mAdapter.setEmptyView(null);
+            mEmptyView.setVisibility(View.GONE);
             mViewModel.reload();
         });
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            mAdapter.setEmptyView(null);
+            mEmptyView.setVisibility(View.GONE);
             mViewModel.reload();
         });
         mRecyclerView.setHasFixedSize(true);
@@ -126,7 +112,7 @@ public class ThirdWebsiteActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(new MyLinearLayoutManager(this));
         mAdapter = new Adapter();
         mAdapter.bindToRecyclerView(mRecyclerView);
-        mAdapter.setEnableLoadMore(true);
+        mAdapter.setEmptyView(mEmptyView);
         mAdapter.setOnLoadMoreListener(() -> {
             Entities.ThirdBookData data = mViewModel.mBookData.getValue();
             if (data == null || data.list == null
@@ -143,7 +129,7 @@ public class ThirdWebsiteActivity extends BaseActivity {
         }, mRecyclerView);
         mViewModel.mBeanData.observe(this, supportBean -> {
             if (supportBean == null || supportBean.entry.size() == 0) {
-                mAdapter.setEmptyView(mEmptyView);
+                mEmptyView.setVisibility(View.VISIBLE);
                 mToolbar.setTitle("未知");
                 mAdapter.setNewData(null);
             } else {
@@ -180,29 +166,24 @@ public class ThirdWebsiteActivity extends BaseActivity {
             mViewModel.refreshUrl(entry.rootUrl);
         });
 
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setUserAgentString(JsoupSearch.UA);
-        String dir = MyApp.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
-        webSettings.setDatabasePath(dir);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setGeolocationEnabled(true);
-        mWebView.setWebViewClient(mWebViewClient);
-        mViewModel.mUrlData.observe(this, url -> {
-            mSwipeRefreshLayout.setEnabled(false);
-            if (!mAdapter.isLoading()) {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-            mWebView.stopLoading();
-            mWebView.loadUrl(url);
-        });
+//        WebSettings webSettings = mWebView.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//        webSettings.setAllowFileAccess(true);
+//        webSettings.setDatabaseEnabled(true);
+//        webSettings.setUserAgentString(JsoupSearch.UA);
+//        String dir = MyApp.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
+//        webSettings.setDatabasePath(dir);
+//        webSettings.setDomStorageEnabled(true);
+//        webSettings.setGeolocationEnabled(true);
+//        mWebView.setWebViewClient(mWebViewClient);
+//        mViewModel.mUrlData.observe(this, url -> {
+//            mWebView.stopLoading();
+//            mWebView.loadUrl(url);
+//        });
 
         mViewModel.mBookData.observe(this, thirdBookData -> {
-            mSwipeRefreshLayout.setRefreshing(false);
             if (thirdBookData == null || thirdBookData.list.size() == 0) {
-                mAdapter.setEmptyView(mEmptyView);
+                mEmptyView.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(null);
             } else {
                 if (thirdBookData.pageCurrent > 1) {
@@ -217,8 +198,12 @@ public class ThirdWebsiteActivity extends BaseActivity {
                 }
             }
         });
-
+        mViewModel.mRefreshData.observe(this, aBoolean -> {
+            mSwipeRefreshLayout.setRefreshing(aBoolean);
+            mAdapter.setEnableLoadMore(!aBoolean);
+        });
         mViewModel.loadData(mCheckedName);
+
     }
 
     @Override
@@ -244,14 +229,14 @@ public class ThirdWebsiteActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mWebView != null) {
-            mWebView.stopLoading();
-            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
-            mWebView.clearHistory();
-            mWebView.removeAllViews();
-            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
-            mWebView.destroy();
-        }
+//        if (mWebView != null) {
+//            mWebView.stopLoading();
+//            mWebView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+//            mWebView.clearHistory();
+//            mWebView.removeAllViews();
+//            ((ViewGroup) mWebView.getParent()).removeView(mWebView);
+//            mWebView.destroy();
+//        }
     }
 
     @Override
@@ -321,52 +306,44 @@ public class ThirdWebsiteActivity extends BaseActivity {
         }
     }
 
-    private final WebViewClient mWebViewClient = new WebViewClient() {
-
-        @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-            super.onReceivedError(view, request, error);
-            Log.e(TAG, "onReceivedError: " + error);
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);
-            Log.i(TAG, "onPageStarted: " + url);
-        }
-
-        @Override
-        public void onPageFinished(WebView view, final String url) {
-            super.onPageFinished(view, url);
-            Log.i(TAG, "onPageFinished:" + url);
-//            view.loadUrl("javascript:window.local_obj.showSource(document.getElementsByTagName('html')[0].innerHTML);");
-            view.evaluateJavascript("document.getElementsByTagName('html')[0].innerHTML", value -> {
-//                Log.i(TAG, "value = " + value);
-                mViewModel.parseHtml(url, value);
-//                    if (mSearchUrl != null && mSearchUrl.equals(url)) {
-////                        mPresenter.startSearch(mSearchType, value);
-//                        Log.i(TAG, "onReceiveValue: startSearch");
-//                    } else {
-////                        mPresenter.updateHtml(value);
-//                        Log.i(TAG, "onReceiveValue: updateHtml ");
-//                    }
-            });
-        }
-
-        @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            Log.i(TAG, "onReceivedSslError: " + error.toString());
-            if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
-                    || error.getPrimaryError() == SslError.SSL_EXPIRED
-                    || error.getPrimaryError() == SslError.SSL_INVALID
-                    || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
-                handler.proceed();
-            } else {
-                handler.cancel();
-            }
-            mViewModel.mBookData.postValue(null);
-        }
-    };
+//    private final WebViewClient mWebViewClient = new WebViewClient() {
+//
+//        @Override
+//        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+//            super.onReceivedError(view, request, error);
+//            Log.e(TAG, "onReceivedError: " + error);
+//        }
+//
+//        @Override
+//        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+//            super.onPageStarted(view, url, favicon);
+//            Log.i(TAG, "onPageStarted: " + url);
+//        }
+//
+//        @Override
+//        public void onPageFinished(WebView view, final String url) {
+//            super.onPageFinished(view, url);
+//            Log.i(TAG, "onPageFinished:" + url);
+////            view.loadUrl("javascript:window.local_obj.showSource(document.getElementsByTagName('html')[0].innerHTML);");
+//            view.evaluateJavascript("document.getElementsByTagName('html')[0].innerHTML", value -> {
+//                mViewModel.parseHtml(url, value);
+//            });
+//        }
+//
+//        @Override
+//        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+//            Log.i(TAG, "onReceivedSslError: " + error.toString());
+//            if (error.getPrimaryError() == SslError.SSL_DATE_INVALID
+//                    || error.getPrimaryError() == SslError.SSL_EXPIRED
+//                    || error.getPrimaryError() == SslError.SSL_INVALID
+//                    || error.getPrimaryError() == SslError.SSL_UNTRUSTED) {
+//                handler.proceed();
+//            } else {
+//                handler.cancel();
+//            }
+//            mViewModel.mBookData.postValue(null);
+//        }
+//    };
 
     private static class Adapter extends BaseQuickAdapter<SearchModel.SearchBook, CommonViewHolder> {
 
@@ -377,15 +354,14 @@ public class ThirdWebsiteActivity extends BaseActivity {
         @Override
         protected void convert(CommonViewHolder holder, SearchModel.SearchBook item) {
             String sub = item.author + " | " + item.tag + "\n" + item.desc;
-            boolean support = SearchModel.hasSupportLocalRead(item.sourceHost);
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)
                     .setText(R.id.book_h2, sub)
-                    .setGone(R.id.local_read_tv, support)
-                    .setGone(R.id.auto_parse_btn, support);
+                    .setGone(R.id.local_read_tv, false)
+                    .setGone(R.id.auto_parse_btn, false);
             holder.itemView.setOnClickListener(v -> {
                 // click
-                BookDetailActivity.startActivity(holder.itemView.getContext(), item.readUrl);
+                ThirdBookDetailActivity.startActivity(holder.itemView.getContext(), item);
             });
         }
     }

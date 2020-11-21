@@ -2,6 +2,7 @@ package com.xzhou.book.common;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -104,5 +105,15 @@ public abstract class BaseActivity<P extends BaseContract.Presenter> extends App
     protected void initToolBar() {
         mToolbar.setNavigationIcon(R.mipmap.ab_back);
         mToolbar.setTitleTextAppearance(this, R.style.CommonTitleTextStyle);
+    }
+
+    private long clickTime;
+
+    public boolean doubleClick() {
+        if (SystemClock.uptimeMillis() - clickTime < 500) {
+            return true;
+        }
+        clickTime = SystemClock.uptimeMillis();
+        return false;
     }
 }

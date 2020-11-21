@@ -1,6 +1,5 @@
 package com.xzhou.book.models;
 
-import com.xzhou.book.net.OkHttpUtils;
 import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;
@@ -78,28 +77,41 @@ public class ThirdWebsiteHtmlParse {
         return data;
     }
 
-    public static Entities.BookDetail xsydwInfo(String html) {
-        Entities.BookDetail data = new Entities.BookDetail();
+    public static Entities.ThirdBookDetail xsydwInfo(String url, String html) {
+        Entities.ThirdBookDetail data = new Entities.ThirdBookDetail();
+        data.readUrl = url;
         try {
-            OkHttpUtils.logi(html);
+//            OkHttpUtils.logi(html);
             Document jsoup = Jsoup.parse(html);
             Elements bookinfoE = jsoup.select(".book-info");
             data.title = bookinfoE.select("h1 em").first().html();
             data.author = bookinfoE.select(".writer").first().html();
-            data.cover = "https:" + jsoup.select("#bookImg img").first().attr("src").replace("\r", "");
+            data.image = "https:" + jsoup.select("#bookImg img").first().attr("src").replace("\r", "");
             Elements tagE = bookinfoE.select(".tag").first().children();
-            data.tags = new ArrayList<>();
-            for (Element e : tagE) {
-                data.tags.add(e.html());
+            StringBuilder tag = new StringBuilder();
+            for (int i = 0, s = tagE.size(); i < s; i++) {
+                Element e = tagE.get(i);
+                if (i == s - 1) {
+                    tag.append(e.html());
+                } else {
+                    tag.append(e.html()).append(" | ");
+                }
             }
+            data.tags = tag.toString();
+            StringBuilder word = new StringBuilder();
             Elements wordCountE = bookinfoE.select(".total").first().children();
             for (Element e : wordCountE) {
-                Log.i(TAG, "wordCountE  = " + e.html());
+                word.append(e.html());
             }
-
-            data.longIntro = bookinfoE.select(".intro").first().html();
-            data.chaptersCount = Integer.parseInt(jsoup.select("#J-catalogCount").html());
-
+            data.wordCount = word.toString();
+            data.intro = bookinfoE.select(".intro").first().html().replace("<br>", "\n");
+            Elements lastE = jsoup.select("div.update");
+            data.lastChapter = "最新章节：" + lastE.select("a").html();
+            data.lastUpdate = "最后更新：" + lastE.select("span").html();
+            data.keyVotes1 = "周推荐";
+            data.keyVotes2 = "月票";
+            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
+            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
             Log.i(TAG, "xsydwInfo  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "xsydwInfo error", e);
@@ -189,6 +201,45 @@ public class ThirdWebsiteHtmlParse {
         return data;
     }
 
+    public static Entities.ThirdBookDetail xxsyInfo(String url, String html) {
+        Entities.ThirdBookDetail data = new Entities.ThirdBookDetail();
+        data.readUrl = url;
+        try {
+//            OkHttpUtils.logi(html);
+            Document jsoup = Jsoup.parse(html);
+            Elements bookprofile = jsoup.select(".bookprofile");
+            data.title = bookprofile.select(".title h1").first().html();
+            data.author = bookprofile.select(".title span a").first().html();
+            data.image = "https:" + bookprofile.select("img").first().attr("src");
+            Elements tagE = bookprofile.select(".sub-cols span");
+            StringBuilder tag = new StringBuilder();
+            for (int i = 0, s = tagE.size(); i < s; i++) {
+                Element e = tagE.get(i);
+                if (i == s - 1) {
+                } else if (i == s - 2) {
+                    tag.append(e.html());
+                } else {
+                    tag.append(e.html()).append(" | ");
+                }
+            }
+            data.tags = tag.toString();
+            data.wordCount = bookprofile.select(".sub-data span em").first().html();
+            data.intro = jsoup.select(".introcontent dd").first().html().replace("\n", "")
+                    .replace("<p>", "\n").replace("</p>", "");
+            Elements lastE = jsoup.select("div.sub-newest");
+            data.lastChapter = "最新章节：" + lastE.select("a").last().html();
+            data.lastUpdate = "最后更新：" + lastE.select("span").last().html();
+            data.keyVotes1 = "总阅读数";
+            data.keyVotes2 = "总收藏";
+            data.valueVotes1 = bookprofile.select(".sub-data span em").get(1).html();
+            data.valueVotes2 = bookprofile.select(".sub-data span em").last().html();
+            Log.i(TAG, "xxsyInfo  = " + data);
+        } catch (Exception e) {
+            Log.e(TAG, "xxsyInfo error", e);
+        }
+        return data;
+    }
+
     public static Entities.ThirdBookData hxtx(String html) {
         Entities.ThirdBookData data = new Entities.ThirdBookData();
         data.list = new ArrayList<>();
@@ -246,6 +297,47 @@ public class ThirdWebsiteHtmlParse {
 //            Log.i(TAG, "hxtx  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "hxtx error", e);
+        }
+        return data;
+    }
+
+    public static Entities.ThirdBookDetail hxtxInfo(String url, String html) {
+        Entities.ThirdBookDetail data = new Entities.ThirdBookDetail();
+        data.readUrl = url;
+        try {
+//            OkHttpUtils.logi(html);
+            Document jsoup = Jsoup.parse(html);
+            Elements bookinfoE = jsoup.select(".book-info");
+            data.title = bookinfoE.select("h1 em").first().html();
+            data.author = bookinfoE.select(".writer").first().html();
+            data.image = "https:" + jsoup.select("#bookImg img").first().attr("src").replace("\r", "");
+            Elements tagE = bookinfoE.select(".tag").first().children();
+            StringBuilder tag = new StringBuilder();
+            for (int i = 0, s = tagE.size(); i < s; i++) {
+                Element e = tagE.get(i);
+                if (i == s - 1) {
+                    tag.append(e.html());
+                } else {
+                    tag.append(e.html()).append(" | ");
+                }
+            }
+            data.tags = tag.toString();
+            StringBuilder word = new StringBuilder();
+            Elements wordCountE = bookinfoE.select(".total").first().children();
+            word.append(wordCountE.first().html()).append(wordCountE.get(1).html());
+            data.wordCount = word.toString();
+            data.intro = bookinfoE.select(".intro").first().html().replace("<br>", "\n");
+            ;
+            Elements lastE = jsoup.select("div.update");
+            data.lastChapter = "最新章节：" + lastE.select("a").html();
+            data.lastUpdate = "最后更新：" + lastE.select("span").html();
+            data.keyVotes1 = "周推荐";
+            data.keyVotes2 = "月票";
+            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
+            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
+            Log.i(TAG, "hxtxInfo  = " + data);
+        } catch (Exception e) {
+            Log.e(TAG, "hxtxInfo error", e);
         }
         return data;
     }
@@ -334,7 +426,7 @@ public class ThirdWebsiteHtmlParse {
                     Element tagE = tags.get(i);
                     if (i == s - 1) {
                         tag.append(tagE.html());
-                    } else {
+                    } else if (i != 0) {
                         tag.append(tagE.html()).append(" | ");
                     }
                 }
@@ -369,11 +461,50 @@ public class ThirdWebsiteHtmlParse {
             }
             data.pageCount = count;
             data.pageCurrent = current;
-
-            Log.i(TAG, "qdzww  = " + data);
+//            Log.i(TAG, "qdzww  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "qdzww error", e);
         }
         return data;
     }
+
+    public static Entities.ThirdBookDetail qdzwwInfo(String url, String html) {
+        Entities.ThirdBookDetail data = new Entities.ThirdBookDetail();
+        data.readUrl = url;
+        try {
+//            OkHttpUtils.logi(html);
+            Document jsoup = Jsoup.parse(html);
+            Elements bookinfoE = jsoup.select(".book-information");
+            data.title = bookinfoE.select(".book-info").select("h1 em").first().html();
+            data.author = bookinfoE.select(".book-info").select("h1 a").first().html();
+            data.image = "https:" + bookinfoE.select(".book-img img").first().attr("src").replace("\r", "");
+            Elements tagE = bookinfoE.select(".book-info").select(".tag").first().children();
+            StringBuilder tag = new StringBuilder();
+            for (int i = 0, s = tagE.size(); i < s; i++) {
+                Element e = tagE.get(i);
+                if (i == s - 1) {
+                    tag.append(e.html());
+                } else {
+                    tag.append(e.html()).append(" | ");
+                }
+            }
+            data.tags = tag.toString();
+            data.valueVotes0 = jsoup.select("div.nav-wrap").select(".fl").select("span#J-catalogCount").html()
+                    .replace("(", "").replace(")", "");
+            data.intro = jsoup.select(".book-intro p").html().replace("<br>", "\n");
+            Elements lastE = jsoup.select("li.update").select(".detail");
+            data.lastChapter = "最新章节：" + lastE.select("p.cf a").html();
+            data.lastUpdate = "最后更新：" + lastE.select("p.cf em").html();
+            data.keyVotes0 = "总章节数";
+            data.keyVotes1 = "周推荐";
+            data.keyVotes2 = "月票";
+            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
+            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
+            Log.i(TAG, "qdzwwInfo  = " + data);
+        } catch (Exception e) {
+            Log.e(TAG, "qdzwwInfo error", e);
+        }
+        return data;
+    }
+
 }

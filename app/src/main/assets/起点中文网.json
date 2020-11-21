@@ -2,14 +2,14 @@
   "name": "起点中文网",
   "url": "https://www.qidian.com/",
   "icon": "https://www.qidian.com/favicon.ico",
-  "searchUrl": "https://www.qidian.com/search?vip=0",
+  "searchUrl": "https://www.qidian.com/search",
   "searchKey": "kw",
   "pageKey": "page",
   "entry": [
     {
       "gender": "女",
       "desc": "起点中文网-女",
-      "rootUrl": "https://www.qidian.com/mm/all?vip=0",
+      "rootUrl": "https://www.qidian.com/mm/all",
       "params": [
         {
           "name": "分类",
@@ -460,7 +460,7 @@
     {
       "gender": "男",
       "desc": "起点中文网-男",
-      "rootUrl": "https://www.qidian.com/all?vip=0",
+      "rootUrl": "https://www.qidian.com/all",
       "params": [
         {
           "name": "分类",

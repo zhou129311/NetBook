@@ -67,83 +67,80 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 mWebProgress = AppSettings.getWebReadProgress(mBook._id);
             }
             final int newItem = showLoading((mCurChapter == 0 && progress[1] == 0) ? 0 : 1, null);
-            mSinglePool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (mBook.isBookshelf()) {
-                        mBook.readTime = System.currentTimeMillis();
-                        BookProvider.updateReadTime(mBook);
-                    }
-                    mChaptersList = AppSettings.getChapterList(mBook._id);
-                    if (mChaptersList == null) {
-                        if (mBook.isBaiduBook) {
-                            HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
-                            if (htmlParse != null) {
-                                mChaptersList = htmlParse.parseChapters(mBook.readUrl);
-                                if (mChaptersList != null && mChaptersList.size() > 0) {
-                                    if (mBook.isBookshelf()) {
-                                        mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
-                                        BookProvider.insertOrUpdate(mBook, true);
-                                    }
-                                    if (!TextUtils.isEmpty(mWebProgress)) {
-                                        for (int i = 0, s = mChaptersList.size(); i < s; i++) {
-                                            Entities.Chapters chapters = mChaptersList.get(i);
-                                            if (mWebProgress.equals(chapters.link)) {
-                                                mCurChapter = i;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
-                            if (list != null) {
-                                for (Entities.BookSource source : list) {
-                                    //漫画需要换到sourceId才可以获取章节目录
-                                    if (source != null && source.host != null && (source.host.contains("my716") || mBook.isPicture)) {
-                                        mBook.curSourceHost = source.host;
-                                        mBook.sourceId = source._id;
-                                        if (mBook.isBookshelf()) {
-                                            BookProvider.insertOrUpdate(mBook, true);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
-                            if (aToc != null && aToc.chapters != null) {
-                                mChaptersList = aToc.chapters;
-                            }
-                        }
-                        if (mChaptersList != null && mBook.isBookshelf()) {
-                            AppSettings.saveChapterList(mBook._id, mChaptersList);
-                        }
-                    }
-                    if (mChaptersList == null || mChaptersList.size() <= 0) {
-                        int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
-                        showError(0, error, null);
-                        return;
-                    }
-                    if (mBook.isBookshelf()) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                                    Entities.Chapters chapters = mChaptersList.get(i);
-                                    chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                                }
-                                if (mBook.isBaiduBook) {
+            mSinglePool.execute(() -> {
+                if (mBook.isBookshelf()) {
+                    mBook.readTime = System.currentTimeMillis();
+                    BookProvider.updateReadTime(mBook);
+                }
+                mChaptersList = AppSettings.getChapterList(mBook._id);
+                if (mChaptersList == null) {
+                    if (mBook.isBaiduBook) {
+                        HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
+                        if (htmlParse != null) {
+                            mChaptersList = htmlParse.parseChapters(mBook.readUrl);
+                            if (mChaptersList != null && mChaptersList.size() > 0) {
+                                if (mBook.isBookshelf()) {
                                     mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
                                     BookProvider.insertOrUpdate(mBook, true);
                                 }
-                                AppSettings.saveChapterList(mBook._id, mChaptersList);
+                                if (!TextUtils.isEmpty(mWebProgress)) {
+                                    for (int i = 0, s = mChaptersList.size(); i < s; i++) {
+                                        Entities.Chapters chapters = mChaptersList.get(i);
+                                        if (mWebProgress.equals(chapters.link)) {
+                                            mCurChapter = i;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                        }).start();
+                        }
+                    } else {
+                        List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
+                        if (list != null) {
+                            for (Entities.BookSource source : list) {
+                                //漫画需要换到sourceId才可以获取章节目录
+                                if (source != null && source.host != null && (source.host.contains("my716") || mBook.isPicture)) {
+                                    mBook.curSourceHost = source.host;
+                                    mBook.sourceId = source._id;
+                                    if (mBook.isBookshelf()) {
+                                        BookProvider.insertOrUpdate(mBook, true);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        Entities.BookAToc aToc = ZhuiShuSQApi.getBookMixAToc(mBook._id, mBook.sourceId);
+                        if (aToc != null && aToc.chapters != null) {
+                            mChaptersList = aToc.chapters;
+                        }
                     }
-                    initChaptersList();
-                    loadReadProgress(mCurChapter, progress[1], newItem, false);
+                    if (mChaptersList != null && mBook.isBookshelf()) {
+                        AppSettings.saveChapterList(mBook._id, mChaptersList);
+                    }
                 }
+                if (mChaptersList == null || mChaptersList.size() <= 0) {
+                    int error = AppUtils.isNetworkAvailable() ? Error.CONNECTION_FAIL : Error.NO_NETWORK;
+                    showError(0, error, null);
+                    return;
+                }
+                if (mBook.isBookshelf()) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                                Entities.Chapters chapters = mChaptersList.get(i);
+                                chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
+                            }
+                            if (mBook.isBaiduBook) {
+                                mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
+                                BookProvider.insertOrUpdate(mBook, true);
+                            }
+                            AppSettings.saveChapterList(mBook._id, mChaptersList);
+                        }
+                    }).start();
+                }
+                initChaptersList();
+                loadReadProgress(mCurChapter, progress[1], newItem, false);
             });
             return true;
         }

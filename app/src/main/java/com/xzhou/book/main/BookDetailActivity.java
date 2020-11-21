@@ -363,19 +363,19 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
     @OnClick({R.id.load_error_view, R.id.detail_book_author, R.id.detail_join, R.id.detail_read
             , R.id.detail_intro, R.id.detail_more_reviews, R.id.detail_more_recommend})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-        case R.id.load_error_view:
+        if (doubleClick()) {
+            return;
+        }
+        int id = view.getId();
+        if (id == R.id.load_error_view) {
             startData();
-            break;
-        case R.id.detail_book_author: {
+        } else if (id == R.id.detail_book_author) {
             Entities.TabData data = new Entities.TabData();
             data.title = detailBookAuthor.getText().toString();
             data.source = TabSource.SOURCE_AUTHOR;
             data.params = new String[]{data.title};
             TabActivity.startActivity(mActivity, data);
-            break;
-        }
-        case R.id.detail_join:
+        } else if (id == R.id.detail_join) {
             if (BookProvider.hasCacheData(mDetail._id)) {
                 BookProvider.delete(mDetail._id, mDetail.title, true);
                 updateJoinBtn(false);
@@ -383,24 +383,18 @@ public class BookDetailActivity extends BaseActivity<BookDetailContract.Presente
                 BookProvider.insertOrUpdate(new BookProvider.LocalBook(mDetail), false);
                 updateJoinBtn(true);
             }
-            break;
-        case R.id.detail_read:
+        } else if (id == R.id.detail_read) {
             ReadActivity.startActivity(mActivity, new BookProvider.LocalBook(mDetail));
-            break;
-        case R.id.detail_intro:
+        } else if (id == R.id.detail_intro) {
             if (detailIntro.getMaxLines() == 4) {
                 detailIntro.setMaxLines(Integer.MAX_VALUE);
             } else {
                 detailIntro.setMaxLines(4);
             }
-            break;
-        case R.id.detail_more_reviews:
+        } else if (id == R.id.detail_more_reviews) {
             AppUtils.startDiscussionByBook(mActivity, mDetail.title, mDetail._id, 1);
-            break;
-        case R.id.detail_more_recommend: {
+        } else if (id == R.id.detail_more_recommend) {
             AppUtils.startRecommendByBook(mActivity, getIntent().getStringExtra(EXTRA_BOOK_ID));
-            break;
-        }
         }
     }
 

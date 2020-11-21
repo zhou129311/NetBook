@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class Log {
 
-    //    public static final boolean LOG_DEBUG = BuildConfig.DEBUG;
+//    public static final boolean LOG_DEBUG = true;
     public static final boolean LOG_DEBUG = BuildConfig.DEBUG;
 
     private static final String TAG = "zx";

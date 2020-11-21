@@ -49,6 +49,7 @@ public abstract class HtmlParse {
             add("strong");
             add("script");
             add("h1");
+            add("style");
         }
     };
 
@@ -132,7 +133,7 @@ public abstract class HtmlParse {
             removeContentTag(content);
         }
         String text = content.toString();
-        Log.i(TAG, "formatContent:text = " + text);
+//        Log.i(TAG, "formatContent:text = " + text);
 
         Matcher m4 = PATTERN4.matcher(text);
         while (m4.find()) {

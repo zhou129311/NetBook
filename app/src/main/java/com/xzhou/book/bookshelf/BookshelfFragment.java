@@ -386,6 +386,9 @@ public class BookshelfFragment extends BaseFragment<BookshelfContract.Presenter>
                     cb.setChecked(!cb.isChecked());
                     return;
                 }
+                if (doubleClick()) {
+                    return;
+                }
                 if (item.isBaiduBook && !SearchModel.hasSupportLocalRead(item.curSourceHost)) {
                     ReadWebActivity.startActivity(getContext(), item, null);
                 } else {

@@ -333,7 +333,7 @@ public class SingleCheckGroup extends ViewGroup {
             } else {
                 setTag(em[1]);
             }
-            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             setBackgroundResource(R.drawable.tag_text_bg);
             ColorStateList colorStateList = getResources().getColorStateList(R.color.tag_text_color);
             setTextColor(colorStateList);

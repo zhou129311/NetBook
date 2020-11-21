@@ -67,43 +67,40 @@ public class AutoParseNetBook {
         if (sItemCallback != null) {
             sItemCallback.onParseState(searchBook);
         }
-        sPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (sParseTypeList == null) {
-                    sParseTypeList = new ArrayList<>(6);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_1);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_2);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_3);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_4);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_5);
-                    sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_6);
-                }
-                boolean success = false;
-                for (int type : sParseTypeList) {
-                    HtmlParse parse = HtmlParseFactory.getHtmlParse(type);
-                    if (parse != null) {
-                        List<Entities.Chapters> list = parse.parseChapters(searchBook.readUrl);
-                        if (list != null && list.size() > 0) {
-                            Entities.Chapters chapters = list.get(0);
-                            Entities.ChapterRead read = parse.parseChapterRead(chapters.link);
-                            if (read != null && read.chapter != null
-                                    && read.chapter.body != null && read.chapter.body.length() > 200) {
-                                SearchModel.HostType hostType = new SearchModel.HostType();
-                                hostType.host = searchBook.sourceHost;
-                                hostType.parseType = type;
-                                SearchModel.saveHostType(hostType);
-                                success = true;
-                                break;
-                            }
+        sPool.execute(() -> {
+            if (sParseTypeList == null) {
+                sParseTypeList = new ArrayList<>(6);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_1);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_2);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_3);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_4);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_5);
+                sParseTypeList.add(SearchModel.ParseType.PARSE_TYPE_6);
+            }
+            boolean success = false;
+            for (int type : sParseTypeList) {
+                HtmlParse parse = HtmlParseFactory.getHtmlParse(type);
+                if (parse != null) {
+                    List<Entities.Chapters> list = parse.parseChapters(searchBook.readUrl);
+                    if (list != null && list.size() > 0) {
+                        Entities.Chapters chapters = list.get(0);
+                        Entities.ChapterRead read = parse.parseChapterRead(chapters.link);
+                        if (read != null && read.chapter != null
+                                && read.chapter.body != null && read.chapter.body.length() > 200) {
+                            SearchModel.HostType hostType = new SearchModel.HostType();
+                            hostType.host = searchBook.sourceHost;
+                            hostType.parseType = type;
+                            SearchModel.saveHostType(hostType);
+                            success = true;
+                            break;
                         }
                     }
                 }
-                searchBook.parseText = success ? "解析成功" : "解析失败";
-                searchBook.isParsing = false;
-                if (sItemCallback != null) {
-                    sItemCallback.onParseState(searchBook);
-                }
+            }
+            searchBook.parseText = success ? "解析成功" : "解析失败";
+            searchBook.isParsing = false;
+            if (sItemCallback != null) {
+                sItemCallback.onParseState(searchBook);
             }
         });
     }

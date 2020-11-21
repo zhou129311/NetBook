@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.ThirdWebsiteHtmlParse;
 import com.xzhou.book.net.HttpRequest;
+import com.xzhou.book.net.OkHttpUtils;
 import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SPUtils;
@@ -34,11 +35,11 @@ public class ThirdViewModel extends AndroidViewModel {
     private static final String TAG = "ThirdViewModel";
     public final MutableLiveData<Entities.ThirdBookData> mBookData = new MutableLiveData<>();
     public final MutableLiveData<Entities.SupportBean> mBeanData = new MutableLiveData<>();
-    public final MutableLiveData<String> mUrlData = new MutableLiveData<>();
+    public final MutableLiveData<Boolean> mRefreshData = new MutableLiveData<>();
     private final Map<String, Entities.SupportBean> mBeanMap = new HashMap<>();
     private final Map<String, HashMap<String, String>> mUrlParams = new HashMap<>();
-    public String mRootUrl;
     private final ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
+    public String mRootUrl;
 
     public ThirdViewModel(@NonNull Application application) {
         super(application);
@@ -48,14 +49,17 @@ public class ThirdViewModel extends AndroidViewModel {
         if (TextUtils.isEmpty(mRootUrl)) {
             return;
         }
+        mRefreshData.setValue(true);
         startLoad(mRootUrl);
     }
 
     public void refreshUrl(String rootUrl) {
+        mRefreshData.setValue(true);
         startLoad(rootUrl);
     }
 
     public void refreshUrl(String rootUrl, String key, String value) {
+        mRefreshData.setValue(true);
         HashMap<String, String> paramsMap = mUrlParams.get(rootUrl);
         if (paramsMap == null) {
             paramsMap = new HashMap<>();
@@ -67,6 +71,7 @@ public class ThirdViewModel extends AndroidViewModel {
     }
 
     public void loadData(String name) {
+        mRefreshData.postValue(true);
         mSinglePool.execute(() -> {
             Entities.SupportBean supportBean = mBeanMap.get(name);
             if (supportBean != null) {
@@ -101,7 +106,8 @@ public class ThirdViewModel extends AndroidViewModel {
                 startLoad(supportBean.entry.get(supportBean.checkIndex).rootUrl);
             } catch (IOException e) {
                 Log.e(TAG, "loadData fail", e);
-                mBookData.postValue(null);
+                mBeanData.postValue(null);
+                mRefreshData.postValue(false);
             } finally {
                 AppUtils.close(is);
                 AppUtils.close(br);
@@ -122,49 +128,52 @@ public class ThirdViewModel extends AndroidViewModel {
 
     private void startLoad(String rootUrl) {
         mRootUrl = rootUrl;
-        // parse url
-        HashMap<String, String> paramsMap = mUrlParams.get(rootUrl);
-        String url = HttpRequest.appendQueryUrl(paramsMap, rootUrl);
-        mUrlData.postValue(url);
-    }
-
-    public void parseHtml(String url, String html) {
         mSinglePool.execute(() -> {
-            Entities.ThirdBookData data = null;
-            if (html != null) {
-                String handlerHtml = handlerHtml(html);
-                if (url.contains("readnovel")) {
-                    data = ThirdWebsiteHtmlParse.xsydw(handlerHtml);
-                } else if (url.contains("xxsy")) {
-                    data = ThirdWebsiteHtmlParse.xxsy(handlerHtml);
-                } else if (url.contains("hongxiu")) {
-                    data = ThirdWebsiteHtmlParse.hxtx(handlerHtml);
-                } else if (url.contains("xs8")) {
-                    data = ThirdWebsiteHtmlParse.yqxsb(handlerHtml);
-                } else if (url.contains("qidian")) {
-                    data = ThirdWebsiteHtmlParse.qdzww(handlerHtml);
-                }
-            }
-            mBookData.postValue(data);
+            // parse url
+            HashMap<String, String> paramsMap = mUrlParams.get(rootUrl);
+            String url = HttpRequest.appendQueryUrl(paramsMap, rootUrl);
+            String html = OkHttpUtils.getPcRel(url);
+            parseHtml(url, html);
         });
     }
 
-    private String handlerHtml(String html) {
-        String value = html;
-        value = value.replace("\\u003C", "<");
-        value = value.replace("&gt;", ">");
-        value = value.replace("&lt;", "<");
-        value = value.replace("&amp;", "&");
-        value = value.replace("\\\"", "\"");
-        value = value.replace("\\n", "\n");
-        if (value.startsWith("\"")) {
-            value = value.substring(1);
+    private void parseHtml(String url, String html) {
+        Log.i(TAG, "parseHtml : " + (html != null));
+        Entities.ThirdBookData data = null;
+        if (html != null) {
+//            html = handlerHtml(html);
+            if (url.contains("readnovel")) {
+                data = ThirdWebsiteHtmlParse.xsydw(html);
+            } else if (url.contains("xxsy")) {
+                data = ThirdWebsiteHtmlParse.xxsy(html);
+            } else if (url.contains("hongxiu")) {
+                data = ThirdWebsiteHtmlParse.hxtx(html);
+            } else if (url.contains("xs8")) {
+                data = ThirdWebsiteHtmlParse.yqxsb(html);
+            } else if (url.contains("qidian")) {
+                data = ThirdWebsiteHtmlParse.qdzww(html);
+            }
         }
-        if (value.endsWith("\"")) {
-            value = value.substring(0, value.length() - 1);
-        }
-//        value = value.replace("\\t", "    ");
-        value = "<html>" + value + "</html>";
-        return value;
+        mBookData.postValue(data);
+        mRefreshData.postValue(false);
     }
+
+//    private String handlerHtml(String html) {
+//        String value = html;
+//        value = value.replace("\\u003C", "<");
+//        value = value.replace("&gt;", ">");
+//        value = value.replace("&lt;", "<");
+//        value = value.replace("&amp;", "&");
+//        value = value.replace("\\\"", "\"");
+//        value = value.replace("\\n", "\n");
+//        if (value.startsWith("\"")) {
+//            value = value.substring(1);
+//        }
+//        if (value.endsWith("\"")) {
+//            value = value.substring(0, value.length() - 1);
+//        }
+////        value = value.replace("\\t", "    ");
+//        value = "<html>" + value + "</html>";
+//        return value;
+//    }
 }

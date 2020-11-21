@@ -19,8 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-# 序列化
--keep class * implements android.os.Parcelable {public static final android.os.Parcelable$Creator *;}
 # 注解
 -keepattributes *Annotation*
 # 异常
@@ -32,26 +30,29 @@
 
 -keepattributes InnerClasses,Signature,EnclosingMethod
 
--keep public class * extends android.app.Activity
--keep public class * extends android.app.Service
--keep public class * extends android.content.BroadcastReceiver
--keep public class * extends android.content.ContentProvider
--keep public class * extends android.app.backup.BackupAgentHelper
--keep public class * extends android.preference.Preference
-
 -keep class androidx.** {*;}
 -keep public class * extends androidx.**
 -keep public class * extends androidx.versionedparcelable.VersionedParcelable {
       <init>();
  }
 
+#-renamesourcefileattribute SourceFile
+-keep class com.google.gson.stream.** { *; }
+# Gson uses generic type information stored in a class file when working with fields. Proguard
+# removes such information by default, so configure it to keep all of it.
+-keepattributes Signature
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+# Gson specific classes
+-dontwarn com.google.gson.**
 -keep class com.xzhou.book.models.Entities$* {*;}
-# 保留Parcelable序列化的类不被混淆
 -keep class * implements android.os.Parcelable {
     public static final android.os.Parcelable$Creator *;
 }
-
-# 保留Serializable序列化的类不被混淆
+-keepclassmembers class * implements android.os.Parcelable {
+    *;
+}
 -keepclassmembers class * implements java.io.Serializable {
     *;
 }
@@ -65,6 +66,12 @@
 -keep class com.chad.library.adapter.** {
 *;
 }
+-keepclasseswithmembers class com.chad.library.adapter.base.BaseQuickAdapter {
+    *;
+}
+-keepclasseswithmembers class * extends com.chad.library.adapter.base.BaseViewHolder{
+     *;
+}
 -keep public class * extends com.chad.library.adapter.base.BaseQuickAdapter
 -keep public class * extends com.chad.library.adapter.base.BaseViewHolder
 -keepclassmembers  class **$** extends com.chad.library.adapter.base.BaseViewHolder {
@@ -75,9 +82,29 @@
 -keep class com.yanzhenjie.permission.** { *;}
 -keep class com.yanzhenjie.permission.FileProvider
 
--dontwarn com.squareup.okhttp3.**
--keep class com.squareup.okhttp3.** { *;}
+#-------------- okhttp3 start-------------
+# OkHttp3
+# https://github.com/square/okhttp
+# okhttp
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.squareup.okhttp.* { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
+
+# okhttp 3
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+# Okio
+-dontwarn com.squareup.**
 -dontwarn okio.**
+-keep public class org.codehaus.* { *; }
+-keep public class java.nio.* { *; }
+#----------okhttp end--------------
 
 -keep class butterknife.*
 -keep class butterknife.** { *; }

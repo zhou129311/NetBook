@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_toolbar" />
+
+    <FrameLayout
+        android:id="@+id/place_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <include layout="@layout/common_load_view" />
+
+        <include layout="@layout/common_load_error_view" />
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/book_detail_margin">
+
+            <ImageView
+                android:id="@+id/detail_book_img"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@mipmap/ic_cover_default"
+                app:layout_constraintBottom_toBottomOf="@id/detail_last_updated"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/detail_book_title" />
+
+            <TextView
+                android:id="@+id/detail_book_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:textColor="@color/common_h1"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/detail_book_img"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="武侠世界自由行" />
+
+            <TextView
+                android:id="@+id/detail_book_author"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_author_text"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/orange"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/detail_book_title"
+                app:layout_constraintTop_toBottomOf="@id/detail_book_title"
+                tools:text="风雪风雪风雪风雪风雪风雪风雪风雪风雪风雪风雪风雪风雪" />
+
+            <TextView
+                android:id="@+id/detail_tag"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/common_h2"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/detail_book_title"
+                app:layout_constraintTop_toBottomOf="@id/detail_book_author"
+                tools:text="连载 | 签约 | 免费 | 玄幻 | 东方玄幻 | 轻小说" />
+
+            <TextView
+                android:id="@+id/detail_last_updated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="@color/common_h2"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/detail_book_title"
+                app:layout_constraintTop_toBottomOf="@id/detail_tag"
+                tools:text="最后更新：4月前" />
+
+            <com.xzhou.book.widget.DrawableButton
+                android:id="@+id/detail_join"
+                style="@style/BookDetailBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/sel_book_detail_add"
+                android:text="@string/book_detail_join_collection"
+                app:layout_constraintEnd_toStartOf="@id/detail_read"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/detail_last_updated" />
+
+            <com.xzhou.book.widget.DrawableButton
+                android:id="@+id/detail_read"
+                style="@style/BookDetailBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableStart="@mipmap/ic_book_detail_read"
+                android:text="@string/detail_start_read"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/detail_join"
+                app:layout_constraintTop_toTopOf="@id/detail_join" />
+
+            <LinearLayout
+                android:id="@+id/detail_group_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/book_detail_margin"
+                android:paddingBottom="@dimen/book_detail_margin"
+                app:layout_constraintTop_toBottomOf="@id/detail_join">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detail_word_key"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all_word_count"
+                        android:textColor="@color/common_h2"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/detail_word_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/common_h1"
+                        android:textSize="15sp"
+                        tools:text="82万" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detail_votes1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/common_h2"
+                        android:textSize="14sp"
+                        tools:text="周推荐" />
+
+                    <TextView
+                        android:id="@+id/detail_votes_value1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/common_h1"
+                        android:textSize="15sp"
+                        tools:text="43640" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/detail_votes2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/common_h2"
+                        android:textSize="13sp"
+                        tools:text="月票" />
+
+                    <TextView
+                        android:id="@+id/detail_votes_value2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/common_h1"
+                        android:textSize="15sp"
+                        tools:text="4614" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/detail_divider1"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:background="@color/common_divider_narrow"
+                app:layout_constraintTop_toBottomOf="@id/detail_group_count" />
+
+            <TextView
+                android:id="@+id/detail_last_chapter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:textColor="@color/common_h1"
+                android:textSize="15sp"
+                app:layout_constraintTop_toBottomOf="@id/detail_divider1"
+                tools:text="最新章节：第0043章 守身如玉" />
+
+
+            <View
+                android:id="@+id/detail_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:background="@color/common_divider_narrow"
+                app:layout_constraintTop_toBottomOf="@id/detail_last_chapter" />
+
+            <TextView
+                android:id="@+id/detail_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/book_detail_margin"
+                android:textColor="@color/common_h1"
+                android:textSize="15sp"
+                app:layout_constraintTop_toBottomOf="@id/detail_divider2"
+                tools:text="秦阮阮“分手大师”的名号打得响，却一脚踩在了“天王老子”顾临泫的脚上。 一毛钱没赚到不说，还被逼倒欠三百万！没办法，为了还债，她不得不以身犯险，这险套路太深，她防不胜防。 最后逼得日日夜夜被压着“还债”，赔了夫人又折兵。顾临泫最擅长的事就是翻手为云覆手为雨，以前是用在商场上，后来是用在秦阮阮身上，秦阮阮是他的云，是他的雨，把她扔床上翻来覆去，不知疲惫……" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</LinearLayout>

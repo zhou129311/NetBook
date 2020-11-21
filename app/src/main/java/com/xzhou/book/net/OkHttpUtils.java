@@ -34,7 +34,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class OkHttpUtils {
     private static OkHttpClient sGetClient;
@@ -138,20 +137,13 @@ public class OkHttpUtils {
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36")
                 .get()
                 .build();
-        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            body = response.body();
-            if (body != null) {
-                logi("url: " + url + "\n" + body.toString());
-                return body.toString();
-            }
+            String rel = response.body().string();
+//            logi("url: " + url + "\n" + rel);
+            return rel;
         } catch (Exception e) {
             Log.e("get url = " + url + "\nerror:", e);
-        } finally {
-            if (body != null) {
-                body.close();
-            }
         }
         return null;
     }
@@ -179,21 +171,15 @@ public class OkHttpUtils {
                 .cacheControl(cacheControl)
                 .get()
                 .build();
-        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            body = response.body();
-            String bodys = body.string();
+            String bodys = response.body().string();
             if (!url.contains("chapter2.zhuishushenqi.com")) {
                 logi("get url = " + url + "\nresponse =" + bodys);
             }
             return new Gson().fromJson(bodys, typeOfT);
         } catch (Exception e) {
             Log.e("get url = " + url + "\nerror:", e);
-        } finally {
-            if (body != null) {
-                body.close();
-            }
         }
         return null;
     }
@@ -206,11 +192,9 @@ public class OkHttpUtils {
                 .removeHeader("X-User-Agent")
                 .post(RequestBody.create(MediaType.parse("application/json"), content))
                 .build();
-        ResponseBody body = null;
         try {
             Response response = getClient().newCall(req).execute();
-            body = response.body();
-            String bodys = body.string();
+            String bodys = response.body().string();
             logi("post url = " + url + ", content = " + content + "\nresponse =" + bodys);
             Object result = null;
             if (typeOfT != null) {
@@ -219,10 +203,6 @@ public class OkHttpUtils {
             return result;
         } catch (Exception e) {
             Log.e("post", e);
-        } finally {
-            if (body != null) {
-                body.close();
-            }
         }
         return null;
     }

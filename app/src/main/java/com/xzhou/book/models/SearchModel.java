@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.xzhou.book.utils.SPUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.List;
 public class SearchModel {
 
     @IntDef({ParseType.PARSE_TYPE_1, ParseType.PARSE_TYPE_2, ParseType.PARSE_TYPE_3, ParseType.PARSE_TYPE_4
-            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6})
+            , ParseType.PARSE_TYPE_5, ParseType.PARSE_TYPE_6, ParseType.PARSE_TYPE_7})
     public @interface ParseType {
         int PARSE_TYPE_1 = 1;
         int PARSE_TYPE_2 = 2;
@@ -24,9 +25,12 @@ public class SearchModel {
         int PARSE_TYPE_4 = 4;
         int PARSE_TYPE_5 = 5;
         int PARSE_TYPE_6 = 6;
+        int PARSE_TYPE_7 = 7;
     }
 
     private static final HashMap<String, Integer> BOOK_HOSTS = new HashMap<String, Integer>() {
+        private static final long serialVersionUID = 4980304754809799545L;
+
         {
             put("www.tianxiabachang.cn", ParseType.PARSE_TYPE_1);
             put("www.yangguiweihuo.com", ParseType.PARSE_TYPE_1);
@@ -160,15 +164,23 @@ public class SearchModel {
             put("www.f96.la", ParseType.PARSE_TYPE_6);
             put("www.1dwx.com", ParseType.PARSE_TYPE_6);
 
+
+            put("www.readnovel.com", ParseType.PARSE_TYPE_7);
+            put("www.xxsy.net", ParseType.PARSE_TYPE_7);
+            put("www.hongxiu.com", ParseType.PARSE_TYPE_7);
+            put("www.xs8.cn", ParseType.PARSE_TYPE_7);
+            put("www.qidian.com", ParseType.PARSE_TYPE_7);
+
 //            put("www.ggdown.org", PARSE_GGD);
 
 //            put("fm.x88dushu.com", ParseType.PARSE_TYPE_6);
         }
     };
 
-    public static class HostType {
+    public static class HostType implements Serializable {
         public static final Type TYPE = new TypeToken<List<HostType>>() {
         }.getType();
+        private static final long serialVersionUID = 5217996193026189915L;
 
         public String host;
         public @ParseType
@@ -224,9 +236,10 @@ public class SearchModel {
         return BOOK_HOSTS.get(host);
     }
 
-    public static class SearchBook {
+    public static class SearchBook implements Serializable {
         public static final Type TYPE = new TypeToken<List<SearchBook>>() {
         }.getType();
+        private static final long serialVersionUID = 5392119717029714720L;
         public String image;
         public String sourceName;
         public String sourceHost;

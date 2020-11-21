@@ -37,6 +37,8 @@ public class HtmlParseFactory {
             return new HtmlParse5();
         case SearchModel.ParseType.PARSE_TYPE_6:
             return new HtmlParse6();
+        case SearchModel.ParseType.PARSE_TYPE_7:
+            return new HtmlParse7();
         }
         return null;
     }

@@ -19,13 +19,15 @@ import com.xzhou.book.utils.AppUtils;
 import com.xzhou.book.utils.Constant;
 import com.xzhou.book.utils.Log;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Entities {
-    public static class RankLv0 implements MultiItemEntity {
+    public static class RankLv0 implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = -9180488290284440929L;
         public String name;
 
         @Override
@@ -34,7 +36,8 @@ public class Entities {
         }
     }
 
-    public static class RankLv1 extends AbstractExpandableItem<RankLv2> implements MultiItemEntity {
+    public static class RankLv1 extends AbstractExpandableItem<RankLv2> implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = -1912241267177192958L;
         public String _id;
         public String title;
         private String cover;
@@ -87,6 +90,8 @@ public class Entities {
 
     public static class RankLv2 extends RankLv1 {
 
+        private static final long serialVersionUID = -2004408387569841136L;
+
         public RankLv2(RankLv1 ranking) {
             super(ranking);
         }
@@ -102,7 +107,8 @@ public class Entities {
         }
     }
 
-    public static class CategoryLv0 implements MultiItemEntity {
+    public static class CategoryLv0 implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 4503104075382863616L;
         public String title;
 
         public CategoryLv0(String title) {
@@ -116,6 +122,7 @@ public class Entities {
     }
 
     public static class CategoryLv1 extends CategoryLv0 {
+        private static final long serialVersionUID = -6510140023060532790L;
         public int bookCount;
         public String gender;
         public List<String> minors;
@@ -233,7 +240,8 @@ public class Entities {
         public T data;
     }
 
-    public static class NetBook implements MultiItemEntity {
+    public static class NetBook implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 8124319381906598755L;
         public String _id;
         public String title;
         public String author;
@@ -268,9 +276,10 @@ public class Entities {
         }
     }
 
-    public static class BookSource {
+    public static class BookSource implements Serializable {
         public static final Type TYPE = new TypeToken<List<BookSource>>() {
         }.getType();
+        private static final long serialVersionUID = 2232095540676922303L;
 
         public String _id;//"5ae1820df5f2af0100f45a3a"
         public String lastChapter;
@@ -284,24 +293,27 @@ public class Entities {
         public String host;//"book.my716.com"
     }
 
-    public static class Recommend {
+    public static class Recommend implements Serializable {
         public static final Type TYPE = new TypeToken<Recommend>() {
         }.getType();
+        private static final long serialVersionUID = -314045338627102267L;
 
         public List<NetBook> books;
 
     }
 
-    public static class BookMixAToc {
+    public static class BookMixAToc implements Serializable {
         public static final Type TYPE = new TypeToken<BookMixAToc>() {
         }.getType();
+        private static final long serialVersionUID = -7022321056936782674L;
 
         public BookAToc mixToc;
     }
 
-    public static class BookAToc {
+    public static class BookAToc implements Serializable {
         public static final Type TYPE = new TypeToken<BookAToc>() {
         }.getType();
+        private static final long serialVersionUID = 1326518435778665143L;
 
         public String _id; //sourceId
         public String book;// bookId
@@ -314,9 +326,10 @@ public class Entities {
         public List<Chapters> chapters;
     }
 
-    public static class Chapters {
+    public static class Chapters implements Serializable {
         public static final Type TYPE = new TypeToken<List<Chapters>>() {
         }.getType();
+        private static final long serialVersionUID = -250188387162998804L;
 
         public String title;
         public String link;
@@ -345,15 +358,17 @@ public class Entities {
         }
     }
 
-    public static class ChapterRead {
+    public static class ChapterRead implements Serializable {
         public static final Type TYPE = new TypeToken<ChapterRead>() {
         }.getType();
+        private static final long serialVersionUID = 8019998476123502165L;
         public Chapter chapter;
     }
 
-    public static class Chapter {
+    public static class Chapter implements Serializable {
         public static final Type TYPE = new TypeToken<Chapter>() {
         }.getType();
+        private static final long serialVersionUID = 5453537778626171634L;
         //文字
         public String title;
         public String body;
@@ -393,16 +408,18 @@ public class Entities {
         }
     }
 
-    public static class HotWord {
+    public static class HotWord implements Serializable {
         public static final Type TYPE = new TypeToken<HotWord>() {
         }.getType();
+        private static final long serialVersionUID = 8484249905415090498L;
 
         public List<String> hotWords;
     }
 
-    public static class AutoSuggest {
+    public static class AutoSuggest implements Serializable {
         public static final Type TYPE = new TypeToken<AutoSuggest>() {
         }.getType();
+        private static final long serialVersionUID = -4389212954767932923L;
 
         public List<Suggest> keywords;
     }
@@ -414,7 +431,8 @@ public class Entities {
      * "author": "发飙的蜗牛",
      * "contentType": "txt" "picture"
      */
-    public static class Suggest {
+    public static class Suggest implements Serializable {
+        private static final long serialVersionUID = -5997328821423890809L;
         public String text;
         public String tag;
         public String id;
@@ -460,21 +478,24 @@ public class Entities {
         }
     }
 
-    public static class AutoComplete {
+    public static class AutoComplete implements Serializable {
         public static final Type TYPE = new TypeToken<AutoComplete>() {
         }.getType();
+        private static final long serialVersionUID = -1476539022633507083L;
 
         public List<String> keywords;
     }
 
-    public static class SearchResult {
+    public static class SearchResult implements Serializable {
         public static final Type TYPE = new TypeToken<SearchResult>() {
         }.getType();
+        private static final long serialVersionUID = 534631677737924730L;
 
         public List<SearchBook> books;
     }
 
     public static class SearchBook extends NetBook {
+        private static final long serialVersionUID = 9143168492051165754L;
         public boolean hasCp;
         public String aliases;
         public String superscript;
@@ -486,13 +507,15 @@ public class Entities {
         }
     }
 
-    public static class BooksByTag {
+    public static class BooksByTag implements Serializable {
         public static final Type TYPE = new TypeToken<BooksByTag>() {
         }.getType();
+        private static final long serialVersionUID = -1335408562764472266L;
 
         public List<TagBook> books;
 
         public static class TagBook extends NetBook {
+            private static final long serialVersionUID = 2647013732145388280L;
             public String majorCate;
             public String minorCate;
             public List<String> tags;
@@ -504,13 +527,15 @@ public class Entities {
         }
     }
 
-    public static class HotReview {
+    public static class HotReview implements Serializable {
         public static final Type TYPE = new TypeToken<HotReview>() {
         }.getType();
+        private static final long serialVersionUID = 671010256822939874L;
         public List<Reviews> reviews;
     }
 
-    public static class Reviews implements MultiItemEntity {
+    public static class Reviews implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 6594789351870269974L;
         public String _id;
         public int rating;
         public String content;
@@ -546,16 +571,18 @@ public class Entities {
         }
     }
 
-    public static class RecommendBookList {
+    public static class RecommendBookList implements Serializable {
         public static final Type TYPE = new TypeToken<RecommendBookList>() {
         }.getType();
+        private static final long serialVersionUID = -7367402286952831123L;
 
         public List<BookListBean> booklists;
     }
 
-    public static class BookDetail {
+    public static class BookDetail implements Serializable {
         public static final Type TYPE = new TypeToken<BookDetail>() {
         }.getType();
+        private static final long serialVersionUID = 4337701199927804961L;
 
         public String _id;
         public String author;
@@ -612,9 +639,10 @@ public class Entities {
         }
     }
 
-    public static class RankingList {
+    public static class RankingList implements Serializable {
         public static final Type TYPE = new TypeToken<RankingList>() {
         }.getType();
+        private static final long serialVersionUID = -266883377968780617L;
 
         public List<RankLv1> female;
         public List<RankLv1> male;
@@ -622,9 +650,10 @@ public class Entities {
         public List<RankLv1> epub;
     }
 
-    public static class Rankings {
+    public static class Rankings implements Serializable {
         public static final Type TYPE = new TypeToken<Rankings>() {
         }.getType();
+        private static final long serialVersionUID = -2883712310300836939L;
 
         public RankingBean ranking;
 
@@ -649,15 +678,17 @@ public class Entities {
         }
     }
 
-    public static class SearchBookList {
+    public static class SearchBookList implements Serializable {
         public static final Type TYPE = new TypeToken<SearchBookList>() {
         }.getType();
+        private static final long serialVersionUID = -8219577493348600922L;
 
         public String ok;
         public int total;
         public List<UgcBookList> ugcbooklists;
 
-        public static class UgcBookList implements MultiItemEntity {
+        public static class UgcBookList implements MultiItemEntity, Serializable {
+            private static final long serialVersionUID = -5784992198253143686L;
             public String _id;
             public Author author;
             public String desc;
@@ -683,15 +714,17 @@ public class Entities {
         }
     }
 
-    public static class BookLists {
+    public static class BookLists implements Serializable {
         public static final Type TYPE = new TypeToken<BookLists>() {
         }.getType();
+        private static final long serialVersionUID = 5703939287108296077L;
 
         public List<BookListBean> bookLists;
     }
 
     //书单列表
-    public class BookListBean implements MultiItemEntity {
+    public static class BookListBean implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = -2230487416004690409L;
         private String _id;
         private String id;
         public String title;
@@ -722,21 +755,24 @@ public class Entities {
         }
     }
 
-    public static class BookListTags {
+    public static class BookListTags implements Serializable {
         public static final Type TYPE = new TypeToken<List<BookListTags>>() {
         }.getType();
+        private static final long serialVersionUID = 2184291046781015239L;
 
         public String name;
         public List<String> tags;
     }
 
-    public static class BookListDetail {
+    public static class BookListDetail implements Serializable {
         public static final Type TYPE = new TypeToken<BookListDetail>() {
         }.getType();
+        private static final long serialVersionUID = -2508257227621938141L;
 
         public BookList bookList;
 
-        public static class BookList {
+        public static class BookList implements Serializable {
+            private static final long serialVersionUID = 7542864738121152522L;
             public String _id;
             public String updated;
             public String title;
@@ -762,11 +798,13 @@ public class Entities {
             }
         }
 
-        public static class BooksBean {
+        public static class BooksBean implements Serializable {
+            private static final long serialVersionUID = -877098187170153307L;
             public BookBean book;
             public String comment;
 
-            public static class BookBean {
+            public static class BookBean implements Serializable {
+                private static final long serialVersionUID = 15112697960589438L;
                 public String _id;
                 public String title;
                 public String author;
@@ -787,56 +825,64 @@ public class Entities {
         }
     }
 
-    public static class CategoryList {
+    public static class CategoryList implements Serializable {
         public static final Type TYPE = new TypeToken<CategoryList>() {
         }.getType();
+        private static final long serialVersionUID = -3508231042411920480L;
 
         public List<Category> male; //男生
         public List<Category> female; //女生
         public List<Category> picture; //漫画
         public List<Category> press; //出版
 
-        public static class Category {
+        public static class Category implements Serializable {
+            private static final long serialVersionUID = 8228067616565153842L;
             public String name;
             public int bookCount;
             public List<String> minors;
         }
     }
 
-    public static class CategoryListLv2 {
+    public static class CategoryListLv2 implements Serializable {
         public static final Type TYPE = new TypeToken<CategoryListLv2>() {
         }.getType();
+        private static final long serialVersionUID = -8335335881648243895L;
 
         public List<Category> male;
         public List<Category> female;
         public List<Category> picture; //漫画
         public List<Category> press; //出版
 
-        public static class Category {
+        public static class Category implements Serializable {
+            private static final long serialVersionUID = -6364697795582709572L;
             public String major;
             public List<String> mins;
         }
     }
 
-    public static class BooksByCats {
+    public static class BooksByCats implements Serializable {
         public static final Type TYPE = new TypeToken<BooksByCats>() {
         }.getType();
+        private static final long serialVersionUID = -1372795524182374938L;
         public List<CatBook> books;
 
         public static class CatBook extends NetBook {
+            private static final long serialVersionUID = 7918738076925282174L;
             public String majorCate;
             public List<String> tags;
         }
     }
 
     //综合讨论区帖子列表
-    public static class DiscussionList {
+    public static class DiscussionList implements Serializable {
         public static final Type TYPE = new TypeToken<DiscussionList>() {
         }.getType();
+        private static final long serialVersionUID = -5525830495946252290L;
         public List<Posts> posts;
     }
 
-    public static class Posts implements MultiItemEntity {
+    public static class Posts implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = -2112428348261246258L;
         public String _id;
         public String title;
         public String type; //type=vote 投票  review 书评
@@ -911,12 +957,14 @@ public class Entities {
     }
 
     //综合讨论区帖子详情
-    public static class DiscussionDetail {
+    public static class DiscussionDetail implements Serializable {
         public static final Type TYPE = new TypeToken<DiscussionDetail>() {
         }.getType();
+        private static final long serialVersionUID = 1196838662222907274L;
         public PostDetail post;
 
-        public static class PostDetail {
+        public static class PostDetail implements Serializable {
+            private static final long serialVersionUID = -7495352065630942615L;
             public String _id;
             public String title;
             public String content;
@@ -965,7 +1013,8 @@ public class Entities {
                 return author == null ? "" : ZhuiShuSQApi.IMG_BASE_URL + author.avatar;
             }
 
-            static class Author {
+            static class Author implements Serializable {
+                private static final long serialVersionUID = 1586665621373770284L;
                 private String _id;
                 private String avatar;
                 private String nickname;
@@ -977,7 +1026,8 @@ public class Entities {
                 private String id;
             }
 
-            static class PostBook {
+            static class PostBook implements Serializable {
+                private static final long serialVersionUID = -2411399512027520700L;
                 private String _id;
                 private String title;
                 private String cover;
@@ -988,7 +1038,8 @@ public class Entities {
                 private Object retentionRatio;
             }
 
-            public static class Vote implements MultiItemEntity {
+            public static class Vote implements MultiItemEntity, Serializable {
+                private static final long serialVersionUID = 1321789582240496772L;
                 public String content;
                 public int count;
                 public String id;
@@ -1004,13 +1055,15 @@ public class Entities {
     }
 
     //评论
-    public static class CommentList {
+    public static class CommentList implements Serializable {
         public static final Type TYPE = new TypeToken<CommentList>() {
         }.getType();
+        private static final long serialVersionUID = -8523560177164443917L;
         public List<Comment> comments;
     }
 
-    public static class Comment implements MultiItemEntity {
+    public static class Comment implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 4937947744093502285L;
         public String _id;
         public String content;
         private Author author;
@@ -1043,7 +1096,8 @@ public class Entities {
             return Constant.ITEM_TYPE_COMMENT;
         }
 
-        static class ReplyTo {
+        static class ReplyTo implements Serializable {
+            private static final long serialVersionUID = -1615777799412391571L;
             private String _id;
             private int floor;//楼层
             private Author author; //回复XXX
@@ -1052,14 +1106,16 @@ public class Entities {
                 return author == null ? "" : author.nickname;
             }
 
-            static class Author {
+            static class Author implements Serializable {
+                private static final long serialVersionUID = -6229864775655527053L;
                 private String _id;
                 private String nickname;
             }
         }
     }
 
-    public static class PostSection implements MultiItemEntity {
+    public static class PostSection implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = -5400900050812469223L;
         public String text;
 
         public PostSection(String text) {
@@ -1072,7 +1128,8 @@ public class Entities {
         }
     }
 
-    public static class Helpful implements MultiItemEntity {
+    public static class Helpful implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 3726918062779885415L;
         public int total;
         public int no;
         public int yes;
@@ -1084,13 +1141,15 @@ public class Entities {
     }
 
     //书评区列表
-    public static class PostReviewList {
+    public static class PostReviewList implements Serializable {
         public static final Type TYPE = new TypeToken<PostReviewList>() {
         }.getType();
+        private static final long serialVersionUID = 3924751709076210194L;
         public List<PostsReviews> reviews;
     }
 
-    public static class PostsReviews implements MultiItemEntity {
+    public static class PostsReviews implements MultiItemEntity, Serializable {
+        private static final long serialVersionUID = 1716484738624516479L;
         public String _id;
         public String title;
         private Book book;
@@ -1129,7 +1188,8 @@ public class Entities {
             return helpful == null ? 0 : helpful.yes;
         }
 
-        public static class Book {
+        public static class Book implements Serializable {
+            private static final long serialVersionUID = 8196748055606935418L;
             public String _id;
             public String cover;
             public String title;
@@ -1138,13 +1198,15 @@ public class Entities {
         }
     }
 
-    public static class ReviewDetail {
+    public static class ReviewDetail implements Serializable {
         public static final Type TYPE = new TypeToken<ReviewDetail>() {
         }.getType();
+        private static final long serialVersionUID = -8892513155130320888L;
         public ReviewDetailHeader review;
     }
 
-    public static class ReviewDetailHeader {
+    public static class ReviewDetailHeader implements Serializable {
+        private static final long serialVersionUID = 2606438032303717138L;
         public String _id;
         public int rating;
         public String content;
@@ -1200,7 +1262,8 @@ public class Entities {
             return author != null && "doyen".equals(author.type);
         }
 
-        static class ReviewBook {
+        static class ReviewBook implements Serializable {
+            private static final long serialVersionUID = 7903682719875619332L;
             private String _id;
             private String cover;
             private String author;
@@ -1208,7 +1271,8 @@ public class Entities {
             private String id;
         }
 
-        static class ReviewAuthor {
+        static class ReviewAuthor implements Serializable {
+            private static final long serialVersionUID = -8046737239973377034L;
             public String _id;
             private String avatar;
             private String nickname;
@@ -1239,12 +1303,14 @@ public class Entities {
         }
     }
 
-    public static class BookHelpList {
+    public static class BookHelpList implements Serializable {
         public static final Type TYPE = new TypeToken<BookHelpList>() {
         }.getType();
+        private static final long serialVersionUID = 8222522964500523139L;
         public List<HelpsBean> helps;
 
-        public static class HelpsBean implements MultiItemEntity {
+        public static class HelpsBean implements MultiItemEntity, Serializable {
+            private static final long serialVersionUID = 4776505755538829516L;
             public String _id;
             public String title;
             private Author author;
@@ -1289,12 +1355,14 @@ public class Entities {
         }
     }
 
-    public static class BookHelp {
+    public static class BookHelp implements Serializable {
         public static final Type TYPE = new TypeToken<BookHelp>() {
         }.getType();
+        private static final long serialVersionUID = -6379329188066668669L;
         public HelpDetail help;
 
-        public static class HelpDetail {
+        public static class HelpDetail implements Serializable {
+            private static final long serialVersionUID = -1525084132173575489L;
             public String _id;
             public String type;
             private Author author;
@@ -1327,7 +1395,8 @@ public class Entities {
                 return author != null && "doyen".equals(author.type);
             }
 
-            static class Author {
+            static class Author implements Serializable {
+                private static final long serialVersionUID = 8122834472750663625L;
                 private String _id;
                 private String avatar;
                 private String nickname;
@@ -1341,13 +1410,15 @@ public class Entities {
         }
     }
 
-    public static class Login {
+    public static class Login implements Serializable {
         public static final Type TYPE = new TypeToken<Login>() {
         }.getType();
+        private static final long serialVersionUID = 247622130995452712L;
         public UserBean user;
         public String token;
 
-        public static class UserBean {
+        public static class UserBean implements Serializable {
+            private static final long serialVersionUID = -8358199002978973566L;
             public String _id;
             public String nickname;
             public String avatar;
@@ -1362,9 +1433,10 @@ public class Entities {
         }
     }
 
-    public static class Updated {
+    public static class Updated implements Serializable {
         public static final Type TYPE = new TypeToken<List<Updated>>() {
         }.getType();
+        private static final long serialVersionUID = -4613607655337320780L;
 
         public String _id;
         public String author;
@@ -1375,14 +1447,14 @@ public class Entities {
         public String lastChapter;
     }
 
-    public static class HelpSearchResult {
+    public static class HelpSearchResult implements Serializable {
         public static final Type TYPE = new TypeToken<HelpSearchResult>() {
         }.getType();
         public String next;//MTA=
         public List<Question> questions;
     }
 
-    public static class Question {
+    public static class Question implements Serializable {
         public String id; // 5a700da3c0f1873406c20041
         public String title; //找书找书找书?
         public String desc; //只记得刚开始穿越到战狼2里面，好想还有就是杀了谁可以获得那个人的一项能力
@@ -1406,11 +1478,13 @@ public class Entities {
         }
     }
 
-    public static class Highlight {
+    public static class Highlight implements Serializable {
+        private static final long serialVersionUID = -2561657440368018660L;
         public List<String> title;
     }
 
-    public static class Author {
+    public static class Author implements Serializable {
+        private static final long serialVersionUID = -6355424730258880688L;
         public String _id;
         public String avatar;
         public String nickname;
@@ -1443,7 +1517,8 @@ public class Entities {
      * "shareIcon": ""
      * }
      */
-    public static class Answer {
+    public static class Answer implements Serializable {
+        private static final long serialVersionUID = 1614776734002863193L;
         public String id;
         public String question;
         public String title;
@@ -1458,7 +1533,8 @@ public class Entities {
         public String shareIcon;
     }
 
-    public static class RichPost {
+    public static class RichPost implements Serializable {
+        private static final long serialVersionUID = 4373049668833164042L;
         public String idType;
         public String id;
 
@@ -1473,9 +1549,10 @@ public class Entities {
         }
     }
 
-    public static class SupportBean {
+    public static class SupportBean implements Serializable {
         public static final Type TYPE = new TypeToken<SupportBean>() {
         }.getType();
+        private static final long serialVersionUID = 7366321973435017459L;
 
         public String name;
         public String url;
@@ -1500,7 +1577,8 @@ public class Entities {
         }
     }
 
-    public static class SupportBeanEntry {
+    public static class SupportBeanEntry implements Serializable {
+        private static final long serialVersionUID = -442833043524291115L;
         public String gender;
         public String desc;
         public String rootUrl;
@@ -1517,7 +1595,8 @@ public class Entities {
         }
     }
 
-    public static class SupportBeanEntryParam {
+    public static class SupportBeanEntryParam implements Serializable {
+        private static final long serialVersionUID = 3344817710113187851L;
         public String name;
         public String key;
         public List<SupportBeanEntryParamEnum> enums;
@@ -1544,7 +1623,8 @@ public class Entities {
         }
     }
 
-    public static class SupportBeanEntryParamEnum {
+    public static class SupportBeanEntryParamEnum implements Serializable {
+        private static final long serialVersionUID = -1157398056819279717L;
         public String name;
         public String value;
 
@@ -1557,7 +1637,8 @@ public class Entities {
         }
     }
 
-    public static class ThirdBookData {
+    public static class ThirdBookData implements Serializable {
+        private static final long serialVersionUID = -7613650711016024906L;
         public int pageCount = 1;
         public int pageCurrent = 0;
         public List<SearchModel.SearchBook> list;
@@ -1568,6 +1649,45 @@ public class Entities {
                     "pageCount=" + pageCount +
                     ", pageCurrent=" + pageCurrent +
                     ", list=" + list +
+                    '}';
+        }
+    }
+
+    public static class ThirdBookDetail implements Serializable {
+        private static final long serialVersionUID = 733910590032644545L;
+
+        public String title;
+        public String image;
+        public String author;
+        public String readUrl;
+        public String wordCount;
+        public String tags;
+        public String lastUpdate;
+        public String lastChapter;
+        public String intro;
+        public String keyVotes0;
+        public String valueVotes0;
+        public String keyVotes1;
+        public String valueVotes1;
+        public String keyVotes2;
+        public String valueVotes2;
+
+        @Override
+        public String toString() {
+            return "ThirdBookDetail{" +
+                    "title='" + title + '\'' +
+                    ", image='" + image + '\'' +
+                    ", author='" + author + '\'' +
+                    ", readUrl='" + readUrl + '\'' +
+                    ", wordCount='" + wordCount + '\'' +
+                    ", keyVotes1='" + keyVotes1 + '\'' +
+                    ", valueVotes1='" + valueVotes1 + '\'' +
+                    ", keyVotes2='" + keyVotes2 + '\'' +
+                    ", valueVotes2='" + valueVotes2 + '\'' +
+                    ", tags='" + tags + '\'' +
+                    ", lastUpdate='" + lastUpdate + '\'' +
+                    ", lastChapter='" + lastChapter + '\'' +
+                    ", intro='" + intro + '\'' +
                     '}';
         }
     }
