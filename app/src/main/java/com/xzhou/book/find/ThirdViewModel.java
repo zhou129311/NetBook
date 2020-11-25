@@ -40,6 +40,7 @@ public class ThirdViewModel extends AndroidViewModel {
     private final Map<String, HashMap<String, String>> mUrlParams = new HashMap<>();
     private final ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
     public String mRootUrl;
+    private int mCurPage = 1;
 
     public ThirdViewModel(@NonNull Application application) {
         super(application);
@@ -58,8 +59,12 @@ public class ThirdViewModel extends AndroidViewModel {
         startLoad(rootUrl);
     }
 
-    public void refreshUrl(String rootUrl, String key, String value) {
-        mRefreshData.setValue(true);
+    public void refreshUrl(String rootUrl, String key, String value, boolean isLoadMore) {
+        if (!isLoadMore) {
+            mRefreshData.setValue(true);
+        } else {
+            mCurPage = Integer.parseInt(value);
+        }
         HashMap<String, String> paramsMap = mUrlParams.get(rootUrl);
         if (paramsMap == null) {
             paramsMap = new HashMap<>();
@@ -138,8 +143,9 @@ public class ThirdViewModel extends AndroidViewModel {
     }
 
     private void parseHtml(String url, String html) {
-        Log.i(TAG, "parseHtml : " + (html != null));
-        Entities.ThirdBookData data = null;
+        Log.i(TAG, url + " : parseHtml : " + (html != null));
+        Entities.ThirdBookData data = new Entities.ThirdBookData();
+        data.pageCurrent = mCurPage;
         if (html != null) {
 //            html = handlerHtml(html);
             if (url.contains("readnovel")) {

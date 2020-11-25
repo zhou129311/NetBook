@@ -3,7 +3,7 @@ package com.xzhou.book.find;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +16,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xzhou.book.R;
 import com.xzhou.book.common.BaseActivity;
+import com.xzhou.book.common.CommonViewHolder;
+import com.xzhou.book.common.MyGridLayoutManager;
 import com.xzhou.book.db.BookProvider;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.SearchModel;
@@ -26,6 +30,8 @@ import com.xzhou.book.read.ReadActivity;
 import com.xzhou.book.search.SearchActivity;
 import com.xzhou.book.utils.ImageLoader;
 import com.xzhou.book.widget.DrawableButton;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -54,28 +60,18 @@ public class ThirdBookDetailActivity extends BaseActivity {
     TextView detailBookTag;
     @BindView(R.id.detail_book_author)
     TextView detailBookAuthor;
-    @BindView(R.id.detail_word_key)
-    TextView detailWordKey;
-    @BindView(R.id.detail_word_count)
-    TextView detailWordCount;
     @BindView(R.id.detail_last_updated)
     TextView detailLastUpdated;
     @BindView(R.id.detail_join)
     DrawableButton mJoinBtn;
     @BindView(R.id.detail_read)
     DrawableButton mReadBtn;
-    @BindView(R.id.detail_votes1)
-    TextView detailVotes1;
-    @BindView(R.id.detail_votes2)
-    TextView detailVotes2;
-    @BindView(R.id.detail_votes_value1)
-    TextView detailVotesValue1;
-    @BindView(R.id.detail_votes_value2)
-    TextView detailVotesValue2;
     @BindView(R.id.detail_last_chapter)
     TextView detailLastChapter;
     @BindView(R.id.detail_intro)
     TextView detailIntro;
+    @BindView(R.id.detail_group_count)
+    RecyclerView mRecyclerView;
 
     private SearchModel.SearchBook mSearchBook;
     private ThirdBookViewModel mViewModel;
@@ -98,6 +94,26 @@ public class ThirdBookDetailActivity extends BaseActivity {
         if (mSearchBook == null) {
             finish();
         }
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mViewModel = new ViewModelProvider(this, new ViewModelProvider
+                .AndroidViewModelFactory(getApplication())).get(ThirdBookViewModel.class);
+
+        mViewModel.mData.observe(this, thirdBookDetail -> {
+            if (thirdBookDetail != null) {
+                ViewGroup parent = (ViewGroup) mPlaceView.getParent();
+                parent.removeView(mPlaceView);
+                initViewData(thirdBookDetail);
+            } else {
+                mLoadView.setVisibility(View.GONE);
+                mLoadErrorView.setVisibility(View.VISIBLE);
+            }
+        });
+        mToolbar.setTitle(mSearchBook.bookName);
+        startData();
     }
 
     @Override
@@ -129,25 +145,6 @@ public class ThirdBookDetailActivity extends BaseActivity {
         outState.putSerializable("search_book", mSearchBook);
     }
 
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this, new ViewModelProvider
-                .AndroidViewModelFactory(getApplication())).get(ThirdBookViewModel.class);
-
-        mViewModel.mData.observe(this, thirdBookDetail -> {
-            if (thirdBookDetail != null) {
-                ViewGroup parent = (ViewGroup) mPlaceView.getParent();
-                parent.removeView(mPlaceView);
-                initViewData(thirdBookDetail);
-            } else {
-                mLoadView.setVisibility(View.GONE);
-                mLoadErrorView.setVisibility(View.VISIBLE);
-            }
-        });
-        startData();
-    }
-
     private void startData() {
         mViewModel.load(mSearchBook);
         mPlaceView.setVisibility(View.VISIBLE);
@@ -159,16 +156,10 @@ public class ThirdBookDetailActivity extends BaseActivity {
         ImageLoader.showRoundImageUrl(this, detailBookImg, detail.image, R.mipmap.ic_cover_default);
         detailBookTitle.setText(detail.title);
         detailBookAuthor.setText(detail.author);
-        if (TextUtils.isEmpty(detail.wordCount)) {
-            detailWordKey.setText(detail.keyVotes0);
-            detailWordCount.setText(detail.valueVotes0);
-        } else {
-            detailWordCount.setText(detail.wordCount);
-        }
-        detailVotes1.setText(detail.keyVotes1);
-        detailVotes2.setText(detail.keyVotes2);
-        detailVotesValue1.setText(detail.valueVotes1);
-        detailVotesValue2.setText(detail.valueVotes2);
+        Adapter adapter = new Adapter(detail.list);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new MyGridLayoutManager(this, 3, true));
+        adapter.bindToRecyclerView(mRecyclerView);
         detailBookTag.setText(detail.tags);
         detailIntro.setText(detail.intro);
         detailLastUpdated.setText(detail.lastUpdate);
@@ -207,4 +198,16 @@ public class ThirdBookDetailActivity extends BaseActivity {
         }
     }
 
+    private static class Adapter extends BaseQuickAdapter<Pair<String, String>, CommonViewHolder> {
+
+        public Adapter(@Nullable List<Pair<String, String>> data) {
+            super(R.layout.item_view_pair_count, data);
+        }
+
+        @Override
+        protected void convert(CommonViewHolder holder, Pair<String, String> item) {
+            holder.setText(R.id.detail_pair_key, item.first)
+                    .setText(R.id.detail_pair_count, item.second);
+        }
+    }
 }

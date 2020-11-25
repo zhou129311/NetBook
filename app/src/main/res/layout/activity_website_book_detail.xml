@@ -31,8 +31,8 @@
 
             <ImageView
                 android:id="@+id/detail_book_img"
-                android:layout_width="60dp"
-                android:layout_height="80dp"
+                android:layout_width="70dp"
+                android:layout_height="97dp"
                 android:contentDescription="@null"
                 android:scaleType="fitXY"
                 android:src="@mipmap/ic_cover_default"
@@ -119,94 +119,12 @@
                 app:layout_constraintStart_toEndOf="@id/detail_join"
                 app:layout_constraintTop_toTopOf="@id/detail_join" />
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/detail_group_count"
+                android:layout_marginTop="@dimen/book_detail_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/book_detail_margin"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:paddingTop="@dimen/book_detail_margin"
-                android:paddingBottom="@dimen/book_detail_margin"
-                app:layout_constraintTop_toBottomOf="@id/detail_join">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/detail_word_key"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/all_word_count"
-                        android:textColor="@color/common_h2"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/detail_word_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:textColor="@color/common_h1"
-                        android:textSize="15sp"
-                        tools:text="82万" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/detail_votes1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/common_h2"
-                        android:textSize="14sp"
-                        tools:text="周推荐" />
-
-                    <TextView
-                        android:id="@+id/detail_votes_value1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:textColor="@color/common_h1"
-                        android:textSize="15sp"
-                        tools:text="43640" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/detail_votes2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/common_h2"
-                        android:textSize="13sp"
-                        tools:text="月票" />
-
-                    <TextView
-                        android:id="@+id/detail_votes_value2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:textColor="@color/common_h1"
-                        android:textSize="15sp"
-                        tools:text="4614" />
-
-                </LinearLayout>
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/detail_join"/>
 
             <View
                 android:id="@+id/detail_divider1"

@@ -16,9 +16,9 @@ import java.util.concurrent.Executors;
 public class SettingPresenter extends BasePresenter<SettingContract.View> implements SettingContract.Presenter {
 
     private long mCacheSize;
-    private String mCachePath;
-    private String mFilePath;
-    private ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
+    private final String mCachePath;
+    private final String mFilePath;
+    private final ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
 
     SettingPresenter(SettingContract.View view) {
         super(view);
@@ -30,13 +30,10 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
     @Override
     public boolean start() {
         onCacheLoading();
-        mSinglePool.execute(new Runnable() {
-            @Override
-            public void run() {
-                mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
-                String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
-                updateCacheSize(value);
-            }
+        mSinglePool.execute(() -> {
+            mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
+            String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
+            updateCacheSize(value);
         });
         return super.start();
     }
@@ -48,47 +45,38 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
             return;
         }
         onCacheLoading();
-        mSinglePool.execute(new Runnable() {
-            @Override
-            public void run() {
-                File bookDir = new File(mFilePath);
-                File[] books = bookDir.listFiles();
-                if (books != null) {
-                    for (File file : books) {
-                        if(file != null){
-                            String bookId = file.getName();
-                            AppSettings.deleteChapterList(bookId);
-                        }
+        mSinglePool.execute(() -> {
+            File bookDir = new File(mFilePath);
+            File[] books = bookDir.listFiles();
+            if (books != null) {
+                for (File file : books) {
+                    if(file != null){
+                        String bookId = file.getName();
+                        AppSettings.deleteChapterList(bookId);
                     }
                 }
-                FileUtils.deleteFileOrDirectory(new File(mCachePath));
-                FileUtils.deleteFileOrDirectory(bookDir);
-                mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
-                String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
-                updateCacheSize(value);
             }
+            FileUtils.deleteFileOrDirectory(new File(mCachePath));
+            FileUtils.deleteFileOrDirectory(bookDir);
+            mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
+            String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
+            updateCacheSize(value);
         });
     }
 
     private void updateCacheSize(final String value) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    Log.d("updateCacheSize::" + value);
-                    mView.updateCacheSize(value);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                Log.d("updateCacheSize::" + value);
+                mView.updateCacheSize(value);
             }
         });
     }
 
     private void onCacheLoading() {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onCacheLoading();
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onCacheLoading();
             }
         });
     }

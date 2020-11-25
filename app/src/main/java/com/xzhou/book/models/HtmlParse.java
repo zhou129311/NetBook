@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.xzhou.book.utils.Log;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -27,7 +28,7 @@ import javax.net.ssl.X509TrustManager;
 
 public abstract class HtmlParse {
     protected String TAG = "HtmlParse";
-    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36";
 
     private static final Pattern PATTERN1 = Pattern.compile("<div(.*?)>");
     private static final Pattern PATTERN2 = Pattern.compile("<fon(.*?)>");
@@ -49,7 +50,7 @@ public abstract class HtmlParse {
             add("strong");
             add("script");
             add("h1");
-            add("style");
+//            add("style");
         }
     };
 
@@ -64,14 +65,18 @@ public abstract class HtmlParse {
     public List<Entities.Chapters> parseChapters(String readUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(10000).get();
+            Connection.Response response = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(30000).execute();
             if (readUrl.endsWith("index.html")) {
                 readUrl = readUrl.replace("index.html", "");
             }
             if (readUrl.endsWith("list/")) {
                 readUrl = readUrl.replace("list/", "");
             }
-            return parseChapters(readUrl, document);
+            if (readUrl.contains("xxsy.net")) {
+                return parseChapters(readUrl, response);
+            } else {
+                return parseChapters(readUrl, response.parse());
+            }
         } catch (Exception e) {
             Log.e(TAG, e);
         }
@@ -80,10 +85,14 @@ public abstract class HtmlParse {
 
     public abstract List<Entities.Chapters> parseChapters(String readUrl, Document document);
 
+    public List<Entities.Chapters> parseChapters(String readUrl, Connection.Response response) {
+        return null;
+    }
+
     public Entities.ChapterRead parseChapterRead(String chapterUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(10000).get();
+            Document document = Jsoup.connect(chapterUrl).userAgent(USER_AGENT).timeout(30000).get();
             Log.i(TAG, "parseChapterRead:baseUri=" + document.baseUri());
             Entities.ChapterRead read = parseChapterRead(chapterUrl, document);
             if (read != null && read.chapter != null && read.chapter.body != null && TextUtils.isEmpty(read.chapter.body.trim())) {

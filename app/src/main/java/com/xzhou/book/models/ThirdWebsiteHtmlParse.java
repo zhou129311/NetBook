@@ -1,5 +1,9 @@
 package com.xzhou.book.models;
 
+import android.text.TextUtils;
+import android.util.Pair;
+
+import com.xzhou.book.net.OkHttpUtils;
 import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;
@@ -8,6 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * File Description:
@@ -70,7 +75,7 @@ public class ThirdWebsiteHtmlParse {
             }
             data.pageCount = (int) Math.ceil((float) count / 10f);
             data.pageCurrent = current;
-//            Log.i(TAG, "xsydw  = " + data);
+            Log.i(TAG, "xsydw  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "xsydw error", e);
         }
@@ -103,15 +108,14 @@ public class ThirdWebsiteHtmlParse {
             for (Element e : wordCountE) {
                 word.append(e.html());
             }
-            data.wordCount = word.toString();
+
+            data.list.add(new Pair<>("总字数", word.toString()));
+            data.list.add(new Pair<>("周推荐", jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html()));
+            data.list.add(new Pair<>("月票", jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html()));
             data.intro = bookinfoE.select(".intro").first().html().replace("<br>", "\n");
             Elements lastE = jsoup.select("div.update");
             data.lastChapter = "最新章节：" + lastE.select("a").html();
             data.lastUpdate = "最后更新：" + lastE.select("span").html();
-            data.keyVotes1 = "周推荐";
-            data.keyVotes2 = "月票";
-            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
-            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
             Log.i(TAG, "xsydwInfo  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "xsydwInfo error", e);
@@ -223,16 +227,16 @@ public class ThirdWebsiteHtmlParse {
                 }
             }
             data.tags = tag.toString();
-            data.wordCount = bookprofile.select(".sub-data span em").first().html();
+
+            data.list.add(new Pair<>("总字数", bookprofile.select(".sub-data span em").first().html()));
+            data.list.add(new Pair<>("总阅读数", bookprofile.select(".sub-data span em").get(1).html()));
+            data.list.add(new Pair<>("总收藏", bookprofile.select(".sub-data span em").last().html()));
+
             data.intro = jsoup.select(".introcontent dd").first().html().replace("\n", "")
                     .replace("<p>", "\n").replace("</p>", "");
             Elements lastE = jsoup.select("div.sub-newest");
             data.lastChapter = "最新章节：" + lastE.select("a").last().html();
             data.lastUpdate = "最后更新：" + lastE.select("span").last().html();
-            data.keyVotes1 = "总阅读数";
-            data.keyVotes2 = "总收藏";
-            data.valueVotes1 = bookprofile.select(".sub-data span em").get(1).html();
-            data.valueVotes2 = bookprofile.select(".sub-data span em").last().html();
             Log.i(TAG, "xxsyInfo  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "xxsyInfo error", e);
@@ -325,16 +329,15 @@ public class ThirdWebsiteHtmlParse {
             StringBuilder word = new StringBuilder();
             Elements wordCountE = bookinfoE.select(".total").first().children();
             word.append(wordCountE.first().html()).append(wordCountE.get(1).html());
-            data.wordCount = word.toString();
+
+            data.list.add(new Pair<>("总字数", word.toString()));
+            data.list.add(new Pair<>("周推荐", jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html()));
+            data.list.add(new Pair<>("月票", jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html()));
+
             data.intro = bookinfoE.select(".intro").first().html().replace("<br>", "\n");
-            ;
             Elements lastE = jsoup.select("div.update");
             data.lastChapter = "最新章节：" + lastE.select("a").html();
             data.lastUpdate = "最后更新：" + lastE.select("span").html();
-            data.keyVotes1 = "周推荐";
-            data.keyVotes2 = "月票";
-            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
-            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
             Log.i(TAG, "hxtxInfo  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "hxtxInfo error", e);
@@ -489,17 +492,77 @@ public class ThirdWebsiteHtmlParse {
                 }
             }
             data.tags = tag.toString();
-            data.valueVotes0 = jsoup.select("div.nav-wrap").select(".fl").select("span#J-catalogCount").html()
+
+//            String style = bookinfoE.select("style").first().html();
+//            if (style != null && style.contains("font-family:")) {
+//                int is = style.indexOf("font-family:") + "font-family:".length();
+//
+//                String fileName = style.substring(is, style.indexOf(";")).trim();
+//                Matcher matcher = PATTERN_TTF_URL.matcher(style);
+//                if (matcher.find()) {
+//                    String ttfUrl = matcher.group();
+//                    ttfUrl = ttfUrl.substring(ttfUrl.lastIndexOf("https"));
+//                    Log.i(TAG, "fileName = " + fileName + " ,ttfUrl = " + ttfUrl);
+//                    String ttfPath = FileUtils.getCachePath(MyApp.getContext()) + File.separator + fileName + ".ttf";
+//                    File file = new File(ttfPath);
+//                    FileOutputStream fos = null;
+//                    if (!file.exists()) {
+//                        try {
+//                            Response response = OkHttpUtils.getPcRelResponse(ttfUrl);
+//                            fos = new FileOutputStream(file);
+//                            fos.write(response.body().bytes());
+//                            fos.flush();
+//                            fos.close();
+//                        } catch (Exception e) {
+//                            Log.e(TAG, "qdzwwInfo ttf error", e);
+//                        } finally {
+//                            AppUtils.close(fos);
+//                        }
+//                    }
+//                    TTFParser parser = new TTFParser();
+//                    parser.parse(file);
+//                    CMap cMap = (CMap) parser.getTable(CMap.TAG);
+//                    EncodingFormat4 format4 = (EncodingFormat4) cMap.getEncoding();
+//                    Elements pairE = bookinfoE.select("." + fileName);
+//                    Elements citeE = bookinfoE.select("cite");
+//                    for (int i = 0; i < pairE.size(); i++) {
+//                        if (i == 0 || i == 1) {
+//                            StringBuilder sb = new StringBuilder(pairE.get(i).html());
+//                            for (int j = 0, s = sb.length(); j < s; j++) {
+//                                int codePoint = sb.codePointAt(j);
+//                                Log.i(TAG, "codePoint = " + codePoint);
+//                                int index = format4.getIndexForCodePoint(codePoint);
+//                                String value = TTFEncodeMap.QDZWW.get(index - 2);
+//                                if (value != null) {
+//                                    sb.replace(j, j + 1, value);
+//                                }
+//                            }
+//                            if (citeE.get(i).html().contains("万")) {
+//                                sb.append("万");
+//                            }
+//                            if (i == 0) {
+//                                data.list.add(new Pair<>("总字数", sb.toString()));
+//                            } else if (i == 1) {
+//                                data.list.add(new Pair<>("总推荐", sb.toString()));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+
+            String count = jsoup.select("div.nav-wrap").select(".fl").select("span#J-catalogCount").html()
                     .replace("(", "").replace(")", "");
+            if (TextUtils.isEmpty(count)) {
+                count = "--";
+            }
+            data.list.add(new Pair<>("总章节数", count));
+            data.list.add(new Pair<>("周推荐", jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html()));
+            data.list.add(new Pair<>("月票", jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html()));
+
             data.intro = jsoup.select(".book-intro p").html().replace("<br>", "\n");
             Elements lastE = jsoup.select("li.update").select(".detail");
             data.lastChapter = "最新章节：" + lastE.select("p.cf a").html();
             data.lastUpdate = "最后更新：" + lastE.select("p.cf em").html();
-            data.keyVotes0 = "总章节数";
-            data.keyVotes1 = "周推荐";
-            data.keyVotes2 = "月票";
-            data.valueVotes1 = jsoup.select(".ticket").select(".rec-ticket").select("#recCount").html();
-            data.valueVotes2 = jsoup.select(".ticket").select(".month-ticket").select("#monthCount").html();
             Log.i(TAG, "qdzwwInfo  = " + data);
         } catch (Exception e) {
             Log.e(TAG, "qdzwwInfo error", e);
@@ -507,4 +570,5 @@ public class ThirdWebsiteHtmlParse {
         return data;
     }
 
+    private static final Pattern PATTERN_TTF_URL = Pattern.compile("https(.*?)\\.ttf");
 }

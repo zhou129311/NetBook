@@ -73,8 +73,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     BookProvider.updateReadTime(mBook);
                 }
                 mChaptersList = AppSettings.getChapterList(mBook._id);
-                if (mChaptersList == null) {
+                if (mChaptersList == null || mChaptersList.size() <= 0) {
                     if (mBook.isBaiduBook) {
+                        Log.i(TAG, "mBook.curSourceHost = " + mBook.curSourceHost);
                         HtmlParse htmlParse = HtmlParseFactory.getHtmlParse(mBook.curSourceHost);
                         if (htmlParse != null) {
                             mChaptersList = htmlParse.parseChapters(mBook.readUrl);
@@ -369,14 +370,11 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         Log.i(TAG, "reloadCurPage::" + pageContent);
         if (!start()) {
             final int newItem = showLoading(item, pageContent);
-            mSinglePool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (pageContent.chapter > 0 && !TextUtils.isEmpty(pageContent.chapterTitle)) {
-                        AppSettings.saveReadProgress(mBook._id, pageContent.chapter, 0);
-                    }
-                    loadReadProgress(newItem);
+            mSinglePool.execute(() -> {
+                if (pageContent.chapter > 0 && !TextUtils.isEmpty(pageContent.chapterTitle)) {
+                    AppSettings.saveReadProgress(mBook._id, pageContent.chapter, 0);
                 }
+                loadReadProgress(newItem);
             });
         }
     }

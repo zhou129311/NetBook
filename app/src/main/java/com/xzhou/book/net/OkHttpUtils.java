@@ -40,7 +40,7 @@ public class OkHttpUtils {
     private static final int CACHE_MAXAGE = 60; // s
     private static final int CACHE_SIZE = 10 * 1024 * 1024;
 
-    private static OkHttpClient getClient() {
+    public static OkHttpClient getClient() {
         if (sGetClient == null) {
             File httpCacheDirectory = new File(FileUtils.getCachePath(MyApp.getContext()), "okhttps");
             Cache cache = new Cache(httpCacheDirectory, CACHE_SIZE);
@@ -128,7 +128,7 @@ public class OkHttpUtils {
         }
     }};
 
-    public static String getPcRel(String url) {
+    public static Response getPcRelResponse(String url) {
         Request req = new Request.Builder()
                 .url(url)
                 .cacheControl(new CacheControl.Builder()
@@ -138,12 +138,20 @@ public class OkHttpUtils {
                 .get()
                 .build();
         try {
-            Response response = getClient().newCall(req).execute();
-            String rel = response.body().string();
-//            logi("url: " + url + "\n" + rel);
-            return rel;
+            return getClient().newCall(req).execute();
         } catch (Exception e) {
             Log.e("get url = " + url + "\nerror:", e);
+        }
+        return null;
+    }
+
+    public static String getPcRel(String url) {
+        Response response = getPcRelResponse(url);
+        if (response != null) {
+            try {
+                return response.body().string();
+            } catch (Exception ignored) {
+            }
         }
         return null;
     }

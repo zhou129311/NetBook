@@ -29,6 +29,7 @@ import com.xzhou.book.common.LineItemDecoration;
 import com.xzhou.book.common.MyLinearLayoutManager;
 import com.xzhou.book.models.Entities;
 import com.xzhou.book.models.SearchModel;
+import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.SPUtils;
 import com.xzhou.book.widget.SingleCheckGroup;
 
@@ -114,18 +115,23 @@ public class ThirdWebsiteActivity extends BaseActivity {
         mAdapter.bindToRecyclerView(mRecyclerView);
         mAdapter.setEmptyView(mEmptyView);
         mAdapter.setOnLoadMoreListener(() -> {
-            Entities.ThirdBookData data = mViewModel.mBookData.getValue();
-            if (data == null || data.list == null
-                    || data.list.size() == 0
-                    || data.pageCurrent >= data.pageCount) {
-                mAdapter.loadMoreEnd();
-            } else {
-                String pageKey = "pageNum";
-                if (mViewModel.mBeanData.getValue() != null) {
-                    pageKey = mViewModel.mBeanData.getValue().pageKey;
-                }
-                mViewModel.refreshUrl(mViewModel.mRootUrl, pageKey, String.valueOf(data.pageCurrent + 1));
+            Entities.SupportBean supportBean = mViewModel.mBeanData.getValue();
+            if (supportBean == null) {
+                mAdapter.loadMoreFail();
+                return;
             }
+            Entities.ThirdBookData data = mViewModel.mBookData.getValue();
+            if (data == null) {
+                mAdapter.loadMoreFail();
+                return;
+            }
+            String pageKey = supportBean.pageKey;
+            int pageCurrent = data.pageCurrent;
+            if (data.pageCurrent < data.pageCount) {
+                pageCurrent += 1;
+            }
+            Log.i(TAG, "start loadMore");
+            mViewModel.refreshUrl(mViewModel.mRootUrl, pageKey, String.valueOf(pageCurrent), true);
         }, mRecyclerView);
         mViewModel.mBeanData.observe(this, supportBean -> {
             if (supportBean == null || supportBean.entry.size() == 0) {
@@ -166,36 +172,29 @@ public class ThirdWebsiteActivity extends BaseActivity {
             mViewModel.refreshUrl(entry.rootUrl);
         });
 
-//        WebSettings webSettings = mWebView.getSettings();
-//        webSettings.setJavaScriptEnabled(true);
-//        webSettings.setAllowFileAccess(true);
-//        webSettings.setDatabaseEnabled(true);
-//        webSettings.setUserAgentString(JsoupSearch.UA);
-//        String dir = MyApp.getContext().getDir("database", Context.MODE_PRIVATE).getPath();
-//        webSettings.setDatabasePath(dir);
-//        webSettings.setDomStorageEnabled(true);
-//        webSettings.setGeolocationEnabled(true);
-//        mWebView.setWebViewClient(mWebViewClient);
-//        mViewModel.mUrlData.observe(this, url -> {
-//            mWebView.stopLoading();
-//            mWebView.loadUrl(url);
-//        });
-
         mViewModel.mBookData.observe(this, thirdBookData -> {
-            if (thirdBookData == null || thirdBookData.list.size() == 0) {
+            Log.i(TAG, "thirdBookData = " + thirdBookData);
+            if (thirdBookData.list == null && thirdBookData.pageCurrent == 1) {
                 mEmptyView.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(null);
-            } else {
+            } else if (thirdBookData.list != null) {
+                if (thirdBookData.list.size() == 0) {
+                    mEmptyView.setVisibility(View.VISIBLE);
+                }
                 if (thirdBookData.pageCurrent > 1) {
                     mAdapter.addData(thirdBookData.list);
                     if (thirdBookData.pageCurrent == thirdBookData.pageCount) {
                         mAdapter.loadMoreEnd();
-                    } else {
+                    } else if (thirdBookData.pageCurrent < thirdBookData.pageCount) {
                         mAdapter.loadMoreComplete();
+                    } else {
+                        mAdapter.loadMoreFail();
                     }
                 } else {
                     mAdapter.setNewData(thirdBookData.list);
                 }
+            } else {
+                mAdapter.loadMoreFail();
             }
         });
         mViewModel.mRefreshData.observe(this, aBoolean -> {
@@ -301,7 +300,7 @@ public class ThirdWebsiteActivity extends BaseActivity {
                 param.checkIndex = index;
                 mDrawerLayout.closeDrawer(mEndDraView);
                 mViewModel.initPageParam(rootUrl);
-                mViewModel.refreshUrl(rootUrl, param.key, value);
+                mViewModel.refreshUrl(rootUrl, param.key, value, false);
             });
         }
     }

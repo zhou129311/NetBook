@@ -65,7 +65,7 @@ public class FileUtils {
     }
 
     public static void deleteBookDir(String bookId) {
-        File file = new File(getCachePath(MyApp.getContext()), bookId);
+        File file = new File(getFilePath(MyApp.getContext()), bookId);
         if (file.exists()) {
             deleteFileOrDirectory(file);
         }

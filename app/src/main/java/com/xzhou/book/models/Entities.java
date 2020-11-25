@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.DrawableRes;
 
@@ -1653,37 +1654,25 @@ public class Entities {
         }
     }
 
-    public static class ThirdBookDetail implements Serializable {
-        private static final long serialVersionUID = 733910590032644545L;
-
+    public static class ThirdBookDetail {
         public String title;
         public String image;
         public String author;
         public String readUrl;
-        public String wordCount;
         public String tags;
         public String lastUpdate;
         public String lastChapter;
         public String intro;
-        public String keyVotes0;
-        public String valueVotes0;
-        public String keyVotes1;
-        public String valueVotes1;
-        public String keyVotes2;
-        public String valueVotes2;
+        public List<Pair<String, String>> list = new ArrayList<>();;
 
         @Override
         public String toString() {
             return "ThirdBookDetail{" +
                     "title='" + title + '\'' +
-                    ", image='" + image + '\'' +
                     ", author='" + author + '\'' +
                     ", readUrl='" + readUrl + '\'' +
-                    ", wordCount='" + wordCount + '\'' +
-                    ", keyVotes1='" + keyVotes1 + '\'' +
-                    ", valueVotes1='" + valueVotes1 + '\'' +
-                    ", keyVotes2='" + keyVotes2 + '\'' +
-                    ", valueVotes2='" + valueVotes2 + '\'' +
+                    ", image='" + image + '\'' +
+                    ", list='" + list + '\'' +
                     ", tags='" + tags + '\'' +
                     ", lastUpdate='" + lastUpdate + '\'' +
                     ", lastChapter='" + lastChapter + '\'' +
