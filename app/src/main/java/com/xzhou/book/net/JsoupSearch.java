@@ -150,7 +150,7 @@ public abstract class JsoupSearch {
                     Element child = f13.get(j);
                     String title = child.getElementsByClass("c-tools").attr("data-tools");
                     BaiduSearch.Title t = new Gson().fromJson(title, BaiduSearch.Title.class);
-                    if (t == null || t.title.contains("网盘")) {
+                    if (t == null || t.title == null || t.title.contains("网盘")) {
                         continue;
                     }
                     SearchModel.SearchBook book = parseResult(t);
@@ -180,7 +180,7 @@ public abstract class JsoupSearch {
         try {
             trustEveryone();
 
-            Document document = Jsoup.connect(title.url).userAgent(USER_AGENT).timeout(10000).get();
+            Document document = Jsoup.connect(title.url).userAgent(USER_AGENT).timeout(30000).get();
             Log.d(TAG, "title= " + title.title + ",url=" + title.url);
             if (mCallback != null && !mCancel) {
                 mCallback.onCurParse(mCurSize, mCurParseSize, title.title + "-" + document.baseUri());
@@ -263,7 +263,7 @@ public abstract class JsoupSearch {
                     book.sourceName = title.title.substring(index + 1);
                 }
             }
-            if (TextUtils.isEmpty(book.sourceName)) {
+            if (book.sourceHost != null && TextUtils.isEmpty(book.sourceName)) {
                 int i1 = book.sourceHost.indexOf(".");
                 int i2 = book.sourceHost.lastIndexOf(".");
                 if (i2 > i1 && i1 > 0) {

@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--<item
-        android:id="@+id/menu_website_source"
+        android:id="@+id/action_search"
+        android:icon="@mipmap/ic_action_search"
         android:orderInCategory="80"
-        android:title="@string/book_read_change_source"
-        app:showAsAction="ifRoom" />-->
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:title="@string/search"
+        app:showAsAction="always"/>-->
 
     <item
-        android:id="@+id/menu_filtrate"
+        android:id="@+id/action_filtrate"
         android:orderInCategory="80"
         android:title="@string/filtrate"
         app:showAsAction="ifRoom" />

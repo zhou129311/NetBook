@@ -172,29 +172,24 @@ public class ThirdWebsiteActivity extends BaseActivity {
             mViewModel.refreshUrl(entry.rootUrl);
         });
 
-        mViewModel.mBookData.observe(this, thirdBookData -> {
-            Log.i(TAG, "thirdBookData = " + thirdBookData);
-            if (thirdBookData.list == null && thirdBookData.pageCurrent == 1) {
-                mEmptyView.setVisibility(View.VISIBLE);
-                mAdapter.setNewData(null);
-            } else if (thirdBookData.list != null) {
-                if (thirdBookData.list.size() == 0) {
-                    mEmptyView.setVisibility(View.VISIBLE);
+        mViewModel.mBookData.observe(this, data -> {
+            Log.i(TAG, "thirdBookData = " + data);
+            if (data.isLoadMore()) {
+                if (data.list != null) {
+                    mAdapter.addData(data.list);
                 }
-                if (thirdBookData.pageCurrent > 1) {
-                    mAdapter.addData(thirdBookData.list);
-                    if (thirdBookData.pageCurrent == thirdBookData.pageCount) {
-                        mAdapter.loadMoreEnd();
-                    } else if (thirdBookData.pageCurrent < thirdBookData.pageCount) {
-                        mAdapter.loadMoreComplete();
-                    } else {
-                        mAdapter.loadMoreFail();
-                    }
+                if (data.pageCurrent > data.pageCount) {
+                    mAdapter.loadMoreFail();
+                } else if (data.pageCurrent == data.pageCount) {
+                    mAdapter.loadMoreEnd();
                 } else {
-                    mAdapter.setNewData(thirdBookData.list);
+                    mAdapter.loadMoreComplete();
                 }
             } else {
-                mAdapter.loadMoreFail();
+                mAdapter.setNewData(data.list);
+            }
+            if (mAdapter.getData().size() == 0) {
+                mEmptyView.setVisibility(View.VISIBLE);
             }
         });
         mViewModel.mRefreshData.observe(this, aBoolean -> {
@@ -202,7 +197,6 @@ public class ThirdWebsiteActivity extends BaseActivity {
             mAdapter.setEnableLoadMore(!aBoolean);
         });
         mViewModel.loadData(mCheckedName);
-
     }
 
     @Override
@@ -217,7 +211,7 @@ public class ThirdWebsiteActivity extends BaseActivity {
         /*if (id == R.id.menu_website_source) {
             showSearchTypeWindow();
         } else */
-        if (id == R.id.menu_filtrate) {
+        if (id == R.id.action_filtrate) {
             if (!mDrawerLayout.isDrawerOpen(mEndDraView)) {
                 mDrawerLayout.openDrawer(mEndDraView);
             }

@@ -29,7 +29,7 @@ public class HtmlParse4 extends HtmlParse {
     public List<Entities.Chapters> parseChapters(String readUrl) {
         try {
             trustEveryone();
-            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(10000).get();
+            Document document = Jsoup.connect(readUrl).userAgent(USER_AGENT).timeout(30000).get();
             if (readUrl.contains("kenshu.cc")) {
                 Element body = document.body();
                 Elements all = body.select("div.bookbtn-txt");
@@ -38,7 +38,7 @@ public class HtmlParse4 extends HtmlParse {
                     String host = AppUtils.getHostFromUrl(readUrl);
                     String preUrl = readUrl.substring(0, readUrl.lastIndexOf(host) + host.length());
                     readUrl = preUrl + a.attr("href");
-                    document = Jsoup.connect(readUrl).timeout(10000).get();
+                    document = Jsoup.connect(readUrl).timeout(30000).get();
                 }
             }
             if (readUrl.endsWith("index.html")) {

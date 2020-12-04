@@ -36,10 +36,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         int NO_CONTENT = 3;
     }
 
-    private ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
-    private BookProvider.LocalBook mBook;
+    private final ExecutorService mSinglePool = Executors.newSingleThreadExecutor();
+    private final BookProvider.LocalBook mBook;
     private List<Entities.Chapters> mChaptersList;
-    private LruCache<String, ChapterBuffer> mCacheChapterBuffers = new LruCache<>(3);
+    private final LruCache<String, ChapterBuffer> mCacheChapterBuffers = new LruCache<>(3);
     private int mMaxLineCount;
     private Paint mPaint;
     private int mTextViewWidth;
@@ -125,19 +125,16 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                     return;
                 }
                 if (mBook.isBookshelf()) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0, size = mChaptersList.size(); i < size; i++) {
-                                Entities.Chapters chapters = mChaptersList.get(i);
-                                chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
-                            }
-                            if (mBook.isBaiduBook) {
-                                mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
-                                BookProvider.insertOrUpdate(mBook, true);
-                            }
-                            AppSettings.saveChapterList(mBook._id, mChaptersList);
+                    new Thread(() -> {
+                        for (int i = 0, size = mChaptersList.size(); i < size; i++) {
+                            Entities.Chapters chapters = mChaptersList.get(i);
+                            chapters.hasLocal = FileUtils.hasCacheChapter(mBook._id, i);
                         }
+                        if (mBook.isBaiduBook) {
+                            mBook.lastChapter = mChaptersList.get(mChaptersList.size() - 1).title;
+                            BookProvider.insertOrUpdate(mBook, true);
+                        }
+                        AppSettings.saveChapterList(mBook._id, mChaptersList);
                     }).start();
                 }
                 initChaptersList();
@@ -253,21 +250,18 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
         mPaint = paint;
         mTextViewWidth = width;
         Log.i(TAG, "setTextViewParams::" + mMaxLineCount + "," + mPaint.getTextSize());
-        mSinglePool.execute(new Runnable() {
-            @Override
-            public void run() {
-                ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
-                for (Map.Entry<String, ChapterBuffer> entry : mCacheChapterBuffers.snapshot().entrySet()) {
-                    if (entry != null && entry.getValue() != null) {
-                        entry.getValue().calcPageLines(mMaxLineCount, mPaint, mTextViewWidth);
-                    }
+        mSinglePool.execute(() -> {
+            ChapterBuffer curBuffer = mCacheChapterBuffers.get(getKey(mCurChapter));
+            for (Map.Entry<String, ChapterBuffer> entry : mCacheChapterBuffers.snapshot().entrySet()) {
+                if (entry != null && entry.getValue() != null) {
+                    entry.getValue().calcPageLines(mMaxLineCount, mPaint, mTextViewWidth);
                 }
-                if (curBuffer != null && curBuffer.getPageCount() > 0 && pageLines != null) {
-                    int curChapterPageCount = curBuffer.getPageCount();
-                    if (curChapterPageCount > 0) {
-                        PageLines curPageLine = curBuffer.getPageForReadPos(pageLines.startPos);
-                        preparePageContents(curBuffer, mCurChapter, curPageLine, curChapterPageCount);
-                    }
+            }
+            if (curBuffer != null && curBuffer.getPageCount() > 0 && pageLines != null) {
+                int curChapterPageCount = curBuffer.getPageCount();
+                if (curChapterPageCount > 0) {
+                    PageLines curPageLine = curBuffer.getPageForReadPos(pageLines.startPos);
+                    preparePageContents(curBuffer, mCurChapter, curPageLine, curChapterPageCount);
                 }
             }
         });
@@ -290,13 +284,10 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             return;
         }
         mCurChapter = chapter;
-        mSinglePool.execute(new Runnable() {
-            @Override
-            public void run() {
-                showLoadChapterPage(item, chapter);
-                AppSettings.saveReadProgress(mBook._id, chapter, 0);
-                loadReadProgress(item);
-            }
+        mSinglePool.execute(() -> {
+            showLoadChapterPage(item, chapter);
+            AppSettings.saveReadProgress(mBook._id, chapter, 0);
+            loadReadProgress(item);
         });
     }
 
@@ -406,12 +397,9 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
                 return;
             }
             final int newItem = showLoading(item, pageContent);
-            mSinglePool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
-                    loadReadProgress(newItem, true);
-                }
+            mSinglePool.execute(() -> {
+                AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
+                loadReadProgress(newItem, true);
             });
         }
     }
@@ -444,32 +432,26 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
             }
             final int newItem = showLoading(item, pageContent);
             Log.i(TAG, "loadNextPage:newItem = " + newItem);
-            mSinglePool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
-                    loadReadProgress(newItem);
-                }
+            mSinglePool.execute(() -> {
+                AppSettings.saveReadProgress(mBook._id, mCurChapter, 0);
+                loadReadProgress(newItem);
             });
         }
     }
 
     @Override
     public void loadAllSource() {
-        ZhuiShuSQApi.getPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
-                if (list != null) {
-                    Iterator<Entities.BookSource> iter = list.iterator();
-                    while (iter.hasNext()) {
-                        Entities.BookSource source = iter.next();
-                        if (ZhuiShuSQApi.IGNORE_HOST.equals(source.host)) {
-                            iter.remove();
-                        }
+        ZhuiShuSQApi.getPool().execute(() -> {
+            List<Entities.BookSource> list = ZhuiShuSQApi.getBookSource(mBook._id);
+            if (list != null) {
+                Iterator<Entities.BookSource> iter = list.iterator();
+                while (iter.hasNext()) {
+                    Entities.BookSource source = iter.next();
+                    if (ZhuiShuSQApi.IGNORE_HOST.equals(source.host)) {
+                        iter.remove();
                     }
-                    updateBookSource(list);
                 }
+                updateBookSource(list);
             }
         });
     }
@@ -676,34 +658,25 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     }
 
     private void initChaptersList() {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.initChapterList(mChaptersList);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.initChapterList(mChaptersList);
             }
         });
     }
 
     private void updateBookSource(final List<Entities.BookSource> list) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onUpdateSource(list);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onUpdateSource(list);
             }
         });
     }
 
     private void updatePages(final PageContent[] pageContents) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onUpdatePages(pageContents);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onUpdatePages(pageContents);
             }
         });
     }

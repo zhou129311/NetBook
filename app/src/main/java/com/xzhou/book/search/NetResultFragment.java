@@ -115,17 +115,13 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         mAdapter.bindToRecyclerView(mRecyclerView);
         mHeaderView = inflater.inflate(R.layout.header_search_loading, null);
         mHeaderTv = mHeaderView.findViewById(R.id.search_load_tv);
-        mHeaderView.findViewById(R.id.stop_search_tv).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mHeaderTv.setText("正在结束搜索...");
-                mPresenter.cancel();
-            }
+        mHeaderView.findViewById(R.id.stop_search_tv).setOnClickListener(v -> {
+            mHeaderTv.setText("正在结束搜索...");
+            mPresenter.cancel();
         });
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addItemDecoration(new LineItemDecoration());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         loadUrl();
     }
 
@@ -290,10 +286,12 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
     @Override
     public void onLoadingState(boolean loading) {
         if (!loading) {
-            mAdapter.setEmptyView(mEmptyView);
 //            mRecyclerView.setVisibility(View.VISIBLE);
 //            mWebView.setVisibility(View.GONE);
             hideSearchLoading();
+            if (mAdapter.getData().isEmpty()) {
+                mAdapter.setEmptyView(mEmptyView);
+            }
         } else {
 //            mWebView.setVisibility(View.VISIBLE);
 //            mRecyclerView.setVisibility(View.GONE);
@@ -343,6 +341,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         if (mIsAddHeader) {
             return;
         }
+        Log.i(TAG, "showSearchLoading");
         mIsAddHeader = true;
         mAdapter.addHeaderView(mHeaderView);
     }
@@ -351,6 +350,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         if (!mIsAddHeader) {
             return;
         }
+        Log.i(TAG, "hideSearchLoading");
         mIsAddHeader = false;
         mAdapter.removeHeaderView(mHeaderView);
     }

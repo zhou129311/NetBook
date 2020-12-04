@@ -70,7 +70,7 @@ public class BaiduSearch extends JsoupSearch {
             key = URLEncoder.encode(key, "gb2312");
             String url = "http://www.baidu.com.cn/s?wd=" + key + "&cl=3";
 //            Document document = Jsoup.parse(OkHttpUtils.getPcRel(url).body().string());
-            Document document = Jsoup.connect(url).userAgent(UA).cookies(getCookies()).timeout(10000).get();
+            Document document = Jsoup.connect(url).userAgent(UA).cookies(getCookies()).timeout(30000).get();
 //            logi("document = " + document.html());
             Element body = document.body();
             Elements page = body.select("div#page");
@@ -95,7 +95,7 @@ public class BaiduSearch extends JsoupSearch {
                 if (mCancel) {
                     break;
                 }
-                Document pageDocument = Jsoup.connect(pageUrl).userAgent(UA).cookies(getCookies()).timeout(10000).get();
+                Document pageDocument = Jsoup.connect(pageUrl).userAgent(UA).cookies(getCookies()).timeout(30000).get();
                 List<SearchModel.SearchBook> list2 = getBookListForDocument(pageDocument);
                 if (list2 != null) {
                     bookList.addAll(list2);

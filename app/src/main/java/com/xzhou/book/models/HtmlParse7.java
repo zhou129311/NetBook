@@ -78,7 +78,7 @@ public class HtmlParse7 extends HtmlParse {
                     "&special=0&maxFreeChapterId=0&isMonthly=0&authorinfot=" + authorinfot;
             document = Jsoup.connect(chapUrl).userAgent(USER_AGENT).cookies(cookies)
                     .header("Referer", readUrl)
-                    .timeout(15000).get();
+                    .timeout(60000).get();
             Elements eList = document.select("ul.catalog-list").select(".cl");
 //            logi(document.html());
             for (Element e : eList) {
@@ -87,7 +87,7 @@ public class HtmlParse7 extends HtmlParse {
                     Elements a = c.getElementsByTag("a");
                     String title = a.html();
                     String link = "https://www.xxsy.net" + a.attr("href");
-                    Log.i(TAG, "link : " + link);
+//                    Log.i(TAG, "link : " + link);
                     list.add(new Entities.Chapters(title, link));
                 }
             }

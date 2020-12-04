@@ -1638,11 +1638,14 @@ public class Entities {
         }
     }
 
-    public static class ThirdBookData implements Serializable {
-        private static final long serialVersionUID = -7613650711016024906L;
+    public static class ThirdBookData {
         public int pageCount = 1;
         public int pageCurrent = 0;
         public List<SearchModel.SearchBook> list;
+
+        public boolean isLoadMore() {
+            return pageCurrent > 1;
+        }
 
         @Override
         public String toString() {
@@ -1663,7 +1666,8 @@ public class Entities {
         public String lastUpdate;
         public String lastChapter;
         public String intro;
-        public List<Pair<String, String>> list = new ArrayList<>();;
+        public List<Pair<String, String>> list = new ArrayList<>();
+        ;
 
         @Override
         public String toString() {

@@ -87,7 +87,7 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
 
     @Override
     public void cancel() {
-        updateLoadingState(false);
+//        updateLoadingState(false);
         for (JsoupSearch search : mSearchList) {
             search.setCancel(true);
         }

@@ -101,16 +101,13 @@ public class TabActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.menu_filtrate:
-        case R.id.menu_post_sort:
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_filtrate || itemId == R.id.menu_post_sort) {
             showPopupWindow(item);
             return true;
-        case R.id.menu_create_list:
-
+        } else if (itemId == R.id.menu_create_list) {
             return true;
-        case R.id.menu_user_list:
-
+        } else if (itemId == R.id.menu_user_list) {
             return true;
         }
         return super.onOptionsItemSelected(item);

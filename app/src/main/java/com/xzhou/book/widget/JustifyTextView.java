@@ -10,8 +10,6 @@ import android.util.TypedValue;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
-import com.xzhou.book.utils.AppUtils;
-
 import java.util.List;
 
 public class JustifyTextView extends AppCompatTextView {
