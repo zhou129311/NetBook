@@ -105,6 +105,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/common_divider_narrow"/>
+
+            <com.xzhou.book.widget.SettingItemView
+                android:id="@+id/crash_view"
+                style="@style/SettingItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="Crash日志记录"
+                app:valueText="0次"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/common_divider_narrow"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

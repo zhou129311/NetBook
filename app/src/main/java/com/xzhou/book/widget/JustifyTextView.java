@@ -6,6 +6,7 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.appcompat.widget.AppCompatTextView;
@@ -40,6 +41,9 @@ public class JustifyTextView extends AppCompatTextView {
 
     public void setLines(List<String> lines) {
         mLines = lines;
+        if(mLines != null) {
+            Log.d("zx",mLines.toString().replace(", ",""));
+        }
         invalidate();
     }
 

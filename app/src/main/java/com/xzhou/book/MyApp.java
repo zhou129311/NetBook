@@ -26,6 +26,7 @@ public class MyApp extends Application {
         BookManager.get().init();
         AppSettings.init();
         ThemeUtils.init();
+        CrashHandler.getInstance().init(this);
     }
 
     @Override

@@ -10,6 +10,8 @@ import com.xzhou.book.utils.Log;
 import com.xzhou.book.utils.ToastUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +36,17 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
             mCacheSize = FileUtils.getFolderSize(mCachePath) + FileUtils.getFolderSize(mFilePath);
             String value = Formatter.formatFileSize(MyApp.getContext(), mCacheSize);
             updateCacheSize(value);
+            File filesDirs = MyApp.getContext().getFilesDir();
+            File[] crash = filesDirs.listFiles();
+            List<File> list = new ArrayList<>();
+            if (crash != null && crash.length > 0) {
+                for (File cf : crash) {
+                    if (cf.isFile() && cf.getName().contains("crash")) {
+                        list.add(cf);
+                    }
+                }
+            }
+            updateCrashFile(list);
         });
         return super.start();
     }
@@ -50,7 +63,7 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
             File[] books = bookDir.listFiles();
             if (books != null) {
                 for (File file : books) {
-                    if(file != null){
+                    if (file != null) {
                         String bookId = file.getName();
                         AppSettings.deleteChapterList(bookId);
                     }
@@ -77,6 +90,14 @@ public class SettingPresenter extends BasePresenter<SettingContract.View> implem
         MyApp.runUI(() -> {
             if (mView != null) {
                 mView.onCacheLoading();
+            }
+        });
+    }
+
+    private void updateCrashFile(List<File> list) {
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.updateCrashFiles(list);
             }
         });
     }
