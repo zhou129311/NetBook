@@ -105,7 +105,11 @@ public class ThirdBookDetailActivity extends BaseActivity {
         mViewModel.mData.observe(this, thirdBookDetail -> {
             if (thirdBookDetail != null) {
                 ViewGroup parent = (ViewGroup) mPlaceView.getParent();
-                parent.removeView(mPlaceView);
+                if (parent != null) {
+                    parent.removeView(mPlaceView);
+                } else {
+                    mPlaceView.setVisibility(View.GONE);
+                }
                 initViewData(thirdBookDetail);
             } else {
                 mLoadView.setVisibility(View.GONE);

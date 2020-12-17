@@ -370,6 +370,9 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             if (!TextUtils.isEmpty(item.author)) {
                 sub = item.author + " | " + sub;
             }
+            if (!TextUtils.isEmpty(item.latestChapterName)) {
+                sub = item.latestChapterName + "\n" + sub;
+            }
             boolean support = SearchModel.hasSupportLocalRead(item.sourceHost);
             holder.setRoundImageUrl(R.id.book_image, item.image, R.mipmap.ic_cover_default)
                     .setText(R.id.book_title, item.bookName)

@@ -1,7 +1,6 @@
 package com.xzhou.book.main;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -112,56 +111,32 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
         if (id == R.id.book_sort_view) {
             ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
             builder.setTitle(R.string.bookshelf_sort_dialog)
-                    .setSingleChoiceItems(mSortItems, AppSettings.getBookshelfOrder(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            AppSettings.saveBookshelfOrder(which);
-                            mBookSortView.setValue(mSortItems[which]);
-                            BookManager.get().reloadList();
-                            dialog.dismiss();
-                        }
+                    .setSingleChoiceItems(mSortItems, AppSettings.getBookshelfOrder(), (dialog, which) -> {
+                        AppSettings.saveBookshelfOrder(which);
+                        mBookSortView.setValue(mSortItems[which]);
+                        BookManager.get().reloadList();
+                        dialog.dismiss();
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else if (id == R.id.book_read_dl_view) {
             ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
             builder.setTitle(R.string.download_read_book)
-                    .setSingleChoiceItems(mCacheItems, AppSettings.getReadCacheMode(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            AppSettings.saveReadCacheMode(which);
-                            mBookReadDlView.setValue(mCacheItems[which]);
-                            dialog.dismiss();
-                        }
+                    .setSingleChoiceItems(mCacheItems, AppSettings.getReadCacheMode(), (dialog, which) -> {
+                        AppSettings.saveReadCacheMode(which);
+                        mBookReadDlView.setValue(mCacheItems[which]);
+                        dialog.dismiss();
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else if (id == R.id.clear_cache_view) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
             builder.setTitle(R.string.clear_cache_dialog_title)
                     .setMessage(R.string.clear_cache_dialog_message)
-                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            mPresenter.clearCache();
-                            mClearCacheView.setEnabled(false);
-                        }
+                    .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                        dialog.dismiss();
+                        mPresenter.clearCache();
+                        mClearCacheView.setEnabled(false);
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else if (id == R.id.sleep_time_view) {
             ItemDialog.Builder builder = new ItemDialog.Builder(mActivity);
             builder.setTitle(R.string.sleep_time)
@@ -182,12 +157,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
                         mSleepTimeView.setValue(mSleepItems[which]);
                         dialog.dismiss();
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss()).show();
         } else if (id == R.id.crash_view) {
             if (mCrashFiles == null || mCrashFiles.size() == 0) {
                 return;
@@ -212,6 +182,14 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
                             ToastUtils.showShortToast("没有找到可以打开该文件的应用");
                         }
 
+                    })
+                    .setNegativeButton("删除全部", (dialog, which) -> {
+                        for (int i = 0; i < mCrashFiles.size(); i++) {
+                            mCrashFiles.get(i).delete();
+                        }
+                        mCrashFiles.clear();
+                        mCrashView.setValue("0");
+                        dialog.dismiss();
                     }).show();
         }
     }
@@ -244,7 +222,7 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
     public void updateCrashFiles(List<File> list) {
         mCrashFiles = list;
         if (list != null && list.size() > 0) {
-            mCrashView.setValue(list.size() + "次");
+            mCrashView.setValue(list.size() + "");
         }
     }
 

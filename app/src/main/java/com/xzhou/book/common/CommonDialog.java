@@ -54,7 +54,7 @@ public class CommonDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if (null == mOnCallDialog) {
-            super.onCreateDialog(savedInstanceState);
+            return super.onCreateDialog(savedInstanceState);
         }
         return mOnCallDialog.getDialog(getActivity());
     }

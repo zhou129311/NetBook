@@ -27,6 +27,16 @@
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:divider="@null"/>
+
+    <TextView
+        android:id="@+id/cancel_tv"
+        style="@style/DialogBtnText"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/touch_bg"
+        android:text="@string/cancel"
+        android:layout_gravity="end"
+        android:textColor="@color/common_h1"/>
 </LinearLayout>

@@ -106,6 +106,12 @@ public class ItemDialog extends AppCompatDialog {
             return this;
         }
 
+        public Builder setNegativeButton(String text, final OnClickListener listener) {
+            mNegativeButtonText = text;
+            mNegativeButtonListener = listener;
+            return this;
+        }
+
         private ItemDialog createSingleChoice() {
             final ItemDialog dialog = new ItemDialog(mContext);
             dialog.mIsSingleChoice = true;
@@ -119,12 +125,9 @@ public class ItemDialog extends AppCompatDialog {
                 dialog.mTitleView.setText(mTitle);
             }
             dialog.mCancelTv = dialog.mView.findViewById(R.id.cancel_tv);
-            dialog.mCancelTv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mNegativeButtonListener != null) {
-                        mNegativeButtonListener.onClick(dialog, Dialog.BUTTON_NEGATIVE);
-                    }
+            dialog.mCancelTv.setOnClickListener(v -> {
+                if (mNegativeButtonListener != null) {
+                    mNegativeButtonListener.onClick(dialog, Dialog.BUTTON_NEGATIVE);
                 }
             });
             if (mNegativeButtonText != null) {
@@ -134,12 +137,9 @@ public class ItemDialog extends AppCompatDialog {
             }
             dialog.mListView = dialog.mView.findViewById(R.id.list_view);
             dialog.mListView.setChoiceMode(CHOICE_MODE_SINGLE);
-            dialog.mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (mOnClickListener != null) {
-                        mOnClickListener.onClick(dialog, position);
-                    }
+            dialog.mListView.setOnItemClickListener((parent, view, position, id) -> {
+                if (mOnClickListener != null) {
+                    mOnClickListener.onClick(dialog, position);
                 }
             });
             dialog.mAdapter = new Adapter(mItems, mInflater, true);
@@ -165,15 +165,23 @@ public class ItemDialog extends AppCompatDialog {
             if (mTitle != null) {
                 dialog.mTitleView.setText(mTitle);
             }
+            dialog.mCancelTv = dialog.mView.findViewById(R.id.cancel_tv);
+            dialog.mCancelTv.setOnClickListener(v -> {
+                if (mNegativeButtonListener != null) {
+                    mNegativeButtonListener.onClick(dialog, Dialog.BUTTON_NEGATIVE);
+                }
+            });
+            if (mNegativeButtonText != null) {
+                dialog.mCancelTv.setText(mNegativeButtonText);
+            } else {
+                dialog.mCancelTv.setVisibility(View.GONE);
+            }
             dialog.mAdapter = new Adapter(mItems, mInflater, false);
             dialog.mListView = dialog.mView.findViewById(R.id.list_view);
             dialog.mListView.setAdapter(dialog.mAdapter);
-            dialog.mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if (mOnClickListener != null) {
-                        mOnClickListener.onClick(dialog, position);
-                    }
+            dialog.mListView.setOnItemClickListener((parent, view, position, id) -> {
+                if (mOnClickListener != null) {
+                    mOnClickListener.onClick(dialog, position);
                 }
             });
             View decorView = ((Activity) mContext).getWindow().getDecorView();
