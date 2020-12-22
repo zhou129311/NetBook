@@ -460,7 +460,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     public void destroy() {
         super.destroy();
         mPaint = null;
-        mSinglePool.shutdownNow();
     }
 
     private void preparePageContents(ChapterBuffer curBuffer, int chapter, PageLines curPageLine, int curChapterPageCount) {

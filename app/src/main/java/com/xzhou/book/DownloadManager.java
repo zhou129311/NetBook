@@ -33,7 +33,7 @@ public class DownloadManager {
     };
 
     private static DownloadManager sInstance;
-    private ExecutorService mPool = Executors.newSingleThreadExecutor();
+    private final ExecutorService mPool = Executors.newSingleThreadExecutor();
     private final Map<String, List<DownloadCallback>> mCallbackMap = new HashMap<>();
     private final Map<String, Download> mDownloadMap = new HashMap<>();
 
@@ -119,56 +119,53 @@ public class DownloadManager {
             notifyStart(bookId);
         }
         mDownloadMap.put(bookId, download);
-        mPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (download.valid() && !download.isPause) {
-                    int error = ERROR_NONE;
-                    int fail = 0;
-                    int exist = 0;
-                    HtmlParse parse = null;
-                    if (!TextUtils.isEmpty(download.host)) {
-                        parse = HtmlParseFactory.getHtmlParse(download.host);
+        mPool.execute(() -> {
+            if (download.valid() && !download.isPause) {
+                int error = ERROR_NONE;
+                int fail = 0;
+                int exist = 0;
+                HtmlParse parse = null;
+                if (!TextUtils.isEmpty(download.host)) {
+                    parse = HtmlParseFactory.getHtmlParse(download.host);
+                }
+                for (int i = download.start; i < download.end; i++) {
+                    if (download.isPause) {
+                        break;
                     }
-                    for (int i = download.start; i < download.end; i++) {
-                        if (download.isPause) {
-                            break;
-                        }
-                        Entities.Chapters chapter = download.list.get(i);
-                        if (!FileUtils.hasCacheChapter(bookId, i)) {
-                            Entities.ChapterRead data;
-                            if (parse != null) {
-                                data = parse.parseChapterRead(chapter.link);
-                            } else {
-                                data = ZhuiShuSQApi.getChapterRead(chapter.link);
-                            }
-                            if (data != null && data.chapter != null && data.chapter.body != null) {
-                                File file = FileUtils.getChapterFile(bookId, i);
-                                String body = AppUtils.formatContent(data.chapter.body);
-                                FileUtils.writeFile(file.getAbsolutePath(), body, false);
-                                chapter.hasLocal = true;
-                            } else {
-                                fail++;
-                                if (!AppUtils.isNetworkAvailable()) {
-                                    error = ERROR_NO_NETWORK;
-                                    break;
-                                }
-                            }
+                    Entities.Chapters chapter = download.list.get(i);
+                    if (!FileUtils.hasCacheChapter(bookId, i)) {
+                        Entities.ChapterRead data;
+                        if (parse != null) {
+                            data = parse.parseChapterRead(chapter.link);
                         } else {
-                            exist++;
-                            chapter.hasLocal = true;
+                            data = ZhuiShuSQApi.getChapterRead(chapter.link);
                         }
-                        if (download.isNotify) {
-                            if ((i + 1) - exist > 0) {
-                                notifyProgress(bookId, i + 1, download.list.size());
+                        if (data != null && data.chapter != null && data.chapter.body != null) {
+                            File file = FileUtils.getChapterFile(bookId, i);
+                            String body = AppUtils.formatContent(data.chapter.body);
+                            FileUtils.writeFile(file.getAbsolutePath(), body, false);
+                            chapter.hasLocal = true;
+                        } else {
+                            fail++;
+                            if (!AppUtils.isNetworkAvailable()) {
+                                error = ERROR_NO_NETWORK;
+                                break;
                             }
                         }
+                    } else {
+                        exist++;
+                        chapter.hasLocal = true;
                     }
-                    AppSettings.saveChapterList(bookId, download.list);
-                    mDownloadMap.remove(bookId);
                     if (download.isNotify) {
-                        notifyEnd(bookId, fail, error);
+                        if ((i + 1) - exist > 0) {
+                            notifyProgress(bookId, i + 1, download.list.size());
+                        }
                     }
+                }
+                AppSettings.saveChapterList(bookId, download.list);
+                mDownloadMap.remove(bookId);
+                if (download.isNotify) {
+                    notifyEnd(bookId, fail, error);
                 }
             }
         });

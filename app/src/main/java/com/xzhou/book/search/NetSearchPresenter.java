@@ -107,7 +107,6 @@ public class NetSearchPresenter extends BasePresenter<NetSearchContract.View> im
     public void destroy() {
         super.destroy();
         AutoParseNetBook.setItemCallback(null);
-        mPool.shutdown();
         for (JsoupSearch search : mSearchList) {
             search.setProgressCallback(null);
             search.setUrlCallback(null);

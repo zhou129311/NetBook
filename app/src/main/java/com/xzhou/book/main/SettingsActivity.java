@@ -183,14 +183,14 @@ public class SettingsActivity extends BaseActivity<SettingContract.Presenter> im
                         }
 
                     })
-                    .setNegativeButton("删除全部", (dialog, which) -> {
+                    /*.setNegativeButton("删除全部", (dialog, which) -> {
                         for (int i = 0; i < mCrashFiles.size(); i++) {
                             mCrashFiles.get(i).delete();
                         }
                         mCrashFiles.clear();
                         mCrashView.setValue("0");
                         dialog.dismiss();
-                    }).show();
+                    })*/.show();
         }
     }
 
