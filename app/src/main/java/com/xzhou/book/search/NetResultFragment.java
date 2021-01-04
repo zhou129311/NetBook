@@ -131,20 +131,15 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
             Dialog dialog = builder.setTitle("是否保存该搜索结果？")
                     .setMessage("保存后再次搜索该书名时可以直接显示该结果。")
-                    .setPositiveButton("保存", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            AppSettings.saveSearchList(mKey, list);
-                            getActivity().finish();
-                        }
+                    .setPositiveButton("保存", (dialog12, which) -> {
+                        dialog12.dismiss();
+                        AppSettings.saveSearchList(mKey, list);
+                        getActivity().finish();
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            getActivity().finish();
-                        }
+                    .setNegativeButton(R.string.cancel, (dialog1, which) -> {
+                        dialog1.dismiss();
+                        AppSettings.deleteSearchList(mKey);
+                        getActivity().finish();
                     })
                     .create();
             dialog.show();

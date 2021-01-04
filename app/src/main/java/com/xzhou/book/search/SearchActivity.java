@@ -147,25 +147,17 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
                 }
             }
         });
-        mSearchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    mKey = mSearchEt.getText().toString();
-                    if (!TextUtils.isEmpty(mKey)) {
-                        search(mKey);
-                    }
-                    return true;
+        mSearchEt.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                mKey = mSearchEt.getText().toString();
+                if (!TextUtils.isEmpty(mKey)) {
+                    search(mKey);
                 }
-                return false;
+                return true;
             }
+            return false;
         });
-        getHistoryFragment().setOnHistoryListener(new HistoryFragment.OnHistoryListener() {
-            @Override
-            public void onClick(String history) {
-                search(history);
-            }
-        });
+        getHistoryFragment().setOnHistoryListener(history -> search(history));
     }
 
     @Override
@@ -440,38 +432,35 @@ public class SearchActivity extends BaseActivity<SearchContract.Presenter> imple
                 tag1.setVisibility(View.GONE);
                 tag2.setVisibility(View.GONE);
             }
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Entities.TabData data = null;
-                    if (item.isTag()) {
-                        data = new Entities.TabData();
-                        data.title = item.text;
-                        data.source = Constant.TabSource.SOURCE_TAG;
-                        data.params = new String[]{item.text};
-                    } else if (item.isAuthor()) {
-                        data = new Entities.TabData();
-                        data.title = item.text;
-                        data.source = Constant.TabSource.SOURCE_AUTHOR;
-                        data.params = new String[]{data.title};
-                    } else if (item.isCat()) {
-                        data = new Entities.TabData();
-                        data.title = item.text;
-                        data.source = Constant.TabSource.SOURCE_CATEGORY_SUB;
-                        data.params = new String[]{item.major, item.gender};
-                        if (item.minors != null && item.minors.size() > 0) {
-                            List<String> filtrates = new ArrayList<>();
-                            filtrates.add(item.major);
-                            filtrates.addAll(item.minors);
-                            data.filtrate = filtrates.toArray(new String[0]);
-                            data.curFiltrate = filtrates.indexOf(item.text);
-                        }
-                    } else if (!TextUtils.isEmpty(item.id)) {
-                        BookDetailActivity.startActivity(mActivity, item.id);
+            holder.itemView.setOnClickListener(v -> {
+                Entities.TabData data = null;
+                if (item.isTag()) {
+                    data = new Entities.TabData();
+                    data.title = item.text;
+                    data.source = Constant.TabSource.SOURCE_TAG;
+                    data.params = new String[]{item.text};
+                } else if (item.isAuthor()) {
+                    data = new Entities.TabData();
+                    data.title = item.text;
+                    data.source = Constant.TabSource.SOURCE_AUTHOR;
+                    data.params = new String[]{data.title};
+                } else if (item.isCat()) {
+                    data = new Entities.TabData();
+                    data.title = item.text;
+                    data.source = Constant.TabSource.SOURCE_CATEGORY_SUB;
+                    data.params = new String[]{item.major, item.gender};
+                    if (item.minors != null && item.minors.size() > 0) {
+                        List<String> filtrates = new ArrayList<>();
+                        filtrates.add(item.major);
+                        filtrates.addAll(item.minors);
+                        data.filtrate = filtrates.toArray(new String[0]);
+                        data.curFiltrate = filtrates.indexOf(item.text);
                     }
-                    if (data != null) {
-                        TabActivity.startActivity(mActivity, data);
-                    }
+                } else if (!TextUtils.isEmpty(item.id)) {
+                    BookDetailActivity.startActivity(mActivity, item.id);
+                }
+                if (data != null) {
+                    TabActivity.startActivity(mActivity, data);
                 }
             });
         }

@@ -3,7 +3,6 @@ package com.xzhou.book.models;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.xzhou.book.net.OkHttpUtils;
 import com.xzhou.book.utils.Log;
 
 import org.jsoup.Jsoup;

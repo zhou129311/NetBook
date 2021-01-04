@@ -157,7 +157,7 @@ public class ThirdBookDetailActivity extends BaseActivity {
     }
 
     private void initViewData(Entities.ThirdBookDetail detail) {
-        ImageLoader.showRoundImageUrl(this, detailBookImg, detail.image, R.mipmap.ic_cover_default);
+        ImageLoader.showRoundImageUrl(this, detailBookImg, mSearchBook.image, R.mipmap.ic_cover_default);
         detailBookTitle.setText(detail.title);
         detailBookAuthor.setText(detail.author);
         Adapter adapter = new Adapter(detail.list);

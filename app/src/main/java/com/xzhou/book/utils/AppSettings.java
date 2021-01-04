@@ -347,6 +347,10 @@ public class AppSettings {
         }
     }
 
+    public static void deleteSearchList(String key) {
+        SPUtils.get().delete(key);
+    }
+
     public static List<SearchModel.SearchBook> getSearchList(String key) {
         List<SearchModel.SearchBook> relsut = null;
         String listStr = SPUtils.get().getSearchString(key);
