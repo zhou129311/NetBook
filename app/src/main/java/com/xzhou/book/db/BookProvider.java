@@ -426,12 +426,7 @@ public class BookProvider {
             String where = COLUMN_ID + "=?";
             String[] args = new String[]{bookId};
             MyApp.getContext().getContentResolver().delete(BookProviderImpl.BOOKSHELF_CONTENT_URI, where, args);
-            MyApp.runUI(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_remove_the_book_shelf, title));
-                }
-            });
+            MyApp.runUI(() -> ToastUtils.showShortToast(AppUtils.getString(R.string.book_detail_has_remove_the_book_shelf, title)));
             DownloadManager.get().pauseDownload(bookId);
             if (deleteCache) {
                 AppUtils.deleteBookCache(bookId);

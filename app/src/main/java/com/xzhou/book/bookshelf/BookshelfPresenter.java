@@ -215,12 +215,7 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
                     DownloadManager.get().startDownload(localBook._id, download);
                     if (localBook.checkAddDownloadCallback()) {
                         updateDownloadStatus(localBook);
-                        localBook.setUpdateDownloadStateListener(new BookProvider.LocalBook.UpdateDownloadStateListener() {
-                            @Override
-                            public void onUpdate() {
-                                updateDownloadStatus(localBook);
-                            }
-                        });
+                        localBook.setUpdateDownloadStateListener(() -> updateDownloadStatus(localBook));
                     }
                 } else {
                     localBook.downloadStatus = AppUtils.getString(R.string.book_read_download_error_topic);
@@ -232,97 +227,71 @@ public class BookshelfPresenter extends BasePresenter<BookshelfContract.View> im
 
     @Override
     public void login(final String openId, final String token, final String loginType) {
-        ZhuiShuSQApi.getPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                Entities.Login login = ZhuiShuSQApi.login(openId, token, loginType);
-                if (login != null && login.user != null) {
-                    AppSettings.saveLogin(login);
-                } else {
+        ZhuiShuSQApi.getPool().execute(() -> {
+            Entities.Login login = ZhuiShuSQApi.login(openId, token, loginType);
+            if (login != null && login.user != null) {
+                AppSettings.saveLogin(login);
+            } else {
 
-                }
-                updateLogin(login);
             }
+            updateLogin(login);
         });
     }
 
     private void updateList(final List<BookProvider.LocalBook> list) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    if (list != null) {
-                        for (final BookProvider.LocalBook book : list) {
-                            if (book.checkAddDownloadCallback()) {
-                                updateDownloadStatus(book);
-                                book.setUpdateDownloadStateListener(new BookProvider.LocalBook.UpdateDownloadStateListener() {
-                                    @Override
-                                    public void onUpdate() {
-                                        updateDownloadStatus(book);
-                                    }
-                                });
-                            }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                if (list != null) {
+                    for (final BookProvider.LocalBook book : list) {
+                        if (book.checkAddDownloadCallback()) {
+                            updateDownloadStatus(book);
+                            book.setUpdateDownloadStateListener(() -> updateDownloadStatus(book));
                         }
                     }
-                    mView.onLoadingState(false);
-                    mView.onDataChange(list);
                 }
+                mView.onLoadingState(false);
+                mView.onDataChange(list);
             }
         });
     }
 
     private void add(final int position, final BookProvider.LocalBook book) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onAdd(position, book);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onAdd(position, book);
             }
         });
     }
 
     private void delete(final BookProvider.LocalBook book) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onRemove(book);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onRemove(book);
             }
         });
     }
 
     private void updated(final boolean updated, final String error) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onLoadingState(false);
-                    mView.onBookshelfUpdated(updated, error);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onLoadingState(false);
+                mView.onBookshelfUpdated(updated, error);
             }
         });
     }
 
     private void updateDownloadStatus(final BookProvider.LocalBook localBook) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onUpdateDownloadState(localBook);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onUpdateDownloadState(localBook);
             }
         });
     }
 
     private void updateLogin(final Entities.Login login) {
-        MyApp.runUI(new Runnable() {
-            @Override
-            public void run() {
-                if (mView != null) {
-                    mView.onLogin(login);
-                }
+        MyApp.runUI(() -> {
+            if (mView != null) {
+                mView.onLogin(login);
             }
         });
     }

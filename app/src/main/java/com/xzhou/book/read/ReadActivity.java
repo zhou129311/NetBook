@@ -521,28 +521,19 @@ public class ReadActivity extends BaseActivity<ReadContract.Presenter> implement
         for (int i = 0; i < mPageManagers.length; i++) {
             final ReadPage page = new ReadPage(this);
             final int position = i;
-            page.setOnReloadListener(new ReadPage.OnReloadListener() {
-                @Override
-                public void onReload() {
-                    mPresenter.reloadCurPage(position, page.getPageContent());
-                }
-            });
+            page.setOnReloadListener(() -> mPresenter.reloadCurPage(position, page.getPageContent()));
             mPageManagers[i] = new ReadPageManager();
             mPageManagers[i].setReadPage(page);
         }
         final ReadPage page = mPageManagers[0].getReadPage();
-        page.setTextLayoutListener(new ReadPage.TextLayoutListener() {
-
-            @Override
-            public void onLayout(boolean isFirst) {
-                if (isFinishing() || isDestroyed()) {
-                    return;
-                }
-                Log.i(TAG, "onLayout::isFirst = " + isFirst);
-                relayoutPageContent();
-                if (isFirst) {
-                    mPresenter.start();
-                }
+        page.setTextLayoutListener(isFirst -> {
+            if (isFinishing() || isDestroyed()) {
+                return;
+            }
+            Log.i(TAG, "onLayout::isFirst = " + isFirst);
+            relayoutPageContent();
+            if (isFirst) {
+                mPresenter.start();
             }
         });
         mReadViewPager.setPageManagers(mPageManagers);

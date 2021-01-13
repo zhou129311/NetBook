@@ -459,7 +459,6 @@ public class ReadPresenter extends BasePresenter<ReadContract.View> implements R
     @Override
     public void destroy() {
         super.destroy();
-        mPaint = null;
     }
 
     private void preparePageContents(ChapterBuffer curBuffer, int chapter, PageLines curPageLine, int curChapterPageCount) {

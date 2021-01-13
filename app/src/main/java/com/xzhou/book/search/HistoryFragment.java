@@ -33,7 +33,7 @@ public class HistoryFragment extends BaseFragment {
 
     private OnHistoryListener mHistoryListener;
     private Adapter mAdapter;
-    private List<String> mList = new ArrayList<>();
+    private final List<String> mList = new ArrayList<>();
 
     public void setOnHistoryListener(OnHistoryListener listener) {
         mHistoryListener = listener;
@@ -73,7 +73,9 @@ public class HistoryFragment extends BaseFragment {
             if (mAdapter != null) {
                 mAdapter.notifyDataSetChanged();
             }
-            mClearHistoryTv.setEnabled(true);
+            if (mClearHistoryTv != null) {
+                mClearHistoryTv.setEnabled(true);
+            }
             AppSettings.saveHistory(mList);
         }
     }
