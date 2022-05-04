@@ -104,6 +104,9 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
         webSettings.setDatabasePath(dir);
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
         mWebView.setWebViewClient(mWebViewClient);
         mWebView.setWebChromeClient(mWebChromeClient);
 
@@ -185,6 +188,7 @@ public class NetResultFragment extends BaseFragment<NetSearchContract.Presenter>
             }
             Log.i(TAG, "mSearchUrl = " + mSearchUrl);
             if (mSearchUrl.equals(mWebView.getUrl())) {
+                mWebView.clearHistory();
                 mWebView.reload();
             } else {
                 mWebView.loadUrl(mSearchUrl);

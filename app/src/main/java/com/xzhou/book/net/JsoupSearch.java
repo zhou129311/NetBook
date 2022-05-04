@@ -32,7 +32,7 @@ import static com.xzhou.book.models.HtmlParse.USER_AGENT;
  * Change List:
  */
 public abstract class JsoupSearch {
-    public static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
+    public static final String UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.41 Safari/537.36 Edg/101.0.1210.32";
     String TAG;
 
     List<String> mPageUrlList;
@@ -133,7 +133,9 @@ public abstract class JsoupSearch {
     protected List<SearchModel.SearchBook> getBookListForDocument(Document document) {
         List<SearchModel.SearchBook> bookList = null;
         try {
-            Elements result = document.select("div.result").select(".c-container");
+            Elements result1 = document.select("div.result").select(".c-container").select(".xpath-log").select(".new-pmd");
+            Elements result = document.select("div.result-op").select(".c-container").select(".xpath-log").select(".new-pmd");
+            result1.addAll(result);
             logd("title=" + document.title() + ",result size=" + result.size());
             bookList = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
@@ -141,33 +143,55 @@ public abstract class JsoupSearch {
                     break;
                 }
                 Element e = result.get(i);
-                logi("result id=" + e.id());
-                Elements f13 = e.getElementsByClass("f13");
-                for (int j = 0; j < f13.size(); j++) {
-                    if (mCancel) {
-                        break;
-                    }
-                    Element child = f13.get(j);
-                    String title = child.getElementsByClass("c-tools").attr("data-tools");
-                    BaiduSearch.Title t = new Gson().fromJson(title, BaiduSearch.Title.class);
-                    if (t == null || t.title == null || t.title.contains("网盘")) {
+                //logi("result =" + e.toString());
+                String link = e.attr("mu");
+                if (TextUtils.isEmpty(link)) {
+                    continue;
+                }
+                logi("result link =" + link);
+                BaiduSearch.Title t = new BaiduSearch.Title();
+                t.title = document.title();
+                t.url = link;
+                SearchModel.SearchBook book = parseResult(t);
+                if (book != null && book.hasValid() && !mBookHosts.contains(book.sourceHost)) {
+                    if (urlInvalid(book.readUrl)) {
                         continue;
                     }
-                    SearchModel.SearchBook book = parseResult(t);
-                    if (book != null && book.hasValid() && !mBookHosts.contains(book.sourceHost)) {
-                        if (urlInvalid(book.readUrl)) {
-                            continue;
-                        }
-                        Log.i(TAG, "book = " + book);
-                        bookList.add(book);
-                        mCurSize += 1;
-                        mBookHosts.add(book.sourceHost);
-                        if (SearchModel.hasSupportLocalRead(book.sourceHost)) {
-                            mCurParseSize += 1;
-                            break;
-                        }
+                    Log.i(TAG, "book = " + book);
+                    bookList.add(book);
+                    mCurSize += 1;
+                    mBookHosts.add(book.sourceHost);
+                    if (SearchModel.hasSupportLocalRead(book.sourceHost)) {
+                        mCurParseSize += 1;
+                        continue;
                     }
                 }
+//                Elements f13 = e.getElementsByClass("f13");
+//                for (int j = 0; j < f13.size(); j++) {
+//                    if (mCancel) {
+//                        break;
+//                    }
+//                    Element child = f13.get(j);
+//                    String title = child.getElementsByClass("c-tools").attr("data-tools");
+//                    BaiduSearch.Title t = new Gson().fromJson(title, BaiduSearch.Title.class);
+//                    if (t == null || t.title == null || t.title.contains("网盘")) {
+//                        continue;
+//                    }
+//                    SearchModel.SearchBook book = parseResult(t);
+//                    if (book != null && book.hasValid() && !mBookHosts.contains(book.sourceHost)) {
+//                        if (urlInvalid(book.readUrl)) {
+//                            continue;
+//                        }
+//                        Log.i(TAG, "book = " + book);
+//                        bookList.add(book);
+//                        mCurSize += 1;
+//                        mBookHosts.add(book.sourceHost);
+//                        if (SearchModel.hasSupportLocalRead(book.sourceHost)) {
+//                            mCurParseSize += 1;
+//                            break;
+//                        }
+//                    }
+//                }
             }
         } catch (Exception e) {
             Log.e(TAG, e);

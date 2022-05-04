@@ -87,6 +87,7 @@ public class BaiduSearch extends JsoupSearch {
                     }
                 }
             }
+            logi("pages size=" + pages.size());
             List<SearchModel.SearchBook> list1 = getBookListForDocument(document);
             if (list1 != null) {
                 bookList.addAll(list1);

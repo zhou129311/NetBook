@@ -9,13 +9,13 @@ android {
             storePassword '123456'
         }
     }
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.xzhou.analyhtml"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 9
-        versionName "1.0.h"
+        targetSdkVersion 31
+        versionCode 11
+        versionName "1.0.j"
     }
     buildTypes {
         release {
